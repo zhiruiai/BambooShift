@@ -104,6 +104,7 @@ jobs:
           npm run source:export -- --out "release/source/$source_name"
           tar -czf "$assets/$source_name.tar.gz" -C release/source "$source_name"
           npm run build:web
+          cargo fetch --locked --manifest-path server/api/Cargo.toml
           npm run backend:package -- --release --out "$RUNNER_TEMP/$service_name"
           tar -czf "$assets/$service_name.tar.gz" -C "$RUNNER_TEMP" "$service_name"
           smoke="$(mktemp -d "$RUNNER_TEMP/pandamate-smoke.XXXXXX")"
