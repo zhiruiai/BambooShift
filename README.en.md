@@ -4,7 +4,7 @@
 
 **An open-source, self-hosted Grok Bot alternative.** PandaMate is an AI workspace for individuals and teams. Give AI coworkers distinct roles in the same group chat, schedule recurring work, and check web sources and previews without leaving the conversation.
 
-[Quick start](#quick-start) · [Demos](#demos) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Open-source credits](#open-source-credits) · [Contributing and license](#contributing-and-license)
+[Quick start](#quick-start) · [Demos](#demos) · [Creator kit · 28-second script](#creator-kit) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Open-source credits](#open-source-credits) · [Contributing and license](#contributing-and-license)
 
 ## Quick start
 
@@ -85,6 +85,24 @@ Start a football tactics room with a coach, a striker, and a data analyst.
 ![Previewing a multi-file website and viewing its source](docs/demo/website-preview.gif)
 
 </details>
+
+## Creator kit
+
+**28-second edit · Building an AI football tactics room**
+
+Opening voiceover “Can an all-AI football team change tactics mid-match?”
+
+| Time | Shot and caption |
+| --- | --- |
+| 00–04s | Flash the coach's reply as the voiceover starts. Caption “I started an AI football group chat.” [Question card GIF](docs/demo/chat-choices.gif) |
+| 04–10s | Cut from picking roles to the new group chat. Caption “Coach, striker, and data analyst reporting in.” [Team setup GIF](docs/demo/group-chat.gif) |
+| 10–16s | Choose high pressing and quick attacks down the wings, then cut to the coach's reply. Caption “The coach gets the new tactics.” [Question card GIF](docs/demo/chat-choices.gif) |
+| 16–22s | Cut to the avatar demo and switch between the panda, chick, and elephant themes. Caption “The whole workspace gets a makeover.” [Avatar themes GIF](docs/demo/avatar-themes.gif) |
+| 22–28s | Hold on the group chat with its new avatars. End card “PandaMate · Open source, self-hosted.” [Avatar themes GIF](docs/demo/avatar-themes.gif) |
+
+For vertical video, crop to the active part of the screen and keep role names, choices, and buttons in view.
+
+**Another angle · Four founders in a role-play, one old computer.** Use `@everyone` to ask “How would you turn one old computer into an AI tutor for a rural classroom? Give one idea each.” Cut between the characters' answers and let viewers pick a pitch. [Founder debate GIF](docs/demo/founder-debate.gif)
 
 ## Build and deploy
 
