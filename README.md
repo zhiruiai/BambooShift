@@ -1,183 +1,128 @@
 # PandaMate
 
-给自己组一支 AI 小队。PandaMate 支持 Bot 群聊、例行任务、联网检索和文件交付。网页、Electron 客户端和 Flutter 移动端共用 Rust 后端，Bot 由 Pi 执行。界面支持中文和英文。
+PandaMate 是一个可自托管的 AI 协作工作区。把研究、写作或工程任务交给不同的 Bot，让它们在同一群聊里分工。可以在聊天里核对网页来源、预览交付物，并把重复工作安排成例行任务。
 
-[English quick start](docs/quickstart.en.md) · [架构](docs/architecture.md) · [功能核对](docs/reference-audit.md) · [验证范围](docs/verification.md) · [Apache 2.0](LICENSE)
+PandaMate is a self-hosted workspace for working with AI Bots in personal and team spaces. [English quick start](docs/quickstart.en.md)
 
-## 功能演示
+[快速开始](#快速开始) · [功能演示](#功能演示) · [开发与部署](#开发与部署) · [源码导航](#源码导航) · [贡献与许可](#贡献与许可)
 
-### 外观与创意群聊
+## 快速开始
 
-**切换头像主题 · 约 7 秒**
-
-预览熊猫、恐龙、小鸡和大象主题。选定大象后，回到群聊看整队换装。
-
-![预览四套头像主题，保存大象主题并返回群聊](docs/demo/avatar-themes.gif)
-
-<details>
-<summary>法国足球战术室 · 约 6 秒</summary>
-
-选中战术教练、锋线球员和数据分析师，组成自己的法国足球战术小队。
-
-![选中三位足球角色，创建法国足球战术室并查看成员](docs/demo/group-chat.gif)
-
-试试在群里问：「半场 0 比 1 落后，对方把禁区挤满了。教练怎么改阵？前锋往哪跑？分析师拿什么数据判断调整有效？」
-
-</details>
-
-<details>
-<summary>临场改战术 · 约 6 秒</summary>
-
-点名战术教练，从问题卡勾选「前场压迫」和「边路快攻」。教练收到选择后，在群里接着布置战术。
-
-![点名教练，提交两项战术选择，并在群里查看教练的续答](docs/demo/chat-choices.gif)
-
-</details>
-
-<details>
-<summary>AI 创始人擂台 · 约 6 秒</summary>
-
-梁文锋、Sam Altman、Dario Amodei 和 Elon Musk 的演绎角色同台。用 `@everyone` 发同一道题，看四个 Bot 分别从效率、产品、安全和压力测试出招。对话为虚构演绎。
-
-![向四个虚构演绎角色发出同一道题，查看各自的回答](docs/demo/founder-debate.gif)
-
-试试把题目换成：「一间乡村教室只有一台旧电脑。你会怎样做一个 AI 助教？每人给一招，再说说愿意牺牲什么。」
-
-</details>
-
-### 工作与交付
-
-<details>
-<summary>团队模板 · 约 6 秒</summary>
-
-选择发布小组模板，查看三位 Bot 的分工，确认后创建团队群聊。
-
-![选择发布小组模板，核对角色并创建团队群聊](docs/demo/team-templates.gif)
-
-</details>
-
-<details>
-<summary>工作日简报 · 约 5 秒</summary>
-
-把项目简报设为工作日任务，选择执行时间，查看保存后的下一次执行。
-
-![设定工作日项目简报的频率和时间，并确认下次执行](docs/demo/scheduled-brief.gif)
-
-</details>
-
-<details>
-<summary>给 Bot 加一项调研技能 · 约 6 秒</summary>
-
-在内置技能库预览调研步骤，选定 Bot，将技能保存为待审核草稿。
-
-![从内置技能库预览调研指令，为指定 Bot 保存待审核草稿](docs/demo/skill-library.gif)
-
-</details>
-
-<details>
-<summary>网站项目 · 约 6 秒</summary>
-
-从聊天打开多文件网站，跳转站内页面，再查看源码目录。
-
-![在聊天中打开网站项目，预览书单并查看三个源文件](docs/demo/website-preview.gif)
-
-</details>
-
-<details>
-<summary>网页检索 · 约 5 秒</summary>
-
-展开聊天里的检索记录，核对已读网页和公开来源。
-
-![展开公开网页检索记录，查看 Pi 官方文档来源](docs/demo/web-research.gif)
-
-</details>
-
-演示使用独立工作空间和示例数据。
-
-## 本地运行
-
-需要 Rust 1.85+、Node.js 22.19+ 和 npm，推荐 Node.js 24。Node 负责 SDK 工作进程和前端工具；账户、业务接口、权限、SQLite、审批与调度由 Rust 负责。
+下载或克隆本仓库。安装 Rust 稳定工具链、Node.js 22.19 或更高版本（推荐 24）及 npm，然后在仓库根目录运行。
 
 ```sh
 npm ci
 npm run configure:local
-npm run dev -- --init-operator
+npm run dev
 ```
 
-- 产品：[http://127.0.0.1:5173/login](http://127.0.0.1:5173/login)，个人与团队共用注册登录。
-- 平台运营：[http://127.0.0.1:5174/admin/setup](http://127.0.0.1:5174/admin/setup)，运营人员管理全部用户和空间，使用独立登录。
-- Rust 分别监听 `3001` 产品接口和 `3002` 运营接口，两个站点分别构建为 `dist` 和 `operations-dist`。
+1. 打开终端显示的产品地址，注册个人或团队账号。默认入口是[本机登录页](http://127.0.0.1:5173/login)。
+2. 在工作空间的 **设置 → 模型配置** 填写模型服务地址、模型名称和 API Key。保存后点 **设为默认**。
+3. 打开一个 Bot 会话，试试「查找 Pi Coding Agent 的官方文档，总结三个要点并附来源」。回复上方的检索记录可以展开。
 
-首次部署的运营人员从本机 `data/platform/operator-setup-code` 取得一次性初始化码，建立自己的运营账户。之后省略 `--init-operator`，访问 `/admin/login`。普通注册不能获得运营权限。两个入口共用一个 Rust 进程和调度器，分别只挂载自己的接口。见[运营部署](docs/operations-console.md)。
+`configure:local` 只用于首次创建本地配置。启动已有配置时直接运行 `npm run dev`。如果还要初始化独立的运营账户，首次启动改用 `npm run dev -- --init-operator`。 [运营入口与初始化](docs/operations-console.md)
 
-在“设置 → 模型”添加模型地址与 API Key，再明确设为默认。每个空间独立配置模型；新账户不会继承部署者的密钥、电脑或第三方应用账户。兼容接口可以保存为独立模型配置，例如 GLM 与 DeepSeek。
+## 能做什么
 
-```sh
-npm run build           # Build Rust and both web applications
-npm start               # Serve the built applications
-npm test                # Backend, web, runtime and client checks
-npm run backend:package # Assemble a separate deployment package
-```
+| 场景 | 功能 |
+| --- | --- |
+| 分工协作 | 单聊、群聊、点名 Bot、角色模板、同事委派和问题卡。可以先预览个人 Bot 或团队草稿，再确认创建。 |
+| 查资料与交付 | 检索公开网页并回看来源。在聊天中预览文档、表格、媒体和多文件网站项目。 |
+| 重复工作 | 设置例行任务的时间和时区，查看运行记录。把可复用的做法整理成技能，审核后交给 Bot。 |
+| 连接工具 | 通过 MCP 连接应用，审批具体工具调用。部署者也可选配独立浏览器、远程电脑和本地语音。 |
 
-## 协作与工作
+网页支持 PWA。桌面端和移动端连接同一套工作空间服务。先启动服务，再按客户端指南连接。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
 
-- Bot 设置、个人主 Bot、真实同事委派与群聊分工。可以用文字生成单个 Bot 或整组 Bot 的草稿，审核后创建。
-- 五套原创头像（伙伴、熊猫、恐龙、小鸡、大象）。Web、桌面和 Flutter 都可生成并预览自定义主题，也可将主题保存到自己在当前空间的账号，在其他设备使用。已上传的 Bot 头像优先显示。
-- 流式聊天、附件、引用、表情回应、消息菜单、搜索和新聊天选择。输入 `/` 打开快捷操作；在草稿任意位置输入 `@`，可选择实际 Bot。
-- 在普通 Bot 的单聊或群聊中，询问最新资讯可搜索公网，贴公开文章或文档链接可直接读取正文。Pi 调用工具完成，无需分配浏览器、逐个批准或配置搜索密钥。搜索词或公开链接会发送给 Exa，请勿提交私有或一次性链接。
-- 记忆管理、个人背景导入、技能提案与版本审核，人工演示核对后生成待审核技能。
-- 「技能与成长」提供技术调研、系统排障、行为验收和前端设计模板。选取模板填入可编辑草稿，保存后通过现有审核流程启用。工作方法参考 [Superpowers](https://github.com/obra/superpowers)、[Matt Pocock Skills](https://github.com/mattpocock/skills) 和 [Anthropic Frontend Design](https://github.com/anthropics/claude-code/blob/main/plugins/frontend-design/skills/frontend-design/SKILL.md)。
-- 例行任务、时区、暂停、运行历史及丢响应后的原请求恢复。
-- 公网 MCP 应用、OAuth/Bearer 授权、工具审批与明确授予的精确例行只读权限。
-- 文件库及 [Markdown、HTML、文档、表格和媒体预览](docs/file-previews.md)、电脑文件收发、独立浏览器与可选远程执行电脑。
-- 真实 token 用量、本地听写、可用的本地声线朗读和明确开启的工作通知。
+## 功能演示
 
-团队只设拥有者和成员；拥有者邀请与移除成员，平台运营人员管理整个平台。共享 Bot 的私人会话、记忆与来源授权见[共享说明](docs/shared-bots.md)。远程电脑与本地听写需要额外配置 Worker、whisper.cpp 和模型。任务在后台服务运行，客户端退出不会主动取消任务。各项实际能力和验证范围见[功能核对](docs/reference-audit.md)。
+从教练、前锋和数据分析师开始，组一个足球战术室。
 
-## 多端
+![选择角色并创建足球战术群聊](docs/demo/group-chat.gif)
 
-网页适配桌面和手机，可作为 PWA 使用。Electron 是连接同一服务的薄客户端：
+<details>
+<summary>群聊与个性化 · 问题卡、多人演绎、头像主题</summary>
 
-```sh
-npm run client:dev
-npm run client:test
-npm run client:package -- --platform darwin --arch arm64
-```
+**临场改战术**。在问题卡勾选前场压迫和边路快攻，教练收到选择后继续布置战术。
 
-远程连接使用 HTTPS，本机可用 `http://127.0.0.1:3001`。客户端与执行电脑是两个组件，详见[桌面客户端](docs/desktop-client.md)。Flutter 源码位于 `mobile/`，安装包构建和真机验收按当前计划后置。
+![在群聊提交战术选择并查看续答](docs/demo/chat-choices.gif)
 
-## 目录
+**创始人擂台**。全体点名，四个虚构演绎角色各出一招，为同一台旧电脑设计 AI 助教。
 
-```text
-web/                    React 产品站点
-  src/                  界面、状态、组件和语言资源
-  public/               头像、图标和静态资源
-operations/             独立运营站点
-desktop/                Electron 客户端与本地连接页
-mobile/                 Flutter 客户端
-server/
-  api/                  Rust HTTP、权限、SQLite、审批与调度
-  workers/              Pi、MCP、文档与电脑执行进程
-  native/               原生电脑控制助手
-shared/                 跨端接口和领域类型
-scripts/                启动、构建和测试工具
-  source/               源码检查、隐私扫描和发布导出
-docs/                   架构、功能、部署与验证说明
-  demo/                 README 功能演示素材
-```
+![使用全体点名发出同一个问题](docs/demo/founder-debate.gif)
 
-业务服务由 Rust 管理，Node SDK 与执行适配位于 `server/workers/`。历史迁移详见[清理记录](docs/evidence/node-retirement.json)。自有代码单文件最多 500 行，注释使用英文，界面文字至少 12px。
+**整队换装**。预览熊猫、恐龙、小鸡和大象主题，再回到群聊查看结果。
 
-## 配置与开源
+![切换群聊头像主题](docs/demo/avatar-themes.gif)
 
-个人邮箱、实际部署地址和端口、模型密钥及电脑凭据放在忽略版本管理的 `config/private/` 或 `data/`。运维记录和构建产物留在本机的 `.local/`、`release/` 等忽略目录。公开示例位于 `server/api/deployment/`，架构与模块边界见[架构文档](docs/architecture.md)。
+</details>
 
-```sh
-npm run check:source
-npm run check:privacy
-npm run source:export -- --out release/source/pandamate-v0.1.0
-```
+<details>
+<summary>模板与自动化 · 团队、简报、技能</summary>
 
-导出排除运行数据、密钥、依赖、工具链、构建缓存和历史图片，包含逐文件校验清单；发现已知私密值就停止。使用干净目录建立 GitHub 仓库，详见[开源交付](docs/source-release.md)。工具不会创建仓库或上传代码。
+**团队模板**。查看三位 Bot 的分工，编辑后创建工作组。
 
-PandaMate 是独立项目，采用 [Apache License 2.0](LICENSE)。请保留 [NOTICE](NOTICE) 和[第三方许可说明](THIRD_PARTY.md)。欢迎按[贡献说明](CONTRIBUTING.md)提交改进。
+![审核分工并创建团队](docs/demo/team-templates.gif)
+
+**工作日简报**。选择任务频率和执行时间，核对下一次执行。
+
+![设置时间和频率并确认下次执行](docs/demo/scheduled-brief.gif)
+
+**调研技能**。预览内置指令，为指定 Bot 保存一份待审核草稿。
+
+![预览调研指令并保存草稿](docs/demo/skill-library.gif)
+
+</details>
+
+<details>
+<summary>检索与交付 · 公开来源、网站预览</summary>
+
+**网页检索**。展开聊天里的检索记录，核对已读网页和来源。
+
+![查看公开检索来源](docs/demo/web-research.gif)
+
+**多文件网站**。从聊天打开交付物，浏览页面，再切换到源码。
+
+![预览多文件网站并查看源文件](docs/demo/website-preview.gif)
+
+</details>
+
+## 开发与部署
+
+Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi 执行 Bot 任务，MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
+
+| 命令 | 用途 |
+| --- | --- |
+| `npm run build` | 编译 Rust 服务，构建产品站点和运营站点 |
+| `npm start` | 使用本地配置启动已构建的服务 |
+| `npm run client:dev` | 运行 Electron 客户端并连接产品服务 |
+| `npm test` | 运行后端、网页、执行进程与桌面客户端测试 |
+| `npm run check:source` · `npm run check:privacy` | 检查源码规范与发布范围内的隐私信息 |
+| `npm run backend:package -- --release --out release/backend` | 组装当前平台的发布包 |
+
+生产部署使用 HTTPS。分别配置产品与运营入口，并把数据目录放在发布包外。模型、第三方应用、远程电脑与本地语音各有配置要求。Flutter 提供 Android 和 iOS 源码及测试流程，原生安装和真机验证单独进行。 [服务部署](server/api/deployment/README.md) · [源码发布](docs/source-release.md) · [验证范围](docs/verification.md)
+
+## 源码导航
+
+开发者和 AI 智能体可以按改动范围定位入口、实现和相关检查。
+
+| 改动范围 | 从这里开始 | 相关检查 |
+| --- | --- | --- |
+| 产品界面 | [网页入口](web/src/main.tsx)、[界面源码](web/src/)、[静态资源](web/public/) | `npm run test:web` |
+| 独立运营站 | [运营入口](operations/main.tsx)、[运营页面](operations/src/) | `npm run build:operations` |
+| Rust API、权限与持久化 | [服务入口](server/api/src/main.rs)、[API 实现](server/api/src/)、[集成测试](server/api/tests/) | `npm run backend:test` |
+| Pi、MCP、文档及电脑执行 | [server/workers/](server/workers/) 与 [server/native/](server/native/) | `npm run test:runtime` |
+| Electron 与 Flutter | [desktop/](desktop/) 与 [mobile/](mobile/) | `npm run client:test` · [Flutter 检查](mobile/README.md#develop-and-verify) |
+| 跨端类型与协议 | [shared/](shared/) | `npm run test:web` · `npm run test:runtime` |
+| 构建、导出与隐私检查 | [scripts/](scripts/) 与 [scripts/source/](scripts/source/) | `npm run check:source` · `npm run check:privacy` |
+
+开发命令定义在 [package.json](package.json)，持续集成流程位于 [.github/workflows/ci.yml](.github/workflows/ci.yml)。权限和任务状态由 Rust 服务判定。涉及权限或数据写入的改动，可沿 API、持久化与测试核对行为。 [贡献指南](CONTRIBUTING.md)
+
+## 数据与外部服务
+
+工作空间数据存储在部署者管理的服务上。模型请求发送给配置的模型服务。公开检索将关键词或公开链接发给 Exa，连接应用和执行电脑则使用各自配置的目标与权限。部署配置、模型密钥、运行数据和浏览器资料应保存在源码版本控制之外。 [外部应用](docs/app-connections.md) · [安全说明](SECURITY.md)
+
+## 贡献与许可
+
+欢迎提交缺陷复现、文档补充与代码改进。请使用示例数据复现问题，并注明相关验证。 [贡献指南](CONTRIBUTING.md)
+
+PandaMate 采用 Apache License 2.0。 [LICENSE](LICENSE) · [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)
