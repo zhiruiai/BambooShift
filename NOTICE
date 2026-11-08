@@ -1,7 +1,7 @@
-OpenBot
-Copyright 2026 OpenBot contributors
+PandaMate
+Copyright 2026 PandaMate contributors
 
-OpenBot's original source code is licensed under the Apache License, Version 2.0.
+PandaMate's original source code is licensed under the Apache License, Version 2.0.
 
 Third-party dependencies retain their respective licenses and copyright notices.
 The source distribution identifies exact dependency versions in its lockfiles.
@@ -11,6 +11,6 @@ Separately installed Node, Electron, Flutter, browser and execution-host package
 retain their own license files. These dependencies are not relicensed by this
 project. Preserve applicable notices when redistributing them.
 
-OpenBot Sans SC, bundled in the Flutter web client, is derived from Noto Sans SC.
+The Chinese font bundled in the Flutter web client is derived from Noto Sans SC.
 Copyright 2014-2021 Adobe, with Reserved Font Name 'Source'. It is distributed
 under the SIL Open Font License 1.1. See mobile/assets/fonts/OFL-NotoSansSC.txt.

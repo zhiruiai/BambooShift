@@ -2,9 +2,82 @@
 
 [简体中文](README.md) · English
 
-**An open-source, self-hosted Grok Bot alternative.** PandaMate is an AI workspace for individuals and teams. Give AI coworkers distinct roles in the same group chat, schedule recurring work, and check web sources and previews without leaving the conversation.
+**An open-source, self-hosted Grok Bot alternative.** Build a team of AI coworkers, hand out tasks in group chat, and review sources as they work. Open the files and websites they deliver from the conversation.
 
-[Quick start](#quick-start) · [Demos](#demos) · [Creator kit · 28-second script](#creator-kit) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Open-source credits](#open-source-credits) · [Contributing and license](#contributing-and-license)
+[Demos](#demos) · [Creator kit](#creator-kit) · [Quick start](#quick-start) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Acknowledgments and open-source credits](#acknowledgments-and-open-source-credits)
+
+## Demos
+
+**Starport Landing.** Open a five-file web game from chat, align the ship, brake, and make a soft landing in the preview.
+
+![Opening a web game from PandaMate chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
+
+These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
+
+### Three stories for short videos
+
+**Dress the workspace as a space elephant crew.** Describe an avatar theme, review the proposed colorways, and save it to see the characters change.
+
+![Generating a space elephant avatar theme and applying it to the workspace](docs/demo/smart-theme.en.gif)
+
+**How would an AI coach play French-style counterattacks?** Start a seven-a-side tactics room with a coach, a striker, and a data analyst. Pick high pressing and quick attacks down the wings and see how the coach builds the plan.
+
+![Selecting three roles and starting a football tactics group chat](docs/demo/group-chat.en.gif)
+
+[Watch the coach respond to the tactical choices](docs/demo/chat-choices.en.gif)
+
+**Founder Roundtable.** Use `@everyone` to ask four role-play characters how they would build an AI tutor on one old computer. See how the pitches differ on adoption, efficiency, safety, and engineering.
+
+![Asking four fictional role-play characters the same question and reading their replies](docs/demo/founder-debate.en.gif)
+
+<details>
+<summary>More demos · Create a Bot, run a team, check sources, and open deliverables</summary>
+
+**Hire a museum night-shift editor.** Describe the video producer you need, review the proposed Bot profile, rename it, and open its chat.
+
+![Generating a short-video producer Bot from a brief and opening its chat](docs/demo/smart-bot.en.gif)
+
+**Give the whole team a new look.** Switch between pandas, dinosaurs, chicks, and elephants and see the change across the chat. [Avatar themes GIF](docs/demo/avatar-themes.en.gif)
+
+**Assemble a launch team.** Start with a team template, review its three roles, rename the group, and create the chat. [Team template GIF](docs/demo/team-templates.en.gif)
+
+**Schedule a weekday briefing.** Choose the days and time and check the next run in Routines. [Scheduled briefing GIF](docs/demo/scheduled-brief.en.gif)
+
+**Have the next research run cite its sources.** Review a built-in research skill and save it as a draft for a specific Bot. [Skill draft GIF](docs/demo/skill-library.en.gif)
+
+**Follow the answer back to its sources.** Expand the search record and see the pages the Bot visited. [Web research GIF](docs/demo/web-research.en.gif)
+
+**Browse a weekend bookshop.** Open the multi-file website, navigate to its reading list, and switch to the stylesheet in Source. [Website preview GIF](docs/demo/website-preview.en.gif)
+
+</details>
+
+## Creator kit
+
+### 20 seconds · Land a spacecraft from a chat
+
+Open with “I asked an AI coworker for a mini-game. I can play it right here in chat.”
+
+| Time | Shot and caption |
+| --- | --- |
+| 00–03s | Flash the spacecraft just above the landing pad. Caption “Can you fly a spaceship inside a chat?” |
+| 03–08s | Return to the request and the web artifact card, then open the preview. Caption “The deliverable is a playable website.” |
+| 08–16s | Cut to the descent and show the flight controls. Leave a beat for touchdown. Caption “Adjust thrust. Prepare to land.” |
+| 16–20s | Hold on the landing result. End card “PandaMate · Open source, self-hosted.” |
+
+[Starport Landing GIF](docs/demo/orbital-landing.en.gif)
+
+### 28 seconds · Plan a seven-a-side counterattack with an AI coach
+
+| Time | Shot and caption |
+| --- | --- |
+| 00–04s | Flash the coach's reply. Opening voiceover “How would an AI team play French-style counterattacks?” [Question card GIF](docs/demo/chat-choices.en.gif) |
+| 04–10s | Cut from picking roles to the new chat. Caption “Coach, striker, and analyst reporting in.” [Team setup GIF](docs/demo/group-chat.en.gif) |
+| 10–18s | Pick high pressing and quick attacks down the wings. Cut to the coach's reply. Caption “New tactics received.” [Question card GIF](docs/demo/chat-choices.en.gif) |
+| 18–28s | Cut between panda, chick, and elephant avatars and end on the group chat with its new look. Caption “PandaMate · Open source, self-hosted.” [Avatar themes GIF](docs/demo/avatar-themes.en.gif) |
+
+Another angle is “Four founders in a role-play, one old computer.” Cut between their pitches and ask viewers which idea they would try. [Founder Roundtable GIF](docs/demo/founder-debate.en.gif)
+
+For vertical video, crop to the action. Keep the artifact button, role names, and landing result visible so viewers can follow along with the sound off.
 
 ## Quick start
 
@@ -17,92 +90,22 @@ npm run dev
 ```
 
 1. Open the product URL printed in the terminal and register a personal or team account.
-2. Open **Settings → Model settings** in your workspace. Enter the model provider URL, model name, and API key. Save the profile, then choose **Set as default**.
-3. Open a Bot chat and try asking it to find the official Pi Coding Agent documentation, summarize three key points, and cite its sources. Expand the search record above the reply to review the sources.
+2. Open **Settings → Models** in your workspace. Enter the model provider URL, model name, and API key. Save the profile, then choose **Set as default**.
+3. Open a direct Bot chat and try “What can you help me with? Give me three examples.”
+4. If your server can reach Exa over HTTPS, ask a workspace Bot to find the official Pi Coding Agent documentation, summarize three points, and cite its sources. Expand the search record above the reply to review them. [Web research setup](server/api/deployment/README.md#execution-boundary)
 
-Run `configure:local` once to create the local configuration. To start an already configured workspace, run `npm run dev`. To set up the separate operations account on first launch, run `npm run dev -- --init-operator`. [Operations setup](docs/operations-console.md)
+Run `configure:local` once to create the local configuration. Use `npm run dev` for later launches. To initialize a separate operations account on the first launch, run `npm run dev -- --init-operator`. [Operations setup](docs/operations-console.md)
 
 ## What you can do
 
 | Use case | Features |
 | --- | --- |
-| AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, role templates, delegation, and question cards. Preview an individual Bot or team draft before creating it. |
-| Web research with sources | Search public web pages and review the sources. Preview documents, spreadsheets, media, and multi-file website projects in chat. |
-| Agent workflow automation and reusable skills | Schedule recurring tasks with a time zone and check past runs. Save repeatable instructions as Bot skills and review them before activation. |
+| AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
+| Web research and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
+| Workflow automation and reusable skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
 | MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP) and approve specific tool calls. Browser control, remote computers, and local speech transcription can be configured separately. |
 
-The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. Start that service before connecting a client. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
-
-## Demos
-
-Start a football tactics room with a coach, a striker, and a data analyst.
-
-![Selecting roles and creating a football tactics group chat](docs/demo/group-chat.gif)
-
-<details>
-<summary>Group chats and personalization · Questions, role-play, and avatars</summary>
-
-**Change tactics mid-game.** Choose high pressing and quick attacks down the wings in the question card. The coach continues with those choices.
-
-![Submitting tactical choices in a group chat and viewing the follow-up](docs/demo/chat-choices.gif)
-
-**Founder debate.** Mention everyone and let four fictional characters pitch an AI tutor they could build on the same old computer.
-
-![Asking everyone in a group chat to answer the same question](docs/demo/founder-debate.gif)
-
-**Give the team a new look.** Preview panda, dinosaur, chick, and elephant themes, then return to the group chat to see the result.
-
-![Changing the avatar theme for a group chat](docs/demo/avatar-themes.gif)
-
-</details>
-
-<details>
-<summary>Templates and automation · Teams, briefings, and skills</summary>
-
-**Team templates.** Review the three Bots and their responsibilities, then edit the draft and create the group.
-
-![Reviewing roles and creating a team](docs/demo/team-templates.gif)
-
-**Weekday briefings.** Choose how often the task runs and when, then check the next scheduled run.
-
-![Setting a schedule and confirming the next run](docs/demo/scheduled-brief.gif)
-
-**Research skills.** Preview built-in instructions, then choose a Bot and save the skill as a draft for review.
-
-![Previewing research instructions and saving a draft](docs/demo/skill-library.gif)
-
-</details>
-
-<details>
-<summary>Research and deliverables · Public sources and website previews</summary>
-
-**Web research.** Expand the search record in chat to review the pages the Bot read and their sources.
-
-![Reviewing public web research sources](docs/demo/web-research.gif)
-
-**Multi-file websites.** Open the deliverable from chat, browse the pages, and switch to the source files.
-
-![Previewing a multi-file website and viewing its source](docs/demo/website-preview.gif)
-
-</details>
-
-## Creator kit
-
-**28-second edit · Building an AI football tactics room**
-
-Opening voiceover “Can an all-AI football team change tactics mid-match?”
-
-| Time | Shot and caption |
-| --- | --- |
-| 00–04s | Flash the coach's reply as the voiceover starts. Caption “I started an AI football group chat.” [Question card GIF](docs/demo/chat-choices.gif) |
-| 04–10s | Cut from picking roles to the new group chat. Caption “Coach, striker, and data analyst reporting in.” [Team setup GIF](docs/demo/group-chat.gif) |
-| 10–16s | Choose high pressing and quick attacks down the wings, then cut to the coach's reply. Caption “The coach gets the new tactics.” [Question card GIF](docs/demo/chat-choices.gif) |
-| 16–22s | Cut to the avatar demo and switch between the panda, chick, and elephant themes. Caption “The whole workspace gets a makeover.” [Avatar themes GIF](docs/demo/avatar-themes.gif) |
-| 22–28s | Hold on the group chat with its new avatars. End card “PandaMate · Open source, self-hosted.” [Avatar themes GIF](docs/demo/avatar-themes.gif) |
-
-For vertical video, crop to the active part of the screen and keep role names, choices, and buttons in view.
-
-**Another angle · Four founders in a role-play, one old computer.** Use `@everyone` to ask “How would you turn one old computer into an AI tutor for a rural classroom? Give one idea each.” Cut between the characters' answers and let viewers pick a pitch. [Founder debate GIF](docs/demo/founder-debate.gif)
+The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
 
 ## Build and deploy
 
@@ -139,9 +142,9 @@ Development commands live in [package.json](package.json) and continuous integra
 
 Workspace data lives on the service managed by the deployer. Model requests go to the configured provider. Public web research sends query terms or public URLs to Exa. Connected apps and computer workers use their configured endpoints and permissions. Store deployment settings, model credentials, runtime data, and browser profiles outside source control. [External apps](docs/app-connections.md) · [Security](SECURITY.md)
 
-## Open-source credits
+## Acknowledgments and open-source credits
 
-Thanks to the maintainers and contributors of the projects below.
+Thanks to everyone who tries PandaMate, reports issues, shares reproductions, or improves the docs and translations. Thanks also to the maintainers of these upstream projects.
 
 | Area | Upstream projects and components |
 | --- | --- |
@@ -149,6 +152,7 @@ Thanks to the maintainers and contributors of the projects below.
 | Server and storage | [Tokio](https://tokio.rs/) and [Axum](https://github.com/tokio-rs/axum) support the Rust service. [SQLx](https://github.com/transact-rs/sqlx) accesses [SQLite](https://sqlite.org/). |
 | Web, desktop, and mobile | [React](https://react.dev/) and [Vite](https://vite.dev/) power the web front end. [Electron](https://www.electronjs.org/) and [Flutter](https://flutter.dev/) are used for the desktop and mobile clients, respectively. |
 | Documents, icons, and fonts | [PDF.js](https://mozilla.github.io/pdf.js/) and [Mammoth.js](https://github.com/mwilliamson/mammoth.js) handle document previews and parsing. [Lucide](https://lucide.dev/) provides UI icons. The Chinese font in Flutter web is derived from [Noto Sans SC](https://fonts.google.com/noto/specimen/Noto+Sans+SC). |
+| Markdown and images | [react-markdown](https://github.com/remarkjs/react-markdown) and [remark-gfm](https://github.com/remarkjs/remark-gfm) render messages and skill documents. [sharp](https://sharp.pixelplumbing.com/) processes image attachments. |
 | Optional execution environments | [Playwright](https://playwright.dev/) and [Chromium](https://www.chromium.org/) support browser use. [whisper.cpp](https://github.com/ggml-org/whisper.cpp) handles local speech transcription. |
 
 PandaMate is an independent project. For the original product reference, see the [official Grok Bot introduction](https://x.ai/news/introducing-grok-bot).
