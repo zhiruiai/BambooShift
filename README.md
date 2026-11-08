@@ -1,10 +1,12 @@
 # PandaMate
 
-PandaMate 是一个可自托管的 AI 协作工作区。把研究、写作或工程任务交给不同的 Bot，让它们在同一群聊里分工。可以在聊天里核对网页来源、预览交付物，并把重复工作安排成例行任务。
+简体中文 · [English](README.en.md)
 
-PandaMate is a self-hosted workspace for working with AI Bots in personal and team spaces. [English quick start](docs/quickstart.en.md)
+**开源、自托管的 Grok Bot 平替。** PandaMate 是面向个人和团队的 AI 协作工作区。让不同的 AI 同事在同一群聊里分工，把重复工作安排成例行任务，在聊天里核对网页来源和预览交付物。
 
-[快速开始](#快速开始) · [功能演示](#功能演示) · [开发与部署](#开发与部署) · [源码导航](#源码导航) · [贡献与许可](#贡献与许可)
+PandaMate is an open-source, self-hosted Grok Bot alternative for AI coworkers and multi-agent collaboration.
+
+[快速开始](#快速开始) · [功能演示](#功能演示) · [开发与部署](#开发与部署) · [源码导航](#源码导航) · [开源致谢](#开源致谢) · [贡献与许可](#贡献与许可)
 
 ## 快速开始
 
@@ -16,7 +18,7 @@ npm run configure:local
 npm run dev
 ```
 
-1. 打开终端显示的产品地址，注册个人或团队账号。默认入口是[本机登录页](http://127.0.0.1:5173/login)。
+1. 打开终端显示的产品地址，注册个人或团队账号。
 2. 在工作空间的 **设置 → 模型配置** 填写模型服务地址、模型名称和 API Key。保存后点 **设为默认**。
 3. 打开一个 Bot 会话，试试「查找 Pi Coding Agent 的官方文档，总结三个要点并附来源」。回复上方的检索记录可以展开。
 
@@ -26,10 +28,10 @@ npm run dev
 
 | 场景 | 功能 |
 | --- | --- |
-| 分工协作 | 单聊、群聊、点名 Bot、角色模板、同事委派和问题卡。可以先预览个人 Bot 或团队草稿，再确认创建。 |
-| 查资料与交付 | 检索公开网页并回看来源。在聊天中预览文档、表格、媒体和多文件网站项目。 |
-| 重复工作 | 设置例行任务的时间和时区，查看运行记录。把可复用的做法整理成技能，审核后交给 Bot。 |
-| 连接工具 | 通过 MCP 连接应用，审批具体工具调用。部署者也可选配独立浏览器、远程电脑和本地语音。 |
+| AI 同事与多智能体协作 | 单聊、群聊、点名 Bot、角色模板、同事委派和问题卡。可以先预览个人 Bot 或团队草稿，再确认创建。 |
+| 带来源的网页检索与交付 | 检索公开网页并回看来源。在聊天中预览文档、表格、媒体和多文件网站项目。 |
+| 智能体工作流自动化与技能 | 设置例行任务的时间和时区，查看运行记录。把可复用的做法整理成技能，审核后交给 Bot。 |
+| MCP 工具调用与人工审批 | 通过 Model Context Protocol（MCP）连接应用，按具体调用进行人工审批。部署者可分别配置浏览器操作、远程电脑和本地语音转写。 |
 
 网页支持 PWA。桌面端和移动端连接同一套工作空间服务。先启动服务，再按客户端指南连接。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
 
@@ -88,7 +90,7 @@ npm run dev
 
 ## 开发与部署
 
-Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi 执行 Bot 任务，MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
+Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi 提供 Bot 的智能体执行框架（agent harness）。MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
 
 | 命令 | 用途 |
 | --- | --- |
@@ -121,8 +123,24 @@ Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存�
 
 工作空间数据存储在部署者管理的服务上。模型请求发送给配置的模型服务。公开检索将关键词或公开链接发给 Exa，连接应用和执行电脑则使用各自配置的目标与权限。部署配置、模型密钥、运行数据和浏览器资料应保存在源码版本控制之外。 [外部应用](docs/app-connections.md) · [安全说明](SECURITY.md)
 
+## 开源致谢
+
+感谢以下上游项目的维护者和贡献者。
+
+| 用途 | 上游项目与组件 |
+| --- | --- |
+| 智能体执行与工具接入 | [Pi Coding Agent](https://github.com/earendil-works/pi) 提供 Bot 执行框架，[MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) 用于连接外部工具。 |
+| 服务端与存储 | [Tokio](https://tokio.rs/) 和 [Axum](https://github.com/tokio-rs/axum) 支撑 Rust 服务，[SQLx](https://github.com/transact-rs/sqlx) 访问 [SQLite](https://sqlite.org/)。 |
+| 网页、桌面与移动端 | [React](https://react.dev/) 和 [Vite](https://vite.dev/) 用于网页开发和构建，[Electron](https://www.electronjs.org/) 和 [Flutter](https://flutter.dev/) 分别用于桌面端和移动端。 |
+| 文档、图标与字体 | [PDF.js](https://mozilla.github.io/pdf.js/) 和 [Mammoth.js](https://github.com/mwilliamson/mammoth.js) 用于文档预览与解析，[Lucide](https://lucide.dev/) 提供界面图标。Flutter 网页端的中文字体派生自 [Noto Sans SC](https://fonts.google.com/noto/specimen/Noto+Sans+SC)。 |
+| 可选执行环境 | [Playwright](https://playwright.dev/) 和 [Chromium](https://www.chromium.org/) 用于浏览器操作，[whisper.cpp](https://github.com/ggml-org/whisper.cpp) 用于本地语音转写。 |
+
+PandaMate 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 官方介绍](https://x.ai/news/introducing-grok-bot)。
+
+依赖版本由锁文件记录，各依赖保留原许可证。服务发布包包含所编译 Rust 与网页依赖的许可清单。 [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)
+
 ## 贡献与许可
 
 欢迎提交缺陷复现、文档补充与代码改进。请使用示例数据复现问题，并注明相关验证。 [贡献指南](CONTRIBUTING.md)
 
-PandaMate 采用 Apache License 2.0。 [LICENSE](LICENSE) · [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)
+PandaMate 源码采用 [Apache License 2.0](LICENSE)。

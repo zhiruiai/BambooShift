@@ -6,6 +6,7 @@ import { isIP } from 'node:net';
 
 export const releaseFiles = [
   'README.md',
+  'README.en.md',
   'LICENSE',
   'NOTICE',
   'CONTRIBUTING.md',
