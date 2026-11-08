@@ -29,7 +29,9 @@ export function planRelease({ startedAt, source, releases, tagLines }) {
   const version = `0.0.${patch}`;
   const tag = `v${version}`;
   if (!versionTag.test(tag)) throw Error('The automatic release series is exhausted.');
-  const sameTag = releases.filter((release) => release.tag_name === tag);
+  const sameTag = releases.filter(
+    (release) => release.tag_name === tag || (release.draft && release.name === `PandaMate ${tag}`),
+  );
   if (sameTag.length > 1 || sameTag.some((release) => !release.draft))
     throw Error('The next version is reserved by another release.');
 

@@ -163,4 +163,7 @@ jobs:
           path: ${{ runner.temp }}/pandamate-builds
       - name: Verify the build snapshot and publish the complete release
         shell: bash
-        run: bash scripts/publishing/publish-release.sh
+        run: |
+          set -euo pipefail
+          git show "${GITHUB_SHA}:scripts/publishing/publish-release.sh" > "$RUNNER_TEMP/pandamate-publish-release.sh"
+          bash "$RUNNER_TEMP/pandamate-publish-release.sh"

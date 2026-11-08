@@ -39,6 +39,8 @@ test('resumes the version and source of an interrupted release', () => {
   assert.equal(plan({ tagLines }).source, olderSource);
   assert.equal(plan({ tagLines, releases }).tag, 'v0.0.1');
   assert.equal(plan({ tagLines, releases }).source, olderSource);
+  const untagged = [{ ...releases[0], tag_name: 'untagged-123', name: 'PandaMate v0.0.1' }];
+  assert.equal(plan({ tagLines, releases: untagged }).source, olderSource);
   assert.throws(() => plan({ releases }), /draft does not match/);
 });
 

@@ -46,8 +46,12 @@ fi
 (cd "$publish_dir" && sha256sum "$source_name" "$server_name" "$client_name" > SHA256SUMS.txt)
 
 releases="$publish_dir/releases.json"
+title="PandaMate $RELEASE_TAG"
+marker="<!-- pandamate-source: $RELEASE_SOURCE -->"
 gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
-release_count="$(jq -r --arg tag "$RELEASE_TAG" '[.[][] | select(.tag_name == $tag)] | length' "$releases")"
+matches="$(jq -c --arg tag "$RELEASE_TAG" --arg title "$title" \
+  '[.[][] | select(.tag_name == $tag or (.draft and .name == $title))]' "$releases")"
+release_count="$(jq 'length' <<< "$matches")"
 if [[ "$release_count" == 0 ]]; then
   notes="$publish_dir/notes.md"
   cat > "$notes" <<NOTES
@@ -62,13 +66,16 @@ PandaMate $RELEASE_TAG · $RELEASE_DAY
 
 源码包包含各端源码。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。
 NOTES
-  gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --verify-tag --draft \
-    --title "PandaMate $RELEASE_TAG" --notes-file "$notes"
+  release="$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
+    -f "tag_name=$RELEASE_TAG" -f "name=$title" -F "body=@$notes" -F draft=true -F prerelease=false)"
+else
+  test "$release_count" = 1
+  release="$(jq -c '.[0]' <<< "$matches")"
 fi
 
-gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
-release="$(jq -ec --arg tag "$RELEASE_TAG" --arg marker "<!-- pandamate-source: $RELEASE_SOURCE -->" \
-  '[.[][] | select(.tag_name == $tag)] | select(length == 1) | .[0] | select(.body | contains($marker))' "$releases")"
+jq -e --arg tag "$RELEASE_TAG" --arg title "$title" --arg marker "$marker" \
+  '(.tag_name == $tag or (.draft and .name == $title)) and (.body | contains($marker))' \
+  <<< "$release" > /dev/null
 id="$(jq -er '.id | numbers' <<< "$release")"
 draft="$(jq -r '.draft' <<< "$release")"
 files=("$source_name" "$server_name" "$client_name" SHA256SUMS.txt)
@@ -78,12 +85,15 @@ refresh_assets() {
   gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases/$id/assets?per_page=100" > "$asset_list"
 }
 
+hash_file() {
+  sha256sum "$publish_dir/$1" | cut -d ' ' -f 1
+}
+
 verify_assets() {
   refresh_assets
   test "$(jq '[.[][]] | length' "$asset_list")" = "${#files[@]}"
   for file in "${files[@]}"; do
-    hash="$(sha256sum "$publish_dir/$file" | cut -d ' ' -f 1)"
-    jq -e --arg name "$file" --arg digest "sha256:$hash" \
+    jq -e --arg name "$file" --arg digest "sha256:$(hash_file "$file")" \
       '[.[][] | select(.name == $name and .state == "uploaded" and .digest == $digest)] | length == 1' \
       "$asset_list" > /dev/null
   done
@@ -94,11 +104,24 @@ if [[ "$draft" == true ]]; then
   allowed="$(printf '%s\n' "${files[@]}" | jq -R . | jq -s .)"
   jq -e --argjson allowed "$allowed" \
     'all(.[][]; .name as $name | $allowed | index($name) != null)' "$asset_list" > /dev/null
-  gh release upload "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --clobber \
-    "$publish_dir/$source_name" "$publish_dir/$server_name" "$publish_dir/$client_name" \
-    "$publish_dir/SHA256SUMS.txt"
+  for file in "${files[@]}"; do
+    asset="$(jq -c --arg name "$file" '[.[][] | select(.name == $name)] | .[0] // null' "$asset_list")"
+    if [[ "$asset" != null ]]; then
+      if jq -e --arg digest "sha256:$(hash_file "$file")" \
+        '.state == "uploaded" and .digest == $digest' <<< "$asset" > /dev/null; then
+        continue
+      fi
+      asset_id="$(jq -er '.id | numbers' <<< "$asset")"
+      gh api --method DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$asset_id"
+    fi
+    curl --silent --show-error --fail --max-time 180 \
+      --header "Authorization: Bearer $GH_TOKEN" --header 'Content-Type: application/octet-stream' \
+      --data-binary "@$publish_dir/$file" \
+      "https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$id/assets?name=$file" > /dev/null
+  done
   verify_assets
-  gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+  gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$id" \
+    -f "tag_name=$RELEASE_TAG" -F draft=false -f make_latest=true > /dev/null
 else
   verify_assets
 fi
