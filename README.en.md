@@ -122,6 +122,8 @@ A Rust service handles identity, permissions, application data, and scheduling, 
 
 Use HTTPS for production. Configure the product and operations entry points separately and store data outside the release package. Model providers, third-party apps, remote computers, and local speech each have their own setup. Flutter includes Android and iOS source and test workflows. Native installation and device testing are separate steps. [Service deployment](server/api/deployment/README.md) · [Source releases](docs/source-release.md) · [Verification coverage](docs/verification.md)
 
+GitHub Actions builds the first release and the daily downloads. [Automated release workflow](docs/source-release.md#github-自动发布)
+
 ## Source map
 
 Developers and AI agents can use this map to find the entry points, implementation, and checks for a change.

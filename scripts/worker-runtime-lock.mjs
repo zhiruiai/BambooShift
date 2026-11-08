@@ -12,6 +12,9 @@ export function packageName(specifier) {
 export function productionLock(source, directNames) {
   if (source.lockfileVersion !== 3 || !source.packages?.[''])
     throw Error('A version 3 npm lockfile is required.');
+  const version = source.packages[''].version;
+  if (typeof version !== 'string' || !version)
+    throw Error('The root npm lockfile must identify the project version.');
   const dependencies = {};
   for (const name of [...new Set(directNames)].sort()) {
     const entry = source.packages[`node_modules/${name}`];
@@ -21,7 +24,7 @@ export function productionLock(source, directNames) {
   }
   const manifest = {
     name: 'openbot-runtime-workers',
-    version: '0.1.0',
+    version,
     private: true,
     type: 'module',
     engines: { node: '>=22.19.0' },

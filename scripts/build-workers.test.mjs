@@ -141,14 +141,17 @@ test('runtime dependency projection rejects unpinned or private dependencies', (
     integrity: 'sha512-synthetic',
     resolved: 'https://registry.npmjs.org/example/-/example-1.0.0.tgz',
   };
-  const lock = { lockfileVersion: 3, packages: { '': {}, 'node_modules/example': entry } };
-  assert.equal(productionLock(lock, ['example']).manifest.dependencies.example, '1.0.0');
+  const root = { version: '0.0.42' };
+  const lock = { lockfileVersion: 3, packages: { '': root, 'node_modules/example': entry } };
+  const { manifest } = productionLock(lock, ['example']);
+  assert.equal(manifest.version, root.version);
+  assert.equal(manifest.dependencies.example, '1.0.0');
   assert.throws(
     () =>
       productionLock(
         {
           ...lock,
-          packages: { '': {}, 'node_modules/example': { ...entry, integrity: undefined } },
+          packages: { '': root, 'node_modules/example': { ...entry, integrity: undefined } },
         },
         ['example'],
       ),
@@ -160,7 +163,7 @@ test('runtime dependency projection rejects unpinned or private dependencies', (
         {
           ...lock,
           packages: {
-            '': {},
+            '': root,
             'node_modules/example': {
               ...entry,
               resolved: 'https://synthetic:password@example.test/package.tgz',
@@ -177,7 +180,7 @@ test('runtime dependency projection rejects unpinned or private dependencies', (
         {
           ...lock,
           packages: {
-            '': {},
+            '': root,
             'node_modules/example': {
               ...entry,
               resolved: 'https://registry.npmjs.org/example.tgz?token=synthetic',

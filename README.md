@@ -122,6 +122,8 @@ Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存�
 
 生产部署使用 HTTPS。分别配置产品与运营入口，并把数据目录放在发布包外。模型、第三方应用、远程电脑与本地语音各有配置要求。Flutter 提供 Android 和 iOS 源码及测试流程，原生安装和真机验证单独进行。 [服务部署](server/api/deployment/README.md) · [源码发布](docs/source-release.md) · [验证范围](docs/verification.md)
 
+首版和每日构建的下载包由 GitHub Actions 生成。 [自动发布与下载包说明](docs/source-release.md#github-自动发布)
+
 ## 源码导航
 
 开发者和 AI 智能体可以按改动范围定位入口、实现和相关检查。

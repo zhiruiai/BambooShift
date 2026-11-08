@@ -1,0 +1,165 @@
+name: PandaMate Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * *'
+      timezone: Asia/Shanghai
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pandamate-release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      publish: ${{ steps.plan.outputs.publish }}
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.plan.outputs.tag }}
+      source: ${{ steps.plan.outputs.source }}
+      day: ${{ steps.plan.outputs.day }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - name: Select the next version
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          started="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .created_at)"
+          gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          git for-each-ref --format='%(refname:short)%09%(objecttype)%09%(subject)' refs/tags > "$RUNNER_TEMP/tags"
+          node scripts/publishing/plan-release.mjs "$started" "$GITHUB_SHA" "$RUNNER_TEMP/releases.json" "$RUNNER_TEMP/tags"
+          source_sha="$(sed -n 's/^source=//p' "$GITHUB_OUTPUT")"
+          if [[ -n "$source_sha" ]]; then
+            git merge-base --is-ancestor "$source_sha" "$GITHUB_SHA"
+          else
+            echo "A release was already published for this Shanghai calendar day."
+          fi
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.publish == 'true'
+    name: Build ${{ matrix.asset }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - asset: linux-x64
+            runner: ubuntu-24.04
+          - asset: macos-arm64
+            runner: macos-15
+    env:
+      RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+      RELEASE_TAG: ${{ needs.plan.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.plan.outputs.source }}
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Stamp the version and install locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/pandamate-assets"
+          node scripts/publishing/stamp-version.mjs "$RELEASE_VERSION"
+          git add -u
+          git write-tree > "$RUNNER_TEMP/pandamate-assets/source-tree.txt"
+          npm ci
+      - name: Build and check the source and Linux server packages
+        if: matrix.asset == 'linux-x64'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = x86_64
+          assets="$RUNNER_TEMP/pandamate-assets"
+          source_name="PandaMate-$RELEASE_TAG-source"
+          service_name="PandaMate-$RELEASE_TAG-server-linux-x64"
+          npm run check:source
+          npm run check:privacy
+          npm run test:source-policy
+          node --test scripts/publishing/*.test.mjs scripts/source/export-source.test.mjs
+          npm run source:export -- --out "release/source/$source_name"
+          tar -czf "$assets/$source_name.tar.gz" -C release/source "$source_name"
+          npm run build:web
+          npm run backend:package -- --release --out "$RUNNER_TEMP/$service_name"
+          tar -czf "$assets/$service_name.tar.gz" -C "$RUNNER_TEMP" "$service_name"
+          smoke="$(mktemp -d "$RUNNER_TEMP/pandamate-smoke.XXXXXX")"
+          tar -xzf "$assets/$service_name.tar.gz" -C "$smoke"
+          npm ci --prefix "$smoke/$service_name/runtime" --omit=dev --ignore-scripts
+          node scripts/check-backend-package.mjs "$smoke/$service_name"
+      - name: Build and check the Apple Silicon client
+        if: matrix.asset == 'macos-arm64'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(uname -m)" = arm64
+          npm run client:test
+          npm run client:package -- --platform darwin --arch arm64
+          client_name="PandaMate-$RELEASE_TAG-client-macos-arm64"
+          mkdir "$RUNNER_TEMP/$client_name"
+          ditto --norsrc --noextattr --noqtn release/client/OpenBot-darwin-arm64/OpenBot.app "$RUNNER_TEMP/$client_name/PandaMate.app"
+          cp LICENSE NOTICE THIRD_PARTY.md "$RUNNER_TEMP/$client_name/"
+          codesign --verify --deep --strict "$RUNNER_TEMP/$client_name/PandaMate.app"
+          plist="$RUNNER_TEMP/$client_name/PandaMate.app/Contents/Info.plist"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$RELEASE_VERSION"
+          ditto -c -k --norsrc --noextattr --noqtn --keepParent "$RUNNER_TEMP/$client_name" "$RUNNER_TEMP/pandamate-assets/$client_name.zip"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: pandamate-${{ matrix.asset }}
+          path: ${{ runner.temp }}/pandamate-assets/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          overwrite: true
+
+  publish:
+    needs: [plan, build]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_VERSION: ${{ needs.plan.outputs.version }}
+      RELEASE_TAG: ${{ needs.plan.outputs.tag }}
+      RELEASE_SOURCE: ${{ needs.plan.outputs.source }}
+      RELEASE_DAY: ${{ needs.plan.outputs.day }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ needs.plan.outputs.source }}
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: pandamate-*
+          path: ${{ runner.temp }}/pandamate-builds
+      - name: Verify the build snapshot and publish the complete release
+        shell: bash
+        run: bash scripts/publishing/publish-release.sh

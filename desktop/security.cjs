@@ -1,5 +1,6 @@
 'use strict';
 const { createHash } = require('node:crypto');
+const { version } = require('./package.json');
 
 const DEFAULT_ORIGIN = 'http://127.0.0.1:3001';
 const SETUP_URL = 'openbot-app://setup/';
@@ -237,7 +238,7 @@ class ConnectionState {
       url,
       ...(lastOrigin ? { lastOrigin: normalizeServerOrigin(lastOrigin) } : {}),
       ...(error ? { error } : {}),
-      version: '0.1.0',
+      version,
     };
   }
   snapshot() {
