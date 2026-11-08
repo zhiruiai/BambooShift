@@ -1,0 +1,101 @@
+{
+  "checkedAt": "2026-11-05T03:56:05.022Z",
+  "users": 0,
+  "operators": 0,
+  "sessions": 0,
+  "runningMessages": 0,
+  "queuedMessages": 0,
+  "spacesChecked": 1,
+  "appConnections": 0,
+  "appActions": 0,
+  "botTeamPlans": 0,
+  "primaryBots": 0,
+  "primaryCheckIns": 0,
+  "avatarSources": 0,
+  "avatarAssets": 0,
+  "sidebarRosters": 0,
+  "legacyDatabaseBaselineUnchanged": true,
+  "operatorSetupCodeExists": true,
+  "routes": [
+    {
+      "port": 3001,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "path": "/api/platform/users",
+      "status": 401
+    },
+    {
+      "path": "/api/platform/workspaces",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/apps",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bootstrap",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-team-plans",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/primary-bot",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/sidebar-roster",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-avatars/00000000-0000-4000-8000-000000000001",
+      "status": 401
+    },
+    {
+      "path": "/api/app-oauth/result",
+      "status": 200
+    },
+    {
+      "path": "/api/app-oauth/callback",
+      "status": 400
+    }
+  ]
+}

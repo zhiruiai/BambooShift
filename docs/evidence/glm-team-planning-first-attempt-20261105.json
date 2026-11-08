@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-11-05T00:54:54.824Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "label": "用户指定 GLM 5.3 Flash（未独立验证服务商模型身份）",
+  "syntheticOnly": true,
+  "maximumModelRequests": 1,
+  "maximumOutputTokens": 4096,
+  "executingTools": false,
+  "formalBotOrConversationMutations": false,
+  "success": false,
+  "error": "模型未在本次受限测试中生成通过服务端校验的方案；未自动重试。",
+  "modelRequests": 1,
+  "sourceSettingsUnchanged": true,
+  "temporaryStoreClosed": true
+}

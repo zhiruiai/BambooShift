@@ -1,0 +1,82 @@
+{
+  "checkedAt": "2026-11-05T10:10:26.925Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "modelLabel": "用户指定 GLM 5.3 Flash（未独立验证服务商模型身份）",
+  "syntheticOnly": true,
+  "priorFailedAttempt": "glm-memory-import-20261105.json",
+  "inputKind": "Synthetic exported facts; same two preferences as first attempt, without an instruction to recall first",
+  "maximumRequests": 4,
+  "maximumOutputTokensPerRequest": 2048,
+  "formalBotMutations": false,
+  "workingToolsEnabled": false,
+  "receipt": {
+    "requestId": "78f940db-6bea-47bc-98d7-fca0bc37ddc5",
+    "primaryRevision": "370cd4a6-e986-42f1-9859-0e1c4835c629",
+    "agentId": "5a964e24-6441-48c9-8cca-710740bc440f",
+    "conversationId": "17170f13-f49a-40b1-aa7b-890ecab81d89",
+    "messageId": "751cfbbf-ce4a-43e3-84c7-496b4af846b3",
+    "createdAt": "2026-11-05T10:10:26.925Z",
+    "resultMessageId": "4e7d6a72-8da8-415a-9b68-cb5472868368",
+    "status": "completed"
+  },
+  "memories": [
+    {
+      "content": "默认使用简洁中文进行交流。",
+      "category": "preference"
+    },
+    {
+      "content": "回答结构先给结论，再列具体步骤。",
+      "category": "preference"
+    }
+  ],
+  "replies": [
+    {
+      "status": "done",
+      "content": "根据提供的资料，提取并保存了以下两条长期沟通偏好：\n\n"
+    },
+    {
+      "status": "done",
+      "content": "已成功保存 2 条长期偏好：\n\n1. **语言风格**：默认使用简洁中文。\n2. **回答结构**：先给结论，再列具体步骤。\n\n无需进一步核对，所有资料均已处理完毕。"
+    }
+  ],
+  "success": true,
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true,
+  "durationMs": 67117,
+  "requestTimings": [
+    {
+      "index": 1,
+      "startedAfterMs": 531,
+      "headersAfterMs": 134,
+      "status": 200
+    },
+    {
+      "index": 2,
+      "startedAfterMs": 64850,
+      "headersAfterMs": 117,
+      "status": 200
+    }
+  ],
+  "observedCalls": [
+    {
+      "id": "chatcmpl-tool-8f4e4340e385de27",
+      "name": "remember",
+      "arguments": "{\"memories\":[{\"content\":\"默认使用简洁中文进行交流。\",\"category\":\"preference\"},{\"content\":\"回答结构先给结论，再列具体步骤。\",\"category\":\"preference\"}]}"
+    }
+  ],
+  "modelRequests": 2,
+  "httpStatuses": [
+    200,
+    200
+  ],
+  "modelTools": [
+    [
+      "remember",
+      "recall"
+    ],
+    [
+      "remember",
+      "recall"
+    ]
+  ]
+}

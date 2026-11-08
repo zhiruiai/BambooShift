@@ -1,0 +1,131 @@
+{
+  "recordedAt": "2026-11-02T16:09:29.929Z",
+  "modelAlias": "sodu-prd-medium",
+  "userModelLabel": "GLM 5.3 Flash",
+  "conversationId": "e1e391aa-ad02-4e2c-8691-6ecd9f66f4ee",
+  "setup": {
+    "transport": "loopback HTTP",
+    "workerProcessSeparate": true,
+    "workerWorkspaceSeparate": true,
+    "realModel": true,
+    "syntheticDataOnly": true
+  },
+  "reportUpload": {
+    "fileId": "c802fe47-1b1e-4f02-b6a9-91ad1dd479ed",
+    "path": "materials/acceptance-report.md",
+    "size": 1825,
+    "sha256": "d11263d05e503c2eaed9ef853b2053bd99725c3b363581db81c893e09bde2caf",
+    "absentBeforeApprovalObserved": true,
+    "exactWorkerBytes": true
+  },
+  "actions": [
+    {
+      "id": "be97a472-d6fb-497f-8f3e-3447fb4caac8",
+      "type": "download_file",
+      "path": "materials/vision-roundtrip.png",
+      "status": "done",
+      "createdAt": "2026-11-02T16:04:50.939Z"
+    },
+    {
+      "id": "166c2395-8c0a-44ac-be23-98a3f7f31803",
+      "type": "upload_file",
+      "path": "materials/vision-retry.png",
+      "status": "done",
+      "createdAt": "2026-11-02T16:03:19.026Z"
+    },
+    {
+      "id": "402e918f-7b0e-43eb-a348-ba29a381a0cb",
+      "type": "upload_file",
+      "path": "materials/vision-roundtrip.png",
+      "status": "error",
+      "error": "目标位置已有同名文件，请换一个文件名。",
+      "createdAt": "2026-11-02T16:02:48.829Z"
+    },
+    {
+      "id": "2b4df269-4deb-4947-8a5d-876bdbe56d6e",
+      "type": "upload_file",
+      "path": "materials/vision-roundtrip.png",
+      "status": "done",
+      "createdAt": "2026-11-02T16:01:49.295Z"
+    },
+    {
+      "id": "58011038-1c1f-4d96-8103-3026a0651ecc",
+      "type": "download_file",
+      "path": "outputs/transfer-check.md",
+      "status": "done",
+      "createdAt": "2026-11-02T15:57:19.061Z"
+    },
+    {
+      "id": "29a65840-0cab-4489-b03b-d97957838b7e",
+      "type": "write_file",
+      "path": "outputs/transfer-check.md",
+      "status": "done",
+      "createdAt": "2026-11-02T15:56:12.911Z"
+    },
+    {
+      "id": "b304fada-c6c6-47cf-a345-ef536a9dc832",
+      "type": "read_file",
+      "path": "materials/acceptance-report.md",
+      "status": "done",
+      "createdAt": "2026-11-02T15:56:05.730Z"
+    },
+    {
+      "id": "c871df73-cf0a-4294-853b-8e225fbacbd4",
+      "type": "upload_file",
+      "path": "materials/acceptance-report.md",
+      "status": "done",
+      "createdAt": "2026-11-02T15:55:17.931Z"
+    }
+  ],
+  "files": [
+    {
+      "id": "f3881a64-1709-4477-9464-7b32de2a4d53",
+      "name": "transfer-check.md",
+      "size": 790,
+      "sha256": "0885cacb5928db27d586f2055012db3d3d1dd425ed4be60e9f2060b23ddba038",
+      "sourcePath": "outputs/transfer-check.md",
+      "exactWorkerBytes": true,
+      "downloadPath": "/api/files/f3881a64-1709-4477-9464-7b32de2a4d53/download"
+    },
+    {
+      "id": "65a10f18-141d-4ba4-94df-eace6286dfbd",
+      "name": "vision-roundtrip.png",
+      "size": 13259,
+      "sha256": "8af9b21a80be348a0b617f09549f701f5570cbbaa1992030dc2ac59dc550a1d8",
+      "sourcePath": "materials/vision-roundtrip.png",
+      "exactWorkerBytes": true,
+      "originalImageExact": true,
+      "downloadPath": "/api/files/65a10f18-141d-4ba4-94df-eace6286dfbd/download"
+    }
+  ],
+  "finalAnswerAfterToolCards": true,
+  "finalMessageId": "8a7c606d-fbd5-4c9f-b808-65540c0f0c20",
+  "uiChecks": [
+    "send PNG",
+    "same target refused without overwrite",
+    "changed path retry succeeds",
+    "browse directory",
+    "up one directory",
+    "refresh listing",
+    "import selected PNG into active conversation",
+    "390px viewport has 390px page width"
+  ],
+  "screenshots": [
+    "screenshots/computer-file-send.png",
+    "screenshots/computer-file-receive.png",
+    "screenshots/computer-files-mobile.png",
+    "screenshots/model-remote-files.png"
+  ],
+  "limitations": [
+    "Same-host transport only; public remote deployment not tested",
+    "No native desktop input or capture in this scenario",
+    "File transfer capped at 10 MiB; no resumable uploads"
+  ],
+  "cleanup": {
+    "temporaryWorkerStopped": true,
+    "temporaryWorkspaceRemoved": true,
+    "temporaryTokenRemoved": true,
+    "computerRestoredTo": "local/browser",
+    "modelConfigurationRetained": true
+  }
+}

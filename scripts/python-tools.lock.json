@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "sources": {
+    "desktop-browser.py": "dfd36e3eedbdd7df9927f6108134c9db113efb2a83e0dd14959d2ac68b88cd20",
+    "desktop-control.py": "10408453bd6a300a4ff7e10065e9340182aa316d44d3286d573dc975d9bfd05b",
+    "desktop-session.py": "0ae49289af39c2a6f03169d586eaebc647f3ceea43e1eada40c10f8823748d54",
+    "isolated-shell.py": "42adae0acb92caa01b1d253d679e6da244e87a12698b9d63ec18d52bccb7b995",
+    "python-tools.json": "e2e9cff983b540ac01e2a455e23c76ef540eee20d5a4c6080ab36d005a5aa498",
+    "python_tool_build.py": "3bded3d50e70852fd1659e0d725589c1af25b97f2aa84769f62e239a56d40140",
+    "python_tools/desktop_browser/configuration.py": "25450c1cebeef34bbc25b2b336e7f842885c7f81bc20062c74cdfc8ee6b09a45",
+    "python_tools/desktop_browser/isolation.py": "f752183d5340484c261e521facf49ca2e2ae0e0287f5d1d4ada1bb9f48bd8cc3",
+    "python_tools/desktop_browser/relay.py": "47ddaf34fb25e0d732f368546ff08b924737bdf282fa369c9c477c2599691eae",
+    "python_tools/desktop_control/operations.py": "516e098b677db70c2c9ff05c721fb42126f60cc6d57212bb6472027e485b04c2",
+    "python_tools/desktop_control/protocol.py": "f19b57085019c5022efce5bbd6f6030191f9db2e8f961e761176862883c8ac39",
+    "python_tools/desktop_control/session.py": "88b2575a46cd5c669c9ef87ee0d8a6d903694acffb243d54927fa74fdef0109e",
+    "python_tools/desktop_control/supervision.py": "6e46ff82b882478e5bc297dc4e95a595d989985667d0261095fb8071c01fdce7",
+    "python_tools/desktop_control/x11.py": "7f6e017ce1b404ca8d59cb55989afb06a72e8fcc152df200e7a1ba45cbd53b37",
+    "python_tools/desktop_session/foundation.py": "76347d0080a83e9b6e7f4a9248961ff6c164bf44da40f16f5fff5811f8d08b55",
+    "python_tools/desktop_session/lifecycle.py": "bdb093e9040840485e5f305650743c05ace1d72a86521aca723d380e23452b30",
+    "python_tools/desktop_session/namespace.py": "f019f0ce6237a7b448fdd4488da01abf227c124093a184e94dece9c6c0ac1b0e",
+    "python_tools/desktop_session/supervisor.py": "a138c581bb43eae1081edabe1dd1b14655dd0607fd39a2a86b6148c409f8b662",
+    "python_tools/isolated_shell/execution.py": "e0b2baee017500e8cb1ca4bfc9f9ead0b6d35567c3fc6ef5739fe3ce72eda4cf",
+    "python_tools/isolated_shell/foundation.py": "66f19de301f6be72a440995b5b01edf2a56cb79e84b79940655d7cd9abc019cb",
+    "python_tools/isolated_shell/maintenance.py": "a8fc27d78fafe860e6a9979445bade09872b4030ee53ee7ed6f176f926b16942",
+    "python_tools/isolated_shell/namespace.py": "b7c7270c8a7048a29f5dc159af7179b1ab8ce894c1c0eda8e54a440a81b048de",
+    "python_tools/isolated_shell/workspace.py": "268822aa2a6584f3767848d75394ea9e07b37b6fa0e99e1f698e3159c5e6f7ad"
+  }
+}

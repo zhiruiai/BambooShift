@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-11-05T00:51:52.469283+00:00",
+  "scope": "MCP OAuth implementation and targeted protocol/session/UI-handler/native-boundary regression",
+  "tests": {
+    "command": "node scripts/run.mjs --test server/app-oauth*.test.ts src/apps.test.ts desktop/security.test.cjs",
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 4918.387542
+  },
+  "appConnectionRegression": {
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 965.69275
+  },
+  "realThirdPartyAccountAuthorization": false,
+  "productBrowserAcceptance": false,
+  "paidModelCalls": 0,
+  "formalAccountOrVmMutations": false,
+  "limitations": [
+    "Provider tests use actual local HTTP authorization and resource fixtures with synthetic credentials.",
+    "Browser component event tests are not rendered-browser or real provider login acceptance.",
+    "The full regression and updated live service are recorded separately after Bot settings and team changes."
+  ],
+  "sourceSha256": {
+    "shared/app-oauth.ts": "64cd30ca6df97d14565ed30faded999d888798b44f0d0f1d425f6844eeceffac",
+    "shared/app-connections.ts": "2383621883b393745c420344929b0c54e2f18a57a03cfe0a718bd90842db9848",
+    "server/app-oauth.ts": "58ab5610b0f2f8c6b51e1b9073bd908720e725da4d19a06050e916bb2f352969",
+    "server/app-oauth-network.ts": "ddf9fb9a778f23149c5a04a57841f7c43bee783c67e4fc59b1662889088c4b6f",
+    "server/app-oauth-provider.ts": "c818ca4724e5eb982bcef7c6477ca0e2f102d4e69ef2490c62895e96581ce27f",
+    "server/app-oauth.test.ts": "dcc8a1d8803738c8bb80405c29eeb56df07e31c8e90ace70fb566c470a23ed70",
+    "server/app-oauth-provider.test.ts": "e7cd0fe92543d74f04a3f5455fd9f87f10ced05ab7907625b5d4a62f7fb7026c",
+    "server/app-oauth-connections.test.ts": "deee1b6c6acb8e375279a9de55d9aa6e9af37145d7619d56d60f885db3a62ed1",
+    "server/app-connections.ts": "80bf7dda181bc13b59067bdd8fa92f8a7abfc5d7248717d8a8e7d27d4a36bb97",
+    "server/platform-app.ts": "163aa87d3ee4ff8a44f26d7dc9a9fdf3f919d4dc2d74e10aaf5e98c870d38ab3",
+    "src/appOAuth.ts": "15e4053eba811d8324e5c8138868efd195f7e186d9200aec6f49bbaa79318c99",
+    "src/components/AppOAuthPanel.tsx": "32501421f1f0b6e815f8959dcc5b1f946304ccbc0a37a6668f62c040664c9b39",
+    "src/platform/AppAuthorizePage.tsx": "e900e8607e01a3b0dee030384e0a7879dae77060c6f4933560b34ec53031763e",
+    "src/components/AppsDialog.tsx": "d5b201aa96e023b025313e6f8c93a31f6bb9966995a7da7890c4f9566027eb2d",
+    "src/components/AppsDialog.css": "79a1595ee4831d7e47b69a985e13889175cf719d600d03cc5392db6827c036af",
+    "src/platform/AccountPages.tsx": "5852b605b2c64759d82fcb6524b33b0bedcffaafa440b0785919eaa92896a3bd",
+    "src/PlatformRoot.tsx": "ea242c7e2d9510769475212b42b8e337dec04e13c33229f1d9d6816cf3289cd0",
+    "src/platform/platformApi.ts": "49a3b3ce8575f7147f5eb640ed51f70580fb98b4c8698bd0502162cbb17d1019",
+    "desktop/main.cjs": "9a506279870bcb82a307f2f09369f0b1a73ca75645d9963564587bbe1b544da3",
+    "desktop/security.cjs": "842c191b78cd27c72de5e83e3f4b4e7137e9d6b374c1bdbab810e626c4f804cb",
+    "desktop/remote-preload.cjs": "37e0b607272b9f571d236ce4bbe821dc70f34dc58cb14b88c0336f41c3b25181",
+    "desktop/security.test.cjs": "bf210d90bc144ac616e6b98067e30ac23297decb43845609fa28905ae2759292",
+    "scripts/package-client.mjs": "a2e9b3d050fe6ae42320defe11cd5ced7320a43db0b9e3d9a69bda98710cb605",
+    "src/apps.test.ts": "fcebbc7f338e2a08ce82a53415cabe7491553baf97b6765563f9b9d9feb4a22f"
+  },
+  "finalCombinedRegression": "bot-settings-team-verification.json"
+}

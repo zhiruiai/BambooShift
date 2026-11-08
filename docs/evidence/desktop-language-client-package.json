@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-06",
+  "platform": "darwin",
+  "arch": "arm64",
+  "electronVersion": "45.2.1",
+  "tests": {
+    "passed": 58,
+    "failed": 0
+  },
+  "sourceFiles": [
+    "authorization.cjs",
+    "input-permissions.cjs",
+    "language.cjs",
+    "main.cjs",
+    "menus.cjs",
+    "package.json",
+    "preload.cjs",
+    "remote-preload.cjs",
+    "security.cjs",
+    "session-policy.cjs",
+    "shared-download.cjs",
+    "ui/app.js",
+    "ui/i18n.js",
+    "ui/index.html",
+    "ui/logo.svg",
+    "ui/styles.css"
+  ],
+  "sourceFilesMatch": true,
+  "archiveSha256": "f197774f0d59ee29fa59e0d5195af99c6c7206f42ef3d81bfe0cd9bfebe1b943",
+  "microphoneUsageLocales": ["en", "zh-Hans"],
+  "localSignature": "ad-hoc; strict verified by packager",
+  "productionSigned": false,
+  "launchedForThisCheck": false,
+  "notes": [
+    "Restricted iconutil run failed; same build succeeded with normal packaging permissions.",
+    "Main-process native menu/controller and actual setup-script DOM event fixtures cover both locales.",
+    "OS permission panels follow macOS per-app/system language; client choice does not change OS or remote workspace language."
+  ]
+}

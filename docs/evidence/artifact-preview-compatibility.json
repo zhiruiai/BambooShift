@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-07",
+  "issue": "HTML artifacts stored as text/plain were rejected before the isolated preview could render",
+  "change": "Accept text/plain for .html/.htm attachments, preserving existing scope, size, encoding and sanitization checks",
+  "focusedTests": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "webRegression": {
+    "total": 609,
+    "passed": 609,
+    "failed": 0,
+    "skipped": 0,
+    "inputFiles": 720,
+    "inputSha256": "be070c962b8d3b39771b04aa9ce69bf06d5e1b79d28c596d33e947d166b5c531"
+  },
+  "typecheck": true,
+  "productBuild": true,
+  "liveAssetsMatchBuild": true,
+  "acceptance": "User confirmed that the original output opens after reloading the desktop client",
+  "userDocumentsOrChatsModified": false,
+  "sourceExportStillPending": true
+}

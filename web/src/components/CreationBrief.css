@@ -1,0 +1,51 @@
+.creation-brief {
+  margin-block: 8px;
+}
+.creation-brief-body,
+.creation-draft-summary {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.creation-brief-body {
+  margin-block-start: 7px;
+}
+.creation-brief-body label {
+  display: grid;
+  gap: 5px;
+}
+.creation-brief-body textarea {
+  width: 100%;
+  min-height: 74px;
+  padding: 8px;
+  resize: vertical;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.creation-brief-body > button {
+  justify-self: start;
+}
+.creation-brief-actions,
+.creation-draft-identity,
+.creation-theme-samples {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.creation-draft-identity p,
+.creation-draft-summary > p {
+  color: var(--text-secondary);
+}
+.creation-theme-samples > svg {
+  flex: none;
+}

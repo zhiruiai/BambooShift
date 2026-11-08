@@ -1,0 +1,137 @@
+{
+  "checkedAt": "2026-11-05T10:16:35.072Z",
+  "scope": "Personal memory import through general settings and actual primary Bot Pi execution, atomic batch memory writes, fixed-account recovery and contextual model settings entry",
+  "reference": [
+    "https://docs.x.ai/grok-bot/settings-and-notifications",
+    "https://docs.x.ai/grok-bot/bots"
+  ],
+  "serverStandardSuite": {
+    "total": 712,
+    "passed": 700,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 91226.41125,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 334,
+    "passed": 334,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 14864.463208,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 106642.31025,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "totalFinalUniqueTests": 1046,
+  "totalFinalUniquePassed": 1044,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "server": 22,
+    "frontend": 18,
+    "total": 40
+  },
+  "behaviorEvidence": {
+    "flow": "General settings offers an original export prompt, manual paste and explicit submission to the personal primary Bot. The mounted import panel retains in-memory drafts while configuring models or the primary Bot. Contextual model buttons open the model pane directly; general settings remain the default.",
+    "identity": "Actual platform HTTP and Pi tests enforce owner, expected account, personal scope, exact primary revision and private conversation. Primary changes and access revocation stop later actions. Navigation verifies the receipt input message and lets the existing sync controller order refreshes instead of overwriting newer SSE.",
+    "persistence": "Summary message, conversation update and actor-scoped import receipt commit in one transaction before dispatch. Identical request replay returns its original status; mismatches fail. Raw source is not persisted as import input or Pi history. Model responses and saved memories may contain source facts. Deleted original messages produce missing status without resurrection.",
+    "execution": "Isolated actual Pi context exposes only recall/remember. Ordinary chat and imports use separate queue purposes. Existing-memory count and bounded excerpts reduce reads; import-only remember supports 1–20 entries per atomic batch, 40 entries/24000 characters per run. Invalid later entries, database faults and exceeded budgets do not leave partial batches. Successful earlier batches remain after later task failure. Deadline remains 120 seconds; restart never replays.",
+    "recovery": "Only request ID and primary revision are stored in browser session storage. Unknown responses preserve the original payload in the current mounted page for exact retry. Remount without payload offers receipt lookup, not an invented new request. Completed means Pi ended, not a promised saved-memory count; known terminal receipts can be dismissed explicitly.",
+    "model": "The final synthetic GLM run made two requests and one batch remember call, saved two preferences, and completed in 67.117 seconds. An earlier three-request attempt saved one preference but ended in error. That failure is preserved; its precise cause was not recorded. Final input retained the same facts but removed an explicit recall instruction, so this is not an identical-input speed benchmark."
+  },
+  "focusedEvidence": {
+    "backend": {
+      "total": 22,
+      "passed": 22,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 2335.05
+    },
+    "settingsAndAdjacent": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1100.191167
+    },
+    "importUi": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 827.371167
+    },
+    "runtimeAndAdjacent": {
+      "total": 60,
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 6651.582625
+    }
+  },
+  "modelProof": "glm-memory-import-batch-20261105.json",
+  "priorModelFailure": "glm-memory-import-20261105.json",
+  "modelRequestsThisStage": 5,
+  "finalModelDurationMs": 67117,
+  "typescript": "passed",
+  "formatCheckedFiles": 16,
+  "vite": {
+    "modules": 1969,
+    "duration": "2.81s"
+  },
+  "sourceFreeze": {
+    "files": 358,
+    "snapshotSha256": "2cf23609a4a89f4c3cc658eb4eff0b0511a1bed93c28436e48709c42949ecaa1",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "5a9f7c4d4d6803e8e12bf271d1cc903af55298896b86afce20fc94bbdfc1ee9c"
+  },
+  "sourceSha256": {
+    "server/app.ts": "ff96641cc18484e2f71ee78dad058c719c49d560c15bcaa502792afff8d060c4",
+    "server/memory-import-http.test.ts": "35e150cf7ca7aebe1a7bce9a53076d63a68b878b5452630d6a2673c48088513c",
+    "server/memory-imports.test.ts": "a85e6123060e61b4e1063edb7e5baf1240cb6d5f639a17346e4a1df1d8bc938c",
+    "server/memory-imports.ts": "8a4816228fbece47d5d425b1f5bbd7971b23189e8aa1a9e9762277e0f817d715",
+    "server/runtime-memory-import.test.ts": "bf41da7a85f6510fae9c292b69c2d5f8af627e0cfbb8553d620def9a8a5974fb",
+    "server/runtime.ts": "9871847482c81981a4bd1ea04b793b485848430b410d2548ef0687c3c0d3ee45",
+    "shared/memory-imports.ts": "5bb03f1fa6a55b32ca619462064f28542700f29be2f20fae25ac117f5e224388",
+    "src/App.tsx": "0e5cd6bafb4d472e4285f44fdb39f5f12017a3c591435db3867bb9e7073d3dcb",
+    "src/components/MemoryImportPanel.css": "e297202a7e4bf2d2977346cc85fa8dbad9dd388b8babd26f4918d95ca80232e5",
+    "src/components/MemoryImportPanel.tsx": "1618786a05db5c962a21f67ac94e6b37f10b741692612a2fd51b6d370e2b1652",
+    "src/components/SettingsDialog.tsx": "a8aad25b9886ac6ed50e659df9a2ff60f8b623b6fb96004591bad3f282db10dd",
+    "src/components/WorkspaceSettingsDialog.css": "05e0ef3c8e1b243db2220eb47e8a936470d104376d49f3233b98956bf2cdc28e",
+    "src/components/WorkspaceSettingsDialog.tsx": "bd63823028dbbd78aa85dd014570cd97e73aaeb0fc925a1fd60a076bdeaaade3",
+    "src/memoryImport.test.ts": "ff822b00b51b1a12c19c7fceb1cc4f9437ad7dc03a32d70c84cfb47d0ae00086",
+    "src/memoryImport.ts": "d5eddaa5308659dca415725c8d9a1445292528ae3e2b7c9c3bb08e09e2f82858",
+    "src/memoryImportSettings.test.ts": "80171c6ffdb0e4dcd72f7494999875ad243e13de8aba1cd98cb53359456174eb"
+  },
+  "serviceProof": "memory-import-service.json",
+  "serviceChecks": 58,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "shared-bot-files-client-package.json",
+    "note": "Native files unchanged; existing client loads separately running web service. No new native-window acceptance."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "externalModelRequests": 5,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control remains unavailable; React event and controlled engine tests do not prove product visual/focus/touch acceptance.",
+    "One successful synthetic GLM run does not guarantee all imported facts are saved or provider latency remains within the deadline. Service-provider model identity was not independently verified.",
+    "Remaining full-reference feature and multi-device gaps remain recorded in reference-audit.md; original goal remains active."
+  ]
+}

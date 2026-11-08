@@ -1,0 +1,19 @@
+{
+  "mobileSearchTitle": "Search workspace",
+  "mobileSearchHint": "Search this workspace",
+  "mobileSearchClear": "Clear search",
+  "mobileSearchAll": "All",
+  "mobileSearchMessages": "Messages",
+  "mobileSearchGroups": "Group chats",
+  "mobileSearchFiles": "Files",
+  "mobileSearchWebsites": "Websites",
+  "mobileSearchLinks": "Links",
+  "mobileSearchRoutines": "Routines",
+  "mobileSearchEmpty": "No results",
+  "mobileSearchTruncated": "Choose a category to see all its matches.",
+  "mobileSearchLatest": "Back to latest messages",
+  "mobileChatLibraryTitle": "Conversation library",
+  "mobileChatLibraryOpenLink": "Open link in browser",
+  "mobileChatLibraryMoreLinks": "Show more links",
+  "mobileChatLibrarySourceHint": "Open the source message"
+}

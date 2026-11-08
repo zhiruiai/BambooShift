@@ -1,0 +1,35 @@
+.conversation-library-links {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+.conversation-library-links a {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px;
+  border-radius: 9px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.conversation-library-links a:hover {
+  background: var(--surface-hover);
+}
+.conversation-library-links strong,
+.conversation-library-links small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conversation-library-links strong {
+  font-size: 13px;
+  color: var(--text);
+}
+.conversation-library-links small {
+  font-size: 12px;
+}
+.conversation-library-links > button {
+  justify-self: start;
+}

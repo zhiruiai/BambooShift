@@ -1,0 +1,132 @@
+{
+  "recordedAt": "2026-11-06T02:07:24.762Z",
+  "scope": "Legacy Node refactor, React service text, scripts and macOS thin client packaging. Not full Rust acceptance.",
+  "tests": {
+    "server": {
+      "total": 869,
+      "passed": 857,
+      "failed": 0,
+      "skipped": 12
+    },
+    "chrome": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0
+    },
+    "client": {
+      "total": 419,
+      "passed": 419,
+      "failed": 0,
+      "skipped": 0
+    },
+    "desktopAndPolicy": {
+      "total": 54,
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typecheck": {
+      "passed": true
+    },
+    "viteProductionBuild": {
+      "passed": true,
+      "warning": "A shared minified chunk exceeds 500 kB."
+    }
+  },
+  "structure": {
+    "sourceTests": 47,
+    "splitTests": 82,
+    "fixtureModules": 47,
+    "unchangedTestRegistrationStatements": 468,
+    "unchangedFixtureDeclarations": 293,
+    "unchangedMethodBodies": 64,
+    "controllerFunctions": 59,
+    "auditErrors": []
+  },
+  "sourcePolicy": {
+    "files": 1195,
+    "violations": [],
+    "passed": true
+  },
+  "privateConfigurationScan": {
+    "files": 1452,
+    "violations": [],
+    "passed": true
+  },
+  "logs": [
+    {
+      "kind": "server",
+      "file": "openbot-refactor-server-final.log",
+      "sha256": "d2f30be9b41857e1f632d9bd284d01b9dd9e954d5a1eed9607649f32b4077d14"
+    },
+    {
+      "kind": "chrome",
+      "file": "openbot-refactor-chrome-recheck.log",
+      "sha256": "e2bc6815d1ec1b0e3d9e118228ad748079c8debf294da7f9a9b26972e5af2797"
+    },
+    {
+      "kind": "client",
+      "file": "openbot-service-text-client-final.log",
+      "sha256": "4ffc8f341e4646d586cd7e7cdc6f51edf4359b3fb6bd7991c73107eecaddbd46"
+    },
+    {
+      "kind": "desktopAndPolicy",
+      "file": "openbot-refactor-desktop-scripts.log",
+      "sha256": "a7e7feb101ce84736a06dfa2b1016b86f825280d95953786bd8d1c1f6eff261c"
+    },
+    {
+      "kind": "typecheck",
+      "file": "openbot-refactor-final-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "viteBuild",
+      "file": "openbot-refactor-web-build.log",
+      "sha256": "2626e11bdf7e896a7d7b044ff4b87fe0bcfeef1dbc42f5f1559c4eaf65168027"
+    },
+    {
+      "kind": "package",
+      "file": "openbot-refactor-client-package-recheck.log",
+      "sha256": "d5ba50b625efc7b2579b58d7aa9cabfb6fea82cb606d1bc3accd1ebda84f7edd"
+    }
+  ],
+  "desktopEvidence": "refactor-desktop-package-20261106.json",
+  "subsequentChanges": [
+    {
+      "scope": "Document worker codec extraction preserving legacy re-exports",
+      "reportedTests": {
+        "passed": 9,
+        "failed": 0
+      },
+      "log": "openbot-document-worker-codec-tests.log",
+      "note": "Reported by the owning agent after this full legacy-server run; not represented as another full-server run."
+    }
+  ],
+  "limitations": [
+    "Two Linux-only cases remain unexecuted on this macOS host.",
+    "No product GUI, microphone or desktop-control acceptance performed in this check.",
+    "No real account, private data, VM or paid model used.",
+    "The running product service has not yet been switched from Node and Vite to Rust.",
+    "Rust integration, migration and GUI acceptance continue separately."
+  ],
+  "initialFailures": [
+    {
+      "kind": "test setup",
+      "reason": "First Pi SDK load consumed the existing 500 ms request deadline after moving the case into a separate file.",
+      "fix": "Explicit suite preload; original deadline and assertions retained."
+    },
+    {
+      "kind": "Chrome compatibility",
+      "log": "openbot-refactor-chrome-final.log",
+      "reason": "Pure LocalComputer extraction omitted captureDownload compatibility delegation.",
+      "fix": "Restored the delegation; original tests unchanged; final 13 passed."
+    },
+    {
+      "kind": "packaging environment",
+      "log": "openbot-refactor-client-package.log",
+      "reason": "iconutil failed in the restricted build environment.",
+      "fix": "Same package command succeeded in the authorized local build environment; no packaging source workaround."
+    }
+  ]
+}

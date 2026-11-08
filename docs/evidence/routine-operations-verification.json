@@ -1,0 +1,147 @@
+{
+  "checkedAt": "2026-11-05T12:04:16.959Z",
+  "scope": "Durable routine creation and manual-run receipts, exact-request recovery, actual Pi final outcomes and initiating-session authorization in chat and workspace-management UI",
+  "reference": ["https://docs.x.ai/grok-bot/skills-routines-and-automations"],
+  "serverStandardSuite": {
+    "total": 773,
+    "passed": 761,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 162767.480125,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 379,
+    "passed": 379,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 38308.8745,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 143602.095042,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "totalFinalUniqueTests": 1152,
+  "totalFinalUniquePassed": 1150,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "server": 32,
+    "frontend": 22,
+    "total": 54
+  },
+  "behaviorEvidence": {
+    "persistence": "Actor/request-scoped receipts persist independently. Creation and receipt are one transaction; manual input, conversation timestamp, last/next run and receipt are one runtime transaction before dispatch. Identical accepted requests return the original receipt despite later edits, deletion or restart; mismatched payloads fail. Unaccepted manual requests require the exact observed editable configuration, excluding execution timestamps.",
+    "runtime": "Trusted manual entry fixes the intended Bot and binds the real initiating user/session rather than background owner authorization. Busy, maintenance and pending-human-input guards reject new dispatches before persistence. Actual Pi finalization records completion/error/cancellation/interruption with the original input and final assistant output. Intermediate tool turns do not count as task completion. Every assistant turn retains the trusted operation marker.",
+    "recovery": "Restart marks previously submitted runs interrupted and never dispatches them. Faults in terminal receipt persistence produce a conservative interrupted view, without replay. An explicit close request atomically returns an already-accepted receipt or tombstones an unaccepted ID. The commit transaction checks that tombstone again, preventing late posts even across SQLite connections. A lost close response can be resolved by a specific 410 response; no 404-based assumption releases the slot. Owner-only fixed-account HTTP GET/POST isolates receipts by user and workspace; authorization changes during commit roll back, and post-commit authorization loss does not falsely claim the request was not applied. App shutdown closes new operations before awaiting other service cleanup.",
+    "ui": "One pending intent per account/workspace in session storage contains only request ID, operation kind, optional routine ID and digest. Original request bodies exist only in the mounted page. Unknown responses offer read-only lookup and explicit same-payload retry after a missing result; remount without body cannot invent a retry. Storage refusal sends no request. Failed/late refresh cannot discard a confirmed receipt. Actual React handlers preserve editing drafts and protect navigation; chat and management use the same new operation flow without old-API fallback.",
+    "navigation": "Original task or message identity is verified before opening its conversation. History remains readable after deleting the source routine if the original input/conversation remain. The verification bootstrap is never installed over newer synchronization state. Stale account or workspace responses cannot navigate."
+  },
+  "focusedEvidence": {
+    "domain": {
+      "total": 14,
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 341.943
+    },
+    "platformHttp": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 14016.824083
+    },
+    "actualPiAndShutdown": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1665.493083
+    },
+    "uiAndAdjacent": {
+      "total": 33,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1752.681834
+    },
+    "navigation": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 587.263208
+    }
+  },
+  "foundAndFixed": [
+    "Review found a refresh with no original body and a missing receipt could leave new operations blocked indefinitely. Explicit transactional request closure now provides a safe exit and rejects late submissions, including across two SQLite connections.",
+    "The first synthetic Pi fixture asserted an intermediate done message before the next assistant turn began; the fixture was adjusted to stream the next turn explicitly.",
+    "The subsequent multi-turn run exposed production code dropping the operation marker on later assistant messages, preventing authoritative final receipt completion. Later turns now retain that marker; the actual Pi test passes.",
+    "Independent review found the new operation gate closed only after awaited app cleanup. It now closes at shutdown entry; an actual application test holds cleanup and verifies new operations are rejected."
+  ],
+  "typescript": "passed",
+  "formatCheckedFiles": 17,
+  "vite": {
+    "modules": 1984,
+    "duration": "4.90s"
+  },
+  "sourceFreeze": {
+    "files": 389,
+    "includesPackageManifests": true,
+    "snapshotSha256": "19d7f051e7bddb523324cc6e1b568b83fe05a48d080b4da9f9aee5abf9b172ee",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "daa2454ada3453f75f86ce3b6c43a96e1d4176c8f503ebb377fb7792ff76422e"
+  },
+  "sourceSha256": {
+    "server/app.ts": "b4764c21dd8a2748b0f31eaaab9f6fa70fcbc2af622cbc6612c5707b9b96fc20",
+    "server/platform-app.ts": "d9f7d637b6c86df0e6981a0877368c0fe5b560fd881905e3af9cb5ebf9e6247a",
+    "server/routine-operations-http.test.ts": "99e288e58664745d29a3e3774127f1768fa719876b7bfe44e7e726ed40c388c1",
+    "server/routine-operations.test.ts": "dd9d7da856e1b6566c56afa4450f6bba501c3429e683c066196cd8091ce22cb6",
+    "server/routine-operations.ts": "3fc506d03429d6911776cb7cd1ed82a61384e91193f93eb862c7fee554847739",
+    "server/runtime-routine-operations.test.ts": "086ac055ff03f4e7a98d08b164c1d94dca16ff6039fc4a4ae2c249527f309f8c",
+    "server/runtime.ts": "68e74f97925f0192dc5b69670b6f8aa81927ec487df116d4ec77cc207af4a5e8",
+    "shared/routine-operations.ts": "11d17edf22ee0fae1aa6b543c6d18507cc16f6d3ed4f0c1b1d9a0f10728146a0",
+    "src/App.tsx": "9dc52e3b3360b02a9b948340e4f49a4de695c8b99ec27a4ea963178f8641e605",
+    "src/admin/AdminApp.tsx": "cd1ea58c1a8e4e522e2c29c6854fdf23517b375f2e28da3e83b332aaf5d90a8f",
+    "src/components/RoutineDialog.css": "4cd2dbab2b4df64bc60af4e1395c38aceca69e297371fc459fc1461c0431941b",
+    "src/components/RoutineDialog.tsx": "d5c2fb0055eef521e4c0d282943816cae3f8277dcec0c16d54c776e78b58a3b1",
+    "src/routineOperationNavigation.test.ts": "258fa7455b038f5bdf9ab12426aa4c1db460a06100081d3377e8c77b7e7039b6",
+    "src/routineOperationNavigation.ts": "d28a32d8f2679f56d697663fb19c2bbb495550d1034e5d4efa6c908399f614a7",
+    "src/routineOperations.test.ts": "3517225405d39dfa3e9ed37ba84d48aa0b7ddddc35af751dedf70badf5512546",
+    "src/routineOperations.ts": "bf994553055b5099be5cbf18d9603a7325ca1a13f5799246cf56f378f9c2607e",
+    "src/timeZones.test.ts": "94d1695755c2b3ffd6005192e596d8efc2733cce3b48126a2e9794664ae22b6d"
+  },
+  "serviceProof": "routine-operations-service.json",
+  "serviceChecks": 65,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "appearance-client-package.json",
+    "runtimeFilesVerified": 9,
+    "archiveSha256": "b722e596a78dbea51821b7c9d6d1c89b9227dbb7a15224a6c998f7d5107cd7e6",
+    "note": "Existing native runtime and packaged archive remain byte-identical. No repackaging or new native GUI acceptance."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "externalModelRequests": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control still returns disabled; React event tests and controlled engine tests do not establish product visual/focus/touch acceptance.",
+    "The durable once-accepted request does not promise exactly-once external effects. Manual execution can perform real work; interrupted results require inspecting original chat and external state.",
+    "Legacy POST /routines and /routines/:id/run retain their prior semantics. New chat and workspace-management create/run paths exclusively use /routine-operations. Edit/pause/delete were not expanded into general durable operations.",
+    "Natural-language routine creation/editing, event triggers, recent run history, reference quotas/deletion confirmation and other multi-device/full-reference gaps remain recorded; original goal stays active."
+  ]
+}

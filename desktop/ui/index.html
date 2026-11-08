@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <meta name="color-scheme" content="light" />
+    <title data-i18n="pageTitle">连接工作空间 · PandaMate</title>
+    <link rel="icon" type="image/svg+xml" href="./logo.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./i18n.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="window-header">
+      <span class="wordmark">PandaMate</span>
+      <div class="header-settings">
+        <span class="window-label" data-i18n="colleague">你的 AI 同事</span
+        ><label class="language-label"
+          ><span data-i18n="language">客户端语言</span
+          ><select id="client-language" aria-describedby="language-help">
+            <option value="zh-CN">简体中文</option>
+            <option value="en">English</option>
+          </select></label
+        >
+      </div>
+    </header>
+    <main class="setup-layout">
+      <section class="connection-panel" aria-labelledby="page-title">
+        <div class="identity">
+          <img
+            class="orb"
+            src="./logo.svg"
+            width="70"
+            height="70"
+            alt="PandaMate 紫色小伙伴"
+            data-i18n-alt="mascot"
+          />
+          <span class="connection-label"
+            ><span class="status-dot"></span
+            ><span data-i18n="connectWorkspace">连接工作空间</span></span
+          >
+        </div>
+        <h1 id="page-title" data-i18n="heading">连接你的工作空间</h1>
+        <p class="intro" data-i18n="intro">输入工作空间地址，与你的 AI 同事继续协作。</p>
+        <form id="connect-form" novalidate aria-busy="true">
+          <label class="field-label" for="workspace-url" data-i18n="address">工作空间地址</label>
+          <input
+            id="workspace-url"
+            name="workspace-url"
+            type="url"
+            inputmode="url"
+            autocomplete="url"
+            autocapitalize="off"
+            spellcheck="false"
+            value="http://127.0.0.1:3001"
+            placeholder="https://你的工作空间地址"
+            data-i18n-placeholder="addressPlaceholder"
+            aria-describedby="address-help"
+            maxlength="2048"
+            required
+            disabled
+          />
+          <div class="address-help" id="address-help">
+            <span data-i18n="secureAddress">远程工作空间请使用 https:// 地址。</span>
+            <button id="use-local" data-i18n="useLocal" type="button" disabled>使用本机地址</button>
+          </div>
+          <div id="error-panel" class="error-panel" role="alert" hidden>
+            <span class="error-symbol" aria-hidden="true">!</span>
+            <div>
+              <strong data-i18n="unavailable">暂时无法连接</strong>
+              <p id="error-message"></p>
+              <p class="error-help" data-i18n="errorHelp">
+                请检查地址与网络，并确认工作空间正在运行。
+              </p>
+            </div>
+          </div>
+          <button id="connect-button" class="primary-button" type="submit" disabled>
+            <span id="connect-spinner" class="spinner" aria-hidden="true"></span>
+            <span id="connect-label">正在准备…</span>
+            <span id="connect-arrow" class="arrow" aria-hidden="true" hidden>↗</span>
+          </button>
+          <button
+            id="change-address"
+            data-i18n="changeAddress"
+            class="change-address"
+            type="button"
+            hidden
+          >
+            更换工作空间地址
+          </button>
+          <p id="connection-status" class="connection-status" role="status" aria-live="polite">
+            正在读取连接信息…
+          </p>
+        </form>
+        <div class="workspace-note">
+          <span class="note-icon" aria-hidden="true"></span>
+          <div>
+            <strong data-i18n="returnTitle">工作继续，随时回来。</strong>
+            <p data-i18n="returnHelp">
+              电脑操作与任务在工作空间服务器上运行。关闭此应用后任务仍可继续，请保持服务器运行。
+            </p>
+            <p data-i18n="accountLogin">
+              连接后使用 PandaMate 账户登录；首次使用可在登录页注册个人或团队账户。
+            </p>
+          </div>
+        </div>
+        <p id="language-help" class="language-help" data-i18n="languageHelp">
+          仅保存于此客户端；工作空间内的语言可在其设置中选择。
+        </p>
+        <p id="language-status" class="language-help" role="status" hidden></p>
+      </section>
+      <footer class="setup-footer">
+        <span>PandaMate</span><span data-i18n="footer">同一个工作空间 · 从这里继续</span>
+      </footer>
+    </main>
+  </body>
+</html>

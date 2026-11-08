@@ -1,0 +1,236 @@
+{
+  "date": "2026-11-06",
+  "purpose": "Retire the former Node business backend after Rust migration; preserve active SDK execution and regression contracts.",
+  "businessRuntime": "Rust",
+  "nodeScope": "Isolated Pi, MCP, document and computer execution; independent computer HTTP worker.",
+  "originalServer": {
+    "source": 150,
+    "tests": 152,
+    "fixtures": 47,
+    "total": 349
+  },
+  "movedFromServer": {
+    "source": 9,
+    "tests": 18,
+    "fixtures": 3,
+    "total": 30
+  },
+  "removedFromServer": {
+    "source": 141,
+    "tests": 134,
+    "fixtures": 44,
+    "total": 319
+  },
+  "movedHttpModules": 7,
+  "remainingServerFiles": 0,
+  "preservation": {
+    "fullSourceRecoveryCopy": "Ignored .local/retired-node; source only, excluded from releases.",
+    "originalManifestSha256": "d42bea69eefe4e7713354d049423be08817604164138e88906c58cedfcd2f519",
+    "formalDataOrConfigurationChanged": false,
+    "retainedTests": "Moved pure runtime tests unchanged where possible; extracted production transport, local desktop, shell, file and codec contracts from mixed old-controller test modules.",
+    "oldBusinessTests": "Removed with the retired implementation. Current Rust tests exercise the new architecture; this is a domain coverage map, not a claim of one-for-one assertion equivalence.",
+    "documentCancellation": "The retired Node host-path reader/supervisor is not retained. Rust owns authorized file access, timeout, caller-drop cancellation, actual child exit and parser capacity; the worker receives bytes only.",
+    "migrationFixture": "Independent synthetic frozen SQLite schemas and hashing, with existing offline rehearsal assertions; no legacy Store, account service or template service imports."
+  },
+  "limits": [
+    "Two Linux-specific tests cannot execute on this macOS host.",
+    "The nine skips in the general execution run include opt-in browser cases; the separate real Chromium run passed all nine cases.",
+    "No actual remote VM, user file, production service or model endpoint was used for this reorganization."
+  ],
+  "verification": [
+    {
+      "scope": "retargeted execution and MCP plus compiled workers",
+      "log": "/private/tmp/openbot-retained-workers-regression.log",
+      "sha256": "1c37e983fda9ddf8352b0f4fa7b0d68c90052f54427c2b14e59f7104f318c175",
+      "total": 98,
+      "passed": 89,
+      "failed": 0,
+      "skipped": 9
+    },
+    {
+      "scope": "actual opt-in Chromium",
+      "log": "/private/tmp/openbot-retained-browser-regression.log",
+      "sha256": "d16f2bec6e6d8f5c3dbacddb25e107359e9395355abfead86fbb857fdfd27c06",
+      "total": 9,
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "desktop cancellation and local takeover",
+      "log": "/private/tmp/openbot-retained-desktop-cancellation.log",
+      "sha256": "f6b609a1188159e201804c9b1b3246a1c05e1e0eaea49f40e3d01fb871bc8745",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "actual PDF, DOCX, images, UTF-8 and codec process",
+      "log": "/private/tmp/openbot-retained-documents-regression.log",
+      "sha256": "964c684f2655714d59dfb15687d13340c4ece6fcdafe43925dc8e73d43b51842",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "Rust document kill/wait and two-slot supervision",
+      "log": "/private/tmp/openbot-document-supervision-retained.log",
+      "sha256": "2b20894e668249556f49d5137d59cd68c384af573eea47a197bc4785004aebb6",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "frozen legacy schema migration and restore",
+      "log": "/private/tmp/openbot-frozen-schema-migration.log",
+      "sha256": "884175b66af484c79acc8366a2431ad9c014ef02ac41edf28745d040377b8156",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "scope": "Post-deletion combined active execution, codecs, client contracts and compiled workers",
+      "log": "/private/tmp/openbot-node-retirement-final.log",
+      "sha256": "76f22fe558f23f2b8fa8226f9238c9e4721fdc811b6906aef7db8f7d1df76da0",
+      "total": 153,
+      "passed": 144,
+      "failed": 0,
+      "skipped": 9
+    },
+    {
+      "scope": "Post-deletion frozen schema migration and restore",
+      "log": "/private/tmp/openbot-frozen-schema-migration-after-retirement.log",
+      "sha256": "861b2638201a90ddf50ba8cf4dd9eb78fc867cd3bb2b581e991728f9353282ce",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "rustCoverage": {
+    "accounts, operator, teams, invitations, source security": [
+      "backend-rs/tests/accounts.rs",
+      "backend-rs/tests/membership.rs",
+      "backend-rs/tests/operator.rs",
+      "backend-rs/tests/security.rs",
+      "backend-rs/tests/http_contract.rs",
+      "backend-rs/tests/operations_http.rs",
+      "backend-rs/tests/operations_startup.rs"
+    ],
+    "workspace records, session, bootstrap, SSE, roster, settings, primary": [
+      "backend-rs/tests/workspace_http.rs",
+      "backend-rs/tests/workspace_store.rs",
+      "backend-rs/tests/workspace_session.rs",
+      "backend-rs/tests/workspace_events.rs",
+      "backend-rs/tests/workspace_roster.rs",
+      "backend-rs/tests/workspace_groups.rs",
+      "backend-rs/tests/workspace_primary.rs",
+      "backend-rs/tests/workspace_time_zone.rs",
+      "backend-rs/tests/workspace_read_contracts.rs",
+      "backend-rs/tests/workspace_recovery.rs",
+      "backend-rs/tests/workspace_credentials.rs"
+    ],
+    "creation receipts, team proposals, atomic catalog confirmation": [
+      "backend-rs/tests/workspace_creation_receipts.rs",
+      "backend-rs/tests/team_builder_atomic.rs",
+      "backend-rs/tests/team_builder_planning.rs",
+      "backend-rs/tests/team_builder_shared.rs"
+    ],
+    "real Pi roots, requester authority, queued messages, delegate and shared definitions": [
+      "backend-rs/tests/agent_execution.rs",
+      "backend-rs/tests/agent_messages.rs",
+      "backend-rs/tests/agent_queue.rs",
+      "backend-rs/tests/agent_security.rs",
+      "backend-rs/tests/agent_group_authority.rs",
+      "backend-rs/tests/agent_delegation.rs",
+      "backend-rs/tests/agent_delegation_security.rs",
+      "backend-rs/tests/agent_delegation_shared.rs"
+    ],
+    "routines, tools, primary check-ins, import restricted memory and recovery": [
+      "backend-rs/tests/routine_operations.rs",
+      "backend-rs/tests/scheduling_runs.rs",
+      "backend-rs/tests/scheduling_primary.rs",
+      "backend-rs/tests/agent_routine_tools.rs",
+      "backend-rs/tests/agent_routine_tools_shared.rs",
+      "backend-rs/tests/memory_imports.rs",
+      "backend-rs/tests/memory_import_compatibility.rs"
+    ],
+    "MCP catalog, OAuth, approval, source credentials and inflight cancellation": [
+      "backend-rs/tests/apps_connections.rs",
+      "backend-rs/tests/apps_oauth.rs",
+      "backend-rs/tests/apps_recovery.rs",
+      "backend-rs/tests/apps_shared.rs",
+      "backend-rs/tests/agent_apps.rs",
+      "backend-rs/tests/agent_apps_shared.rs",
+      "backend-rs/tests/agent_primary_apps.rs"
+    ],
+    "computer authority, isolated execution, files, lifecycle, cloud and recovery": [
+      "backend-rs/tests/computer_local.rs",
+      "backend-rs/tests/computer_actions.rs",
+      "backend-rs/tests/computer_cloud.rs",
+      "backend-rs/tests/computer_lifecycle.rs",
+      "backend-rs/tests/computer_recovery.rs",
+      "backend-rs/tests/computer_transport.rs",
+      "backend-rs/tests/agent_computer.rs",
+      "backend-rs/tests/agent_computer_security.rs",
+      "backend-rs/tests/agent_computer_shared.rs"
+    ],
+    "files, document bytes, avatars and no host path access": [
+      "backend-rs/tests/workspace_file_uploads.rs",
+      "backend-rs/tests/workspace_avatar_uploads.rs",
+      "backend-rs/tests/workspace_avatar_limits.rs",
+      "backend-rs/tests/workspace_avatars.rs",
+      "backend-rs/tests/agent_workspace_tools.rs"
+    ],
+    "live sharing, source resources, copying, template lifecycle and receipts": [
+      "backend-rs/tests/shared_bots_http.rs",
+      "backend-rs/tests/shared_bots_recovery.rs",
+      "backend-rs/tests/shared_bots_resources.rs",
+      "backend-rs/tests/shared_bots_runtime.rs",
+      "backend-rs/tests/bot_templates_copies.rs",
+      "backend-rs/tests/bot_templates_http.rs",
+      "backend-rs/tests/bot_templates_recovery.rs"
+    ],
+    "speech, static delivery, old schema and service lifecycle": [
+      "backend-rs/tests/speech_http.rs",
+      "backend-rs/tests/compatibility.rs",
+      "backend-rs/tests/page_navigation.rs",
+      "backend-rs/tests/web_delivery.rs",
+      "backend-rs/tests/startup_shutdown.rs"
+    ]
+  },
+  "dependencyGraph": {
+    "packages/pi-worker": "Pi SDK only; no business store",
+    "packages/mcp-worker": "MCP transport/OAuth only; no business store",
+    "packages/document-worker": "Explicit authorized bytes and bounded codecs; Rust supervises process",
+    "packages/computer-worker": "packages/computer-runtime and shared contracts",
+    "scripts/computer-worker.ts": "packages/computer-runtime/http",
+    "scripts/node-migration-fixture.ts": "scripts/migration-fixture frozen synthetic schema writer"
+  },
+  "filesManifest": "node-retirement-files.json",
+  "staticVerification": [
+    {
+      "scope": "TypeScript",
+      "log": "/private/tmp/openbot-node-retired-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result": "passed"
+    },
+    {
+      "scope": "Source policy",
+      "log": "/private/tmp/openbot-node-retired-source-policy.log",
+      "sha256": "fad0a5750903fb02958b00505771594f9c18fec8fb822f4e92b385cf5bc37e7f",
+      "result": "997 files, 0 violations at the retirement checkpoint"
+    },
+    {
+      "scope": "Changed files formatting",
+      "log": "/private/tmp/openbot-node-retired-format-check.log",
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "result": "passed"
+    }
+  ],
+  "verificationNote": "The runs overlap. Do not add their totals; the post-deletion combined run is the final Node execution/client checkpoint, with actual Chrome and Rust document supervision verified separately."
+}

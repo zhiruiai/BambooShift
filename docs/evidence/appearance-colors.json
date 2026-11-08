@@ -1,0 +1,468 @@
+{
+  "checkedAt": "2026-11-05T10:40:23.536Z",
+  "files": 29,
+  "syntax": "postcss parsed all",
+  "lightRestored": 28,
+  "legacyFiles": 28,
+  "restoration": [
+    {
+      "file": "src/styles.css",
+      "originalSha256": "9e84897555715ffdc20a9efc7fa8b85dee3668da36eada36eaed49d98f97082b",
+      "reconstructedSha256": "9e84897555715ffdc20a9efc7fa8b85dee3668da36eada36eaed49d98f97082b",
+      "match": true
+    },
+    {
+      "file": "src/admin/Admin.css",
+      "originalSha256": "ccf5c8f8f93d931538adf41ee00d08d5e8e5a8563ef67c2bdff0655fc94fb9a7",
+      "reconstructedSha256": "ccf5c8f8f93d931538adf41ee00d08d5e8e5a8563ef67c2bdff0655fc94fb9a7",
+      "match": true
+    },
+    {
+      "file": "src/components/AppsDialog.css",
+      "originalSha256": "79a1595ee4831d7e47b69a985e13889175cf719d600d03cc5392db6827c036af",
+      "reconstructedSha256": "79a1595ee4831d7e47b69a985e13889175cf719d600d03cc5392db6827c036af",
+      "match": true
+    },
+    {
+      "file": "src/components/AvatarPicker.css",
+      "originalSha256": "51a396f561dec1951a428f268d04c66c5cb370312d7a5305d846a88031fab3b8",
+      "reconstructedSha256": "51a396f561dec1951a428f268d04c66c5cb370312d7a5305d846a88031fab3b8",
+      "match": true
+    },
+    {
+      "file": "src/components/BotProfiles.css",
+      "originalSha256": "06bed1c30c02c749f83d98b98ebc0fa69f24d26e4c6c7274afff5d3fdf5bd2c8",
+      "reconstructedSha256": "06bed1c30c02c749f83d98b98ebc0fa69f24d26e4c6c7274afff5d3fdf5bd2c8",
+      "match": true
+    },
+    {
+      "file": "src/components/BotScreenPicker.css",
+      "originalSha256": "7731bbaf59920cc23d3db4bea1af6fa382c6fc62d6c84f4312bdda1456798cf4",
+      "reconstructedSha256": "7731bbaf59920cc23d3db4bea1af6fa382c6fc62d6c84f4312bdda1456798cf4",
+      "match": true
+    },
+    {
+      "file": "src/components/BotTeamProposalCard.css",
+      "originalSha256": "57c0262044db224b71e8842042f0a52694bfee9c7581245846517d58a5bc0933",
+      "reconstructedSha256": "57c0262044db224b71e8842042f0a52694bfee9c7581245846517d58a5bc0933",
+      "match": true
+    },
+    {
+      "file": "src/components/BotTemplates.css",
+      "originalSha256": "f23db5ae3d643da3bdc3531445930753f681df68edda428ac340a11b8d8461f2",
+      "reconstructedSha256": "f23db5ae3d643da3bdc3531445930753f681df68edda428ac340a11b8d8461f2",
+      "match": true
+    },
+    {
+      "file": "src/components/CloudComputerCard.css",
+      "originalSha256": "11613c752ab48d2fadff74e97f88dff3a4b25ca7fb31b7bd061afd11a3e8686d",
+      "reconstructedSha256": "11613c752ab48d2fadff74e97f88dff3a4b25ca7fb31b7bd061afd11a3e8686d",
+      "match": true
+    },
+    {
+      "file": "src/components/ComputerFiles.css",
+      "originalSha256": "16e8ac44a9965c7029dd4eb6b007f486d73c6a4645a071466737305b35f904aa",
+      "reconstructedSha256": "16e8ac44a9965c7029dd4eb6b007f486d73c6a4645a071466737305b35f904aa",
+      "match": true
+    },
+    {
+      "file": "src/components/ComputerFrame.css",
+      "originalSha256": "9741d14cabee54b19dd6708caf6bf26bb22ca7ea0e4b0d7c5912b103d9ff32df",
+      "reconstructedSha256": "9741d14cabee54b19dd6708caf6bf26bb22ca7ea0e4b0d7c5912b103d9ff32df",
+      "match": true
+    },
+    {
+      "file": "src/components/ConversationSearch.css",
+      "originalSha256": "4f1375480afe3f31816ac842fe836094a721b9bbf527231954572ca5f16a3bd0",
+      "reconstructedSha256": "4f1375480afe3f31816ac842fe836094a721b9bbf527231954572ca5f16a3bd0",
+      "match": true
+    },
+    {
+      "file": "src/components/DictationControls.css",
+      "originalSha256": "3933f2dd78f89753002de7643dbccf8e666df1faf5c0ab1110757bcd4f05a3d6",
+      "reconstructedSha256": "3933f2dd78f89753002de7643dbccf8e666df1faf5c0ab1110757bcd4f05a3d6",
+      "match": true
+    },
+    {
+      "file": "src/components/GroupSettingsDialog.css",
+      "originalSha256": "869b37d43d3aa2bda13c35986ad472f4a68fb8e5b81c56738c1b69b9db59377a",
+      "reconstructedSha256": "869b37d43d3aa2bda13c35986ad472f4a68fb8e5b81c56738c1b69b9db59377a",
+      "match": true
+    },
+    {
+      "file": "src/components/MemoryImportPanel.css",
+      "originalSha256": "e297202a7e4bf2d2977346cc85fa8dbad9dd388b8babd26f4918d95ca80232e5",
+      "reconstructedSha256": "e297202a7e4bf2d2977346cc85fa8dbad9dd388b8babd26f4918d95ca80232e5",
+      "match": true
+    },
+    {
+      "file": "src/components/MobileHome.css",
+      "originalSha256": "2546546c819960a583ee62a438bb8117848d34a161fb855f97315ab4ae52fa98",
+      "reconstructedSha256": "2546546c819960a583ee62a438bb8117848d34a161fb855f97315ab4ae52fa98",
+      "match": true
+    },
+    {
+      "file": "src/components/PrimaryBot.css",
+      "originalSha256": "4454d60af44a91edbaaf87db58f483faa226a1c64d2460ac2c8d7f2e3660f7f4",
+      "reconstructedSha256": "4454d60af44a91edbaaf87db58f483faa226a1c64d2460ac2c8d7f2e3660f7f4",
+      "match": true
+    },
+    {
+      "file": "src/components/RemoteShellDetails.css",
+      "originalSha256": "8702a7ced984e3b8172e09540be4e6bcbed92a71a9066c904bf5fe090e3fc778",
+      "reconstructedSha256": "8702a7ced984e3b8172e09540be4e6bcbed92a71a9066c904bf5fe090e3fc778",
+      "match": true
+    },
+    {
+      "file": "src/components/RoutineDialog.css",
+      "originalSha256": "7e7776af22f007a6cab260dabd1b20e01ad40b951ebebaaa06e517a4dae2eb7c",
+      "reconstructedSha256": "7e7776af22f007a6cab260dabd1b20e01ad40b951ebebaaa06e517a4dae2eb7c",
+      "match": true
+    },
+    {
+      "file": "src/components/SettingsDialog.css",
+      "originalSha256": "0ccec7bc806b59beaddc02231b955f4477662fdf95375716ea136697e3a40632",
+      "reconstructedSha256": "0ccec7bc806b59beaddc02231b955f4477662fdf95375716ea136697e3a40632",
+      "match": true
+    },
+    {
+      "file": "src/components/SharedBots.css",
+      "originalSha256": "a000a28040f689c5884325c30dc19859ccb3c81554278b543cb2e54a07a4eee1",
+      "reconstructedSha256": "a000a28040f689c5884325c30dc19859ccb3c81554278b543cb2e54a07a4eee1",
+      "match": true
+    },
+    {
+      "file": "src/components/SidebarRoster.css",
+      "originalSha256": "4a5fe01f1b88f95ed445d314626653ee1d1679e0a35a706573009a0f0318d077",
+      "reconstructedSha256": "4a5fe01f1b88f95ed445d314626653ee1d1679e0a35a706573009a0f0318d077",
+      "match": true
+    },
+    {
+      "file": "src/components/SkillVersions.css",
+      "originalSha256": "8ed8b9225d8d77127fe5f179e93a907dc530c5f95967b352c83e750aec73336a",
+      "reconstructedSha256": "8ed8b9225d8d77127fe5f179e93a907dc530c5f95967b352c83e750aec73336a",
+      "match": true
+    },
+    {
+      "file": "src/components/SmartTeamPanel.css",
+      "originalSha256": "7548480ccd507cc2afcb33b298d14169a6e4a1e5906dfe5ad1de0f02da5c91dc",
+      "reconstructedSha256": "7548480ccd507cc2afcb33b298d14169a6e4a1e5906dfe5ad1de0f02da5c91dc",
+      "match": true
+    },
+    {
+      "file": "src/components/WorkspaceSettingsDialog.css",
+      "originalSha256": "05e0ef3c8e1b243db2220eb47e8a936470d104376d49f3233b98956bf2cdc28e",
+      "reconstructedSha256": "05e0ef3c8e1b243db2220eb47e8a936470d104376d49f3233b98956bf2cdc28e",
+      "match": true
+    },
+    {
+      "file": "src/platform/AccountSettings.css",
+      "originalSha256": "90bd6d5d97e96d4c60e7d12de9cb571253f4d69b1dcc4e23012065c52d7b5f5d",
+      "reconstructedSha256": "90bd6d5d97e96d4c60e7d12de9cb571253f4d69b1dcc4e23012065c52d7b5f5d",
+      "match": true
+    },
+    {
+      "file": "src/platform/BotTemplatePage.css",
+      "originalSha256": "11ddefd7fc0dd4cfd636bd34c6f6ad0f1f20b521b023fe7a7303fefa728813d5",
+      "reconstructedSha256": "11ddefd7fc0dd4cfd636bd34c6f6ad0f1f20b521b023fe7a7303fefa728813d5",
+      "match": true
+    },
+    {
+      "file": "src/platform/Platform.css",
+      "originalSha256": "9b2f4ba76010c2170f1e2f02ea45a08148d54d241da25997926b8da40b96bc5c",
+      "reconstructedSha256": "9b2f4ba76010c2170f1e2f02ea45a08148d54d241da25997926b8da40b96bc5c",
+      "match": true
+    }
+  ],
+  "unresolvedVariables": [],
+  "guiTested": false,
+  "formatStructureNotes": {
+    "files": [
+      "src/styles.css",
+      "src/theme.css"
+    ],
+    "reason": "Prettier only reflowed color functions; whitespace-sensitive color value fingerprint differed. All 28 complete legacy stylesheets match original SHA256 after restoring light branches and applying the project formatter."
+  },
+  "preservedMediaAndArtwork": [
+    "Actual img/video pixels and SVG avatar art are untouched; no new filter/invert rules.",
+    "Existing window traffic-light colors, mini/work-preview illustration colors, preview overlay, avatar crop mask, and avatar drop-shadow retained.",
+    "Bot color swatches and uploaded avatars are not selected by message accent scope.",
+    "Terminal/code surfaces keep separate neutral theme layers; error/success/warning states retain semantic color families."
+  ],
+  "originalColorDeclarationsMapped": 1193,
+  "originalArtworkColorDeclarationsPreserved": [
+    {
+      "file": "src/styles.css",
+      "selector": ".window-dots i",
+      "prop": "background",
+      "value": "#ff625b"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".window-dots i",
+      "prop": "box-shadow",
+      "value": "inset 0 0 0 1px #00000008"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".window-dots i:nth-child(2)",
+      "prop": "background",
+      "value": "#febd43"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".window-dots i:nth-child(3)",
+      "prop": "background",
+      "value": "#34c64b"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-desktop",
+      "prop": "background",
+      "value": "linear-gradient(145deg, #ddd9dc, #eae8e5 48%, #b9c7cf)"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-window",
+      "prop": "background",
+      "value": "#fff"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-window",
+      "prop": "box-shadow",
+      "value": "0 5px 15px #33333325"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-window",
+      "prop": "border",
+      "value": "1px solid #dfdfe4"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-titlebar",
+      "prop": "background",
+      "value": "#fafafa"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-titlebar",
+      "prop": "border-bottom",
+      "value": "1px solid #eee"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-titlebar > span",
+      "prop": "background",
+      "value": "#d6d6db"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-titlebar > div",
+      "prop": "background",
+      "value": "#e5e5e9"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-sidebar",
+      "prop": "background",
+      "value": "#f8f8fa"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-sidebar i",
+      "prop": "background",
+      "value": "#e7e7ed"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-doc-title",
+      "prop": "background",
+      "value": "#d6d8e1"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-doc-line",
+      "prop": "background",
+      "value": "#eeeef3"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-chart",
+      "prop": "border-bottom",
+      "value": "1px solid #eceaf1"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-chart i",
+      "prop": "background",
+      "value": "#a9bdbd"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".mini-chart i:nth-child(2n)",
+      "prop": "background",
+      "value": "#b4a7cc"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-overlay",
+      "prop": "background",
+      "value": "#26232d77"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-overlay",
+      "prop": "color",
+      "value": "white"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview",
+      "prop": "background",
+      "value": "linear-gradient(160deg, #b4c9d5 0%, #d4c4bd 45%, #6e7061 70%, #3c5146 100%)"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview:before",
+      "prop": "background",
+      "value": "#314f4080"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-window",
+      "prop": "background",
+      "value": "#fff"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-window",
+      "prop": "border",
+      "value": "1px solid #e5e5e7"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-window",
+      "prop": "box-shadow",
+      "value": "0 6px 20px #1a24213c"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-bar",
+      "prop": "border-bottom",
+      "value": "1px solid #eee"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-bar i",
+      "prop": "background",
+      "value": "#ddd"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-bar span",
+      "prop": "color",
+      "value": "#b5b5ba"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-rail",
+      "prop": "background",
+      "value": "#f8f8f9"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-rail i",
+      "prop": "background",
+      "value": "#e3e3e8"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-document-heading",
+      "prop": "color",
+      "value": "#73737b"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-document-rule",
+      "prop": "background",
+      "value": "#eeeef2"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-document-tile",
+      "prop": "color",
+      "value": "#c8c6ce"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-document-tile",
+      "prop": "border",
+      "value": "1px solid #ededf1"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".preview-document-tile > span",
+      "prop": "color",
+      "value": "#8d8b94"
+    },
+    {
+      "file": "src/styles.css",
+      "selector": ".work-preview-label",
+      "prop": "color",
+      "value": "#ffffffd9"
+    },
+    {
+      "file": "src/components/AvatarPicker.css",
+      "selector": ".avatar-crop-circle",
+      "prop": "box-shadow",
+      "value": "0 0 0 100px #2c203a66"
+    },
+    {
+      "file": "src/components/AvatarPicker.css",
+      "selector": ".avatar-crop-circle",
+      "prop": "border",
+      "value": "1px solid #ffffffb3"
+    }
+  ],
+  "sourceSha256": {
+    "src/styles.css": "3f87d2cf5aa81500a4775cd9b3bca869d4d5c9d9b6683d354fd6b6513ec7e152",
+    "src/theme.css": "be1e4a06fad4dcf6f189b92e024df629fa95b28b93595f35e14a55db29757bb9",
+    "src/admin/Admin.css": "dff7a5f51cb185c858beab360355f7aa5d3a719d4f11b00c5eaeea3eb2ce6262",
+    "src/components/AppsDialog.css": "3e883fa404098b06f10b50f75f414b217275f16d94ec2976c9fdf9589ac12f47",
+    "src/components/AvatarPicker.css": "e67e2d1a737c8ac27f971dd3ea0a5286a4f838d1fbd98dc604b9e970b8bd4df3",
+    "src/components/BotProfiles.css": "52a5c07729b23ad73ef1417c493ba17d685ec8671178eccc1f7d0dee90c40b27",
+    "src/components/BotScreenPicker.css": "7731bbaf59920cc23d3db4bea1af6fa382c6fc62d6c84f4312bdda1456798cf4",
+    "src/components/BotTeamProposalCard.css": "96b420bad50feef576b17681510fe9d37b3177b66dfc7313e67dfcda5852425b",
+    "src/components/BotTemplates.css": "7b8a368880fcf25debe8995cb4cb53824de95791d6bd9cf3ec17f60664fff7e1",
+    "src/components/CloudComputerCard.css": "9adced97c4252cc4fbcafb2c6599868f5afbab4952e7d1a1db055561f5821b90",
+    "src/components/ComputerFiles.css": "2fed39fa7e32c7055cd227671473c6436b8fd3b8bde44139f5a51d5cc0fdf6b1",
+    "src/components/ComputerFrame.css": "b1e6a013f76efb3e59449d8b75614b9941e856b45a5ab0ed946e15b03a9af1e1",
+    "src/components/ConversationSearch.css": "552ce5c77f8447b67abba09d44518f90eb3067225dbaec304a81f5683682d056",
+    "src/components/DictationControls.css": "f6381851311203429fe1015cde4d7b437cc3b5500a8f553f71ac146212ef4de8",
+    "src/components/GroupSettingsDialog.css": "869b37d43d3aa2bda13c35986ad472f4a68fb8e5b81c56738c1b69b9db59377a",
+    "src/components/MemoryImportPanel.css": "e297202a7e4bf2d2977346cc85fa8dbad9dd388b8babd26f4918d95ca80232e5",
+    "src/components/MobileHome.css": "50068ea9fe35021b12abb2f5d772b0f067027d8f32a12030b7afcb91bd49ad9f",
+    "src/components/PrimaryBot.css": "b1768e33d4a2d58157722adffb7aa0f62a9e3083040d82b21dd6ae58809c48eb",
+    "src/components/RemoteShellDetails.css": "5033d0d6633287116f0d6842008b2915a8e99261680de83f06c74b951ac7d065",
+    "src/components/RoutineDialog.css": "495814f9b683deb920a49d0f1c8206c392c902e264472f36bb158d67c3217503",
+    "src/components/SettingsDialog.css": "035987176c5de881b7ada6db3f38e6c1c14d03d9222d887c6adae244af76f7d6",
+    "src/components/SharedBots.css": "a000a28040f689c5884325c30dc19859ccb3c81554278b543cb2e54a07a4eee1",
+    "src/components/SidebarRoster.css": "dda85d462470e3eadde4b4819ff081a7493c0b59468206325ca22a51abc87ea7",
+    "src/components/SkillVersions.css": "762608f9df50c4ea8196634ead475964f020481000dc058b992ac14b98b73b7f",
+    "src/components/SmartTeamPanel.css": "d62aa4104787daa47b881bd6c0944464f6226f9492af087ece614da4f296a7bb",
+    "src/components/WorkspaceSettingsDialog.css": "144eb1f04b3c2341e7d98b66d336c0071676edc4037f4381f983a012f301ecb5",
+    "src/platform/AccountSettings.css": "c98415352ae758d02a24b8c3a39beaaeb7ff820decd3aabdd8868006a71b0701",
+    "src/platform/BotTemplatePage.css": "b91d8c8145d69f67903cbbaf0b28a8d71c5a74a7f92c38fd217cb76ec7acee47",
+    "src/platform/Platform.css": "4d05ac66c3a8a256da10b3c66e235aae5353ea25e2dc04fc6ba75ff1dfff28d4"
+  },
+  "contrast": {
+    "semanticPairs": 42,
+    "botFormulaSamples": 434,
+    "minimumRequiredRatio": 4.5,
+    "method": "Linear-sRGB luminance calculation on parsed source values; not a browser rendering or pixel acceptance test",
+    "passed": true
+  },
+  "productGuiAcceptance": false
+}

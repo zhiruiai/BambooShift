@@ -1,0 +1,36 @@
+.shared-website-page {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: var(--surface);
+}
+.shared-website-page header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  padding: 8px clamp(12px, 4vw, 28px);
+  border-bottom: 1px solid var(--border);
+}
+.shared-website-page h1 {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  white-space: nowrap;
+}
+.shared-website-page header button {
+  flex: none;
+}
+.shared-website-page > .website-project-preview {
+  flex: 1;
+  min-height: 0;
+}
+.shared-website-status {
+  margin: auto;
+  max-width: 420px;
+  padding: 16px;
+  text-align: center;
+}

@@ -1,0 +1,158 @@
+{
+  "checkedAt": "2026-11-05T09:01:56.938Z",
+  "scope": "Explicit publisher application/tool grants for shared Bots, source-held credentials and private recipient approvals",
+  "reference": ["https://docs.x.ai/grok-bot/shared-bots"],
+  "serverStandardSuite": {
+    "total": 681,
+    "passed": 669,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 85742.394375,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 305,
+    "passed": 305,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 13560.535125,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 109677.496876,
+    "parts": {
+      "engine": {
+        "total": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 102103.368417
+      },
+      "vision": {
+        "total": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 7574.128459
+      }
+    },
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "totalFinalUniqueTests": 986,
+  "totalFinalUniquePassed": 984,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "server": 20,
+    "frontend": 9,
+    "total": 29
+  },
+  "behaviorEvidence": {
+    "sharing": "Owner explicitly selects connection revision and exact named tool hashes. Limits are 20 connections, 64 tools per connection and 512 KiB selected metadata. Same sharing CAS/idempotent request includes audience, files and apps; omitted apps preserves grants and [] revokes.",
+    "reads": "Readonly whitelist queries read catalog metadata without credentials/endpoints, recipient database initialization, source writes or creating another source connection service. Central grants contain approved names and revisions only.",
+    "sourceExecution": "Real Pi and MCP temporary servers verify source credentials are sent only to the source application after the personal requester approves. Source and personal applications with the same connection ID execute through different fixed services.",
+    "identity": "Only the original requester approves; publisher and other members cannot approve or read recipient private data. Runtime child calls retain the original requester and source grant guards continue to constrain the root after a child returns.",
+    "revocation": "Source connection changes broadcast revalidation, cancel pending approvals and stop affected tasks. In-flight grant revocation aborts MCP transport and discards late results; already-sent external effects remain unknown and are not retried.",
+    "oauth": "Actual AppConnections refresh test rotates credentialGeneration without changing connection revision and keeps approved tools usable. Changed scopes, fresh schemas, removed membership, missing source instance and revoked grants prevent calls.",
+    "frontend": "Actual React events validate tool selection, explicit version renewal without tool expansion, original request recovery, fixed-account late response rejection, same-count app refresh and source-aware approval/detail navigation.",
+    "ui": "Existing shared settings, app detail and approval components use the existing styles. Publisher connections appear in a readonly section, without connection-management controls or endpoints. Product visual, focus and touch acceptance is still pending."
+  },
+  "focusedEvidence": {
+    "domain": {
+      "total": 45,
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 813.936125
+    },
+    "runtime": {
+      "total": 45,
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 4165.7645
+    },
+    "realHttpPiMcp": {
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 3401.221208
+    },
+    "frontend": {
+      "total": 85,
+      "passed": 85,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 4799.858416
+    }
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 26,
+  "vite": {
+    "modules": 1961,
+    "duration": "2.09s"
+  },
+  "sourceFreeze": {
+    "files": 342,
+    "snapshotSha256": "16537c83243df73c57ed0cd4eac436c95e90f842e802e6294c04ce7b630d1113",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "c71556440a0ee8339bc11e33c6ae5b457f71a64ae5c14c93918002bafee8fe8f"
+  },
+  "sourceSha256": {
+    "server/app-actions.test.ts": "58a203b3427baf3a21f8bdcdd27f3fff0b70c8fe901094babe41450aef5d6cac",
+    "server/app-actions.ts": "74402fef4717525d4a07564566a024eafd7f8420ae551126eac9fdd4749bc271",
+    "server/app.ts": "e953ab29a814307c45ed6aea6a2fa81053bc6c5c774428359bdb98e98f367818",
+    "server/bot-run-definition.ts": "e095975e6aa20d53e748dd1569b35fcb34b82930a7c81f78ac54bf85893fbd8c",
+    "server/platform-app.ts": "7a0fdc18b93cba235e1f9ca5956da5003d3406fc4aa94fb1ff58e00063fe49aa",
+    "server/runtime-shared-bots.test.ts": "c697853146eb8ec13e777326afade4fd0f6e91d3c8b86ac0836eca4f8258a15c",
+    "server/runtime.ts": "4b9bae415440239703cb874d28079f085d9298539a6dfc1fc2faff1b3bc72f04",
+    "server/shared-bot-apps-http.test.ts": "d811831a7f8b878251c642312eecce1d3e024e5929a26903b0025940cc2808e8",
+    "server/shared-bot-apps.test.ts": "ea6bbc25f1c38b80a2aba9aafcbd5b7595b6653460c50e12d7b6088bf8d3ca96",
+    "server/shared-bot-apps.ts": "6a94531c1d397fec686b8a107194510b9f28f0aaa0c2348e92fda865d866576a",
+    "server/shared-bot-http.ts": "8c8d958eba09039746fb1ae55d91a5a325c7cf157d0744fb4516538ab80bcffc",
+    "server/shared-bot-references.ts": "7917d7e9ab57b7ad947b1693b846a7fabde6763bec5c495467ca2fe70ac64199",
+    "server/shared-bots.ts": "42b08a748e458367cd56fb515103bca070c4c57a2703989ce9c1ee6ea63e3404",
+    "shared/app-connections.ts": "e9e87dc6580b6148277b758d0916ae5eed054d5351608bc3aa0cf14f82a554f5",
+    "shared/shared-bots.ts": "f0178541c548f0ee021aa127f3b9d448cc865a6bbfe992c025e67b9bbdce875c",
+    "src/App.tsx": "9e8ced86a84c1a41c95a6fc6104c710b8a00bee051b4e12c93cabd7ac4e8fa84",
+    "src/apps.test.ts": "f52cbfa2066314c50c1d3929014258e41834accc451f7e02c5f243d8d74ef9d9",
+    "src/components/AgentDialog.tsx": "5d3904c5cffcba570982431d15872affe154afcf9f44f241fd7732cd123272e4",
+    "src/components/AppActionCard.tsx": "ec7e92afe22f2b4c2a176c97ab1adc58cf62dc741aec28fb45bd8c3ee2051a4c",
+    "src/components/AppsDialog.tsx": "8807907ec68ddc09b8a988b3a278161a4d3638da5ed8f0321eae62555ed6b755",
+    "src/components/SharedBotApps.tsx": "31c9095affe0834fb735f038aa6c2e73349457d226570e8307f9c4e8cd331fae",
+    "src/components/SharedBots.css": "a000a28040f689c5884325c30dc19859ccb3c81554278b543cb2e54a07a4eee1",
+    "src/components/SharedBotsDialog.tsx": "90ed1b66bca293964460dff629bd5a2c02af827e5ed8efe5ef3163d896f01daf",
+    "src/sharedBotApps.test.ts": "db12c33c4402548f990ce553314924bb334b74ad1f20dfd9c760d082b7930ae7",
+    "src/sharedBotApps.ts": "d64f3c5be9935392ced6459d8e32624dc1d6940ffd7181ce3bdcfac3464121f3",
+    "src/sharedBots.ts": "1cf70a1fd06a2a8a89719f524d2f6c472356c98fac1711efe2470f9e336586ea"
+  },
+  "serviceProof": "shared-bot-apps-service.json",
+  "serviceChecks": 53,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "shared-bot-files-client-package.json",
+    "note": "Native files unchanged; the existing client loads the updated separately running web service. No new package or native GUI acceptance."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "paidModelCalls": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser tool again returned Local browser use is disabled in Work settings. React event tests and controlled computer-engine fixtures are not product GUI acceptance.",
+    "Publisher apps require an explicit approval per call; always-allow preferences, automatic tool expansion, provider app directory and actual external-account OAuth acceptance are not implemented or proven.",
+    "Team-knowledge grants, private computer provisioning, image generation, full voice calls, group-size reference differences and remaining multi-device acceptance remain open. Original goal is active."
+  ]
+}

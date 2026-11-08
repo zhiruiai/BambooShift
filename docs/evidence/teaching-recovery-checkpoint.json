@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-07",
+  "status": "verified-checkpoint-not-final-release",
+  "scope": "Web teaching recovery, computer input gating and adjacent full Web source regression",
+  "source": {
+    "files": 717,
+    "sha256": "c2224f5724856b7e98b21c7b04a57870e728e428696f5a3561731b211f9a708b",
+    "unchangedDuringTests": true
+  },
+  "webTests": {
+    "total": 600,
+    "passed": 600,
+    "failed": 0,
+    "skipped": 0
+  },
+  "typecheck": {
+    "passed": true
+  },
+  "productBuild": {
+    "passed": true
+  },
+  "operationsBuild": {
+    "passed": true
+  },
+  "boundaries": {
+    "realRemoteTeachingNotRun": true,
+    "paidModelRequests": 0,
+    "mobileInstallerBuilds": 0,
+    "subsequentUnreadImplementationPending": true,
+    "finalSourceExportPending": true
+  }
+}

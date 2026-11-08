@@ -1,0 +1,420 @@
+@media (min-width: 1700px) {
+  .app-shell {
+    margin: 24px auto;
+    height: calc(100dvh - 48px);
+  }
+}
+@media (max-width: 1150px) {
+  .app-shell,
+  .app-shell.with-detail {
+    grid-template-columns: 232px minmax(310px, 1fr);
+  }
+  .details-panel {
+    position: absolute;
+    right: 17px;
+    top: 17px;
+    bottom: 17px;
+    width: 282px;
+    border-radius: 0 15px 15px 0;
+    box-shadow: -12px 0 35px light-dark(#29222e0a, var(--shadow-soft));
+    z-index: 8;
+  }
+  .with-detail .chat-panel {
+    padding-right: 0;
+  }
+  .header-status {
+    display: none;
+  }
+  .chat-header {
+    padding: 0 16px;
+  }
+  .messages-scroll {
+    padding: 0 21px;
+  }
+  .message-content {
+    max-width: 91%;
+  }
+  .app-wordmark {
+    display: none;
+  }
+}
+@media (max-width: 760px) {
+  :root {
+    background: light-dark(#fff, var(--bg-canvas));
+  }
+  .app-shell,
+  .app-shell.with-detail {
+    height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    display: flex;
+    width: 100%;
+  }
+  .sidebar {
+    width: 100%;
+    border: 0;
+    flex-shrink: 0;
+    background: light-dark(#fcfcfc, var(--surface));
+  }
+  .sidebar-toolbar {
+    height: 73px;
+    padding: 0 21px;
+  }
+  .window-dots {
+    display: none;
+  }
+  .app-wordmark {
+    display: block;
+    font-size: 24px;
+    color: light-dark(#2d2930, var(--text));
+    letter-spacing: -0.9px;
+  }
+  .toolbar-actions {
+    gap: 10px;
+  }
+  .toolbar-actions .icon-button {
+    height: 33px;
+    width: 33px;
+  }
+  .search-box {
+    margin: 0 20px 15px;
+    height: 35px;
+    border-radius: 9px;
+    background: light-dark(#f1f1f3, var(--surface-subtle));
+    border-color: light-dark(#ededee, var(--border));
+  }
+  .search-box input {
+    font-size: 13px;
+  }
+  .search-box kbd {
+    display: none;
+  }
+  .conversation-list {
+    padding: 0 10px;
+  }
+  .conversation-row {
+    padding: 13px 11px;
+    gap: 12px;
+    min-height: 75px;
+    border-radius: 11px;
+  }
+  .conversation-row.selected {
+    background: light-dark(#f0eff2, var(--accent-soft));
+  }
+  .conversation-avatar > .avatar,
+  .conversation-avatar > .group-avatar {
+    width: 43px !important;
+    height: 43px !important;
+  }
+  .conversation-avatar > .avatar > svg {
+    width: 43px;
+    height: 43px;
+  }
+  .conversation-heading > span {
+    font-size: 14px;
+  }
+  .conversation-heading time {
+    font-size: 12px;
+  }
+  .conversation-preview {
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  .sidebar-bottom {
+    padding: 15px 20px 20px;
+  }
+  .connect-apps {
+    height: 40px;
+    font-size: 12px;
+  }
+  .profile-button > span:last-child {
+    font-size: 12px;
+  }
+  .profile-button small {
+    font-size: 12px;
+  }
+  .user-avatar {
+    width: 33px;
+    height: 33px;
+  }
+  .chat-panel {
+    display: none;
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .mobile-chat-open .sidebar {
+    display: none;
+  }
+  .mobile-chat-open .chat-panel {
+    display: flex;
+  }
+  .mobile-back {
+    display: flex;
+    margin-left: -7px;
+    margin-right: 2px;
+  }
+  .chat-header {
+    height: 65px;
+    padding: 0 13px;
+    justify-content: flex-start;
+  }
+  .chat-title {
+    flex: 1;
+    gap: 7px;
+  }
+  .chat-title > span:not(.avatar):not(.group-avatar) {
+    font-size: 12px;
+  }
+  .chat-title small {
+    font-size: 12px;
+  }
+  .chat-title > svg {
+    display: none;
+  }
+  .chat-header-actions {
+    gap: 0;
+  }
+  .chat-header-actions .icon-button {
+    width: 27px;
+  }
+  .chat-header-actions > .icon-button:first-of-type {
+    display: none;
+  }
+  .messages-scroll {
+    padding: 0 13px;
+  }
+  .conversation-start {
+    margin: 20px 0;
+  }
+  .conversation-start span {
+    font-size: 12px;
+  }
+  .message-row {
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .message-avatar {
+    width: 20px;
+  }
+  .message-avatar .avatar,
+  .message-avatar svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .message-content {
+    max-width: 88%;
+  }
+  .message-bubble {
+    font-size: 12px;
+    padding: 11px 12px;
+    line-height: 1.8;
+  }
+  .outgoing .message-content {
+    max-width: 89%;
+  }
+  .message-author {
+    font-size: 12px;
+  }
+  .composer-area {
+    padding: 0 10px calc(9px + env(safe-area-inset-bottom, 0px));
+  }
+  .composer {
+    min-height: 45px;
+  }
+  .composer-footnote {
+    font-size: 12px;
+    padding-top: 6px;
+  }
+  .setup-note {
+    font-size: 12px;
+  }
+  .details-panel {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    z-index: 15;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .details-toolbar {
+    height: 57px;
+    padding: 0 20px;
+    font-size: 12px;
+    border-bottom: 1px solid light-dark(#f4f1f6, var(--border));
+  }
+  .details-toolbar .icon-button {
+    width: 32px;
+    height: 32px;
+    opacity: 1;
+  }
+  .detail-identity {
+    padding: 22px;
+  }
+  .detail-identity h2 {
+    font-size: 17px;
+  }
+  .detail-identity p {
+    font-size: 12px;
+  }
+  .detail-tabs {
+    gap: 12px;
+    padding-bottom: 20px;
+  }
+  .detail-tabs button {
+    font-size: 12px;
+    padding: 7px 15px;
+  }
+  .detail-content {
+    max-width: 460px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 27px;
+  }
+  .section-label {
+    font-size: 12px;
+  }
+  .detail-section {
+    padding: 18px 0;
+  }
+  .mini-desktop {
+    height: 160px;
+  }
+  .mini-window {
+    height: 125px;
+    max-width: 260px;
+  }
+  .mini-titlebar {
+    height: 15px;
+  }
+  .mini-workspace {
+    height: 110px;
+  }
+  .mini-document {
+    padding: 15px;
+  }
+  .mini-chart {
+    height: 48px;
+  }
+  .computer-caption {
+    font-size: 12px;
+    padding: 11px;
+  }
+  .section-help {
+    font-size: 12px;
+  }
+  .routine-copy {
+    font-size: 12px;
+  }
+  .routine-copy small {
+    font-size: 12px;
+  }
+  .routine-row {
+    padding: 9px 0;
+  }
+  .resources > button > span:nth-child(2) {
+    font-size: 12px;
+  }
+  .resources small {
+    font-size: 12px;
+  }
+  .member-mini {
+    font-size: 12px;
+    padding: 9px 0;
+  }
+  .member-status {
+    font-size: 12px;
+  }
+  .details-footer {
+    font-size: 12px;
+    justify-content: center;
+    padding: 17px;
+  }
+  .modal-overlay {
+    padding: 12px;
+    align-items: center;
+  }
+  .modal {
+    padding: 21px;
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 16px;
+  }
+  .modal-header h2 {
+    font-size: 19px;
+  }
+  .modal-header p {
+    font-size: 12px;
+  }
+  .modal-wide {
+    max-height: 94dvh;
+  }
+  .computer-dialog-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .computer-settings {
+    padding: 15px;
+    border: 1px solid light-dark(#eee8f4, var(--border));
+    border-radius: 10px;
+  }
+  .computer-capabilities {
+    display: none;
+  }
+  .computer-settings .segmented {
+    max-width: 260px;
+  }
+  .field-pair {
+    gap: 9px;
+  }
+  .dialog-form label {
+    font-size: 12px;
+  }
+  .dialog-form input,
+  .dialog-form select,
+  .dialog-form textarea {
+    font-size: 14px;
+  }
+  .empty-conversation {
+    padding-top: 60px;
+  }
+  .empty-conversation h2 {
+    font-size: 18px;
+  }
+  .toast {
+    font-size: 12px;
+    min-width: 220px;
+    max-width: calc(100% - 24px);
+    bottom: 20px;
+  }
+  .mention-menu {
+    left: 20px;
+    right: 20px;
+  }
+  .computer-message-card {
+    min-width: 0;
+  }
+  .work-preview {
+    padding: 19px;
+  }
+  .sidebar .app-symbols {
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
+/* Keep the compact messenger layout readable on standard-density displays. */
+.message-bubble {
+  font-size: 13px;
+  color: light-dark(#303034, var(--text));
+}

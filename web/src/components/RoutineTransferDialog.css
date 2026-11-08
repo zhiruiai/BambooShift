@@ -1,0 +1,48 @@
+.routine-transfer {
+  display: grid;
+  gap: 14px;
+  font-size: 14px;
+}
+.routine-transfer h3,
+.routine-transfer p {
+  margin: 0;
+  line-height: 1.6;
+}
+.routine-transfer label {
+  display: grid;
+  gap: 8px;
+}
+.routine-transfer select {
+  width: 100%;
+  border: 1px solid var(--border);
+  padding: 11px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  min-width: 0;
+}
+.routine-transfer button {
+  font-size: 13px;
+  min-height: 40px;
+  justify-self: start;
+}
+.routine-transfer .section-help {
+  font-size: 12px;
+}
+.routine-transfer-destination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.routine-transfer-recovery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.routine-transfer-recovery p {
+  flex-basis: 100%;
+}

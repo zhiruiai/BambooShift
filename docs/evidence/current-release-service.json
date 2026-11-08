@@ -1,0 +1,80 @@
+{
+  "date": "2026-11-07",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "artifact": {
+    "version": 1,
+    "profile": "release",
+    "files": 577,
+    "hashesVerified": true,
+    "privateFindings": [],
+    "noticeIndexSha256": "25bfe21456d7dd1c478b5f6f69bda8a27ead22c5ea2d354fbb27f186aab1503f",
+    "productionDependenciesInstalled": true
+  },
+  "syntheticAcceptance": {
+    "version": 1,
+    "packageProfile": "release",
+    "health": true,
+    "publicUi": true,
+    "separateOperationsListener": true,
+    "operationsPublicUi": true,
+    "productPlatformRoutesAbsent": true,
+    "operationsProductRoutesAbsent": true,
+    "operationsSetupRequired": true,
+    "ordinaryAccountRejectedByOperations": true,
+    "renamedAccountCookieRejectedByOperations": true,
+    "operatorSetupNotConsumed": true,
+    "nativeImageWorkerCrop": true,
+    "productionSharpCodec": true,
+    "registration": true,
+    "privateWorkspace": true,
+    "expectedUserMismatchRejected": true,
+    "actualPiModelRequests": 2,
+    "rustOwnedMemoryWrite": true,
+    "duplicateInputNotReplayed": true,
+    "logoutRevocation": true,
+    "gracefulShutdown": true,
+    "dependencies": "clean production npm installation",
+    "data": "temporary synthetic account and local mock model; removed after validation",
+    "productionCutover": false
+  },
+  "localUpgrade": {
+    "upgraded": true,
+    "backup": {
+      "databases": 7,
+      "configurations": 6,
+      "manifestSha256": "1c419e05712e388c29ccdef2afb835c21fe013d34221c1f2e0c963a202e4c2f8"
+    },
+    "checks": {
+      "productPlatformRoutesAbsent": true,
+      "operationsProductRoutesAbsent": true,
+      "productOriginRejectedByOperations": true
+    },
+    "privateConfiguration": {
+      "version": 1,
+      "configurationsVerified": 6,
+      "allUnchanged": true,
+      "allPrivateMode": true,
+      "operatorSetupFileRead": false,
+      "modelRequestsRepeated": false
+    },
+    "setupAccountCreated": false
+  },
+  "remoteWorkerUpdated": false,
+  "desktopClient": {
+    "version": 1,
+    "platform": "darwin",
+    "architecture": "arm64",
+    "electronVersion": "45.2.1",
+    "archiveFiles": 20,
+    "archiveWhitelistVerified": true,
+    "privateFindings": 0,
+    "projectLicenseFilesCurrent": true,
+    "archiveSha256": "fefdf5654e3a9284b6d5f47daf878daab7fc7b1e8f02f70e8b3341ec5dabfe3a",
+    "localSignature": "ad-hoc",
+    "signedForDistribution": false,
+    "nativeGuiAcceptance": false,
+    "serviceIncluded": false,
+    "strictSignatureVerification": true
+  }
+}

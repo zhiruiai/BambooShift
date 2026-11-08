@@ -1,0 +1,132 @@
+.private-skills-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block-end: 12px;
+}
+.private-skills-toolbar p {
+  flex: 1 1 220px;
+  margin: 0;
+}
+.private-skill-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.private-skill-list .integration {
+  width: 100%;
+  padding: 8px;
+  text-align: start;
+  flex-wrap: nowrap;
+}
+.private-skill-list .integration > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.private-skill-list .integration > svg:last-child {
+  flex: none;
+}
+.private-skill-review h3,
+.private-skill-review h4,
+.private-skill-review p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.private-skill-review {
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+}
+.private-skill-revision {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.private-skill-revision dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.private-skill-review pre {
+  margin: 6px 0 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--surface-subtle);
+}
+.private-skill-target {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.private-skill-target label {
+  display: grid;
+  width: min(100%, 300px);
+  gap: 5px;
+}
+.private-skill-target select {
+  min-height: 40px;
+  width: 100%;
+}
+.private-skill-publication {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+}
+.private-skill-publication-pending {
+  margin-block: 12px;
+}
+.private-skill-publication h4,
+.private-skill-publication p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.private-skill-publication label {
+  display: grid;
+  gap: 5px;
+  width: min(100%, 300px);
+}
+.private-skill-publication select {
+  width: 100%;
+  min-height: 44px;
+}
+.private-skill-publication-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.private-skill-publication-heading {
+  width: 100%;
+  justify-content: space-between;
+}
+.private-skill-publication-trigger {
+  justify-self: start;
+}
+.private-skill-publication button,
+.private-skill-publication-trigger {
+  min-height: 44px;
+}
+@media (max-width: 640px) {
+  .private-skills-toolbar button,
+  .private-skill-target button,
+  .private-skill-target select {
+    min-height: 44px;
+  }
+}

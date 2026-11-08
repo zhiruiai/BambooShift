@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "recordedOn": "2026-11-06",
+  "scope": "Static React request and DTO review plus targeted synthetic Rust HTTP regressions; not full Rust or GUI acceptance.",
+  "requestInventory": {
+    "rustRoutePatterns": 129,
+    "frontendPathOccurrences": 196,
+    "mechanicallyMatchedOccurrences": 147,
+    "remainingManuallyClassified": 49,
+    "remainingCategories": [
+      "Page navigation",
+      "Base URL prefixes",
+      "Dynamic action or resource paths with existing routes",
+      "Legacy accountless pairing routes not implemented by Rust account mode"
+    ]
+  },
+  "reviewedResponseFamilies": [
+    "Workspace bootstrap and overview",
+    "Platform overview, users and workspaces",
+    "Account and device summaries",
+    "Model profiles and activation",
+    "Creation, routine operation and memory import receipts",
+    "Workspace files",
+    "Shared Bots and templates",
+    "Computer status and run history"
+  ],
+  "fixes": [
+    {
+      "kind": "member_read_authorization",
+      "routes": [
+        "GET /api/workspaces/:wid/cloud-computer",
+        "GET /api/workspaces/:wid/routines/:id/runs",
+        "GET /api/workspaces/:wid/routines/:id/runs/:runId"
+      ],
+      "behavior": "Members may read; fixed expected account, live session and workspace membership remain required. Owner-only writes unchanged.",
+      "tests": 3
+    },
+    {
+      "kind": "damaged_group_creation_receipt",
+      "behavior": "Empty, duplicate or non-array current group members yield missing without navigation entities or data repair; immutable original receipt IDs are retained. Valid existing one-member groups remain readable.",
+      "coveredPaths": ["GET receipt", "POST same request replay", "POST cancel existing request"],
+      "tests": 2
+    }
+  ],
+  "finalTargetedRegression": {
+    "testFiles": ["workspace_creation_receipts", "workspace_http", "workspace_read_contracts"],
+    "passed": 11,
+    "failed": 0,
+    "ignored": 0,
+    "newCases": 5,
+    "existingCases": 6,
+    "realModelCalls": 0,
+    "productionDataUsed": false
+  },
+  "earlierResults": [
+    {
+      "log": "openbot-rust-member-reads-before.log",
+      "outcome": "Read test reproduced member HTTP 403 before authorization correction."
+    },
+    {
+      "log": "openbot-rust-member-reads-final.log",
+      "outcome": "Three member-read HTTP tests passed."
+    },
+    {
+      "log": "openbot-rust-creation-receipts-final.log",
+      "outcome": "Compilation stopped before tests due to unrelated migration probe Read/Write by_ref ambiguity; original test assertions retained."
+    }
+  ],
+  "limitations": [
+    "Static path extraction does not prove every dynamic endpoint or state is covered.",
+    "Synthetic history fixtures validate HTTP contracts and authorization, not model execution.",
+    "Legacy accountless /auth/pair, /auth/devices, /auth/pairing-code and /auth/logout routes are not counted as migrated.",
+    "This record does not claim deployment cutover, production migration or product GUI completion."
+  ],
+  "sourceFiles": [
+    {
+      "path": "backend-rs/src/workspace/creation.rs",
+      "sha256": "d5cafa1c1d596226e3c3a60ed4bc14dc6ee5d075aa63642649a0e8132200075c",
+      "bytes": 8313
+    },
+    {
+      "path": "backend-rs/tests/workspace_creation_receipts.rs",
+      "sha256": "feca4f21807bf33b40b85a2ba5f0c4db66c453f1cc02b954aded5bf787705368",
+      "bytes": 4510
+    },
+    {
+      "path": "backend-rs/src/computer/routes.rs",
+      "sha256": "b3a1636ecdc096240258104a51311e2585280a010b753cfc55ffca4349eec38c",
+      "bytes": 11700
+    },
+    {
+      "path": "backend-rs/src/scheduling/history.rs",
+      "sha256": "54272c5735fb5b45544ff667fc203cb4cec8c2cb3e9fe3558fc041aca12f6c85",
+      "bytes": 7589
+    },
+    {
+      "path": "backend-rs/tests/workspace_read_contracts.rs",
+      "sha256": "feb474302c9e799157c672ce14a017f4c79d4067267a7b5bc92ff74cc683de5f",
+      "bytes": 6140
+    }
+  ],
+  "logs": [
+    {
+      "path": "openbot-rust-member-reads-before.log",
+      "sha256": "114243df56351f3b517ae86e9056f178bba26915aa6e678b9f71a6d36de8078b",
+      "bytes": 2343
+    },
+    {
+      "path": "openbot-rust-member-reads-final.log",
+      "sha256": "a59fc0721ac08112873678206f917081ca47b33ba99d50fb08f92f34f5567e28",
+      "bytes": 1130
+    },
+    {
+      "path": "openbot-rust-creation-receipts-final.log",
+      "sha256": "4affd68fed9f21aa42743c299cad74019bd6784fc7539d4cfa6b9eecc0077b4f",
+      "bytes": 2247
+    },
+    {
+      "path": "openbot-rust-creation-receipts-recheck.log",
+      "sha256": "3adab4fd30bf086919b5d171efd482ff8d84c12368fc989cf296caf6f3280169",
+      "bytes": 1770
+    }
+  ],
+  "staticAudit": {
+    "path": "openbot-rust-client-endpoint-audit.json",
+    "sha256": "d4ffd1b91cf46ca3f882721dd3621d03d4e1b6414bf45e3d0a1f0a91839be8f8",
+    "bytes": 5445
+  }
+}

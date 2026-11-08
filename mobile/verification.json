@@ -1,0 +1,66 @@
+{
+  "verifiedOn": "2026-11-07",
+  "phase": "source_verified_installers_and_device_acceptance_deferred",
+  "sdk": {
+    "flutter": "3.47.9",
+    "dart": "3.13.7",
+    "frameworkCommit": "c197ca5199e9ee5661e865596c9c07294dfab51c"
+  },
+  "nativeProjects": [
+    "android",
+    "ios"
+  ],
+  "dependencySource": "https://pub.dev",
+  "source": {
+    "files": 281,
+    "sha256": "61cf33840fd80384bfcc1bbfeef0ce5e41fffd781c230f251f609fc0c848ead5",
+    "inputs": [
+      "lib",
+      "test",
+      "assets",
+      "tool",
+      "pubspec.yaml",
+      "pubspec.lock",
+      "analysis_options.yaml"
+    ]
+  },
+  "analysis": {
+    "issues": 0,
+    "command": "./tool/flutter.sh analyze --no-pub",
+    "logSha256": "c532e45371c72e153e4319b82f833231fd5966564a12d784786877b394021a38"
+  },
+  "tests": {
+    "passed": 349,
+    "failed": 0,
+    "skipped": 0,
+    "command": "./tool/flutter.sh test --no-pub --reporter expanded",
+    "logSha256": "0a83c96d214399a5bbc977152e0c4636d9d1ed20f3f613251fe818b1afd5874a",
+    "fixtures": "Synthetic accounts, isolated HTTP fixtures, fake OS services, in-memory secure storage and offscreen Flutter widgets."
+  },
+  "localization": {
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "keysPerLanguage": 750,
+    "matchingKeySets": true
+  },
+  "layout": {
+    "minimumLogicalTextPixels": 12,
+    "verifiedOffscreenPhoneLayouts": true,
+    "deviceAcceptance": false
+  },
+  "boundaries": {
+    "androidInstallerBuilt": false,
+    "iosInstallerBuilt": false,
+    "realDeviceTest": false,
+    "liveModelCalls": false,
+    "realSystemShareSheet": false,
+    "remoteComputerLifecycleExecuted": false
+  },
+  "differencesFromDesktop": [
+    "HTML shows its source on mobile; advanced document and interactive previews run in Web and desktop.",
+    "The mobile computer screen supports viewing, takeover and teaching; cloud lifecycle administration remains in Web and desktop.",
+    "All five preset avatar families are available. AI theme generation, ordinary Bot custom image editing, device voice and background push need further native work."
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-11-05T01:32:41.047Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "label": "用户指定 GLM 5.3 Flash，未独立核验模型身份",
+  "syntheticOnly": true,
+  "maximumModelRequests": 3,
+  "maximumOutputTokensPerRequest": 2048,
+  "exposedTools": [
+    "production propose_team only"
+  ],
+  "formalBotsOrMessagesChanged": false,
+  "externalWorkToolsExecuted": false,
+  "success": true,
+  "draft": {
+    "title": "晨光笔记发布准备团队",
+    "summary": "该团队负责晨光笔记产品的发布前准备工作，包括产品资料整理、中文发布文稿撰写以及功能测试流程协调。优先复用已有 Bot，新增一位功能测试专家以确保产品质量。",
+    "leadKey": "coordinator",
+    "members": [
+      {
+        "key": "coordinator",
+        "kind": "reuse",
+        "agentId": "coordinator",
+        "assignment": "担任团队负责人，统筹整体进度，协调各成员分工，确保发布准备工作按计划推进。"
+      },
+      {
+        "key": "researcher",
+        "kind": "reuse",
+        "agentId": "researcher",
+        "assignment": "负责整理晨光笔记的产品说明资料，收集并梳理产品特性、用户场景等核心信息，为后续内容创作提供依据。"
+      },
+      {
+        "key": "editor",
+        "kind": "reuse",
+        "agentId": "editor",
+        "assignment": "负责将整理好的资料转化为高质量的中文发布文稿，包括宣传文案、使用说明等内容的撰写与润色。"
+      },
+      {
+        "key": "qa-tester",
+        "kind": "create",
+        "role": "功能测试",
+        "description": "专门负责晨光笔记的功能测试流程设计与执行协调",
+        "instructions": "负责制定功能测试计划，识别关键测试场景，协调测试资源，跟踪缺陷修复进度，确保产品功能符合预期标准。",
+        "avatar": "gem",
+        "color": "#4caf50",
+        "name": "功能测试员",
+        "assignment": "负责晨光笔记的功能测试工作，包括制定测试用例、识别潜在问题、跟踪缺陷修复，确保产品功能稳定性。"
+      }
+    ]
+  },
+  "beforeConfirmation": {
+    "bots": 3,
+    "conversations": 1,
+    "cards": 1
+  },
+  "afterConfirmation": {
+    "bots": 4,
+    "conversations": 3,
+    "cardStatus": "committed",
+    "groupLead": "coordinator"
+  },
+  "requests": [
+    {
+      "status": 200,
+      "finishReasons": [
+        "tool_calls"
+      ],
+      "usage": {
+        "prompt_tokens": 1786,
+        "total_tokens": 2179,
+        "completion_tokens": 393
+      }
+    },
+    {
+      "status": 200,
+      "finishReasons": [
+        "stop"
+      ],
+      "usage": {
+        "prompt_tokens": 2279,
+        "total_tokens": 2370,
+        "completion_tokens": 91
+      }
+    }
+  ],
+  "modelRequests": 2,
+  "registeredTools": [
+    "propose_team"
+  ],
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true
+}

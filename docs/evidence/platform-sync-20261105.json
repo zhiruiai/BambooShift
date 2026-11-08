@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-04T17:43:33.355Z",
+  "timezone": "Asia/Shanghai",
+  "scope": "Platform-wide operations, workspace synchronization, send receipt recovery, mobile navigation and local service coordination",
+  "regression": {
+    "command": "OPENBOT_BROWSER_TEST=1 node scripts/run.mjs --test --test-concurrency=1 server/*.test.ts src/*.test.ts",
+    "tests": 159,
+    "passed": 159,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 185137.63725,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "modules": 1874,
+    "formatCheck": "passed"
+  },
+  "platform": {
+    "operatorListsUnrelatedPersonalUsersAndTeamMembers": true,
+    "ordinaryAccountCookiesCannotAuthorizeOperatorEndpoints": true,
+    "suspendingOnePersonalAccountKeepsOtherTeamSessionsActive": true,
+    "restoringAccountDoesNotReviveRevokedCookies": true,
+    "discardedReceiptAndSameClientIdRetryProduceOneUserMessage": true,
+    "fixturesUseTemporaryAccountsOnly": true
+  },
+  "sync": {
+    "serverEpochAndRevisionTests": 2,
+    "clientCoordinatorTests": 8,
+    "receiptMetadataTests": 13,
+    "mobileHistoryTests": 6,
+    "resolvedReviewFindings": [
+      "Late same-epoch handshake lowered the observed revision",
+      "Different-epoch snapshots retried without bounded backoff",
+      "Earlier GET could remove a message after its POST receipt",
+      "Workspace component retained old account scope when switching users in one team"
+    ],
+    "automaticMutationReplay": false,
+    "receiptStorage": "Same-tab sessionStorage, account/workspace scoped, IDs/SHA256/time only, at most 100 unresolved entries for seven days"
+  },
+  "localCutover": {
+    "formalUsersBeforeRestart": 0,
+    "formalSessionsBeforeRestart": 0,
+    "runningMessagesBeforeRestart": 0,
+    "legacyRecordsMatchMigrationBaseline": true,
+    "anonymousWorkspaceAndOperatorAccessDenied": true,
+    "operatorSetupStillRequired": true,
+    "apiReady": true,
+    "bridgeReady": true,
+    "tunnelReady": true,
+    "workerReady": true,
+    "vmDeadlineUnchanged": "2026-11-04T19:00:26.311Z"
+  },
+  "limits": [
+    "No GUI acceptance for the new account, cloud computer and mobile changes; local browser control remains disabled",
+    "Controlled Chrome server fixtures are separate from product GUI acceptance",
+    "Service runner does not create or reauthenticate SSH, install a daemon or renew the VM",
+    "No production account was created and the private operator initialization code was not consumed"
+  ]
+}

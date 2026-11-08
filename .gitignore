@@ -1,0 +1,36 @@
+node_modules/
+dist/
+operations-dist/
+data/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+test-results/
+release/
+/docs/screenshots/
+*.tsbuildinfo
+
+# Local toolchains, credentials, private configuration and build caches.
+.tools/
+.build/
+.local/
+config/private/
+server/api/target/
+mobile/.dart_tool/
+mobile/build/
+mobile/android/local.properties
+mobile/ios/Flutter/Generated.xcconfig
+mobile/ios/Flutter/flutter_export_environment.sh
+
+# Python development bytecode; never included in deployment source manifests.
+__pycache__/
+
+# Signing material is deployment configuration, never public source.
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.mobileprovision
+key.properties

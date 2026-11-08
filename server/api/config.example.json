@@ -1,0 +1,13 @@
+{
+  "dataDir": "/ABSOLUTE/PATH/TO/private-data",
+  "bind": "127.0.0.1:3001",
+  "publicOrigin": null,
+  "webOrigin": "http://127.0.0.1:5173",
+  "runtimeDir": "/ABSOLUTE/PATH/TO/pandamate/runtime",
+  "nodeBinary": "/ABSOLUTE/PATH/TO/node",
+  "operations": {
+    "bind": "127.0.0.1:3002",
+    "publicOrigin": null,
+    "webOrigin": "http://127.0.0.1:5174"
+  }
+}

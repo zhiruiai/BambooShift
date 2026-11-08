@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-11-05T09:56:10.634Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "modelLabel": "用户指定 GLM 5.3 Flash（未独立验证服务商模型身份）",
+  "syntheticOnly": true,
+  "maximumRequests": 4,
+  "maximumOutputTokensPerRequest": 2048,
+  "formalBotMutations": false,
+  "workingToolsEnabled": false,
+  "receipt": {
+    "requestId": "477e8849-4763-45ca-a7f4-f9e8f8be39a5",
+    "primaryRevision": "58dfd1ae-3513-42fa-bdcb-3993b52a1487",
+    "agentId": "0f89388c-3a92-4247-a94e-ca57598bb715",
+    "conversationId": "14845777-04c4-42c8-9c27-c32cfcd06e4a",
+    "messageId": "7948c51e-c357-471c-bf6d-ac7ff6786da1",
+    "createdAt": "2026-11-05T09:56:10.634Z",
+    "resultMessageId": "7a3f0aaa-fa5c-48f3-bd59-6401f1774fa6",
+    "status": "error"
+  },
+  "memories": [
+    {
+      "content": "用户偏好：默认使用简洁中文回复",
+      "category": "preference"
+    }
+  ],
+  "success": false,
+  "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'error'\n- 'completed'\n",
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true,
+  "modelRequests": 3,
+  "httpStatuses": [
+    200,
+    200,
+    200
+  ],
+  "modelTools": [
+    [
+      "remember",
+      "recall"
+    ],
+    [
+      "remember",
+      "recall"
+    ],
+    [
+      "remember",
+      "recall"
+    ]
+  ]
+}

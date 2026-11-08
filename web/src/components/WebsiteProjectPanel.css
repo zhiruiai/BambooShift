@@ -1,0 +1,263 @@
+.website-project-panel {
+  container: website-project / inline-size;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-inline-start: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+.website-project-header,
+.website-project-panel > .modal-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 58px;
+  margin: 0;
+  padding: 8px 13px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+.website-project-panel > .modal-header > :first-child {
+  min-width: 0;
+}
+.website-project-header h2,
+.website-project-panel > .modal-header h2 {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.website-project-actions,
+.website-project-panel > .modal-header .modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+}
+.website-project-action,
+.website-project-actions > .icon-button,
+.website-project-panel > .modal-header .icon-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  min-width: 38px;
+  min-height: 38px;
+  margin: 0;
+  padding: 5px 9px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.website-project-action:hover:not(:disabled),
+.website-project-actions > .icon-button:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.website-project-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.website-project-tabs,
+.website-project-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.website-project-tabs button {
+  min-height: 34px;
+  padding: 4px 13px;
+  border-radius: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.website-project-tabs button[aria-selected='true'] {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.website-project-meta {
+  flex-wrap: wrap;
+  justify-content: end;
+  margin-inline-start: auto;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.website-project-meta .website-project-action {
+  min-height: 32px;
+  color: var(--accent);
+}
+.website-project-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.website-project-content > .website-project-preview {
+  flex: 1;
+  height: 0;
+  min-height: 0;
+}
+.website-project-content > [role='alert']:not(.website-project-status),
+.website-project-status {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 18px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.website-project-notice {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--danger-border);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 12px;
+}
+.website-project-current-page {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: none;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.website-project-source {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(130px, 36%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+.website-project-file-list,
+.website-project-file pre {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.website-project-file-list {
+  padding: 8px;
+  border-inline-end: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+.website-project-file-list ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.website-project-file-list button {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  width: 100%;
+  min-height: 34px;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.website-project-file-list button svg {
+  margin-top: 2px;
+}
+.website-project-file-list button:hover,
+.website-project-file-list button[aria-current='true'] {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.website-project-file {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.website-project-path {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.website-project-file pre {
+  flex: 1;
+  margin: 0;
+  padding: 12px;
+  font:
+    13px/1.6 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.website-project-file code {
+  font: inherit;
+}
+@container website-project (width < 530px) {
+  .website-project-actions .website-project-action span,
+  .website-project-panel > .modal-header .website-project-action span {
+    display: none;
+  }
+}
+@container website-project (width < 420px) {
+  .website-project-source {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 32%) minmax(0, 1fr);
+  }
+  .website-project-file-list {
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border);
+  }
+}
+@media (max-width: 900px) {
+  .modal-overlay:has(> .website-project-overlay) {
+    padding: 0;
+  }
+  .modal.website-project-overlay {
+    width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .website-project-overlay > .modal-header {
+    padding-block-start: max(8px, env(safe-area-inset-top));
+  }
+  .website-project-overlay .website-project-content {
+    padding-block-end: env(safe-area-inset-bottom);
+  }
+}
+@media (pointer: coarse) {
+  .website-project-action,
+  .website-project-panel > .modal-header .icon-button,
+  .website-project-tabs button,
+  .website-project-file-list button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

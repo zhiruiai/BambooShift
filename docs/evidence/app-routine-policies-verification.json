@@ -1,0 +1,226 @@
+{
+  "generatedAt": "2026-11-06T17:05:46.802941+00:00",
+  "scope": "Exact readonly local application policies for scheduled routines; synthetic local-only validation",
+  "files": [
+    {
+      "path": "backend-rs/src/apps/policy_data.rs",
+      "lines": 97,
+      "sha256": "c3d9192dd3e0136c1fee9b3dd699967a0ef1c47878f2f8c6a0b53166d3ad1120"
+    },
+    {
+      "path": "backend-rs/src/apps/policies.rs",
+      "lines": 206,
+      "sha256": "9bf37523dfd49ba51e597177c0fc2a28f88fc5753f8fbc951ee3724b83cbc388"
+    },
+    {
+      "path": "backend-rs/src/apps/policy_routes.rs",
+      "lines": 59,
+      "sha256": "c3bfcbc225d51222c87c16ab9cb9e0ab444c123ffc42d9a5c9cad6506d158226"
+    },
+    {
+      "path": "backend-rs/src/apps/policy_runtime.rs",
+      "lines": 226,
+      "sha256": "a3adc0ce70268ea4889fca4cc0abe40b30f768b4a422eb3d7b212330db5ae82d"
+    },
+    {
+      "path": "backend-rs/src/apps/action_execution.rs",
+      "lines": 60,
+      "sha256": "8153ca43d1e045337ef156ce8ff46517fff2f2c7a2d2d08fde4a2a42958ed49e"
+    },
+    {
+      "path": "backend-rs/src/apps/actions.rs",
+      "lines": 289,
+      "sha256": "b1d8c7feee54f8e83f4945e23e7b6ad549b9891d814e9240a30789eb2a92e909"
+    },
+    {
+      "path": "backend-rs/src/apps/connections.rs",
+      "lines": 424,
+      "sha256": "b06a1a3a23d295a13b82de7c198dccb15631e80e41df96f5cdff3b23149000b8"
+    },
+    {
+      "path": "backend-rs/src/apps/model.rs",
+      "lines": 137,
+      "sha256": "dcba45be6d83f99d48c91092406b5ee5b1167880720d28c8978f7293fc712ed1"
+    },
+    {
+      "path": "backend-rs/src/apps/store.rs",
+      "lines": 168,
+      "sha256": "b06a43ce422d524d1b4b5e79055584dd0661ca15693ae7b195b307ea30131b77"
+    },
+    {
+      "path": "backend-rs/src/apps/mod.rs",
+      "lines": 80,
+      "sha256": "d6caf7f621d5d0457348e9eed42483755546d1d29863201d09ff65e9be75a443"
+    },
+    {
+      "path": "backend-rs/src/agent/apps_tools.rs",
+      "lines": 294,
+      "sha256": "35007ca9d3b49ce65d700cd8b7b035fc603d75994f2e383507c7bc0c962acdb8"
+    },
+    {
+      "path": "backend-rs/src/agent/admission.rs",
+      "lines": 119,
+      "sha256": "58a4ca1fcdd6ca23eb58639eae6f310687ea7c44c85d9eea59476af69fa7c6aa"
+    },
+    {
+      "path": "backend-rs/src/agent/delegation.rs",
+      "lines": 245,
+      "sha256": "9050ecbe0ab6f9b32d984f453f65c78e5eb4cf837515653f392060652b81de44"
+    },
+    {
+      "path": "backend-rs/src/scheduling/execution.rs",
+      "lines": 169,
+      "sha256": "9f01eebfccc4c59e1be185d5c64a8bfe0efd1b3e468ca85172beb2bd9809f450"
+    },
+    {
+      "path": "backend-rs/tests/app_policies_http.rs",
+      "lines": 188,
+      "sha256": "e5c21cdc2fd59112f637c9ed6b822d3675cd7034ff8e730f88d47cef93a262d6"
+    },
+    {
+      "path": "backend-rs/tests/app_policies_execution.rs",
+      "lines": 136,
+      "sha256": "ccbffd31927799829b62ee64f27bade5dabe4129a570ef35d23beb31a27a8220"
+    },
+    {
+      "path": "backend-rs/tests/app_policies_versions.rs",
+      "lines": 144,
+      "sha256": "eaa19bd10572912aadf8ed8ec885b46b019187d3d0ce48229357416e97862d39"
+    },
+    {
+      "path": "backend-rs/tests/app_policies_isolation.rs",
+      "lines": 113,
+      "sha256": "aec24d8c913d041c2e24823aba44a7f38ce1439dc5095614898cf1ec8cac7ecc"
+    },
+    {
+      "path": "backend-rs/tests/app_policy_support/mod.rs",
+      "lines": 117,
+      "sha256": "ddca267e94b6dbad95577987f8014a2a343b9a0ade6769c65b83dbe2b49d5ccb"
+    },
+    {
+      "path": "backend-rs/tests/apps_support/mod.rs",
+      "lines": 253,
+      "sha256": "d3bcf153fb201b454646d8240961ef51b2fa4cb1004bad6b704942aac412f950"
+    },
+    {
+      "path": "packages/mcp-worker/index.ts",
+      "lines": 114,
+      "sha256": "01f26b0b5fdd5f22ad03ee647e0e868746c675aee243e6d1cd59bc8a984e0583"
+    },
+    {
+      "path": "packages/mcp-worker/transport.ts",
+      "lines": 285,
+      "sha256": "0126d0cc67a1096430234a11779f6105e2026aa82b3be7e6033dec768db200ce"
+    },
+    {
+      "path": "shared/app-policies.ts",
+      "lines": 29,
+      "sha256": "d8838b2c06b5177f577080e4e2870b95b30a36aa51f02f3aa79bc894d16bb1f2"
+    },
+    {
+      "path": "shared/app-connections.ts",
+      "lines": 86,
+      "sha256": "e19ff7611151e8dd1f3a9b6e6cc0c539e2c142f68f9ef415f54ef563f0a659b0"
+    },
+    {
+      "path": "src/appPolicies.ts",
+      "lines": 179,
+      "sha256": "82b390620fa2a8628cbf2411f3afb63d4eb707354546a452ed31271f526c866a"
+    },
+    {
+      "path": "src/appPolicies.test.ts",
+      "lines": 158,
+      "sha256": "aa14c863c6bf238cf80d5ad0b728a23add6240ca34ef781d4b0b59f2c4bf086b"
+    },
+    {
+      "path": "src/appPolicyPanel.test.ts",
+      "lines": 179,
+      "sha256": "14c9064ccd55fe9c340158bfc627c17a5f1b377a9afe82c6821838ff070ae427"
+    },
+    {
+      "path": "src/testSupport/appPolicyFixture.ts",
+      "lines": 109,
+      "sha256": "1bedb2fd8d4e71a0929cc863998faa77185723becba9480cdb04575cdfa72094"
+    },
+    {
+      "path": "src/components/apps/AppPolicyPanel.tsx",
+      "lines": 210,
+      "sha256": "d189d9380022c964dad93da79a922afee8cb94008e06842f693c2a5b986046e9"
+    },
+    {
+      "path": "src/components/apps/AppPolicyPanel.css",
+      "lines": 45,
+      "sha256": "af19754ef2c50905245bfdd6a0ab93c622308a4c2e2527aead5121b8225df709"
+    },
+    {
+      "path": "src/components/apps/AppConnectionDetailsView.tsx",
+      "lines": 334,
+      "sha256": "6b573d2c77ea7446257bed2586b0655cf50e5293e30da60b6eb1efee9abe1012"
+    },
+    {
+      "path": "src/components/apps/useAppsDialogContent.ts",
+      "lines": 228,
+      "sha256": "7e57d833a364a78325d8fddea5acfa4d3da4c5874a725f8c05bf548c4a211282"
+    },
+    {
+      "path": "src/components/AppActionCard.tsx",
+      "lines": 300,
+      "sha256": "0d688e919d8bbd65020d93afc2fa412a03be7439961eb55f9a547d800af398cf"
+    },
+    {
+      "path": "src/i18n/catalogs/en/referenceAppPolicies.ts",
+      "lines": 38,
+      "sha256": "c04a463a744ff0ac251c62457dae97060d3db41e67d873d9a7900f5126100a4b"
+    },
+    {
+      "path": "src/i18n/catalogs/zh-CN/referenceAppPolicies.ts",
+      "lines": 35,
+      "sha256": "2ba4c42ff4d2ae2d08d21b47ef528a44e5dd735f91faa4f24a74dd6d7051c59e"
+    },
+    {
+      "path": "docs/app-routine-policies.md",
+      "lines": 17,
+      "sha256": "1086d4e0d3c59f4a065b04c952e99cf2b5518907489b7facea253702c16fa0c5"
+    },
+    {
+      "path": "docs/app-connections.md",
+      "lines": 54,
+      "sha256": "1209e8887dc650a735767e7c3f460547bb4f127303aed786ce9ab6a49c6d9a2a"
+    }
+  ],
+  "checks": {
+    "rust": {
+      "passed": 27,
+      "new": 11,
+      "log": "/private/tmp/openbot-app-policies-rust-final.log"
+    },
+    "mcpWorker": {
+      "passed": 23,
+      "log": "/private/tmp/openbot-app-policies-mcp-final.log"
+    },
+    "web": {
+      "uniquePassed": 39,
+      "new": 9,
+      "logs": [
+        "/private/tmp/openbot-app-policies-web-final.log",
+        "/private/tmp/openbot-app-policies-ui-last.log"
+      ]
+    },
+    "types": {
+      "log": "/private/tmp/openbot-app-policies-types-final.log"
+    },
+    "sourceLineLimit": 500
+  },
+  "notPerformed": [
+    "Product GUI acceptance",
+    "Paid model calls",
+    "Third-party account authorization",
+    "Production service or VM changes"
+  ],
+  "limitations": [
+    "Exact JSON parameters only; no wildcard scopes",
+    "Only original owner scheduled root of a local Bot; manual/member/delegated/shared-source requests still require approval",
+    "Annotations are not proof; explicit trust confirmation is required",
+    "Unknown results are never retried automatically; cancellation cannot undo external effects"
+  ]
+}

@@ -1,0 +1,52 @@
+.time-zone-settings {
+  margin: 18px 0;
+  color: var(--text);
+}
+.time-zone-settings h3 {
+  font-size: 13px;
+  margin: 0 0 10px;
+  font-weight: 550;
+}
+.time-zone-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.time-zone-select select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface);
+  font: inherit;
+}
+.time-zone-select select:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 3px;
+}
+.time-zone-settings .field-help {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+.time-zone-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.time-zone-actions button {
+  min-height: 44px;
+}
+.time-zone-readonly {
+  display: block;
+  font-size: 12px;
+  margin: 10px 0;
+  color: var(--text-secondary);
+}

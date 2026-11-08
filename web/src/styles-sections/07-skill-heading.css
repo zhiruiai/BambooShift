@@ -1,0 +1,365 @@
+.skill-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 0;
+  text-align: left;
+}
+.skill-heading > span:nth-child(2) {
+  flex: 1;
+}
+.skill-heading strong {
+  font-size: 12px;
+  color: light-dark(#7f708f, var(--text-secondary));
+  font-weight: 500;
+}
+.skill-heading small {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#b3a4c1, var(--text-muted));
+  margin-top: 4px;
+}
+.skill-heading > svg {
+  color: light-dark(#b5a4c4, var(--text-muted));
+}
+.skill-card > p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: light-dark(#aca0b7, var(--text-muted));
+  margin-top: 10px;
+}
+.approve-skill {
+  margin-top: 11px;
+  padding: 6px 10px;
+  font-size: 12px;
+  min-height: 28px;
+}
+.skill-content {
+  background: light-dark(#faf7fd, var(--surface));
+  border-radius: 7px;
+  padding: 12px;
+  color: light-dark(#9b8ba9, var(--text-muted));
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 10px;
+  max-height: 250px;
+  overflow: auto;
+}
+.skill-content p + p {
+  margin-top: 9px;
+}
+.skill-content h1,
+.skill-content h2,
+.skill-content h3 {
+  font-size: 12px;
+}
+.skill-list {
+  max-height: 380px;
+  overflow: auto;
+}
+.computer-dialog-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 205px;
+  gap: 24px;
+}
+.computer-screen {
+  aspect-ratio: 16/10;
+  background: light-dark(#f4f2f7, var(--surface-subtle));
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid light-dark(#e3deeb, var(--border));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.computer-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.computer-screen-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  color: light-dark(#b5a6c4, var(--text-muted));
+  padding: 20px;
+  text-align: center;
+}
+.computer-screen-empty h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: light-dark(#9d8cad, var(--text-muted));
+}
+.computer-screen-empty p {
+  font-size: 12px;
+  line-height: 1.7;
+  max-width: 330px;
+  color: light-dark(#b5a6c3, var(--text-muted));
+  overflow-wrap: anywhere;
+}
+.computer-screen-empty > span {
+  font-size: 12px;
+  padding: 5px 8px;
+  background: light-dark(#eae4f2, var(--surface-subtle));
+  border-radius: 5px;
+}
+.computer-screen-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 1px;
+  color: light-dark(#b0a2bd, var(--text-muted));
+  font-size: 12px;
+}
+.computer-screen-toolbar > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.browser-address {
+  display: flex;
+  align-items: center;
+  border: 1px solid light-dark(#e4dcec, var(--border));
+  border-radius: 9px;
+  padding: 5px;
+  gap: 7px;
+}
+.browser-address > span {
+  display: flex;
+  color: light-dark(#b5a6c2, var(--text-muted));
+  margin: 0 4px;
+}
+.browser-address input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  padding: 7px 0;
+  background: transparent;
+  font-size: 12px;
+  box-shadow: none !important;
+  color: light-dark(#93819f, var(--text-secondary));
+}
+.browser-address .primary-button {
+  font-size: 12px;
+  padding: 7px 9px;
+  min-height: 30px;
+}
+.computer-activity {
+  margin-top: 23px;
+  max-height: 230px;
+  overflow: auto;
+}
+.computer-action {
+  border: 1px solid light-dark(#eae2f2, var(--border));
+  padding: 12px;
+  border-radius: 9px;
+  margin-bottom: 9px;
+}
+.computer-action > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.computer-action strong {
+  font-size: 12px;
+  color: light-dark(#94819f, var(--text-secondary));
+  font-weight: 500;
+}
+.computer-action small {
+  margin-left: auto;
+  font-size: 12px;
+  color: light-dark(#bdadc9, var(--text-muted));
+}
+.action-dot {
+  height: 5px;
+  width: 5px;
+  background: light-dark(#cfbf9c, var(--warning));
+  border-radius: 50%;
+}
+.action-dot.done {
+  background: light-dark(#a0b9a8, var(--success));
+}
+.action-dot.error {
+  background: light-dark(#c69797, var(--danger));
+}
+.computer-action code {
+  font-size: 12px;
+  background: light-dark(#faf7fc, var(--code-inline));
+  border-radius: 5px;
+  padding: 8px;
+  margin: 9px 0;
+  display: block;
+  overflow-wrap: anywhere;
+  color: light-dark(#ac9bb9, var(--text-muted));
+  max-height: 80px;
+  overflow: auto;
+}
+.action-result {
+  font-size: 12px;
+  color: light-dark(#af9dbe, var(--text-muted));
+  display: block;
+  text-align: right;
+}
+.error-text {
+  font-size: 12px;
+  color: light-dark(#bb8e8e, var(--danger));
+  line-height: 1.6;
+}
+.approval-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.approval-actions button {
+  font-size: 12px;
+  padding: 6px 9px;
+  min-height: 27px;
+}
+.computer-settings h3 {
+  font-size: 12px;
+  color: light-dark(#a08caf, var(--text-muted));
+  font-weight: 500;
+  margin: 5px 0 14px;
+}
+.computer-connection-state {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  border: 1px solid light-dark(#e8e1ec, var(--border));
+  background: light-dark(#faf8fc, var(--surface));
+  border-radius: 10px;
+}
+.computer-connection-state > div {
+  flex: 1;
+  min-width: 180px;
+}
+.computer-connection-state strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: light-dark(#44404a, var(--text));
+  font-size: 12px;
+  font-weight: 500;
+}
+.computer-connection-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: light-dark(#b39861, var(--warning));
+  flex-shrink: 0;
+}
+.computer-connection-state.is-connected .computer-connection-dot {
+  background: light-dark(#6f9b7a, var(--success));
+}
+.computer-connection-state p,
+.computer-connection-state small {
+  display: block;
+  margin: 6px 0 0;
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.computer-connection-state .computer-connection-error {
+  flex-basis: 100%;
+  color: light-dark(#a24f4f, var(--danger));
+  margin-top: 0;
+}
+.computer-connection-state > button {
+  min-height: 44px;
+  white-space: normal;
+}
+.computer-settings .segmented {
+  margin-bottom: 12px;
+}
+.computer-settings > p {
+  font-size: 12px;
+  color: light-dark(#b3a1c0, var(--text-muted));
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.computer-settings .dialog-form {
+  gap: 13px;
+}
+.computer-settings .dialog-form input {
+  font-size: 12px;
+}
+.computer-capabilities {
+  border-top: 1px solid light-dark(#eee6f6, var(--border));
+  padding-top: 18px;
+  margin-top: 23px;
+}
+.computer-capabilities h4 {
+  font-size: 12px;
+  font-weight: 500;
+  color: light-dark(#a18db0, var(--text-muted));
+  margin-bottom: 13px;
+}
+.computer-capabilities p {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: light-dark(#b4a0c3, var(--text-muted));
+  margin: 12px 0;
+}
+.computer-capabilities svg {
+  color: light-dark(#a8b6a9, var(--text-muted));
+}
+.preview-disclaimer {
+  font-size: 12px !important;
+  color: light-dark(#aaa, var(--text-muted)) !important;
+  position: absolute;
+  bottom: 4px;
+  right: 7px;
+}
+.mention-menu {
+  position: absolute;
+  bottom: 92px;
+  left: 60px;
+  right: 60px;
+  max-width: 360px;
+  background: light-dark(white, var(--surface));
+  border: 1px solid light-dark(#e4e0e9, var(--border));
+  border-radius: 11px;
+  box-shadow: 0 5px 30px light-dark(#0001, var(--shadow-soft));
+  padding: 5px;
+  z-index: 3;
+}
+.mention-menu > span {
+  font-size: 12px;
+  color: light-dark(#aaa, var(--text-muted));
+  padding: 7px;
+  display: block;
+}
+.mention-menu button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  width: 100%;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 12px;
+}
+.mention-menu button:hover {
+  background: light-dark(#f3eef9, var(--surface-hover));
+}
+.mention-menu small {
+  color: light-dark(#aaa, var(--text-muted));
+  margin-left: auto;
+  font-size: 12px;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

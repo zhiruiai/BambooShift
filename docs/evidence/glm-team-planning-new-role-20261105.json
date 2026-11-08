@@ -1,0 +1,105 @@
+{
+  "checkedAt": "2026-11-05T01:00:09.628Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "label": "用户指定 GLM 5.3 Flash（未独立验证服务商模型身份）",
+  "syntheticOnly": true,
+  "maximumModelRequests": 1,
+  "maximumOutputTokens": 4096,
+  "executingTools": false,
+  "formalBotOrConversationMutations": false,
+  "success": true,
+  "draft": {
+    "title": "晨光笔记发布准备工作组",
+    "summary": "该团队负责“晨光笔记”发布前的准备工作。资料研究员负责整理产品背景与市场资料；内容编辑负责撰写与校对发布文案；新增的功能测试员负责制定测试计划并执行功能验证。由内容编辑担任负责人，协调各方资料与文案，确保最终交付物符合发布标准。",
+    "leadKey": "content_editor",
+    "members": [
+      {
+        "key": "researcher",
+        "kind": "reuse",
+        "agentId": "80f511b1-4f94-4036-a366-ccac292580a6",
+        "assignment": "负责搜集、核对“晨光笔记”的相关公开资料，整理成结构化的信息文档，供文案撰写和测试用例参考。"
+      },
+      {
+        "key": "content_editor",
+        "kind": "reuse",
+        "agentId": "3c42ef27-fb54-4cba-aa7c-83a0dbe4e1e5",
+        "assignment": "作为团队负责人，负责汇总研究员提供的资料，撰写并发布说明、宣传文案等文档，协调测试员反馈，确保最终交付物的质量与一致性。"
+      },
+      {
+        "key": "qa_tester",
+        "kind": "create",
+        "role": "产品功能测试",
+        "description": "长期负责软件功能测试，制定测试计划并验证产品功能。",
+        "instructions": "负责制定“晨光笔记”的功能测试计划。根据产品需求文档，设计测试用例，模拟用户操作流程，识别并记录功能缺陷。不直接修复代码，而是提供详细的测试报告与复现步骤，供开发人员参考。重点关注核心功能、边界条件及用户体验流程。",
+        "avatar": "spark",
+        "color": "#ff5733",
+        "name": "功能测试员",
+        "assignment": "专注于“晨光笔记”的功能验证工作。基于研究员提供的产品资料，设计测试场景，执行功能测试，并输出测试报告，指出发现的问题。"
+      }
+    ]
+  },
+  "reusedBots": 2,
+  "proposedNewBots": 1,
+  "modelResponse": {
+    "stopReason": "toolUse",
+    "parts": [
+      {
+        "type": "toolCall",
+        "name": "propose_team",
+        "arguments": {
+          "title": "晨光笔记发布准备工作组",
+          "summary": "该团队负责“晨光笔记”发布前的准备工作。资料研究员负责整理产品背景与市场资料；内容编辑负责撰写与校对发布文案；新增的功能测试员负责制定测试计划并执行功能验证。由内容编辑担任负责人，协调各方资料与文案，确保最终交付物符合发布标准。",
+          "leadKey": "content_editor",
+          "members": [
+            {
+              "key": "researcher",
+              "kind": "reuse",
+              "agentId": "80f511b1-4f94-4036-a366-ccac292580a6",
+              "assignment": "负责搜集、核对“晨光笔记”的相关公开资料，整理成结构化的信息文档，供文案撰写和测试用例参考。"
+            },
+            {
+              "key": "content_editor",
+              "kind": "reuse",
+              "agentId": "3c42ef27-fb54-4cba-aa7c-83a0dbe4e1e5",
+              "assignment": "作为团队负责人，负责汇总研究员提供的资料，撰写并发布说明、宣传文案等文档，协调测试员反馈，确保最终交付物的质量与一致性。"
+            },
+            {
+              "key": "qa_tester",
+              "kind": "create",
+              "name": "功能测试员",
+              "role": "产品功能测试",
+              "description": "长期负责软件功能测试，制定测试计划并验证产品功能。",
+              "instructions": "负责制定“晨光笔记”的功能测试计划。根据产品需求文档，设计测试用例，模拟用户操作流程，识别并记录功能缺陷。不直接修复代码，而是提供详细的测试报告与复现步骤，供开发人员参考。重点关注核心功能、边界条件及用户体验流程。",
+              "color": "#FF5733",
+              "avatar": "spark",
+              "assignment": "专注于“晨光笔记”的功能验证工作。基于研究员提供的产品资料，设计测试场景，执行功能测试，并输出测试报告，指出发现的问题。"
+            }
+          ]
+        }
+      }
+    ],
+    "usage": {
+      "input": 1260,
+      "output": 464,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "reasoning": 0,
+      "totalTokens": 1724
+    }
+  },
+  "transport": {
+    "status": 200,
+    "contentType": "text/event-stream; charset=utf-8",
+    "bytes": 24414,
+    "finishReasons": [
+      "tool_calls"
+    ],
+    "toolNames": [
+      "propose_team"
+    ]
+  },
+  "modelRequests": 1,
+  "sourceSettingsUnchanged": true,
+  "temporaryStoreClosed": true,
+  "billedCost": "unknown; custom provider rates are not registered in Pi"
+}

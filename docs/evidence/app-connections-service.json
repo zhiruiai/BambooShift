@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-11-05T00:20:58.297Z",
+  "users": 0,
+  "operators": 0,
+  "sessions": 0,
+  "runningMessages": 0,
+  "queuedMessages": 0,
+  "spacesChecked": 1,
+  "appConnections": 0,
+  "appActions": 0,
+  "legacyDatabaseBaselineUnchanged": true,
+  "operatorSetupCodeExists": true,
+  "routes": [
+    {
+      "port": 3001,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "path": "/api/platform/users",
+      "status": 401
+    },
+    {
+      "path": "/api/platform/workspaces",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/apps",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bootstrap",
+      "status": 401
+    }
+  ]
+}

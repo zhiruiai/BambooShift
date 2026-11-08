@@ -1,0 +1,19 @@
+.team-skill-copy-link {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.team-skill-copy-link > label {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}
+.team-skill-copy-link input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}

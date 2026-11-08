@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inbound_share_not_saved">无法保存此次分享。请先在 PandaMate 处理待确认的分享，再重试。</string>
+</resources>

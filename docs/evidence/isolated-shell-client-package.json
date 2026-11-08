@@ -1,0 +1,139 @@
+{
+  "checkedAt": "2026-11-04T20:27:21.390Z",
+  "scope": "Local production web build and existing macOS thin-client package verification; no GUI, microphone, desktop control, formal data, model calls or remote VM access.",
+  "runtime": {
+    "node": "v24.22.1",
+    "platform": "darwin",
+    "architecture": "arm64"
+  },
+  "validation": {
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "viteModules": 1897,
+    "desktopPolicyTests": {
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "command": "node scripts/run.mjs --test desktop/security.test.cjs"
+    }
+  },
+  "nativeClient": {
+    "bundle": "release/client/OpenBot-darwin-arm64/OpenBot.app",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "electronVersion": "45.2.1",
+    "originalPackagedAt": "2026-11-04T19:43:07.888Z",
+    "repackaged": false,
+    "repackageReason": "All bundled client files already match the current sources. RemoteShellDetails is served by the configured OpenBot service and is not included in app.asar.",
+    "strictSignatureVerified": true,
+    "signatureCommand": "codesign --verify --deep --strict",
+    "localSignature": "ad-hoc",
+    "signedForDistribution": false,
+    "serviceIncluded": false,
+    "archiveSha256": "3115ae4a878d1eea335e21a69369996bbd5a83177382ad8329a10a1be8dba22b",
+    "archiveContainsOnlyExplicitClientFiles": true,
+    "sourceFiles": {
+      "main.cjs": {
+        "byteIdentical": true,
+        "sha256": "2743fe0ce7c00eb7bd23d633dbbfbce8859ea1c4427bf3d6ea0456a866930a82"
+      },
+      "package.json": {
+        "equivalentExceptRemovedPrivate": true,
+        "sha256": "db88c37eb1c0bc51d0c6f6c83178cf3e7e63060c45185b934a7feb118551eddf"
+      },
+      "preload.cjs": {
+        "byteIdentical": true,
+        "sha256": "7d62fd43029cc97afd5882cd5037de75ba7a8e88fbb8139602aa9056df181b83"
+      },
+      "security.cjs": {
+        "byteIdentical": true,
+        "sha256": "4e3bedb63b761975fbb4a03dd3d42c3d8b9825cfa65de41378cde205feb9a4e8"
+      },
+      "ui/app.js": {
+        "byteIdentical": true,
+        "sha256": "ef79e5c7ab383096841b30b9b79ff99d9da931a049880cb37678e57338d44e44"
+      },
+      "ui/index.html": {
+        "byteIdentical": true,
+        "sha256": "b911d6e6f0e74b37ddd46191def3c8f5a11a1c3e43eaec29878bebf5baaeb8ba"
+      },
+      "ui/logo.svg": {
+        "byteIdentical": true,
+        "sha256": "3aec59ac43529b3de932bdc309c08a883ddabb42c5df407eaca5d61119dc7fe6"
+      },
+      "ui/styles.css": {
+        "byteIdentical": true,
+        "sha256": "99f2258eee82fa370f433141d4b9a826b56fc7af6bee05bea53288697b7bf13e"
+      }
+    }
+  },
+  "webUI": {
+    "delivery": "service-hosted",
+    "nativeLoadsConfiguredServiceOrigin": true,
+    "remoteShellComponentBundledInNative": false,
+    "sourceComponent": "src/components/RemoteShellDetails.tsx",
+    "sourceSha256": "e41b6b8ec7923de55e8fed4669bd563ca70bc427d60c0d9e6e2938e72393e948",
+    "indexSha256": "8115b39882efe09d06605170f489c4ca2d13acc2791c1f1f8fdfd8d269a2ed1b",
+    "remoteShellJavaScript": {
+      "file": "dist/assets/SkillVersionReview-CSd0YrLO.js",
+      "sha256": "3922e1a8a34b9a32af191f131eed9ce355436c96ef521c464e62591863c06da5",
+      "containsApprovalAndOutputAndResourceLimitUI": true
+    },
+    "remoteShellCss": {
+      "file": "dist/assets/SkillVersionReview-BEFrlMeN.css",
+      "sha256": "05a9b7203e506f444a1eb4aa5412ed4c6c74ed6540d36a25bce93b5d59fbe5ef"
+    },
+    "builtAssets": [
+      {
+        "file": "dist/assets/AccountDevices-BXxJRAsc.css",
+        "sha256": "f14ee459cf43f3ee6f0ce17706ba4dab19e0baf95bfb82731bae8ba3c1cba936"
+      },
+      {
+        "file": "dist/assets/AccountDevices-DEMpUub3.js",
+        "sha256": "977be360bf22ba991be2c0bdcafbeaf642f9d20b18927e6e383f98a9dd26dad0"
+      },
+      {
+        "file": "dist/assets/AccountSettingsPage-D0cL9mL2.js",
+        "sha256": "f23c46af01329e80db8ae42dce0237f7f64224a3e4a5b71f67224950ff7380d2"
+      },
+      {
+        "file": "dist/assets/AdminApp-suFQOcJz.js",
+        "sha256": "cb976e6af770f4713cf4470af6d5f63731ca8f9348f0157c3dab9c1fc155214a"
+      },
+      {
+        "file": "dist/assets/App-BkQuJkHH.css",
+        "sha256": "a73e7dc9af8221dcdf50290f3e8c39e9299544a9eae436303ff68711268a205e"
+      },
+      {
+        "file": "dist/assets/App-C9IskEW3.js",
+        "sha256": "91e6cc31fd565a69590056314c69864f39a77e7a611b0b85a4fb445a53e8a553"
+      },
+      {
+        "file": "dist/assets/SkillVersionReview-BEFrlMeN.css",
+        "sha256": "05a9b7203e506f444a1eb4aa5412ed4c6c74ed6540d36a25bce93b5d59fbe5ef"
+      },
+      {
+        "file": "dist/assets/SkillVersionReview-CSd0YrLO.js",
+        "sha256": "3922e1a8a34b9a32af191f131eed9ce355436c96ef521c464e62591863c06da5"
+      },
+      {
+        "file": "dist/assets/index-BZ6KEzDw.css",
+        "sha256": "0f68af4261bba8a60ae27fe8f044942e5388576b917c3fcccc631a00b4b11c70"
+      },
+      {
+        "file": "dist/assets/index-CqcTWPZm.js",
+        "sha256": "48f1a54570179f1ed1949e72c2ffd1c8cf9d391413579691073ae6325fff32cf"
+      }
+    ]
+  },
+  "limits": {
+    "applicationLaunched": false,
+    "guiAccepted": false,
+    "microphoneAccessRequested": false,
+    "desktopControlUsed": false,
+    "formalDataAccessed": false,
+    "remoteVMAccessed": false,
+    "productionSigningAndNotarization": false,
+    "otherNativePlatformsVerified": false
+  }
+}

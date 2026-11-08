@@ -1,0 +1,96 @@
+.message-row.message-row-linked {
+  margin-bottom: 4px;
+}
+.reply-thread-bar {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 4px clamp(12px, 2vw, 24px);
+  border-bottom: 1px solid var(--border);
+}
+.reply-thread-bar h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.reply-thread-bar button,
+.thread-reply-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 8px;
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.thread-reply-count {
+  margin-block: 2px;
+}
+.reply-thread-bar button:hover,
+.thread-reply-count:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+@media (pointer: coarse) {
+  .reply-thread-bar button,
+  .thread-reply-count {
+    min-height: 44px;
+  }
+}
+.message-row-linked .message-bubble {
+  border-radius: 15px;
+}
+.message-row .message-avatar {
+  padding-bottom: 17px;
+}
+.message-footer {
+  min-height: 20px;
+}
+.delivery-check {
+  display: inline-flex;
+  align-items: center;
+}
+.activity-row {
+  margin-block: 3px 10px;
+}
+.activity-row .message-content {
+  margin-inline-start: 30px;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+  .message-row .message-content {
+    position: relative;
+  }
+  .message-row .compact-message-footer {
+    position: absolute;
+    z-index: 2;
+    inset-block-end: 1px;
+    inset-inline-end: 1px;
+    margin-top: 0;
+    min-height: 0;
+  }
+  .outgoing .compact-message-footer {
+    inset-inline-end: auto;
+    inset-inline-start: 1px;
+  }
+  .activity-row .compact-message-footer {
+    inset-inline-end: auto;
+    inset-inline-start: 100%;
+  }
+}
+@media (max-width: 760px) {
+  .activity-row .message-content {
+    margin-inline-start: 25px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .working-line .typing-dots i,
+  .message-bubble .typing-cursor {
+    animation: none;
+  }
+}

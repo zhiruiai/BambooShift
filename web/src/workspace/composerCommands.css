@@ -1,0 +1,47 @@
+.composer-command-menu {
+  max-width: 420px;
+}
+.composer-command-menu .mention-options {
+  max-height: min(320px, 45vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.composer-command-menu button > svg {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+.composer-command-menu button > span {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+.composer-command-menu button strong {
+  font-size: 12px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.composer-command-menu button small {
+  margin-left: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: normal;
+}
+.composer-command-menu p {
+  padding: 9px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.message-app-context {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 7px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.message-app-context svg {
+  flex-shrink: 0;
+}

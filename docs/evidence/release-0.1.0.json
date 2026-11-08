@@ -1,0 +1,102 @@
+{
+  "version": "0.1.0",
+  "platform": "macOS arm64",
+  "sourceChecks": {
+    "web": {
+      "passed": 648,
+      "failed": 0,
+      "sha256": "24f6a0fbfbd52f1d8cdc6fc9f1c3d65a1644b64b0700e7e759f646dd0a3af29b"
+    },
+    "rust": {
+      "passed": 323,
+      "failed": 0,
+      "sha256": "bb4434a98901c7fcfa8b8e068e71be812c2033ff51fa7941fc630cbdb35333a5"
+    },
+    "runtime": {
+      "passed": 176,
+      "failed": 0,
+      "conditionalSkips": 8,
+      "sha256": "ff38ced996e3f822352f7af2e503cb63b226d8eae5ad68af0e8e19720d078357"
+    },
+    "flutter": {
+      "passed": 349,
+      "failed": 0,
+      "analyzerIssues": 0,
+      "installersOrDeviceTests": false
+    }
+  },
+  "releasePackage": {
+    "indexedFiles": 622,
+    "bytes": 32598659,
+    "manifestSha256": "8503f5c8d8c84671122f618dacc37ce610e4f18c9f6448e3e6336066b2f5c058",
+    "privateValueFindings": 0,
+    "indexedNpmPackages": 76,
+    "indexedCargoCrates": 208,
+    "upstreamLicenseFiles": 478,
+    "missingLicenseFiles": 0,
+    "productAssets": 126,
+    "operationsAssets": 3,
+    "integrityLogSha256": "a647b5f976ac6e6bfbda6cad5875e9bb052d307a3d3f62d9a7dfc861b672a3a4"
+  },
+  "isolatedPackageAcceptance": {
+    "passed": true,
+    "actualPiWorker": true,
+    "liveModelCalls": false,
+    "formalUserDataUsed": false,
+    "separateProductAndOperations": true,
+    "sha256": "26b675a2a13f9d1d5defc2cd718472cfaaebb1f7e020c77108ec73a25e3e18a8"
+  },
+  "localActivation": {
+    "restarted": true,
+    "productAndOperationsHealthy": true,
+    "servedAssetsMatchedRelease": {
+      "product": 126,
+      "operations": 3
+    },
+    "boundaryChecks": {
+      "productPlatformRoutesAbsent": true,
+      "operationsProductRoutesAbsent": true,
+      "productOriginRejectedByOperations": true,
+      "creationPreviewNeedsSession": true
+    },
+    "databasesBackedUp": 7,
+    "configurationsUnchangedAndOwnerOnly": 6,
+    "formalOperatorSetupUntouched": true,
+    "liveModelCalls": false,
+    "remoteComputerLifecycleChanged": false
+  },
+  "browserChecks": {
+    "filePreview": {
+      "passed": true,
+      "cases": [
+        "html-interactions",
+        "markdown-format-and-source",
+        "mobile-chrome",
+        "nested-dialog-focus",
+        "scope-and-network-isolation"
+      ],
+      "sha256": "5330d72bfbbd5a9085f27406e1d9a315aeb6f1af2995620016ad239360d7d852"
+    },
+    "appsAndAvatars": {
+      "passed": true,
+      "cases": [
+        "wide-catalog",
+        "mobile-reachable-controls",
+        "avatar-selection"
+      ],
+      "sha256": "86fa85426b4a3d5c2fb231683081a800ccbe770ecf77f1bed77fe9528c5b63c7"
+    },
+    "userBrowserControlled": false,
+    "creationAndTimeline": {
+      "passed": true,
+      "cases": [
+        "editable-bot-draft",
+        "explicit-theme-application",
+        "local-theme-reload",
+        "chat-handoff-and-streaming",
+        "owner-only-actions"
+      ],
+      "sha256": "38d6272c9f3ff34165f8ef32bde4c5805a5f4f85399af537ef150f5ef7cf88e8"
+    }
+  }
+}

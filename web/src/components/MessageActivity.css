@@ -1,0 +1,83 @@
+.message-activity {
+  max-width: 100%;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.message-activity-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  list-style: none;
+}
+summary.message-activity-line {
+  cursor: pointer;
+}
+summary.message-activity-line::-webkit-details-marker {
+  display: none;
+}
+summary.message-activity-line:hover,
+.message-activity[open] > summary {
+  background: var(--surface-hover);
+}
+summary.message-activity-line:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.message-activity-icon,
+.message-activity-chevron {
+  flex: none;
+  color: var(--text-muted);
+}
+.message-activity[open] > summary .message-activity-chevron {
+  transform: rotate(90deg);
+}
+.message-activity-label,
+.message-activity-state {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.message-activity-state {
+  color: var(--text-muted);
+}
+.message-activity-state::before {
+  content: '·';
+  margin-inline-end: 7px;
+}
+.message-activity[data-tone='working'] .message-activity-state {
+  color: var(--accent);
+}
+.message-activity[data-tone='success'] .message-activity-state {
+  color: var(--success);
+}
+.message-activity[data-tone='error'] .message-activity-state {
+  color: var(--danger);
+}
+.message-activity-details {
+  min-width: 0;
+  margin: 4px 0 5px 13px;
+  padding: 1px 0 1px 9px;
+  border-inline-start: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.message-activity-text,
+.message-activity-reason {
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+.message-activity-reason {
+  color: var(--danger);
+}
+@media (any-pointer: coarse) {
+  .message-activity-line {
+    min-height: 36px;
+  }
+}

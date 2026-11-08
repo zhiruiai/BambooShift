@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-05T01:12:02.698Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "electronVersion": "45.2.1",
+  "bundle": "release/client/OpenBot-darwin-arm64/OpenBot.app",
+  "archiveSha256": "6531cd375f4ee271b75af0e4a8967a34e766b165f237166a2bb2e6ec254f08e8",
+  "packagedEntries": [
+    "/main.cjs",
+    "/package.json",
+    "/preload.cjs",
+    "/remote-preload.cjs",
+    "/security.cjs",
+    "/ui",
+    "/ui/app.js",
+    "/ui/index.html",
+    "/ui/logo.svg",
+    "/ui/styles.css"
+  ],
+  "entrySourcesMatch": true,
+  "signing": "ad-hoc; package script completed codesign --verify --deep --strict",
+  "newNativeOAuthGuiTested": false
+}

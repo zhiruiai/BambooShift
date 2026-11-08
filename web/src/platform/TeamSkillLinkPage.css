@@ -1,0 +1,17 @@
+.team-skill-link-content {
+  max-width: 800px;
+  overflow-wrap: anywhere;
+}
+.team-skill-link-detail {
+  border: 1px solid light-dark(#e9e3ee, var(--border));
+  border-radius: 14px;
+  background: light-dark(#fff, var(--surface));
+  padding: 18px;
+}
+.skill-content.team-skill-link-markdown {
+  max-height: none;
+  font-size: 14px;
+}
+.team-skill-link-markdown pre {
+  white-space: pre-wrap;
+}

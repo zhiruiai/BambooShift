@@ -1,0 +1,170 @@
+{
+  "verifiedAt": "2026-11-06T02:04:43.036Z",
+  "bundle": "release/client/OpenBot-darwin-arm64/OpenBot.app",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "electronVersion": "45.2.1",
+  "signature": {
+    "type": "ad-hoc",
+    "deepStrictVerified": true,
+    "distributionSigned": false,
+    "notarized": false
+  },
+  "archive": {
+    "path": "release/client/OpenBot-darwin-arm64/OpenBot.app/Contents/Resources/app.asar",
+    "sha256": "391e5659cf06bf4b9b3141b2cfc93f6527e64fabf7b18b50d50222586fc1f20d",
+    "filesExactWhitelist": true,
+    "sourceFiles": [
+      {
+        "path": "authorization.cjs",
+        "sourceSha256": "cc7733ab2973dd0e389fc8b41b6d497cd7403b75cea21f507ae55e084272e941",
+        "packagedSha256": "cc7733ab2973dd0e389fc8b41b6d497cd7403b75cea21f507ae55e084272e941",
+        "exactBytes": true
+      },
+      {
+        "path": "input-permissions.cjs",
+        "sourceSha256": "3d843a098370f48f2b88004f321529c3faff9df851110e2a145524f1b1530b49",
+        "packagedSha256": "3d843a098370f48f2b88004f321529c3faff9df851110e2a145524f1b1530b49",
+        "exactBytes": true
+      },
+      {
+        "path": "main.cjs",
+        "sourceSha256": "721a46456b2b73c5f8c4d5e1d8e54c2caf8ec77fd4ec1eefec41d556961002b0",
+        "packagedSha256": "721a46456b2b73c5f8c4d5e1d8e54c2caf8ec77fd4ec1eefec41d556961002b0",
+        "exactBytes": true
+      },
+      {
+        "path": "menus.cjs",
+        "sourceSha256": "69bc26f6eba863878c6bda94da32fc50409c22347f21d030717f724057c51666",
+        "packagedSha256": "69bc26f6eba863878c6bda94da32fc50409c22347f21d030717f724057c51666",
+        "exactBytes": true
+      },
+      {
+        "path": "package.json",
+        "sourceSha256": "52c89ddd3492254cb9af605387653ffc99f81e436f7662f47fe55491b6093eda",
+        "packagedSha256": "db88c37eb1c0bc51d0c6f6c83178cf3e7e63060c45185b934a7feb118551eddf",
+        "exactBytes": false
+      },
+      {
+        "path": "preload.cjs",
+        "sourceSha256": "7d62fd43029cc97afd5882cd5037de75ba7a8e88fbb8139602aa9056df181b83",
+        "packagedSha256": "7d62fd43029cc97afd5882cd5037de75ba7a8e88fbb8139602aa9056df181b83",
+        "exactBytes": true
+      },
+      {
+        "path": "remote-preload.cjs",
+        "sourceSha256": "b21ae1292db386470102371c352c6736a75bfa7b5d210a03fc657c8dc3f3d8a4",
+        "packagedSha256": "b21ae1292db386470102371c352c6736a75bfa7b5d210a03fc657c8dc3f3d8a4",
+        "exactBytes": true
+      },
+      {
+        "path": "security.cjs",
+        "sourceSha256": "294d563af556646259ef84a1ab1eb499d876bc22de81c8ad2c6d8799f3152131",
+        "packagedSha256": "294d563af556646259ef84a1ab1eb499d876bc22de81c8ad2c6d8799f3152131",
+        "exactBytes": true
+      },
+      {
+        "path": "session-policy.cjs",
+        "sourceSha256": "394b1e1e61be7d32312d6d7317ef37f64e5bd9815dcb02611d4680509f05a5d3",
+        "packagedSha256": "394b1e1e61be7d32312d6d7317ef37f64e5bd9815dcb02611d4680509f05a5d3",
+        "exactBytes": true
+      },
+      {
+        "path": "shared-download.cjs",
+        "sourceSha256": "232d1f1f739f09a050a3910547c389d1bc8f3402b89b36356959314beae86c0e",
+        "packagedSha256": "232d1f1f739f09a050a3910547c389d1bc8f3402b89b36356959314beae86c0e",
+        "exactBytes": true
+      },
+      {
+        "path": "ui/app.js",
+        "sourceSha256": "ef79e5c7ab383096841b30b9b79ff99d9da931a049880cb37678e57338d44e44",
+        "packagedSha256": "ef79e5c7ab383096841b30b9b79ff99d9da931a049880cb37678e57338d44e44",
+        "exactBytes": true
+      },
+      {
+        "path": "ui/index.html",
+        "sourceSha256": "b911d6e6f0e74b37ddd46191def3c8f5a11a1c3e43eaec29878bebf5baaeb8ba",
+        "packagedSha256": "b911d6e6f0e74b37ddd46191def3c8f5a11a1c3e43eaec29878bebf5baaeb8ba",
+        "exactBytes": true
+      },
+      {
+        "path": "ui/logo.svg",
+        "sourceSha256": "3aec59ac43529b3de932bdc309c08a883ddabb42c5df407eaca5d61119dc7fe6",
+        "packagedSha256": "3aec59ac43529b3de932bdc309c08a883ddabb42c5df407eaca5d61119dc7fe6",
+        "exactBytes": true
+      },
+      {
+        "path": "ui/styles.css",
+        "sourceSha256": "ff9cd3bb0fe32f9872621e09891407b4ed813bba23cd79c9308a2b4857ae08d0",
+        "packagedSha256": "ff9cd3bb0fe32f9872621e09891407b4ed813bba23cd79c9308a2b4857ae08d0",
+        "exactBytes": true
+      }
+    ],
+    "relativeRequires": [
+      {
+        "from": "authorization.cjs",
+        "to": "security.cjs"
+      },
+      {
+        "from": "input-permissions.cjs",
+        "to": "security.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "security.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "session-policy.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "input-permissions.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "authorization.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "shared-download.cjs"
+      },
+      {
+        "from": "main.cjs",
+        "to": "menus.cjs"
+      },
+      {
+        "from": "menus.cjs",
+        "to": "security.cjs"
+      },
+      {
+        "from": "session-policy.cjs",
+        "to": "security.cjs"
+      },
+      {
+        "from": "shared-download.cjs",
+        "to": "security.cjs"
+      }
+    ],
+    "manifestNormalization": "The packaged package.json omits only the private:true development metadata; all other fields match."
+  },
+  "icon": {
+    "path": "electron.icns",
+    "bytes": 125468,
+    "sha256": "7ee4b890da57020c0962330e0bcb51167f28f6f3df22fa8a979537fe62336adf"
+  },
+  "serviceIncluded": false,
+  "privateConfigurationIncluded": false,
+  "guiLaunched": false,
+  "reactUi": "Loaded from separately built service; not bundled in app.asar.",
+  "checks": {
+    "desktopAndSourcePolicyTests": 54,
+    "typecheck": true,
+    "viteProductionBuild": true
+  },
+  "limitations": [
+    "No distribution signing or notarization.",
+    "No product GUI or microphone/desktop-control acceptance in this package check.",
+    "The running product service has not been switched to Rust."
+  ]
+}

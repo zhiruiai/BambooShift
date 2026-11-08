@@ -1,0 +1,21 @@
+.chat-mention-status {
+  margin: 6px 0 0;
+  color: inherit;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.chat-mention-status summary {
+  cursor: pointer;
+}
+.chat-mention-status ul {
+  display: grid;
+  gap: 3px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.chat-mention-status li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}

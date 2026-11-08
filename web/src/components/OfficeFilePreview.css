@@ -1,0 +1,61 @@
+.office-preview {
+  padding: 16px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.office-preview > p {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+}
+.office-preview > h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.office-preview-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.office-preview-pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.office-preview-pages button {
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  color: var(--text);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.office-preview-pages button[aria-current='page'] {
+  border-color: var(--accent);
+  font-weight: 650;
+}
+.office-preview-table {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+.office-preview-table table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+.office-preview-table :is(td, th) {
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+  white-space: pre-wrap;
+  min-width: 3em;
+  max-width: 22em;
+}
+.office-preview-table th {
+  background: var(--surface-subtle);
+}

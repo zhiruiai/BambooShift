@@ -1,0 +1,153 @@
+{
+  "checkedAt": "2026-11-05T09:23:04.469Z",
+  "scope": "Consistent 2–6 Bot group creation, searchable recipients, suggested names, palette and keyboard entry, preservation of existing groups",
+  "reference": [
+    "https://docs.x.ai/grok-bot/chat-and-collaboration",
+    "https://docs.x.ai/grok-bot/bots"
+  ],
+  "serverStandardSuite": {
+    "total": 690,
+    "passed": 678,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 81732.921,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 316,
+    "passed": 316,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 12963.326375,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 110001.776834,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "totalFinalUniqueTests": 1006,
+  "totalFinalUniquePassed": 1004,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "server": 9,
+    "frontend": 11,
+    "total": 20
+  },
+  "behaviorEvidence": {
+    "creation": "Shared constants enforce 2–6 distinct Bots in manual groups, planner tool schema/prompt, new chat proposals and commit. Explicit one-person groups, duplicate IDs, disguised multi-Bot DMs and invalid isGroup types are rejected. True one-Bot DMs remain supported.",
+    "legacy": "Existing groups can keep or reduce to one member. Groups above six can keep/reorder/remove original members, but cannot introduce outsiders until a smaller group has been saved. Existing single-person plan receipts remain readable and editable; new commit requires at least two. Runtime continues to serve existing single/oversized groups.",
+    "selection": "Searchable recipients expose selected chips and leader order. Default names follow selections until manually edited; explicit reset restores the suggestion. Creation submits only selected IDs and does not start work. Busy/unknown saves cannot replay via stale handlers.",
+    "navigation": "Cmd/Ctrl+Shift+N opens group mode; Cmd/Ctrl+K provides searchable creation commands and chat history. Open dialogs/IME/repeat/stale identity protect drafts. Members see only group creation commands. Current-chat search remains history-only; commands close search before opening the next dialog.",
+    "identity": "Conversation create and delete validate supplied expected-account headers through existing mutation authorization. Real temporary team HTTP checks reject old-account requests without modifying data. Existing headerless API compatibility and shared-main-DM guards are preserved.",
+    "model": "One actual request to the user-selected GLM endpoint produced a validated six-member proposal reusing all six synthetic Bots, with a leader and assignments. No Bot or conversation was created, no work tool executed, and formal settings remained unchanged."
+  },
+  "focusedEvidence": {
+    "domainAndHttp": {
+      "total": 39,
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1958.408125
+    },
+    "identityAndRelated": {
+      "total": 63,
+      "passed": 63,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 6801.8575
+    },
+    "runtime": {
+      "total": 32,
+      "passed": 32,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 5539.115666
+    },
+    "recipientUi": {
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 3580.407333
+    },
+    "navigationUi": {
+      "total": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 942.566458
+    }
+  },
+  "modelProof": "glm-six-member-planning-20261105.json",
+  "modelRequests": 1,
+  "modelReportedTokens": 2224,
+  "typescript": "passed",
+  "formatCheckedFiles": 26,
+  "vite": {
+    "modules": 1963,
+    "duration": "2.61s"
+  },
+  "sourceFreeze": {
+    "files": 346,
+    "snapshotSha256": "705088b717d873b8dbbd220e551493cb47a7f2240ab5ba8887e5d402c3ff62f0",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "c1152c9ef25e9bf2c1f5aa6952203e5734fccc2aa7ce22b83217c6b099d9c643"
+  },
+  "sourceSha256": {
+    "server/app.test.ts": "e836ac4d595d1fd03d89c3fe74c45fc537fa24ebf7e9cdff9211a2c9d139b610",
+    "server/app.ts": "507c3648dfe5ad98eb330a30ab3d9ae5a1687f1e7a27a4741e64757c30012ef3",
+    "server/bot-team-plans.test.ts": "838a2f82e830b92bd5d6be67fa38f0a70a2d7cc83e10ada482612637e55ce0ec",
+    "server/bot-team-plans.ts": "3c427908e45d2f9e6954097f114992d5b50b885afb1dde1e8609bd2ca56fdd08",
+    "server/group-settings.test.ts": "dfe043486bd9bfe6c4727d4155a164fbade921fcb2559defe9deead619769db2",
+    "server/group-settings.ts": "28faaaaecbee0503459f3314e1866e38c40da93f5f7bca41074b3f2bd0f5fcfe",
+    "server/runtime-team-proposals.test.ts": "cb785b256a90f1cc16570c9a671f95113f08c643dcb3aa488ec83c201fd34f7b",
+    "server/runtime.ts": "85ebdc13dfe892ee3b188bd0d3fd8fd92f889314b60bf61bade2d831b67745eb",
+    "server/team-planner-model.ts": "275ddc9e84952270b47abe6265c5e41886c8e8560e27a7e698b8c43a0d3ea377",
+    "server/team-proposals.test.ts": "974b851fdd433dda41d4ec6c63ab4b8b9fdfd421895b44cf7943314abac19300",
+    "server/team-proposals.ts": "ddf6f14de9677075531994d782586198cf807ce2dca7acd560ee5424d5f23612",
+    "shared/bot-team-plans.ts": "06bf839708c7aa124cba085e54177a27e557e7b7e8fe7a6c1bce32a7447aa52d",
+    "shared/group-members.ts": "d7fa53b63d0afdc28e9a7b6ddf848ecbff4d4a19d47507011c8d648d9c4bf00f",
+    "shared/group-settings.ts": "894eb5f6c658c8295154ba6caca36e02531a04193b99c07ff24e68c9cb05183b",
+    "src/App.tsx": "db8229e83d2adf33a7e8c7da6a97c87127fd892f36911e528a221df43735bcab",
+    "src/botTeamDraft.ts": "4368991988947c6085454ba0974da63c7beb5e67d3399428b9701f92ab99ef3f",
+    "src/components/BotProfiles.css": "06bed1c30c02c749f83d98b98ebc0fa69f24d26e4c6c7274afff5d3fdf5bd2c8",
+    "src/components/BotTeamProposalCard.tsx": "8ddb90a0553faa457445084589ae0dabadde4091898c5b0eb628e02f6a4708c0",
+    "src/components/ConversationSearch.css": "4f1375480afe3f31816ac842fe836094a721b9bbf527231954572ca5f16a3bd0",
+    "src/components/ConversationSearch.tsx": "ac510f5c2891fc61c8753b26426ddd4ab92f02cc9a865c4f887f0dd3babd7ce0",
+    "src/components/CreateDialog.tsx": "c45a9ade5397246a1eb2d3c599a4c8fd82fb4740cc9a7edab6f9e58d9d0a2718",
+    "src/components/GroupRecipients.tsx": "18e59d870c24f7d9bcbcb360a0fc1ceb6cc42fead5fd6d0381174df5e5ff8b4f",
+    "src/components/GroupSettingsDialog.tsx": "aa0caab617c9551fb79279a0532a58a2ba7cf48f3a44fb3a70571dee34d61492",
+    "src/components/SmartTeamPanel.tsx": "27563e67681e2d8b2a9ba1c7d6a7fbba9df47c89a74520c9a6ecbdfe3fc03879",
+    "src/groupNavigation.test.ts": "6d63b2234c06f748f5d8c668a1c1cab188ff2801570f38368d26eadd11da585b",
+    "src/groupRecipients.test.ts": "cb986e3fc09370424475af533ce6ccf215e9dcda6f881aa085ad353ab639d85f"
+  },
+  "serviceProof": "group-creation-service.json",
+  "serviceChecks": 55,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "shared-bot-files-client-package.json",
+    "note": "Native files unchanged; existing client loads separately running web service. No new native-window acceptance."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "externalModelRequests": 1,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control remains unavailable; React event and controlled engine tests do not prove product visual/focus/touch acceptance.",
+    "Group membership in older groups is preserved; new 2–6 rules do not retroactively delete historical members.",
+    "Remaining full-reference feature and multi-device gaps remain recorded in reference-audit.md; original goal remains active."
+  ]
+}

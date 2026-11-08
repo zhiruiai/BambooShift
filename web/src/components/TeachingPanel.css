@@ -1,0 +1,100 @@
+.teaching-panel {
+  margin-top: 14px;
+  font-size: 14px;
+}
+.teaching-live-status {
+  font-size: 12px;
+  font-weight: 600;
+}
+.teaching-body {
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 10px;
+  display: grid;
+  gap: 12px;
+}
+.teaching-body p {
+  margin: 0;
+  line-height: 1.6;
+}
+.teaching-body label,
+.teaching-review {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.teaching-body input,
+.teaching-body select,
+.teaching-body textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 9px 10px;
+  font: inherit;
+  font-size: 14px;
+}
+.teaching-body .teaching-confirm {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.teaching-confirm input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+.teaching-body button {
+  font-size: 13px;
+  justify-self: start;
+}
+.teaching-heading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.teaching-heading span,
+.teaching-body small,
+.teaching-body .section-help {
+  font-size: 12px;
+  color: var(--muted);
+}
+.teaching-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  max-height: 360px;
+  overflow: auto;
+}
+.teaching-steps li {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  display: grid;
+  gap: 7px;
+  overflow-wrap: anywhere;
+}
+.teaching-steps li > div {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .teaching-body {
+    padding: 12px;
+  }
+  .teaching-steps li > div {
+    flex-wrap: wrap;
+  }
+  .teaching-body button {
+    min-height: 40px;
+  }
+}

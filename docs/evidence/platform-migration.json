@@ -1,0 +1,55 @@
+{
+  "timezone": "Asia/Shanghai",
+  "architecture": "platform",
+  "legacyData": {
+    "privateBackupCreated": true,
+    "backupMethod": "SQLite backup API",
+    "recordsUnchangedAfterCutoverAndRestart": true,
+    "counts": {
+      "agents": 8,
+      "conversations": 15,
+      "messages": 163,
+      "memories": 2,
+      "routines": 0,
+      "skills": 2,
+      "files": 17,
+      "settings": 7
+    },
+    "originalPathsPreserved": true
+  },
+  "liveChecks": {
+    "platformHealth": true,
+    "anonymousProductAuthenticated": false,
+    "anonymousOperatorAuthenticated": false,
+    "unscopedBootstrapStatus": 404,
+    "anonymousPlatformUsersStatus": 401,
+    "operatorLoginPageStatus": 200,
+    "operatorSetupRequired": true,
+    "setupCodePrivate": true,
+    "setupCodeUnchangedAcrossRestart": true,
+    "testAccountsCreatedInLiveDatabase": false
+  },
+  "validation": {
+    "fullServerRegression": {
+      "tests": 108,
+      "passed": 108,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 205395.763583
+    },
+    "subsequentWorkspaceIsolationRegression": {
+      "tests": 4,
+      "passed": 4,
+      "includesNewAmbientHeaderTest": true
+    },
+    "desktopPolicyRegression": {
+      "tests": 10,
+      "passed": 10
+    },
+    "typescript": "passed",
+    "productionBuild": "passed",
+    "newAccountAndPlatformGui": "pending"
+  },
+  "scope": "Local service migration and controlled integration tests; not a public production deployment or new UI visual acceptance. No credentials, account tokens or record content are included.",
+  "recordedAt": "2026-11-04T16:15:09.007Z"
+}

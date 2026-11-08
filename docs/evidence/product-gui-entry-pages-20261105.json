@@ -1,0 +1,45 @@
+{
+  "checkedAt": "2026-11-05T12:45:37.410424+00:00",
+  "environment": "Independent local temporary platform on 127.0.0.1:3198",
+  "browserControlAvailable": true,
+  "readOnlyGuiChecks": [
+    "Personal/team registration mode switch exposes team name",
+    "Registration to product login navigation",
+    "Independent platform setup has its own branding and return-to-product link",
+    "390px registration document width equals viewport width"
+  ],
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "documentWidth": 390,
+    "overrideReset": true
+  },
+  "productAccountCreated": false,
+  "authenticatedFlowsAccepted": false,
+  "blockedAction": "Create synthetic GUI test owner and team",
+  "blocker": "Automatic approval review requires explicit consent for this temporary account creation; async user question remains pending. No alternate route was used to create it.",
+  "doesNotProve": [
+    "Bot settings interaction",
+    "Intelligent team creation",
+    "Routine chat entry",
+    "Team invitation flow",
+    "Authenticated platform administration"
+  ],
+  "screenshots": [
+    {
+      "path": "docs/evidence/product-gui-register-team-desktop.jpg",
+      "sha256": "c24e19c14919ecaf64335b4556bb82b33e4d934628157035da2f9e6521447200"
+    },
+    {
+      "path": "docs/evidence/product-gui-register-team-mobile.jpg",
+      "sha256": "0ce4c43fafc49962fafc50804a321a0eed3baa5efa89609b9c934ed3d2d9a385"
+    },
+    {
+      "path": "docs/evidence/product-gui-admin-setup-desktop.jpg",
+      "sha256": "ce0ba1d3aa6985a594b82ddd545edd474b58260b49d296a216ba4e8aa13f542e"
+    }
+  ],
+  "temporaryServiceStopped": true,
+  "temporaryDataRemoved": true,
+  "agentCreatedTabClosed": true
+}

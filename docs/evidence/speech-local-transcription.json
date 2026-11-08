@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-04T19:37:02.412Z",
+  "source": "macOS installed Tingting synthetic Chinese voice written to a file",
+  "realMicrophoneUsed": false,
+  "externalInferenceRequests": 0,
+  "runtime": "whisper.cpp v1.9.5 CPU arm64, 4 threads, language auto",
+  "audio": {
+    "bytes": 190802,
+    "durationMs": 5834.5625,
+    "sha256": "b21d45c9a65f436e905f527fab7262fe4a2ba6a56ba089a7b48a5442d49119c5"
+  },
+  "result": {
+    "text": "你好,这是本地语音识别测试,请帮我整理今天的工作计划。",
+    "durationMs": 5834.5625,
+    "elapsedMs": 23743,
+    "cacheControl": "no-store",
+    "identityMatched": true
+  },
+  "staleAccountRejectedBeforeTranscription": true,
+  "newTemporarySpeechDirectoriesRemain": 0,
+  "isolatedPlatformRemoved": true,
+  "productGUIVerified": false
+}

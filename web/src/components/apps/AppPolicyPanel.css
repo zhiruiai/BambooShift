@@ -1,0 +1,45 @@
+.app-policy-panel {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 20px;
+  font-size: 13px;
+}
+.app-policy-panel h3 {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+.app-policy-panel select,
+.app-policy-panel textarea {
+  width: 100%;
+  font-size: 13px;
+}
+.app-policy-entry {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 10px 0;
+}
+.app-policy-entry strong,
+.app-policy-entry span {
+  display: block;
+}
+.app-policy-entry span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+.app-policy-entry pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.app-policy-confirm {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+}
+.app-policy-confirm input {
+  width: auto;
+  flex: 0 0 auto;
+}

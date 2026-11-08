@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "scope": "Pure execution workers and the Rust process resolver",
+  "artifactDirectory": ".build/runtime",
+  "buildCommand": "node scripts/build-workers.mjs --out .build/runtime",
+  "productionInstallCommand": "npm ci --omit=dev --ignore-scripts",
+  "node": ">=22.19.0",
+  "workers": [
+    {
+      "name": "pi-worker",
+      "bytes": 12455,
+      "sha256": "66d89aa8b2d50f37e7fa972e4461bb544ef92dfe91792a1aca2b09038c688487"
+    },
+    {
+      "name": "mcp-worker",
+      "bytes": 32845,
+      "sha256": "9af9289dfbf1478ffad052029012b4d58603f68c5267211c6f28870c854bb5b1"
+    },
+    {
+      "name": "computer-worker",
+      "bytes": 125446,
+      "sha256": "0bcf1d149d2f52a0470220d55a066ef9cf243ef99d77bcbeffeb116e7dfc670b"
+    },
+    {
+      "name": "document-worker",
+      "bytes": 17074,
+      "sha256": "4ebf4da36147f3cb215880638ecf5b71c4cd0531a40ffaa35d536fcc8a4ef46b"
+    }
+  ],
+  "checks": {
+    "releaseTests": { "passed": 4, "failed": 0 },
+    "rustResolverTests": { "passed": 2, "failed": 0 },
+    "documentSupervisorAfterResolverChange": { "passed": 3, "failed": 0 },
+    "npmInstallPlan": "npm ci --omit=dev --ignore-scripts --dry-run --offline passed",
+    "sourcePolicy": "All new source and test files have fewer than 500 lines."
+  },
+  "verified": [
+    "Four bundled mjs entries start directly with Node without a TypeScript loader or source entries.",
+    "The compiled Pi worker uses the real SDK and completes a tool round trip against a local synthetic model.",
+    "The compiled document worker parses synthetic CSV bytes and the computer worker serves an authenticated temporary loopback health request.",
+    "The generated production lock retains exact versions and integrity hashes, excludes tsx and business-server modules, and rejects credential-bearing dependency URLs.",
+    "Rust prefers a valid released bundle and rejects an invalid bundle rather than silently falling back.",
+    "Document parser cancellation, dropped callers, deadlines and excessive output reap the child before releasing capacity."
+  ],
+  "limits": [
+    "Execution tests used existing SDK dependencies linked into a temporary artifact. A clean production npm install was not performed.",
+    "The computer smoke check did not launch a browser, desktop, virtual machine or real account.",
+    "No real model endpoint, formal database or user document was used.",
+    "Browser binaries and native desktop prerequisites are separate deployment requirements."
+  ]
+}

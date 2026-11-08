@@ -1,0 +1,357 @@
+.delivery-notice {
+  color: light-dark(#81788d, var(--text-secondary));
+  font-size: 12px;
+  margin: 6px 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  line-height: 1.6;
+}
+.outgoing .delivery-notice {
+  justify-content: flex-end;
+  text-align: right;
+}
+.delivery-notice > svg {
+  flex-shrink: 0;
+}
+.delivery-notice small {
+  flex-basis: 100%;
+  color: light-dark(#8b7b75, var(--danger));
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.delivery-cancelled,
+.delivery-interrupted {
+  color: light-dark(#9b766b, var(--danger));
+}
+.composer-actions {
+  gap: 6px;
+  flex-shrink: 0;
+}
+.stop-button {
+  width: 29px;
+  height: 29px;
+  border: 1px solid light-dark(#dfd7e5, var(--border));
+  border-radius: 50%;
+  background: light-dark(#f4eff7, var(--surface-subtle));
+  color: light-dark(#786287, var(--text-secondary));
+}
+.stop-button:hover:not(:disabled) {
+  background: light-dark(#e8dfef, var(--surface-hover));
+}
+.composer-delivery-mode {
+  padding: 3px 7px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 3px;
+}
+.composer-delivery-mode select {
+  border: 1px solid light-dark(#e7e1ec, var(--border));
+  background: light-dark(#f8f5fa, var(--surface-subtle));
+  color: light-dark(#766084, var(--text-secondary));
+  border-radius: 7px;
+  font-size: 12px;
+  min-height: 29px;
+  padding: 3px 6px;
+  width: auto;
+}
+.composer-delivery-mode > span {
+  color: light-dark(#817887, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.6;
+}
+.send-error {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0 0 9px;
+  padding: 9px 10px;
+  border: 1px solid light-dark(#ebdcd5, var(--danger-border));
+  background: light-dark(#fbf4f1, var(--danger-soft));
+  border-radius: 9px;
+  font-size: 12px;
+  color: light-dark(#986f60, var(--danger));
+}
+.send-error > div {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 3px;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}
+.send-error strong {
+  font-weight: 550;
+}
+.send-error small {
+  font-size: 12px;
+  color: light-dark(#9a8278, var(--danger));
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.send-error > button {
+  font-size: 12px;
+  flex-shrink: 0;
+  min-height: 27px;
+  border-radius: 6px;
+  padding: 3px 5px;
+}
+.send-error > button:hover {
+  background: light-dark(#f2e4de, var(--danger-soft));
+}
+@media (hover: none), (pointer: coarse) {
+  .reaction-chip {
+    min-height: 34px;
+    min-width: 36px;
+  }
+}
+@media (max-width: 760px) {
+  .quoted-message,
+  .composer-reply {
+    padding-block: 9px;
+  }
+  .quoted-message strong,
+  .quoted-message > span > span,
+  .composer-reply strong,
+  .composer-reply-content > span {
+    font-size: 12px;
+  }
+  .composer-delivery-mode {
+    padding-inline: 3px;
+  }
+  .composer-delivery-mode > span {
+    font-size: 12px;
+  }
+  .composer-delivery-mode select {
+    font-size: 12px;
+    min-height: 32px;
+  }
+  .delivery-notice,
+  .delivery-notice small {
+    font-size: 12px;
+  }
+  .send-error > button {
+    min-height: 34px;
+  }
+}
+
+/* The desktop application provides the real window frame and system controls. */
+html[data-openbot-desktop='true'] .app-shell {
+  height: 100dvh;
+  max-width: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+html[data-openbot-desktop='true'] .window-dots {
+  display: none;
+}
+html[data-openbot-desktop='true'] .app-wordmark {
+  display: block;
+}
+
+/* Existing chat actions keep keyboard and drag interactions inside the conversation. */
+.mention-menu > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: light-dark(#7a7184, var(--text-secondary));
+  font-size: 12px;
+}
+.mention-menu > span > small {
+  font-size: 12px;
+  color: light-dark(#84798e, var(--text-secondary));
+  margin: 0;
+}
+.mention-options {
+  max-height: min(260px, 38dvh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.mention-menu button.active,
+.mention-menu button[aria-selected='true'] {
+  background: light-dark(#f0e9f7, var(--accent-soft));
+  color: light-dark(#655174, var(--accent));
+}
+.mention-menu button small {
+  color: light-dark(#7e7488, var(--text-secondary));
+}
+.file-drop-overlay {
+  position: absolute;
+  inset: 12px;
+  z-index: 12;
+  border: 2px dashed light-dark(#a58bbd, var(--border-strong));
+  border-radius: 14px;
+  background: light-dark(#faf7fcef, var(--surface));
+  display: grid;
+  place-items: center;
+  text-align: center;
+  pointer-events: none;
+  backdrop-filter: blur(3px);
+}
+.file-drop-overlay > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  padding: 22px;
+  color: light-dark(#8b6ca3, var(--text-secondary));
+  max-width: 100%;
+}
+.file-drop-overlay strong {
+  font-size: 17px;
+  font-weight: 550;
+  color: light-dark(#6c507e, var(--text-secondary));
+}
+.file-drop-overlay span {
+  font-size: 12px;
+  color: light-dark(#87778f, var(--text-secondary));
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.routine-management {
+  flex-wrap: wrap;
+}
+.routine-management-copy {
+  min-width: 0;
+  flex-basis: calc(100% - 32px);
+  overflow-wrap: anywhere;
+}
+.routine-edit-title {
+  display: block;
+  padding: 0;
+  text-align: left;
+  border-radius: 4px;
+}
+.routine-edit-title:hover strong {
+  color: light-dark(#72548c, var(--text-secondary));
+}
+.routine-controls {
+  margin-left: auto;
+  padding-left: 28px;
+  gap: 5px;
+}
+.routine-controls .icon-button {
+  width: 29px;
+  height: 29px;
+  color: light-dark(#8b779b, var(--accent));
+}
+.routine-management.routine-editing {
+  background: light-dark(#f7f3fa, var(--surface-subtle));
+  border-radius: 8px;
+  padding: 12px 9px;
+}
+.routine-editor-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.routine-editor-heading > span {
+  font-size: 12px;
+  color: light-dark(#7f7488, var(--text-secondary));
+}
+.routine-editor-fields {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.routine-editor-fields:disabled {
+  opacity: 0.7;
+}
+.routine-editor .field-help {
+  margin: 0;
+}
+.routine-save-error,
+.inline-save-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  color: light-dark(#966b5e, var(--danger));
+  background: light-dark(#fcf3ef, var(--danger-soft));
+  border: 1px solid light-dark(#eeddd5, var(--danger-border));
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.routine-save-error > svg,
+.inline-save-error > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+@media (max-width: 760px) {
+  .mention-menu {
+    left: 12px;
+    right: 12px;
+  }
+  .mention-menu button {
+    min-height: 43px;
+  }
+  .mention-menu > span > small {
+    font-size: 12px;
+  }
+  .file-drop-overlay {
+    inset: 7px;
+  }
+  .routine-controls .icon-button {
+    min-width: 35px;
+    min-height: 35px;
+  }
+  .routine-editor .dialog-actions {
+    flex-wrap: wrap;
+  }
+}
+
+.markdown-table-scroll {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin: 9px 0;
+  border: 1px solid light-dark(#d8d8df, var(--border));
+  border-radius: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: light-dark(#bab4c4, var(--border-strong)) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.markdown-table-scroll:focus-visible {
+  outline: 2px solid light-dark(#aa8dc0, var(--accent));
+  outline-offset: 2px;
+}
+.markdown-table-scroll table {
+  width: 100%;
+  min-width: 320px;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.markdown-table-scroll th,
+.markdown-table-scroll td {
+  min-width: 100px;
+  padding: 8px 11px;
+  border-right: 1px solid light-dark(#d8d8df, var(--border));
+  border-bottom: 1px solid light-dark(#d8d8df, var(--border));
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.markdown-table-scroll th {
+  font-weight: 600;
+  background: light-dark(#e7e5eb, var(--surface-hover));
+  text-align: left;
+}
+.markdown-table-scroll th:last-child,
+.markdown-table-scroll td:last-child {
+  border-right: 0;
+}

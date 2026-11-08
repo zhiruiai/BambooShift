@@ -1,0 +1,23 @@
+{
+  "mobileRosterTitle": "Manage conversations",
+  "mobileRosterPinned": "Pinned",
+  "mobileRosterPin": "Pin",
+  "mobileRosterUnpin": "Unpin",
+  "mobileRosterHidden": "Hidden conversations",
+  "mobileRosterHide": "Hide",
+  "mobileRosterRestore": "Restore to list",
+  "mobileRosterOther": "Other conversations",
+  "mobileRosterNewSection": "New section",
+  "mobileRosterSectionName": "Section name",
+  "mobileRosterRename": "Rename",
+  "mobileRosterMove": "Move to section",
+  "mobileRosterActions": "Conversation actions",
+  "mobileRosterSectionActions": "Section actions",
+  "mobileRosterPersonal": "These settings only change your own list in this workspace. Bot preferences apply to its private chats; group chats stay separate.",
+  "mobileRosterDeleteConfirm": "Delete this section? Its conversations will move to Other conversations and remain available.",
+  "mobileRosterUnknown": "The previous change may have been saved. Check the current list before making another change. Nothing will be sent again automatically.",
+  "mobileRosterCheck": "Check current list",
+  "mobileRosterAcknowledge": "Use this list and clear local recovery",
+  "mobileRosterAcknowledgeConfirm": "Clear the local recovery record and continue from the list just checked? This does not cancel a request already received by the server. A later change uses this list revision and will conflict if the server has changed.",
+  "mobileRosterConfirm": "Confirm"
+}

@@ -1,0 +1,141 @@
+{
+  "checkedAt": "2026-11-05T05:47:03.219Z",
+  "scope": "Authenticated task requester across Pi roots and delegates, exact-person app/computer approvals, per-member queue/stop boundaries, live access revocation, and truthful existing team visibility",
+  "reference": [
+    "https://docs.x.ai/grok-bot/shared-bots",
+    "https://docs.x.ai/grok-bot/chat-and-collaboration"
+  ],
+  "serverStandardSuite": {
+    "total": 582,
+    "passed": 570,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 35255.741833
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 166869.632792,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "serverFinalUniqueResults": {
+    "total": 582,
+    "passed": 580,
+    "failed": 0,
+    "skipped": 2,
+    "skips": "Linux-only file-descriptor race and dedicated UID checks on macOS"
+  },
+  "clientAndDesktop": {
+    "total": 216,
+    "passed": 216,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 4564.848042
+  },
+  "totalFinalUniquePassed": 796,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "newTests": {
+    "runtime": 13,
+    "approvalDomain": 11,
+    "platformHttp": 7,
+    "actualMcpPreflight": 2,
+    "client": 11
+  },
+  "initialFullRegression": {
+    "total": 578,
+    "passed": 562,
+    "failed": 4,
+    "skipped": 12,
+    "durationMs": 73466.538625,
+    "cause": "Four older fixture cases omitted the new fixed ExpectedUser or trusted direct/background authority; production authorization was not loosened.",
+    "repairs": [
+      "platform and virtual-desktop clients supply their actual account header",
+      "isolated contexts supply a trusted background owner resolver",
+      "account-change fixture proves stale sender denial, then explicitly refreshes its header"
+    ],
+    "rerun": "Full final server suite passes after repairs and observation preflight coverage."
+  },
+  "behaviorEvidence": {
+    "authenticatedSender": "Real Pi receives member input with forged request-body identity, but the persisted app action names only the authenticated member and original message.",
+    "decisions": "Owner and peer cannot approve/reject/stop another member task; same-member second login can approve while the original task login remains valid.",
+    "queue": "Another member retains queued work and begins a separate root after the first requester stops. Late stop cleanup does not cancel the next root.",
+    "revocation": "Original login logout, membership removal and workspace suspension invalidate pending/running work; dispatched external effects remain unknown and are never replayed.",
+    "asynchronousBoundary": "Actual MCP catalog and fetch, computer queue/read/health/takeover, and observation preflight recheck the grant before dispatch; cleanup remains allowed.",
+    "background": "Scheduled/direct platform work is bound to the active workspace owner and survives browser logout; workspace suspension revokes it.",
+    "snapshot": "Profile and active skill content are captured together at each run start.",
+    "ui": "Actual React handlers and rendered output cover requester buttons, stale accounts, late upload approval, workspace admin stop and team-visible labels."
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 40,
+  "vite": {
+    "modules": 1948,
+    "duration": "1.61s"
+  },
+  "sourceFreeze": {
+    "serverSharedFiles": 162,
+    "serverSharedSnapshotSha256": "f4762e1bb389124464248baabc134ccaf4f9bf93ca6131f05086f32facc70739",
+    "clientDesktopFiles": 141,
+    "clientDesktopTreeSha256": "205c2c0f6de3c49798a1a98126c475c0b3847392ca20d547edf4ff23d64489fb"
+  },
+  "sourceSha256": {
+    "server/app-actions.ts": "a4eb6d2df23e593b2a7aa62fbbe42a623acc4fe0accad7dbc9f356bc72fe45db",
+    "server/app-connections.test.ts": "3db15174ef9ebbf9f1e3c40731368129f5ae82935195d23b4e5de1ee4cebb7e4",
+    "server/app-connections.ts": "89bd692b7cf8bbff096028044a209338ca5ec97cff8e22454e8d73edda81e4c5",
+    "server/app-transport.ts": "13f98759f66c6f862afc46df87b2b0199533b023ed776f830d8d06d4bc16cfbc",
+    "server/app.ts": "d693161f04bcb8e779a94f30d42159a7b3b39c127f17119f601259f10a603f90",
+    "server/bot-computers.ts": "89dad83608128f7420a048a8ae8240fe7c60ec8ec9ee190f8abbe8e34831cae4",
+    "server/computer.ts": "101babcea40cb4447199a15adf71aa47f93cf267cf1b551953817cdfbd36fb89",
+    "server/platform-app.test.ts": "13400970bf94aa27f72954ba1ec8d5e1062748bc2c6fca84902ebe0c15f3c750",
+    "server/platform-app.ts": "d48390d480de16cc8c6aea97f8784337a119b31c9341f2cc32435b665d22c631",
+    "server/requester-approvals.test.ts": "ed6be771837a16fed1d48e4a399b4f18b0d134a2621fb124fdfbe013558864ed",
+    "server/requester-platform.test.ts": "44776497e7213f3c731272e6fd51f7f6399b48fa7ba18bfa02cb7ef1d75cfc77",
+    "server/run-access.ts": "023c50e4434259e9ff6f94e3493f08bd1be81dafc1003843919e806c2606dbe2",
+    "server/runtime-requester.test.ts": "1f64cadbfea025d9fa52bb437d6d276340813de192c8e1aa95fa412712d76358",
+    "server/runtime-team-proposals.test.ts": "e037e22f6566ff7ed382ec4fe2b929f3014be91edc33a287477a7b00503987fc",
+    "server/runtime.ts": "8cb4b0e597c348b31c86d4abb3a9dacafa1410c9dbcd6649c8ebe74d21cce338",
+    "server/virtual-desktop.test.ts": "7f50e2809eb1a81ef95f02548c42ee7b01f0357cd02db71e480d6f1df5aacf82",
+    "server/workspace-isolation.test.ts": "6933978dda01a6b1a63a76e2697add6befab0ba9aa563422927e6034e69dafcd",
+    "shared/app-connections.ts": "d7f0d545475d17b4302716cc9b3e1836278d148a25697158fdf947584c4ca8e5",
+    "shared/approvals.ts": "400186d2da3e19304e3cb238075dd48867a3514dab781da0cd01622b4542f994",
+    "shared/types.ts": "db8b145bfe6cb576007e17a3001fe4ddf2caa298f0546edd8e3677d6a1aa6a66",
+    "src/App.tsx": "650e3f237d11831e6311e6b134bff74f9955fa27a6d1294717ab362aa45e1556",
+    "src/admin/AdminApp.tsx": "ecd9c7adb4959d849cd9e65ad63e42d2071192e07fb14ee432e8cde0d03d1367",
+    "src/admin/AdminPanels.tsx": "f9a754e15c31913a603547dc115898c92b252c5078ffd4fca0651418bff25c0e",
+    "src/appConnections.ts": "1fdc2fea690e2f0d5e24328981d2f110d764aa164112a1f20378bb12a981feec",
+    "src/approvalUi.ts": "a4373838f820352767d07002e94580514634980423697efaa4e909da9d1a566a",
+    "src/apps.test.ts": "bbca1320907b6aa7592ab1364bf11371797109043ea8d623017a5e915059a041",
+    "src/botProfiles.test.ts": "e30bf63d72f734a23d184e88ffb39ea6b66e70e4420afa310c99c6d9637447c1",
+    "src/botTemplates.ts": "a0a915f0445e5181c3763f2584f697f1a35439e6b0262f6f4bdadbc3825248fc",
+    "src/components/AgentDialog.tsx": "e0a70533401da97f60a705ed75e841afc0432d0e4bb2d468d871e695e3e6e828",
+    "src/components/AppActionCard.tsx": "87cac320174819ac45186fdc168b31158f98fb8d8c0c157effa6330729eca6d2",
+    "src/components/ComputerDialog.tsx": "dc02d17ab3157b777eb403e7b43e9a4b1916bdfc8c9ed2d3c50885d19d016f11",
+    "src/components/ComputerFiles.tsx": "01fa14ce54be3002bb78be0a9b9a82d6c9541fbcd53c8aed9e07dc1f2b5b7c76",
+    "src/components/CreateDialog.tsx": "590d82e749ddb8c5c7f2b2cfa0923cf5363bc280afd84801305dc71f6eb88a31",
+    "src/components/SidebarRoster.tsx": "0954bd0a125542788b2dcb8044c16db420aae95beedcbc17381fd486d220d1fa",
+    "src/computerLifecycle.test.ts": "f89d6ec2dbae03687e75a6d23ff37518460e549e8f78f767c10ad795b78874b3",
+    "src/computerScope.test.ts": "1dfc6b22aa450a2aabaa79586cb37062fec82112bfc1f7d86b2d73459636c220",
+    "src/computerScope.ts": "ab99b34b7961fdc8c23f588b2ddc40279af9354dcd01bfb8c6cf3ed98edea3f2",
+    "src/platform/BotTemplatePage.tsx": "2652e8dfd6023baf76ca194563696665c23e0b712b940319e3d826bd22287f72",
+    "src/remote-shell-ui.test.ts": "f559b917863403562a9842c3345022fc12682808694814312e5bb35c3016b3d6",
+    "src/requesterStop.test.ts": "ac01ab0339bcd9c345737c487059a2b27fcf2755d17fbb9a704085131dfef915"
+  },
+  "serviceProof": "requester-service.json",
+  "dataAndExternalEffects": {
+    "temporaryAccounts": true,
+    "paidModelCalls": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product GUI control still reports Local browser use is disabled in Work settings; no product visual/focus/touch acceptance.",
+    "Shared Bot live references, private member chats/memory/computers, explicit shared resources and browse/add flow remain unimplemented. Existing team chats are team-visible.",
+    "Synthetic computer-engine browser fixtures are not product GUI evidence."
+  ]
+}

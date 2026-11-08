@@ -1,0 +1,103 @@
+{
+  "checkedAt": "2026-11-05T12:49:04.644Z",
+  "scope": "Natural-language routine management through actual Pi; exact chat recipient and draft-preserving entry; Bot profile freshness and intelligent-team member draft retention",
+  "sourceFiles": 398,
+  "sourceSha256": "8b99d617203be940098a05ece2eec1eba2abf3cfee5b8316dd4c1ad3247bc6db",
+  "changedCodeFiles": [
+    "server/app.ts",
+    "server/messages.test.ts",
+    "server/messages.ts",
+    "server/pending-submissions.test.ts",
+    "server/platform-app.ts",
+    "server/routine-tools-http.test.ts",
+    "server/routine-tools.test.ts",
+    "server/routine-tools.ts",
+    "server/runtime-routine-tools.test.ts",
+    "server/runtime.ts",
+    "shared/routine-tools.ts",
+    "shared/types.ts",
+    "src/App.tsx",
+    "src/chatDrafts.test.ts",
+    "src/chatDrafts.ts",
+    "src/components/AgentDialog.tsx",
+    "src/components/RoutineDialog.css",
+    "src/components/RoutineDialog.tsx",
+    "src/components/SmartTeamPanel.tsx",
+    "src/pendingSubmissions.ts",
+    "src/routineChat.test.ts",
+    "src/routineChat.ts",
+    "src/routineChatNavigation.test.ts",
+    "src/smartTeamSettings.test.ts"
+  ],
+  "serverStandardSuite": {
+    "total": 803,
+    "passed": 791,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 105727.153042,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 394,
+    "passed": 394,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 17804.671417,
+    "concurrency": 2
+  },
+  "totalTests": 1197,
+  "totalPassed": 1185,
+  "totalFailed": 0,
+  "totalSkipped": 12,
+  "newTests": {
+    "server": 30,
+    "frontend": 15,
+    "total": 45
+  },
+  "skipped": "10 existing opt-in browser/computer-engine checks and 2 Linux-only checks. These engine files were unchanged and this phase did not rerun their previous opt-in results.",
+  "behavior": {
+    "routineManagement": "Five scoped actual Pi tools. Source human message, live owner session and Bot/conversation membership are checked per call and again inside mutations. Root/call receipts and mutations are atomic; replay returns immutable prior results, and changed payload or stale configuration revisions fail.",
+    "steering": "Accepted same-actor steering immediately invalidates the previous generation. A new generation can authorize mutations only after actual Pi user-message delivery; late assistant turns cannot borrow a newer input. Child, background, manual routine and memory import do not inherit this capability.",
+    "recipient": "Explicit Bot is validated against the conversation and persisted separately from automatic routing. Original and retried chat requests must preserve explicit/automatic choice semantics even if both resolve to the same Bot.",
+    "navigation": "Existing source chat and Bot are verified under the fixed identity. Existing draft confirmation preserves text, attachments and reply before appending. Busy input or a changed draft/identity cannot be overwritten. No automatic send or task execution.",
+    "settings": "Read-only Bot names and roles use the latest source. Switching a planned new Bot to reuse and back preserves its profile and confirmed avatar while retaining the latest assignment."
+  },
+  "realModel": {
+    "evidence": "glm-routine-chat-20261105.json",
+    "requests": 6,
+    "success": true,
+    "limits": {
+      "maximumModelHttpRequests": 8,
+      "outputTokensPerRequest": 2048,
+      "modelRequestTimeoutMs": 65000,
+      "totalDeadlineMs": 180000,
+      "modelOriginOnly": true,
+      "nonRoutineToolExecutionBlocked": true
+    },
+    "note": "Bounded synthetic live-model sample, not a guarantee of every natural-language request. Final prompt additionally requests user-facing language rather than internal fields."
+  },
+  "productGui": {
+    "evidence": "product-gui-entry-pages-20261105.json",
+    "browserControlRecovered": true,
+    "registrationDesktopAndMobileReadOnly": true,
+    "authenticatedFlowsAccepted": false,
+    "pending": "Explicit approval for synthetic local GUI account creation after automatic approval review rejected it."
+  },
+  "service": {
+    "checks": 65,
+    "formalDataUnchanged": true,
+    "operatorCodeRead": false,
+    "operatingUrls": ["http://127.0.0.1:5173/", "http://127.0.0.1:5173/admin"],
+    "nativePackageRebuilt": false,
+    "nativeSourceUnchanged": true
+  },
+  "vite": {
+    "modules": 1985
+  },
+  "remaining": [
+    "Authenticated Bot settings/team/routine/platform GUI acceptance",
+    "Manual Bot/group creation response recovery",
+    "Explicit catalog revalidation for team plans after Bot changes",
+    "Event triggers, full run history, unified quotas and routine deletion confirmation"
+  ]
+}

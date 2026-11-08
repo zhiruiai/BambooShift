@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-11-04T22:43:05.089Z",
+  "clientFilesIdentical": 7,
+  "packageMetadataMatches": true,
+  "archiveSha256": "3115ae4a878d1eea335e21a69369996bbd5a83177382ad8329a10a1be8dba22b",
+  "repackaged": false,
+  "productGuiVerified": false,
+  "applicationLaunched": false,
+  "strictSignatureVerified": true,
+  "packageNormalization": "Packager removes the source-only private field; every remaining metadata field matches."
+}

@@ -1,0 +1,53 @@
+[package]
+license = "Apache-2.0"
+name = "openbot-backend"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+publish = false
+default-run = "openbot-backend"
+
+[workspace]
+resolver = "3"
+
+[dependencies]
+axum = "=0.8.9"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal", "sync", "process", "io-util", "time", "fs"] }
+tokio-stream = { version = "0.1", features = ["sync"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+futures-util = "0.3"
+sqlx = { version = "=0.8.6", default-features = false, features = ["runtime-tokio", "sqlite", "macros"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+scrypt = { version = "=0.11.0", default-features = false }
+rand = "0.8"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+chrono-tz = "0.10"
+url = "2"
+subtle = "2"
+hex = "0.4"
+hmac = "0.12"
+libc = "0.2"
+image = { version = "=0.25.6", default-features = false, features = ["png", "jpeg", "webp"] }
+webp = { version = "=0.3.1", default-features = false }
+
+[[bin]]
+name = "openbot-image-worker"
+path = "src/workspace/avatar_worker_main.rs"
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+tempfile = "3"
+
+[profile.dev.package."*"]
+opt-level = 2
+
+[profile.test]
+opt-level = 1
+
+[profile.release]
+strip = "symbols"

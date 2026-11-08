@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#fafafa" />
+    <title>PandaMate · 等待连接</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        background: #fafafa;
+        color: #27252b;
+        font:
+          15px/1.8 -apple-system,
+          BlinkMacSystemFont,
+          'PingFang SC',
+          sans-serif;
+      }
+      main {
+        max-width: 340px;
+        padding: 32px;
+        text-align: center;
+      }
+      svg {
+        width: 64px;
+        height: 64px;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 20px 0 8px;
+      }
+      p {
+        color: #737078;
+      }
+      a {
+        display: inline-block;
+        padding: 8px 24px;
+        margin-top: 16px;
+        border-radius: 24px;
+        background: #26232b;
+        color: white;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true">
+        <path fill="#8c66e8" d="M15 8C34-2 55 11 57 31c3 20-13 29-32 27C7 56 0 39 5 24Z" />
+        <path stroke="white" stroke-width="6" stroke-linecap="round" d="m23 22 2 8m12-10 2 8" />
+      </svg>
+      <h1 id="offline-heading">暂时无法连接工作空间</h1>
+      <p id="offline-message">
+        检查网络与 PandaMate 服务后再试。任务由服务端处理，重新连接后可以查看最新进展。
+      </p>
+      <a id="offline-reconnect" href="/">重新连接</a>
+    </main>
+    <script src="/offline.js"></script>
+  </body>
+</html>

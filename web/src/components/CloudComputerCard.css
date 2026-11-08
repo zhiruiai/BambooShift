@@ -1,0 +1,127 @@
+.cloud-computer-card {
+  min-width: 0;
+  padding: 14px 15px;
+  margin-bottom: 18px;
+  border: 1px solid light-dark(#e8e1ec, var(--border));
+  border-radius: 10px;
+  background: light-dark(#faf8fc, var(--surface));
+  color: light-dark(#51445d, var(--text));
+}
+.cloud-computer-heading,
+.cloud-computer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.cloud-computer-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.cloud-computer-identity > div {
+  min-width: 0;
+}
+.cloud-computer-identity h3 {
+  font-size: 13px;
+  font-weight: 550;
+  color: light-dark(#4f4358, var(--text));
+  overflow-wrap: anywhere;
+}
+.cloud-computer-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  font-size: 12px;
+  color: light-dark(#74747b, var(--text-secondary));
+}
+.cloud-computer-status.state-running {
+  color: light-dark(#51765a, var(--success));
+}
+.cloud-computer-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 13px 0;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.cloud-computer-facts > div {
+  min-width: 0;
+}
+.cloud-computer-facts dt {
+  color: light-dark(#74747b, var(--text-secondary));
+}
+.cloud-computer-facts dd {
+  margin: 2px 0 0;
+  color: light-dark(#4b4353, var(--text));
+  overflow-wrap: anywhere;
+}
+.cloud-computer-notice,
+.cloud-computer-error,
+.cloud-computer-footer p {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.cloud-computer-notice {
+  color: light-dark(#74617f, var(--text-secondary));
+}
+.cloud-computer-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 11px;
+  border-radius: 8px;
+  background: light-dark(#fff1f2, var(--danger-soft));
+  color: light-dark(#a04c59, var(--danger));
+}
+.cloud-computer-error > svg {
+  margin-top: 3px;
+}
+.cloud-computer-footer {
+  margin-top: 12px;
+}
+.cloud-computer-footer p {
+  flex: 1 1 220px;
+  margin: 0;
+  color: light-dark(#74747b, var(--text-secondary));
+}
+.cloud-computer-footer small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+.cloud-computer-card .secondary-button {
+  min-height: 40px;
+  white-space: normal;
+  text-align: center;
+}
+.computer-settings .cloud-computer-change {
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 12px;
+  white-space: normal;
+}
+.computer-settings #computer-manual-connection > p {
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: light-dark(#74747b, var(--text-secondary));
+}
+@media (max-width: 760px) {
+  .cloud-computer-card {
+    padding: 13px;
+  }
+  .cloud-computer-card .secondary-button {
+    min-height: 44px;
+  }
+  .cloud-computer-footer > button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,180 @@
+.bot-avatar-picker {
+  min-width: 0;
+  container-type: inline-size;
+}
+.bot-avatar-picker .bot-identity-picker {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  align-items: start;
+  justify-content: start;
+  gap: 14px;
+}
+.avatar-picker-options {
+  min-width: 0;
+}
+.bot-avatar-picker .bot-identity-picker :is(.color-choices, .shape-choices) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+  gap: 4px;
+  max-width: 284px;
+}
+.bot-avatar-picker .bot-identity-picker :is(.color-choices, .shape-choices) > button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 8px;
+  opacity: 1;
+}
+.bot-avatar-picker .shape-choices > button {
+  overflow: hidden;
+}
+.bot-avatar-picker .shape-choices > button.chosen {
+  outline: 1px solid var(--accent-border);
+  outline-offset: -2px;
+  background: var(--accent-soft);
+}
+.bot-avatar-picker .bot-identity-picker :is(.color-choices, .shape-choices) > button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.bot-avatar-picker .bot-identity-picker .avatar {
+  pointer-events: none;
+}
+@container (max-width: 372px) {
+  .bot-avatar-picker .bot-identity-picker :is(.color-choices, .shape-choices) {
+    grid-template-columns: repeat(3, 44px);
+  }
+}
+@container (max-width: 230px) {
+  .bot-avatar-picker .bot-identity-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.avatar-picker-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.avatar-picker-tabs button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: light-dark(#8b7e95, var(--text-secondary));
+}
+.avatar-picker-tabs button[aria-selected='true'] {
+  color: light-dark(#7e5c98, var(--accent));
+  background: light-dark(#f7f1fa, var(--accent-soft));
+  border-color: light-dark(#e8dcef, var(--accent-border));
+}
+.avatar-upload {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 18px;
+  border: 1px dashed light-dark(#d7c6e2, var(--border));
+  border-radius: 12px;
+  background: light-dark(#fcfafd, var(--surface));
+}
+.avatar-upload > div {
+  flex: 1;
+  min-width: 0;
+}
+.avatar-upload strong {
+  display: block;
+  color: light-dark(#756180, var(--text-secondary));
+  font-size: 13px;
+}
+.avatar-upload small,
+.avatar-upload > div > span {
+  display: block;
+  color: light-dark(#968a9f, var(--text-muted));
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 5px 0;
+}
+.avatar-upload button,
+.avatar-crop-actions button {
+  min-height: 44px;
+}
+.avatar-upload-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: light-dark(#8b7e95, var(--text-secondary));
+  font-size: 12px;
+}
+.avatar-upload-status button {
+  margin-left: auto;
+}
+.avatar-crop-editor {
+  margin-top: 16px;
+}
+.avatar-crop-frame {
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  margin: auto;
+  border-radius: 10px;
+  background: light-dark(#efebf2, var(--surface-subtle));
+  touch-action: none;
+  cursor: grab;
+  outline-offset: 4px;
+}
+.avatar-crop-frame:active {
+  cursor: grabbing;
+}
+.avatar-crop-frame:focus-visible {
+  outline: 2px solid light-dark(#b9a0cc, var(--accent));
+}
+.avatar-crop-frame > img {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+.avatar-crop-circle {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 100px #2c203a66;
+  border: 1px solid #ffffffb3;
+  pointer-events: none;
+}
+.dialog-form .avatar-zoom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.dialog-form .avatar-zoom input {
+  width: auto;
+  flex: 1;
+  min-height: 44px;
+  padding: 0;
+  accent-color: light-dark(#a483bd, var(--accent));
+}
+.avatar-crop-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+@media (max-width: 480px) {
+  .avatar-upload {
+    padding: 12px;
+    gap: 12px;
+  }
+  .avatar-crop-actions > button {
+    flex: 1;
+  }
+}

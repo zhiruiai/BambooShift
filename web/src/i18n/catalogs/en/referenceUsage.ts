@@ -1,0 +1,35 @@
+export default {
+  usageTitle: 'Usage',
+  usagePeriod: 'Period',
+  usageDays: 'Last {{days}} days',
+  usageRefresh: 'Refresh',
+  usageLoading: 'Loading usage…',
+  usageInvalidResponse:
+    'This usage result does not match the current account or period. Refresh to try again.',
+  usageAccountRequired: 'Sign in to a workspace to view recorded usage.',
+  usageDescription:
+    'Actual model turns grouped by UTC date, including tool-call replies and system assistance such as team planning and teaching. Recording begins when the ledger is enabled; older chats are not estimated.',
+  usageWorkspaceScope: 'Workspace total',
+  usageSelfScope: 'My tasks only',
+  usageModelTurns: 'Model turns',
+  usageTotalTokens: 'Reported tokens',
+  usageUnreported: 'Unreported turns',
+  usageInput: 'Input tokens',
+  usageOutput: 'Output tokens',
+  usageCacheRead: 'Cache-read tokens',
+  usageCacheWrite: 'Cache-write tokens',
+  usageReportedHint:
+    '{{reported}} of {{all}} model turns reported nonzero usage. Missing or all-zero reports do not mean the work was free.',
+  usageCostUnknown: 'Cost unknown',
+  usageCostHint:
+    'This is a usage record, not a bill. Provider rates and actual charges have not been verified.',
+  usageEmpty: 'No model usage has been recorded in this period.',
+  usageByBot: 'By Bot',
+  usageByModel: 'By model',
+  usageByDay: 'View by day',
+  usageDateUTC: 'Date (UTC)',
+  usageItem: 'Item',
+  usageRemovedBot: 'Deleted Bot',
+  usageSystemTasks: 'System assistance',
+  usageUnknownModel: 'Unspecified model',
+} as const;

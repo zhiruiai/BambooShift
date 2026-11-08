@@ -1,0 +1,30 @@
+.website-project-card {
+  text-align: left;
+}
+.website-project-card:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+.website-project-card .file-copy {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.website-project-library {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+@media (min-width: 901px) {
+  .app-shell.with-website {
+    grid-template-columns: 210px minmax(280px, 0.8fr) minmax(410px, 1.4fr);
+    grid-template-rows: minmax(0, 1fr);
+  }
+}
+@media (min-width: 901px) and (max-width: 1050px) {
+  .app-shell.with-website {
+    grid-template-columns: minmax(280px, 0.8fr) minmax(410px, 1.4fr);
+  }
+  .with-website > .sidebar {
+    display: none;
+  }
+}

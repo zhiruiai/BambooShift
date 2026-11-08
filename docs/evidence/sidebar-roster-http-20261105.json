@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-05T03:50:14.870Z",
+  "syntheticAccountsOnly": true,
+  "productGuiAcceptance": false,
+  "paidModelRequests": 0,
+  "formalDataChanged": false,
+  "vmMutated": false,
+  "success": true,
+  "verified": {
+    "ownerMemberPreferencesIndependent": true,
+    "memberCanOrganizeOwnRoster": true,
+    "secondLoginSeesSamePreferences": true,
+    "bootstrapReturnsOnlyOwnPreferences": true,
+    "oldPageBootstrapAfterAccountCookieSwitchRejected": true,
+    "wrongExpectedUserRejected": true,
+    "nonMemberRejected": true,
+    "staleRevisionRejected": true,
+    "sectionRenameAndCollapsePersistAcrossRestart": true,
+    "deletingSectionRetainsHiddenAndPinnedBot": true,
+    "restoringBotPreservesPin": true,
+    "hidingPrimaryPreservesSelectionAndEnabledDailyFollowUp": true,
+    "oldSharedPinRouteRejectsWithoutPartialWrite": true,
+    "botHistoryMemorySkillsRoutinesFilesAndSettingsUnchanged": true
+  },
+  "temporaryDataRemoved": true
+}

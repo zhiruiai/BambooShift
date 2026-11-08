@@ -1,0 +1,109 @@
+.team-proposal-card {
+  width: min(100%, 430px);
+  border: 1px solid light-dark(#e8deee, var(--border));
+  border-radius: 13px;
+  padding: 14px;
+  background: light-dark(#fcf9fe, var(--surface));
+  color: light-dark(#7b6788, var(--text-secondary));
+}
+.team-proposal-card > header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.team-proposal-icon {
+  display: grid;
+  place-items: center;
+  background: light-dark(#eee5f5, var(--surface-subtle));
+  color: light-dark(#a182b5, var(--text-muted));
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  flex: none;
+}
+.team-proposal-card > header strong {
+  flex: 1;
+  min-width: 80px;
+  font-size: 12px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.team-proposal-status {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 12px;
+  color: light-dark(#9d8aa9, var(--text-muted));
+}
+.team-proposal-source {
+  color: light-dark(#a294ab, var(--text-muted));
+  font-size: 12px;
+  margin: 9px 0;
+}
+.team-proposal-goal {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 10px 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.team-proposal-card details {
+  border-top: 1px solid light-dark(#eee7f3, var(--border));
+  margin-top: 10px;
+  font-size: 12px;
+}
+.team-proposal-card summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  color: light-dark(#937aa5, var(--accent));
+}
+.team-proposal-card details[open] {
+  max-height: 330px;
+  overflow: auto;
+}
+.team-proposal-card details p,
+.team-proposal-card dd {
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.team-proposal-card dl {
+  display: grid;
+  gap: 11px;
+}
+.team-proposal-card dt {
+  color: light-dark(#7d688b, var(--text-secondary));
+}
+.team-proposal-card dt span {
+  color: light-dark(#a38eb2, var(--text-muted));
+  font-size: 12px;
+  margin-left: 8px;
+}
+.team-proposal-card dd {
+  color: light-dark(#94839f, var(--text-secondary));
+  margin: 4px 0 0;
+}
+.team-proposal-help {
+  font-size: 12px;
+  line-height: 1.7;
+  color: light-dark(#a091aa, var(--text-muted));
+  margin: 7px 0;
+}
+.team-proposal-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 11px;
+}
+.team-proposal-actions button {
+  min-height: 44px;
+  white-space: normal;
+}
+.team-proposal-error {
+  border-color: light-dark(#ebdbdf, var(--danger-border));
+}
+.team-proposal-cancelled .team-proposal-status {
+  color: light-dark(#a49ba9, var(--text-muted));
+}

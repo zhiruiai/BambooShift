@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "recordedDate": "2026-11-06",
+  "scope": "Follow-up model configuration explicitly authorized after the refactor acceptance",
+  "configuration": {
+    "configuredExistingPersonalWorkspaces": 1,
+    "profiles": [
+      {
+        "label": "GLM",
+        "active": true,
+        "privateCredential": true
+      },
+      {
+        "label": "DeepSeek Flash",
+        "active": false,
+        "privateCredential": true
+      }
+    ],
+    "defaultModel": "GLM",
+    "backupModel": "DeepSeek Flash",
+    "backupSelection": "manual",
+    "automaticFailover": false,
+    "newWorkspacesInheritConfiguration": false,
+    "backupCreatedBeforeConfiguration": true,
+    "credentialFileMode": "0600",
+    "credentialsStoredInWorkspacePrivateConfiguration": true,
+    "databaseStoresCredentialReferencesOnly": true,
+    "otherWorkspacesChanged": false,
+    "credentialsWrittenToSource": false
+  },
+  "connectivity": {
+    "execution": "Published compiled Pi worker in an isolated environment",
+    "syntheticPromptOnly": true,
+    "tools": 0,
+    "formalUserContentLoaded": false,
+    "rawResponseSaved": false,
+    "checks": [
+      {
+        "label": "GLM",
+        "completed": true,
+        "assistantTextReceived": true,
+        "httpStatuses": [200],
+        "modelRequests": 1,
+        "timedOut": false,
+        "credentialLeakDetected": false,
+        "childExitConfirmed": true,
+        "elapsedSeconds": 1.07,
+        "passed": true
+      },
+      {
+        "label": "DeepSeek Flash",
+        "completed": true,
+        "assistantTextReceived": true,
+        "httpStatuses": [200],
+        "modelRequests": 1,
+        "timedOut": false,
+        "credentialLeakDetected": false,
+        "childExitConfirmed": true,
+        "elapsedSeconds": 4.73,
+        "passed": true
+      }
+    ],
+    "modelLabels": "User-declared configuration labels; model response text was not used to establish provider identity",
+    "totalSyntheticProbeRequests": 2,
+    "scope": "Only the two controlled synthetic probes, one per configured model; this is not a count of all model activity by the running service."
+  },
+  "service": {
+    "restartAfterConfigurationConfirmed": true,
+    "source": "Root verified the running service and actual workspace binding",
+    "existingEnabledScheduledFeaturesMayContinue": true,
+    "nonModelBusinessTablesClaimedUnchanged": false
+  },
+  "historicalAcceptance": {
+    "priorRefactorTestCountsChanged": false,
+    "priorIntegrationEvidenceRewritten": false
+  },
+  "privacy": {
+    "workspaceIdsIncluded": false,
+    "providerAliasesIncluded": false,
+    "endpointsIncluded": false,
+    "secretsIncluded": false
+  }
+}

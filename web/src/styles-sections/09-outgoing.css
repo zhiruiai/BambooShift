@@ -1,0 +1,337 @@
+.outgoing .message-bubble {
+  color: light-dark(#f7f7f8, var(--text));
+}
+.message-author {
+  font-size: 12px;
+}
+.conversation-preview {
+  color: light-dark(#77777e, var(--text-secondary));
+  font-size: 12px;
+}
+.conversation-heading time {
+  color: light-dark(#808087, var(--text-secondary));
+  font-size: 12px;
+}
+.section-label {
+  color: light-dark(#717179, var(--text-secondary));
+  font-size: 12px;
+}
+.section-help,
+.detail-identity p,
+.subtle-status {
+  color: light-dark(#7b7b83, var(--text-secondary));
+  font-size: 12px;
+}
+.detail-tabs button {
+  font-size: 12px;
+  color: light-dark(#777780, var(--text-secondary));
+}
+.detail-tabs button.active {
+  color: light-dark(#46464e, var(--text));
+}
+.routine-copy {
+  font-size: 12px;
+}
+.routine-copy small,
+.resources small {
+  font-size: 12px;
+  color: light-dark(#808089, var(--text-secondary));
+}
+.resources > button > span:nth-child(2) {
+  font-size: 12px;
+}
+.resources .count,
+.member-status {
+  color: light-dark(#81818b, var(--text-secondary));
+  font-size: 12px;
+}
+.member-mini {
+  font-size: 12px;
+}
+.computer-caption {
+  font-size: 12px;
+  color: light-dark(#777780, var(--text-secondary));
+}
+.setup-note {
+  font-size: 12px;
+  color: light-dark(#89729e, var(--text-secondary));
+}
+.composer textarea::placeholder {
+  color: light-dark(#8e8e99, var(--text-muted));
+}
+.composer-footnote {
+  color: light-dark(#9999a2, var(--text-muted));
+}
+.detail-identity p {
+  line-height: 1.7;
+}
+.details-toolbar {
+  color: light-dark(#82828c, var(--text-secondary));
+  font-size: 12px;
+}
+.details-footer {
+  color: light-dark(#90909a, var(--text-muted));
+  font-size: 12px;
+}
+.conversation-start span {
+  color: light-dark(#898992, var(--text-secondary));
+  font-size: 12px;
+}
+.system-message {
+  color: light-dark(#888891, var(--text-secondary));
+  font-size: 12px;
+}
+.field-help,
+.dialog-form label small,
+.modal-header p {
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+}
+.dialog-form label,
+.field-label {
+  color: light-dark(#55545d, var(--text-secondary));
+  font-size: 12px;
+}
+.dialog-form input,
+.dialog-form textarea,
+.dialog-form select {
+  color: light-dark(#333338, var(--text));
+}
+.dialog-form input::placeholder,
+.dialog-form textarea::placeholder {
+  color: light-dark(#909099, var(--text-muted));
+  font-size: 12px;
+}
+.dialog-form h3 {
+  color: light-dark(#55545d, var(--text-secondary));
+}
+.secondary-button {
+  color: light-dark(#756180, var(--text-secondary));
+}
+.setting-info-row,
+.setting-info-row strong,
+.settings-runtime small {
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+}
+.integration strong {
+  font-size: 13px;
+  color: light-dark(#333338, var(--text));
+}
+.integration small {
+  font-size: 12px;
+  color: light-dark(#74747b, var(--text-secondary));
+}
+.integration-status {
+  font-size: 12px;
+  color: light-dark(#796584, var(--text-secondary));
+}
+.info-box {
+  color: light-dark(#786c83, var(--text-secondary));
+  font-size: 12px;
+}
+.agent-profile p {
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+}
+.editable-memory p {
+  font-size: 12px;
+  color: light-dark(#55515d, var(--text-secondary));
+}
+.editable-memory small {
+  color: light-dark(#85808c, var(--text-secondary));
+}
+.memory-category {
+  font-size: 12px;
+  color: light-dark(#806596, var(--text-secondary));
+}
+.routine-management strong {
+  color: light-dark(#4d4656, var(--text));
+  font-size: 13px;
+}
+.routine-management small {
+  color: light-dark(#7b7184, var(--text-secondary));
+  font-size: 12px;
+}
+.routine-management p {
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+}
+.skill-heading strong {
+  color: light-dark(#53465f, var(--text));
+  font-size: 13px;
+}
+.skill-heading small {
+  color: light-dark(#80728d, var(--text-secondary));
+  font-size: 12px;
+}
+.skill-card > p,
+.skill-content {
+  font-size: 12px;
+  color: light-dark(#776b81, var(--text-secondary));
+}
+.computer-screen-empty {
+  color: light-dark(#a18eb1, var(--text-muted));
+}
+.computer-screen-empty h3 {
+  color: light-dark(#756481, var(--text-secondary));
+}
+.computer-screen-empty p {
+  color: light-dark(#82758d, var(--text-secondary));
+  font-size: 12px;
+}
+.computer-screen-empty > span {
+  font-size: 12px;
+  color: light-dark(#847190, var(--text-secondary));
+}
+.computer-screen-toolbar {
+  color: light-dark(#80738a, var(--text-secondary));
+  font-size: 12px;
+}
+.computer-screen-toolbar .text-button {
+  font-size: 12px;
+}
+.browser-address input {
+  color: light-dark(#66586f, var(--text-secondary));
+  font-size: 12px;
+}
+.computer-settings h3 {
+  font-size: 13px;
+  color: light-dark(#6d5d78, var(--text-secondary));
+}
+.computer-settings > p {
+  font-size: 12px;
+  color: light-dark(#83758e, var(--text-secondary));
+}
+.computer-settings .dialog-form input {
+  font-size: 12px;
+}
+.computer-capabilities h4 {
+  font-size: 12px;
+  color: light-dark(#796787, var(--text-secondary));
+}
+.computer-capabilities p {
+  font-size: 12px;
+  color: light-dark(#8b7b96, var(--text-secondary));
+}
+.computer-action strong {
+  font-size: 12px;
+  color: light-dark(#776282, var(--text-secondary));
+}
+.computer-action small {
+  color: light-dark(#908198, var(--text-secondary));
+  font-size: 12px;
+}
+.computer-action code {
+  font-size: 12px;
+  color: light-dark(#887394, var(--text-secondary));
+}
+.action-result {
+  font-size: 12px;
+  color: light-dark(#8b7599, var(--text-secondary));
+}
+.file-copy strong {
+  font-size: 12px;
+  color: light-dark(#65616c, var(--text-secondary));
+}
+.file-copy small {
+  font-size: 12px;
+  color: light-dark(#87828f, var(--text-secondary));
+}
+.segmented > button {
+  color: light-dark(#867590, var(--text-secondary));
+}
+.segmented > button.active {
+  color: light-dark(#5c486d, var(--accent));
+}
+.text-button {
+  color: light-dark(#826398, var(--accent));
+}
+.pill {
+  font-size: 12px;
+  color: light-dark(#6d8c77, var(--success));
+}
+.pill.pending {
+  color: light-dark(#a18353, var(--warning));
+}
+.search-box input::placeholder {
+  color: light-dark(#878791, var(--text-secondary));
+}
+.empty-conversation p {
+  color: light-dark(#81788c, var(--text-secondary));
+}
+.detail-empty p {
+  color: light-dark(#8d8299, var(--text-secondary));
+}
+.add-detail-row {
+  color: light-dark(#84778f, var(--text-secondary));
+}
+.header-status {
+  color: light-dark(#85818c, var(--text-secondary));
+}
+.member-row small {
+  color: light-dark(#85808c, var(--text-secondary));
+}
+.resource-icon.lavender {
+  color: light-dark(#9476b4, var(--accent));
+}
+.resource-icon.amber {
+  color: light-dark(#b79558, var(--warning));
+}
+@media (max-width: 760px) {
+  .message-bubble {
+    font-size: 13px;
+  }
+  .conversation-preview {
+    font-size: 12px;
+  }
+  .section-label,
+  .routine-copy,
+  .resources > button > span:nth-child(2),
+  .member-mini {
+    font-size: 12px;
+  }
+  .section-help,
+  .detail-identity p,
+  .routine-copy small,
+  .resources small {
+    font-size: 12px;
+  }
+  .details-footer {
+    font-size: 12px;
+  }
+  .setup-note {
+    font-size: 12px;
+  }
+  .composer textarea {
+    font-size: 13px;
+  }
+  .dialog-form input,
+  .dialog-form textarea,
+  .dialog-form select {
+    font-size: 16px;
+  }
+}
+.screenshot-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 10px 12px;
+  border: 1px solid light-dark(#ebd3cc, var(--danger-border));
+  border-radius: 8px;
+  background: light-dark(#fff3ef, var(--danger-soft));
+  color: light-dark(#9a6152, var(--danger));
+  font-size: 12px;
+  line-height: 1.65;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+.screenshot-error > svg {
+  margin-top: 2px;
+}
+.screenshot-error small {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#9a7369, var(--danger));
+  margin-top: 3px;
+}

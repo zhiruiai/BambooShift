@@ -1,0 +1,14 @@
+.packaged-skills .apps-search {
+  width: 100%;
+}
+
+.packaged-skills .packaged-skill-content {
+  max-height: none;
+  margin: 0;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
+
+.packaged-skills .private-skill-target button {
+  min-height: 44px;
+}

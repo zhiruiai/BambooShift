@@ -1,0 +1,27 @@
+{
+  "checkedAt": "2026-11-05T00:56:07.453Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "label": "用户指定 GLM 5.3 Flash（未独立验证服务商模型身份）",
+  "syntheticOnly": true,
+  "maximumModelRequests": 1,
+  "maximumOutputTokens": 4096,
+  "executingTools": false,
+  "formalBotOrConversationMutations": false,
+  "failureReason": "模型没有返回有效的团队方案。你的目标已保留，请重新生成。",
+  "success": false,
+  "error": "模型未在本次受限测试中生成通过服务端校验的方案；未自动重试。",
+  "transport": {
+    "status": 200,
+    "contentType": "text/event-stream; charset=utf-8",
+    "bytes": 16737,
+    "finishReasons": [
+      "tool_calls"
+    ],
+    "toolNames": [
+      "propose_team"
+    ]
+  },
+  "modelRequests": 1,
+  "sourceSettingsUnchanged": true,
+  "temporaryStoreClosed": true
+}

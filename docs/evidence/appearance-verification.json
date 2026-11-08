@@ -1,0 +1,155 @@
+{
+  "checkedAt": "2026-11-05T10:43:15.194Z",
+  "scope": "Device-level general appearance settings, shared light/dark surfaces, private Bot accents, native spelling support and settings shortcut",
+  "reference": [
+    "https://docs.x.ai/grok-bot/settings-and-notifications"
+  ],
+  "currentRun": {
+    "clientAndDesktop": {
+      "total": 347,
+      "passed": 347,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 12353.328042,
+      "concurrency": 2
+    },
+    "settingsAndAdjacent": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 974.614167
+    },
+    "preferenceControllerAndPanel": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 136.793667
+    },
+    "contrast": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 145.156041
+    },
+    "navigationAndBindings": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 845.067791
+    }
+  },
+  "unchangedBackend": {
+    "sourceFiles": 191,
+    "allHashesMatchPrevious": true,
+    "notRerunThisStage": true,
+    "proof": "memory-import-verification.json",
+    "serverStandardSuite": {
+      "total": 712,
+      "passed": 700,
+      "failed": 0,
+      "skipped": 12,
+      "durationMs": 91226.41125,
+      "concurrency": 2
+    },
+    "optInComputerEngineSupplement": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 106642.31025,
+      "concurrency": 1,
+      "newlyCovered": 10,
+      "repeatedFromStandardSuite": 3,
+      "productGuiAcceptance": false
+    },
+    "uniquePassed": 710,
+    "skipped": 2
+  },
+  "combinedCurrentClientAndUnchangedBackendEvidence": {
+    "uniquePassed": 1057,
+    "failed": 0,
+    "skipped": 2,
+    "note": "Server and browser-engine results are carried only for byte-identical backend sources; they were not rerun for this appearance-only change."
+  },
+  "newFrontendTests": 13,
+  "behaviorEvidence": {
+    "preferences": "Versioned per-origin local storage defaults to system theme, Bot accent and spelling enabled. Initial application happens before React rendering. System changes affect only system mode. Storage events read current stored values so delayed events cannot override a later write; failed reads or writes retain usable in-memory choices and show persistence status. HMR disposal removes old global listeners.",
+    "integration": "All owners and members can change device appearance in general settings. Hidden controls reject old handlers, role changes return to an active general panel, model setup retains import drafts, and Cmd/Ctrl+, protects existing dialogs and IME. Composer spelling changes independently from its existing draft.",
+    "colors": "Shared semantic theme values cover all 28 existing CSS files plus the new theme layer. Reconstructing each original light branch and applying the project formatter exactly matches prior file hashes, proving old selectors/layout declarations and light values were retained. New private-message color styling is an explicit added behavior. Theme text/status and Bot color formulas pass numerical contrast checks; this does not establish pixel/GUI acceptance.",
+    "accent": "Only assistant message-content in a true one-Bot DM receives accent scope, with validated six-digit Bot color. Neutral selection does not mutate Bot data, group author colors, avatars, user messages or screen images. Error/status colors and code/terminal layers remain separate.",
+    "desktop": "Only the connected product WebContentsView opts into native spellcheck; setup and default renderer policies remain false. Actual controller construction and retry paths retain every other isolation setting. A new macOS arm64 Electron package was built, locally signed and checked against the current nine runtime files; native spelling dictionaries were not exercised in a GUI."
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 39,
+  "vite": {
+    "modules": 1974,
+    "duration": "2.20s"
+  },
+  "sourceFreeze": {
+    "files": 366,
+    "snapshotSha256": "25e863f21d4d4557b22441c06c1439f3c55ee0ab5495fda680348fc948b1a32a",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "728ea1c2bd1f38c3eae0cddb3947915514079a8d59bf249dd73d984e0ade9572"
+  },
+  "sourceSha256": {
+    "desktop/main.cjs": "9a9c0639e1637f6263206aea594324eb15fdef7fd813ac8bf3db1aca2490eff7",
+    "desktop/security.test.cjs": "8b4bea2204235fb5545cf6919836e4ccfa162fd0a97831dbf68ef3ef395543ba",
+    "src/App.tsx": "5c245f90f1502ddb509309db372c9eb8164323a915ff09cdb7ae048ad8f05a70",
+    "src/admin/Admin.css": "dff7a5f51cb185c858beab360355f7aa5d3a719d4f11b00c5eaeea3eb2ce6262",
+    "src/appearance.test.ts": "95693fd0b11f6812c3d60c6663b384b1e05d7978359260c0373d5aeae2f5e004",
+    "src/appearance.ts": "74d3fef7264c0d60e9c84ade1376ba07a748a1b39be6144176b8fd0e1500cc33",
+    "src/components/AppearanceSettings.css": "2d9a7a69081d77d2be6b6371f0e193c3e81b1f1d94d4e76286ed95e2aadec7ce",
+    "src/components/AppearanceSettings.tsx": "bef2d28872b4ed9d1aeb5a0725eaf07a33d51411c9dab4c4949067d03fb49f2c",
+    "src/components/AppsDialog.css": "3e883fa404098b06f10b50f75f414b217275f16d94ec2976c9fdf9589ac12f47",
+    "src/components/AvatarPicker.css": "e67e2d1a737c8ac27f971dd3ea0a5286a4f838d1fbd98dc604b9e970b8bd4df3",
+    "src/components/BotProfiles.css": "52a5c07729b23ad73ef1417c493ba17d685ec8671178eccc1f7d0dee90c40b27",
+    "src/components/BotTeamProposalCard.css": "96b420bad50feef576b17681510fe9d37b3177b66dfc7313e67dfcda5852425b",
+    "src/components/BotTemplates.css": "7b8a368880fcf25debe8995cb4cb53824de95791d6bd9cf3ec17f60664fff7e1",
+    "src/components/CloudComputerCard.css": "9adced97c4252cc4fbcafb2c6599868f5afbab4952e7d1a1db055561f5821b90",
+    "src/components/ComputerFiles.css": "2fed39fa7e32c7055cd227671473c6436b8fd3b8bde44139f5a51d5cc0fdf6b1",
+    "src/components/ComputerFrame.css": "b1e6a013f76efb3e59449d8b75614b9941e856b45a5ab0ed946e15b03a9af1e1",
+    "src/components/ConversationSearch.css": "552ce5c77f8447b67abba09d44518f90eb3067225dbaec304a81f5683682d056",
+    "src/components/DictationControls.css": "f6381851311203429fe1015cde4d7b437cc3b5500a8f553f71ac146212ef4de8",
+    "src/components/MobileHome.css": "50068ea9fe35021b12abb2f5d772b0f067027d8f32a12030b7afcb91bd49ad9f",
+    "src/components/PrimaryBot.css": "b1768e33d4a2d58157722adffb7aa0f62a9e3083040d82b21dd6ae58809c48eb",
+    "src/components/RemoteShellDetails.css": "5033d0d6633287116f0d6842008b2915a8e99261680de83f06c74b951ac7d065",
+    "src/components/RoutineDialog.css": "495814f9b683deb920a49d0f1c8206c392c902e264472f36bb158d67c3217503",
+    "src/components/SettingsDialog.css": "035987176c5de881b7ada6db3f38e6c1c14d03d9222d887c6adae244af76f7d6",
+    "src/components/SidebarRoster.css": "dda85d462470e3eadde4b4819ff081a7493c0b59468206325ca22a51abc87ea7",
+    "src/components/SkillVersions.css": "762608f9df50c4ea8196634ead475964f020481000dc058b992ac14b98b73b7f",
+    "src/components/SmartTeamPanel.css": "d62aa4104787daa47b881bd6c0944464f6226f9492af087ece614da4f296a7bb",
+    "src/components/WorkspaceSettingsDialog.css": "144eb1f04b3c2341e7d98b66d336c0071676edc4037f4381f983a012f301ecb5",
+    "src/components/WorkspaceSettingsDialog.tsx": "0605ec67ab318d5e196964cc27dce9a00830074a84ffca3d15253d3c71502b46",
+    "src/groupNavigation.test.ts": "b9295b9218825c4be9182bfc9b67e4e2a0a3392a5e633594c3bd1fa29b6e07d6",
+    "src/main.tsx": "1f9e95f731d5633a6904381a579f919b459333ba8c72c370688f1d65b8c25790",
+    "src/memoryImportSettings.test.ts": "602d856de165164fe89808363c38b84aeea612b1160693106ae6718318446c7d",
+    "src/messageAppearance.test.ts": "50ab5af88c38e6ddacae32bc8ff5ff897e64bf9caee439a182e3782b0d623e3d",
+    "src/platform/AccountSettings.css": "c98415352ae758d02a24b8c3a39beaaeb7ff820decd3aabdd8868006a71b0701",
+    "src/platform/BotTemplatePage.css": "b91d8c8145d69f67903cbbaf0b28a8d71c5a74a7f92c38fd217cb76ec7acee47",
+    "src/platform/Platform.css": "4d05ac66c3a8a256da10b3c66e235aae5353ea25e2dc04fc6ba75ff1dfff28d4",
+    "src/styles.css": "3f87d2cf5aa81500a4775cd9b3bca869d4d5c9d9b6683d354fd6b6513ec7e152",
+    "src/theme.css": "be1e4a06fad4dcf6f189b92e024df629fa95b28b93595f35e14a55db29757bb9",
+    "src/themeContrast.test.ts": "ef069b5521ca3ea30418eeab7d5129919d81725d8a91ed32bab41c8af9ded9dc",
+    "src/useAppearance.ts": "fe5859bcd9066d74c70756f68dccf365823b7b085782c10e6d2e2a228543b1e9"
+  },
+  "colorsProof": "appearance-colors.json",
+  "desktopPackageProof": "appearance-client-package.json",
+  "serviceProof": "appearance-service.json",
+  "serviceChecks": 58,
+  "dataAndExternalEffects": {
+    "externalModelRequests": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control remains disabled; no new visual, focus, mobile touch or native spelling GUI acceptance.",
+    "Native spelling depends on available host dictionaries. Device preferences do not sync through accounts or across devices; different origins have separate settings.",
+    "Language selection, timezone controls and complete approval preferences remain pending; full reference and multi-device goals remain active."
+  ]
+}

@@ -1,0 +1,44 @@
+.modal.modal-scroll-body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.modal-scroll-body > .modal-header {
+  flex: none;
+}
+.modal-scroll-body > .modal-header > div:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.modal-scroll-body > .modal-header .icon-button {
+  flex: none;
+}
+.modal-body {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: 12px;
+  padding: 3px;
+  margin: -3px;
+}
+.modal:is(
+    .bot-settings,
+    .group-settings-dialog,
+    .bot-template-dialog,
+    .shared-bots-dialog,
+    .roster-dialog,
+    .routine-library-dialog,
+    .model-preferences-dialog
+  )
+  > .modal-header {
+  margin-block-end: 16px;
+  padding-block: 5px 11px;
+  border-bottom: 1px solid var(--border);
+}
+@media (max-width: 760px) {
+  .modal-scroll-body > .modal-header .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

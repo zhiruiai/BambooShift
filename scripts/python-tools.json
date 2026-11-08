@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "tools": {
+    "desktop-control": [
+      "python_tools/desktop_control/protocol.py",
+      "python_tools/desktop_control/session.py",
+      "python_tools/desktop_control/x11.py",
+      "python_tools/desktop_control/operations.py",
+      "python_tools/desktop_control/supervision.py"
+    ],
+    "isolated-shell": [
+      "python_tools/isolated_shell/foundation.py",
+      "python_tools/isolated_shell/workspace.py",
+      "python_tools/isolated_shell/namespace.py",
+      "python_tools/isolated_shell/execution.py",
+      "python_tools/isolated_shell/maintenance.py"
+    ],
+    "desktop-session": [
+      "python_tools/desktop_session/foundation.py",
+      "python_tools/desktop_session/namespace.py",
+      "python_tools/desktop_session/supervisor.py",
+      "python_tools/desktop_session/lifecycle.py"
+    ],
+    "desktop-browser": [
+      "python_tools/desktop_control/protocol.py",
+      "python_tools/desktop_control/session.py",
+      "python_tools/desktop_browser/configuration.py",
+      "python_tools/desktop_browser/isolation.py",
+      "python_tools/desktop_browser/relay.py"
+    ]
+  }
+}

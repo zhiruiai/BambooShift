@@ -1,0 +1,9 @@
+{
+  "endpoint": "https://mcp.slack.com/mcp",
+  "resource": "https://mcp.slack.com",
+  "resourceMetadata": "https://mcp.slack.com/.well-known/oauth-protected-resource",
+  "authorizationEndpoint": "https://slack.com/oauth/v2_user/authorize",
+  "tokenEndpoint": "https://slack.com/api/oauth.v2.user.access",
+  "scopes": ["search:read.public", "channels:read", "channels:history"],
+  "tools": ["slack_search_public", "slack_search_channels", "slack_read_thread"]
+}

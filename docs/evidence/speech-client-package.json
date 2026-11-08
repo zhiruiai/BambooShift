@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-11-04T19:43:37.207Z",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "electronVersion": "45.2.1",
+  "sourceFilesExact": true,
+  "sourceFileHashes": {
+    "main.cjs": "2743fe0ce7c00eb7bd23d633dbbfbce8859ea1c4427bf3d6ea0456a866930a82",
+    "preload.cjs": "7d62fd43029cc97afd5882cd5037de75ba7a8e88fbb8139602aa9056df181b83",
+    "security.cjs": "4e3bedb63b761975fbb4a03dd3d42c3d8b9825cfa65de41378cde205feb9a4e8",
+    "ui/app.js": "ef79e5c7ab383096841b30b9b79ff99d9da931a049880cb37678e57338d44e44",
+    "ui/index.html": "b911d6e6f0e74b37ddd46191def3c8f5a11a1c3e43eaec29878bebf5baaeb8ba",
+    "ui/logo.svg": "3aec59ac43529b3de932bdc309c08a883ddabb42c5df407eaca5d61119dc7fe6",
+    "ui/styles.css": "99f2258eee82fa370f433141d4b9a826b56fc7af6bee05bea53288697b7bf13e"
+  },
+  "strictSignatureVerified": true,
+  "localSignature": "ad-hoc",
+  "signedForDistribution": false,
+  "microphoneDescription": "将你主动录制的语音转成输入框中的文字，由你确认后发送。",
+  "audioInputEntitlement": true,
+  "cameraEntitlement": false,
+  "applicationLaunched": false,
+  "microphoneAccessRequested": false,
+  "nativeMicrophoneGUIVerified": false
+}

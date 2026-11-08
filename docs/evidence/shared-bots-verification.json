@@ -1,0 +1,170 @@
+{
+  "checkedAt": "2026-11-05T06:37:25.321Z",
+  "scope": "Live shared Bot definitions, private personal-space references and conversations, team/selected access, discovery and authenticated links, atomic join receipts, source snapshots and revocation",
+  "reference": [
+    "https://docs.x.ai/grok-bot/shared-bots",
+    "https://docs.x.ai/grok-bot/chat-and-collaboration"
+  ],
+  "serverStandardSuite": {
+    "total": 626,
+    "passed": 614,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 78523.334625,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 133641.060916,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "serverFinalUniqueResults": {
+    "total": 626,
+    "passed": 624,
+    "failed": 0,
+    "skipped": 2,
+    "skips": "Linux-only file-descriptor race and dedicated UID checks on macOS"
+  },
+  "clientAndDesktop": {
+    "total": 230,
+    "passed": 230,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 13883.330208
+  },
+  "totalFinalUniquePassed": 854,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "newTests": {
+    "runtime": 13,
+    "sharedCatalog": 11,
+    "readonlyPersonalViews": 7,
+    "platformHttp": 9,
+    "privateStoreAtomicity": 4,
+    "clientSharedFlows": 10,
+    "clientLinkPage": 4
+  },
+  "regressionHistory": {
+    "firstFullServer": {
+      "total": 626,
+      "passed": 614,
+      "failed": 0,
+      "skipped": 12,
+      "durationMs": 37419.045458
+    },
+    "concurrentWithChrome": {
+      "total": 626,
+      "passed": 613,
+      "failed": 1,
+      "skipped": 12,
+      "durationMs": 67123.240708
+    },
+    "failure": "One existing speech fixture waited for a second recognition start after checking only that the first process had exited. The response status was not captured, so the exact failing response is unproven.",
+    "diagnosis": "Production keeps account capacity until temporary-file cleanup finishes. Process exit alone is not that completion barrier; a new request can correctly receive SPEECH_ALREADY_PENDING.",
+    "isolatedSpeechRecheck": {
+      "total": 10,
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 8839.143542
+    },
+    "finalFullServer": "Passed after Chrome completed, with test concurrency 2. Production source was unchanged.",
+    "postFullSuiteTestOnlyChange": {
+      "file": "server/speech.test.ts",
+      "change": "Retained original timeout, permission and process-exit assertions; added awaited actual cancelScope cleanup before each subsequent request.",
+      "recheck": {
+        "total": 10,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "durationMs": 9906.958875
+      }
+    }
+  },
+  "behaviorEvidence": {
+    "privateScope": "Real account HTTP rejects source owner, team owner, peers and operator sessions from recipient private bootstrap, messages, files, computer and receipts.",
+    "liveDefinition": "Read-only source profile and active skills project into personal UI; Pi freezes each first-use definition within one root, retaining source grants after children finish. Next root reads edits.",
+    "sourceRevocation": "Real Pi and pending AppActions stop after source revocation, membership removal or source deletion; old decisions and subsequent cached execution are denied.",
+    "atomicJoin": "Single personal SQLite transaction covers alias, DM, reference, receipt and hidden restoration. Injected final insert failures roll everything back; postcommit notification failure preserves recoverable receipt.",
+    "readonly": "Managed references cannot be edited, deleted, copied, republished, re-shared or set primary; source skills are read-only. Existing team visibility is unchanged.",
+    "frontend": "Actual React handlers exercise fixed-account reads, avatar blob cleanup, selected-member editing, immutable request recovery, actual bootstrap confirmation and cross-workspace draft/transfer/dictation guards.",
+    "publicEntry": "Strict shared UUID paths survive login/register; anonymous views disclose no Bot content; users explicitly select an active own personal target."
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 41,
+  "vite": {
+    "modules": 1954,
+    "duration": "11.32s"
+  },
+  "sourceFreeze": {
+    "files": 322,
+    "fullSuiteSnapshotSha256": "d99fa917bbd23bf70fc8a134077cac6b32f269b9cc232cca41085cc90c80eaa7",
+    "postFullSuiteChanges": ["server/speech.test.ts"],
+    "finalTreeSha256": "85ca5f952d6fb7cd6503ae4f2a6f9b8657379b09ba2c522a19aaa705549bc6c1"
+  },
+  "sourceSha256": {
+    "shared/shared-bots.ts": "296bc3d9e6c63b17bbe208e43a7afb250cc16f12d5b350767ffba3baa20dfaac",
+    "shared/types.ts": "fd5260efb20f476550ec1977917c7da651e30f130f7665fee0d99f34a16ba420",
+    "server/store.ts": "dbe3b26dab103f5993df96fc5b53a58d8110c55d6f739699a289b1ec33ef46a4",
+    "server/app.ts": "a123342941cf4a8e3adfa1589b6f93e7778e5ec19edab4c4d0feab98a9eaef06",
+    "server/platform-app.ts": "2c894a5e4002ed637a53e12bc11709969058d436fb48f931920188dc16467e9b",
+    "server/bot-installs.ts": "9f1f3a5c568d4534e6e4a8ec80bcd365553577d8a8dc74dd233c14e799cedf23",
+    "server/primary-bot.ts": "11edee147369963ef1b72196d92db85e0b3df244b4db03b478e8f43c71aadb93",
+    "server/skill-lifecycle.ts": "e08b2a81fbec78f55d61ece4175a293e46c01e6a6d1e89395ab21eb970c94ecd",
+    "server/shared-bot-references.ts": "1fa8207eddbb3eac341984809d3662df4b74345628065fd1bac98e013928c4a8",
+    "server/shared-bot-references.test.ts": "4b11813bf676435bb987e344299db5b12febac2876319a296404f5193d46ce09",
+    "server/shared-bot-http.ts": "8a89485e57936d789a5504a683108c8caf386b18f11a3d01f64d15587200e16f",
+    "server/shared-bot-http.test.ts": "12dd84cd1362db6e92af1a799a7a9ee7cc6bcdad7553681935f25bb90be480a5",
+    "server/shared-bots.ts": "a1a8a4740b43169af375f2fb9e64facd2373d818bb3db1da93b7e3f24dbe0c00",
+    "server/shared-bots.test.ts": "81264da0fe9090011568b6fc15c80564c085357b56a6d6481eed8a6fcb78a835",
+    "server/shared-bot-source.ts": "c274af50d1f8d4116a778371c1b6f50ddbc40fcdfd84c830ad7bf9a92e57b858",
+    "server/shared-bot-reference-view.ts": "3e09e3a8306787f31551e35e6bf08c4d71cb50805406eba65f9e2a55147e2754",
+    "server/shared-bot-reference-view.test.ts": "e39880701b4c3af3b5f1253dd29d2e6ff564efb53f1f3c2964d30bd0c0cb9b02",
+    "server/runtime.ts": "9612c7f86e272dfeb8be54323bde8e4160925bed4f77dbc524f1468e72ae8833",
+    "server/bot-run-definition.ts": "685d010e637baf1ff9fb4fa0e3d840f7f936d967aa28f448929d247a006773bd",
+    "server/runtime-shared-bots.test.ts": "ec9b3f877f6b2db9e077bae8f76c41471b25305af7df91d30e03a744f7293bc7",
+    "src/sharedBots.ts": "b97c0434579a8448eb17bd7f54f5937d93a1d3d721dceda284f4a20ab12e3ae8",
+    "src/sharedBots.test.ts": "fb91eefb9079aeddae3b7b709237b24eeec4f2d271d951517ae2da27dd6e78e4",
+    "src/components/SharedBotsDialog.tsx": "583ea74a281537ece049449e70e47568c8243baa15a3f8ebd6f8996f37672a06",
+    "src/components/SharedBots.css": "397289a5500e0684ce31dc62bc68c3ca77e2e3e3995af75c485cc448515d0f27",
+    "src/App.tsx": "4eebbe0f82a9ab818a82c1872b0a445553aedd3e90cd79b027a1fb3b7d05449a",
+    "src/components/Avatar.tsx": "81b8132c2dfa6ed01f9fd3fd63d6568554df29fe18e6fb811e832bed5c907296",
+    "src/components/AgentDialog.tsx": "61cdc7c4825acaeb0d16a636fd39b6585f5d1ec6a8b4dff82d78a503e56c8782",
+    "src/components/CreateDialog.tsx": "20f2918a6df6beb8646dc391314c7aa93000276f7d4e3418a4cbaca5f6e279d7",
+    "src/components/PrimaryBotDialog.tsx": "7429fa8a78516fd0ab72e5cd8567470bc83f1f62180117cdd636dab2972c8090",
+    "src/components/SidebarRoster.tsx": "7f32b82b56757f7a30e2e887c81c9d36a3ae5fd0f06427fa691651979b6a79ba",
+    "src/primaryBot.ts": "7f300cd10a4dcf7201f746aa0b160c4ee9d8fe9e26b7249202ba2b4dbaf1c0c7",
+    "src/sidebarRoster.ts": "3b487f4efa5a92a8cd5206ee19ce3adb0ba7fd04aaa87e7323a26eb854e27318",
+    "src/admin/AdminApp.tsx": "a8c953e4cd617322535d6254ea1b5cc3481c41b02c557c94fd0cc6b8beff602d",
+    "src/avatarImages.test.ts": "fa6820a56839911e77a5d90b199e8dd903e64f11cc4dd52a19c2ef85c696d783",
+    "src/botTemplates.test.ts": "9496a4de02a1ee578887a436fff78ad38bbb3d05cba19cc7d52dfd8d73f705a0",
+    "src/PlatformRoot.tsx": "ebf0c27d9b86d83405ffd77a9f0036a1b8c795bf8b0f0a7dc64aa5069a217ff7",
+    "src/platform/platformApi.ts": "d4b02badfb8b74d5a5e9c646ec94aad535f73b127516bd2c9e56162c0563c351",
+    "src/platform/SharedBotPage.tsx": "8bc25a70d8c3191fb20706f12940cf478150f96330c359f6b1a34b0f3f1d6dfd",
+    "src/platform/sharedBotPageState.ts": "86e69a4a369dde8fd469c3012000fff8ab48f6ff4574939aa8d7882106e358e5",
+    "src/sharedBotPage.test.ts": "a2806d54f4478e9a01ea08682f18b31f1c9d013f896f24606e97b194c32559bd",
+    "server/speech.test.ts": "7a10cf5a18e1c923a7cd6cb6f645dafa8092a49b5d773419253c1473462a5f20"
+  },
+  "serviceProof": "shared-bots-service.json",
+  "serviceChecks": 38,
+  "dataAndExternalEffects": {
+    "temporaryAccounts": true,
+    "paidModelCalls": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control still reports Local browser use is disabled in Work settings; no product visual/focus/touch acceptance.",
+    "Source apps, files and team knowledge have no granular shared-resource grants yet; recipients use their own configured resources.",
+    "Private computer capacity is not automatically allocated; the previously authorized VM is not inherited by other spaces.",
+    "Original team chats remain team-visible. Shared personal references do not migrate or split existing history.",
+    "Synthetic Chrome engine fixtures are not product GUI evidence."
+  ]
+}

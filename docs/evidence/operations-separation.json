@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "recordedDate": "2026-11-06",
+  "status": "verified_and_running",
+  "scope": "Independent operations website and HTTP listener; existing Rust business backend remains a single writer",
+  "architecture": {
+    "rustProcesses": 1,
+    "sharedState": true,
+    "sharedIdentityDatabase": true,
+    "sharedScheduler": true,
+    "separateBusinessWriterAdded": false,
+    "listeners": "Separate product and operations listeners",
+    "productApi": "Account, workspace and product business APIs; platform APIs absent",
+    "operationsApi": "Platform APIs and health only; account registration and workspace execution absent",
+    "productStaticDirectory": "runtime/dist",
+    "operationsStaticDirectory": "runtime/operations-dist",
+    "operatorSessionIndependent": true,
+    "operatorRoleRequired": true,
+    "separateOriginAndHostValidation": true,
+    "operatorCookieSecurityUsesOwnOrigin": true,
+    "legacyAdminRedirect": "307 only to configured operations origin; unavailable target returns 404",
+    "bothListenersBoundBeforeDatabaseInitialization": true,
+    "sharedGracefulShutdown": true
+  },
+  "verification": {
+    "rustFull": {
+      "passed": 236,
+      "failed": 0,
+      "ignored": 0,
+      "targets": 75
+    },
+    "rustFocused": {
+      "passed": 16,
+      "failed": 0,
+      "ignored": 0,
+      "targets": 5,
+      "includedInRustFull": true
+    },
+    "webFull": {
+      "passed": 425,
+      "failed": 0,
+      "skipped": 0
+    },
+    "typescript": {
+      "errors": 0
+    },
+    "productBuild": {
+      "passed": true
+    },
+    "operationsBuild": {
+      "passed": true
+    },
+    "launchAndAssembly": {
+      "passed": 9,
+      "failed": 0
+    },
+    "packageCheckerContract": {
+      "passed": 11,
+      "failed": 0
+    },
+    "sourcePolicy": {
+      "files": 1254,
+      "violations": 0
+    }
+  },
+  "artifact": {
+    "path": ".build/backend-package-operations",
+    "profile": "debug",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "manifestSha256": "9eedc7f4e8b3da064b035f885d3d12c72e5ab2f9a81a3bb68369df2e8b3785cb",
+    "ownFiles": 106,
+    "ownFileBytes": 38785528,
+    "productionDependenciesInstalled": 228,
+    "cleanOfflineInstallation": true,
+    "reportedVulnerabilities": 0
+  },
+  "packageAcceptance": {
+    "version": 1,
+    "packageProfile": "debug",
+    "health": true,
+    "publicUi": true,
+    "separateOperationsListener": true,
+    "operationsPublicUi": true,
+    "productPlatformRoutesAbsent": true,
+    "operationsProductRoutesAbsent": true,
+    "operationsSetupRequired": true,
+    "ordinaryAccountRejectedByOperations": true,
+    "renamedAccountCookieRejectedByOperations": true,
+    "operatorSetupNotConsumed": true,
+    "nativeImageWorkerCrop": true,
+    "productionSharpCodec": true,
+    "registration": true,
+    "privateWorkspace": true,
+    "expectedUserMismatchRejected": true,
+    "actualPiModelRequests": 2,
+    "rustOwnedMemoryWrite": true,
+    "duplicateInputNotReplayed": true,
+    "logoutRevocation": true,
+    "gracefulShutdown": true,
+    "dependencies": "clean production npm installation",
+    "data": "temporary synthetic account and local mock model; removed after validation",
+    "productionCutover": false
+  },
+  "focusedCoverage": [
+    "Product and operations route and static-root isolation, including no-follow reads",
+    "Fixed-origin admin redirect and missing operations configuration",
+    "Operations rejects product Host/Origin and cross-site fetch",
+    "Independent HTTPS-origin and cookie configuration",
+    "Ordinary account cookie, renamed cookie and ordinary-account password cannot authorize operations",
+    "Both listeners share identity records while product logout leaves operations session active",
+    "Either occupied listener fails before database or setup-code initialization",
+    "SIGTERM closes both listeners and releases database and deployment lock",
+    "Startup signal cancels pending operator provisioning without weakening prior assertions"
+  ],
+  "productionOperationsCutover": {
+    "status": "running",
+    "confirmed": true,
+    "productWebPort": 5173,
+    "operationsWebPort": 5174,
+    "productApiPort": 3001,
+    "operationsApiPort": 3002,
+    "sharedRustProcessVerified": true,
+    "productOriginRejectedByOperations": true,
+    "legacyAdminRedirectVerified": true,
+    "privateConfigurationBackedUp": true,
+    "modelConfigurationRetained": true,
+    "runtime": "Local development frontends over the verified Rust dual-listener server"
+  },
+  "operationsBrowserAcceptance": {
+    "status": "verified",
+    "confirmed": true,
+    "temporarySyntheticDataOnly": true,
+    "fixtureOrigins": ["http://localhost:3198", "http://localhost:3199"],
+    "productRegistration": true,
+    "operatorInitialization": true,
+    "globalUsersVisible": true,
+    "userSuspensionConfirmed": true,
+    "userRestorationConfirmed": true,
+    "minimumVisibleFontPx": 12,
+    "productNavigationLinks": 0,
+    "formalSetupCodeRead": false,
+    "screenshot": {
+      "path": "docs/evidence/gui/independent-operations-users.jpg",
+      "sha256": "fafc4432b8bc4856426ba4b3637285582d4476ad94af3cea9a1454e54a1031bf"
+    },
+    "temporaryCleanup": "confirmed; owned fixture exited and synthetic data removed"
+  },
+  "notClaimed": [
+    "A second business backend or database writer",
+    "A new mobile build, real model account or remote computer acceptance cycle"
+  ],
+  "historicalRefactorEvidenceUnchanged": true,
+  "logs": {
+    "rustFull": {
+      "fileName": "openbot-operations-rust-full.log",
+      "sha256": "a091cb51fc3c9b72b2f3405a99e5846c081ef875a7f278321e30e0887e0d3afc",
+      "bytes": 36620
+    },
+    "rustFocused": {
+      "fileName": "openbot-operations-rust-tests-final.log",
+      "sha256": "5ad963df270e8bd5bbee1ebbae7b84c7d6453e68d9f50755018e2084f67d2d25",
+      "bytes": 2554
+    },
+    "webFull": {
+      "fileName": "openbot-operations-web-full-accepted.log",
+      "sha256": "7ee8b025620de2bdd268f2d849db1bb143c6c6b1751638cba09803f372510f62",
+      "bytes": 398115
+    },
+    "typescript": {
+      "fileName": "openbot-operations-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "productBuild": {
+      "fileName": "openbot-operations-product-build.log",
+      "sha256": "abc47450943a47a6f19720d59ae780946bd028adf476ccec6d4652aacc6400d1",
+      "bytes": 2279
+    },
+    "operationsBuild": {
+      "fileName": "openbot-operations-console-build.log",
+      "sha256": "43081c2a8e45b5c76e62f8342cb980376155c1f7d3fcd8927a36fd39191f872e",
+      "bytes": 707
+    },
+    "launchAndAssembly": {
+      "fileName": "openbot-operations-launch-package-tests.log",
+      "sha256": "e9886128a62d2513551e6c4f90f9da42e56691e6a44f61cbc4d3d1fc3d2e2be0",
+      "bytes": 1389
+    },
+    "packageCheckerContract": {
+      "fileName": "openbot-operations-package-boundaries.log",
+      "sha256": "d5ef2f590ad5f08bb5409ed99a14ca32e300c037d56da8ed36bb2ec0e9fe0c74",
+      "bytes": 792
+    },
+    "productionInstall": {
+      "fileName": "openbot-operations-package-ci.log",
+      "sha256": "2c127b4de7cc14b4420c9d4f7be33f183083b48a0ae103f8cebf62c0bb4df2a4",
+      "bytes": 236
+    },
+    "packageAcceptance": {
+      "fileName": "openbot-operations-package-acceptance.log",
+      "sha256": "08edc20bc89045fad922e5f55b909766f4c30dfaaaea482a2234920c6904c855",
+      "bytes": 788
+    },
+    "sourcePolicy": {
+      "fileName": "openbot-operations-source-check.log",
+      "sha256": "187f658c0681adafd9a61bac2274bf32f0540bcd26fd9b699d31e967ccc0ba21",
+      "bytes": 41
+    },
+    "independentStartup": {
+      "fileName": "openbot-independent-startup-accepted.log",
+      "sha256": "9664947603061f57398e4cb330a282fdbadfa9ed06e0c44118313e77318c73d6",
+      "bytes": 707
+    }
+  }
+}

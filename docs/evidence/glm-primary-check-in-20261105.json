@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-11-05T02:16:54.510Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "label": "用户指定 GLM 5.3 Flash，未独立核验提供商模型身份",
+  "syntheticOnly": true,
+  "simulatedSchedule": "next day 09:00 Asia/Shanghai",
+  "maximumModelRequests": 1,
+  "maximumOutputTokens": 512,
+  "formalConfigurationChanged": false,
+  "externalWorkToolsExecuted": false,
+  "success": true,
+  "status": {
+    "status": "completed",
+    "nextRunAt": "2026-11-07T01:00:00.000Z",
+    "lastRunAt": "2026-11-06T01:00:00.000Z",
+    "lastMessageId": "717ad47e-2159-43f2-89f1-558e8f160e08"
+  },
+  "reply": "今日回顾：已整理“茶芽写作助手”现有进展，且“文案伙伴”已完成中文介绍文案。但需注意，功能测试尚未完成，目前不具备发布条件。\n\n关键待确认事项：发布的具体日期仍未定。请确认您希望何时启动测试或确定发布窗口，以便我协调后续安排。在测试通过前，请勿对外宣称产品已就绪。",
+  "sameSlotReplayPrevented": true,
+  "requests": [
+    {
+      "status": 200,
+      "maxOutputTokens": 512,
+      "tools": 0,
+      "finishReasons": [
+        "stop"
+      ],
+      "usage": {
+        "prompt_tokens": 426,
+        "total_tokens": 506,
+        "completion_tokens": 80
+      }
+    }
+  ],
+  "modelRequests": 1,
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true
+}

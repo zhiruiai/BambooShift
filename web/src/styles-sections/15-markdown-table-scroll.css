@@ -1,0 +1,76 @@
+.markdown-table-scroll tr:last-child td {
+  border-bottom: 0;
+}
+.outgoing .markdown-table-scroll,
+.outgoing .markdown-table-scroll th,
+.outgoing .markdown-table-scroll td {
+  border-color: light-dark(#505056, var(--border-strong));
+}
+.outgoing .markdown-table-scroll th {
+  background: light-dark(#343237, var(--surface-raised));
+}
+.message-bubble ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.message-bubble li.task-list-item {
+  list-style: none;
+  padding-left: 0;
+}
+.message-bubble .task-list-item > input[type='checkbox'] {
+  width: 13px;
+  height: 13px;
+  margin: 0 7px 0 0;
+  vertical-align: -1px;
+  accent-color: light-dark(#9270ac, var(--accent));
+  pointer-events: none;
+}
+@media (max-width: 760px) {
+  .markdown-table-scroll table {
+    font-size: 12px;
+  }
+  .markdown-table-scroll th,
+  .markdown-table-scroll td {
+    padding: 7px 9px;
+  }
+}
+
+/* Account controls reuse the sidebar space instead of adding a second app header. */
+.profile-row > .account-menu {
+  flex: 1;
+  min-width: 0;
+}
+.profile-row .account-menu-trigger {
+  width: 100%;
+  max-width: 100%;
+}
+.mobile-home-header > .account-menu {
+  flex: 1;
+  min-width: 0;
+  max-width: calc(100% - 104px);
+}
+.mobile-home-header .account-menu-trigger {
+  width: 100%;
+  min-height: 44px;
+}
+.mobile-home-header .account-menu-trigger strong {
+  max-width: none;
+}
+.mobile-home-header .mobile-home-actions {
+  flex-shrink: 0;
+}
+.admin-sidebar-footer > .account-menu {
+  margin-bottom: 14px;
+}
+.admin-sidebar-footer .account-menu-trigger {
+  width: 100%;
+}
+.teammate-avatar {
+  width: 23px;
+  height: 23px;
+  font-size: 12px;
+}
+.reaction-chip > span {
+  margin-left: 4px;
+  font-size: 12px;
+}

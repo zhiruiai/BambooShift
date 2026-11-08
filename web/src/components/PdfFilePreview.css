@@ -1,0 +1,39 @@
+.pdf-file-preview {
+  min-width: 0;
+  background: var(--surface-subtle);
+}
+
+.pdf-file-preview-controls {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+}
+
+.pdf-file-preview-controls button {
+  min-height: 36px;
+  font-size: 13px;
+}
+
+.pdf-file-preview p {
+  margin: 0;
+  padding: 24px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.pdf-file-preview canvas:not([hidden]) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  background: #fff;
+}

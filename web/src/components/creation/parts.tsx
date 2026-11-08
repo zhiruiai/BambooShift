@@ -1,0 +1,23 @@
+import type { BotTeamPlan } from '../../../../shared/bot-team-plans';
+import type { AppSettings, BotAgent, Conversation } from '../../../../shared/types';
+import type { ConfirmedTeamConversation } from '../../botTeamDraft';
+import '../BotProfiles.css';
+import type { BotProfileDraft } from '../../botProfiles';
+export type Props = {
+  agents: BotAgent[];
+  canCreateBot: boolean;
+  workspaceId?: string;
+  userId?: string;
+  modelConfigured?: boolean;
+  modelLabel?: string;
+  settings?: AppSettings;
+  onSettingsChanged?: (settings: AppSettings) => void;
+  initialPlanId?: string;
+  initialProfile?: BotProfileDraft;
+  botOnly?: boolean;
+  initialMode?: 'bot' | 'group' | 'team';
+  onClose: () => void;
+  onBrowseShared?: () => void;
+  onCreated: (conversation: Conversation, agents?: BotAgent[]) => void | Promise<void>;
+  onTeamCreated?: (plan: BotTeamPlan, start: boolean, confirmed: ConfirmedTeamConversation) => void;
+};

@@ -1,0 +1,253 @@
+{
+  "recordedAt": "2026-11-04T13:54:02Z",
+  "acceptanceLocalDate": "2026-11-03",
+  "timezone": "Asia/Shanghai",
+  "conversationId": "1622eda2-a852-4b06-bdc1-db512ca57dd7",
+  "conversationTitle": "网页导出验收 · GLM 5.3 Flash",
+  "agentId": "984cd316-0d41-4ada-8b12-18fb9eed4b37",
+  "modelAlias": "sodu-prd-medium",
+  "userModelLabel": "GLM 5.3 Flash",
+  "setup": {
+    "transport": "loopback HTTP",
+    "fixtureOrigin": "http://127.0.0.1:3197",
+    "realModel": true,
+    "syntheticDataOnly": true,
+    "independentWorkerReportedAtAcceptance": true
+  },
+  "actions": [
+    {
+      "id": "1d7cb665-1113-4d06-b9ce-e8b17a0da018",
+      "messageId": "dfc02f9a-7e84-4363-9ccb-54d32441a192",
+      "type": "browser_navigate",
+      "payload": {
+        "type": "browser_navigate",
+        "url": "http://127.0.0.1:3197/"
+      },
+      "status": "done",
+      "createdAt": "2026-11-02T16:49:52.505Z",
+      "result": {
+        "url": "http://127.0.0.1:3197/",
+        "title": "OpenBot 合成导出验收"
+      },
+      "auditTransitions": [
+        {
+          "status": "pending",
+          "at": "2026-11-02T16:49:52.506Z"
+        },
+        {
+          "status": "running",
+          "at": "2026-11-02T16:50:58.555Z"
+        },
+        {
+          "status": "done",
+          "at": "2026-11-02T16:51:04.091Z"
+        }
+      ]
+    },
+    {
+      "id": "9cc48dd1-fede-4608-804a-e691f87112de",
+      "messageId": "49c94777-0c76-4166-9f3d-1575f6b633fb",
+      "type": "browser_download",
+      "payload": {
+        "type": "browser_download",
+        "selector": "#export-csv",
+        "path": "reports/server-export.csv"
+      },
+      "status": "done",
+      "createdAt": "2026-11-02T16:51:06.659Z",
+      "result": {
+        "path": "reports/server-export.csv",
+        "name": "server-export.csv",
+        "size": 59
+      },
+      "auditTransitions": [
+        {
+          "status": "pending",
+          "at": "2026-11-02T16:51:06.659Z"
+        },
+        {
+          "status": "running",
+          "at": "2026-11-02T16:52:30.205Z"
+        },
+        {
+          "status": "done",
+          "at": "2026-11-02T16:52:30.883Z"
+        }
+      ]
+    },
+    {
+      "id": "680f7a2c-492f-4c97-9592-67464f6b927f",
+      "messageId": "4e4dbced-c5b5-4de6-a6d8-f51f36b2681f",
+      "type": "browser_download",
+      "payload": {
+        "type": "browser_download",
+        "selector": "#export-client",
+        "path": "reports/browser-export.csv"
+      },
+      "status": "done",
+      "createdAt": "2026-11-02T16:52:33.233Z",
+      "result": {
+        "path": "reports/browser-export.csv",
+        "name": "browser-export.csv",
+        "size": 86
+      },
+      "auditTransitions": [
+        {
+          "status": "pending",
+          "at": "2026-11-02T16:52:33.234Z"
+        },
+        {
+          "status": "running",
+          "at": "2026-11-02T16:57:13.175Z"
+        },
+        {
+          "status": "done",
+          "at": "2026-11-02T16:57:14.043Z"
+        }
+      ]
+    },
+    {
+      "id": "db0b62dc-f453-4335-b519-797919d0b8ec",
+      "messageId": "aa0cec23-1c98-4325-bfb0-1c4791c65b20",
+      "type": "download_file",
+      "payload": {
+        "type": "download_file",
+        "path": "reports/browser-export.csv"
+      },
+      "status": "done",
+      "createdAt": "2026-11-02T16:57:17.071Z",
+      "result": {
+        "fileId": "f2663e0b-4602-460b-9f81-7ff9f0cabc25",
+        "name": "browser-export.csv",
+        "size": 86,
+        "path": "reports/browser-export.csv",
+        "downloadUrl": "/api/files/f2663e0b-4602-460b-9f81-7ff9f0cabc25/download"
+      },
+      "auditTransitions": [
+        {
+          "status": "pending",
+          "at": "2026-11-02T16:57:17.081Z"
+        },
+        {
+          "status": "running",
+          "at": "2026-11-02T16:57:17.083Z"
+        },
+        {
+          "status": "done",
+          "at": "2026-11-02T16:57:17.624Z"
+        }
+      ]
+    },
+    {
+      "id": "33ad67bd-ea59-47c6-b3e9-2667113f45e5",
+      "messageId": "891c4754-b379-44f0-92b7-8aa542392a3d",
+      "type": "download_file",
+      "payload": {
+        "type": "download_file",
+        "path": "reports/server-export.csv"
+      },
+      "status": "done",
+      "createdAt": "2026-11-02T16:57:17.077Z",
+      "result": {
+        "fileId": "5810b745-2fdd-4dc7-9e5e-123f7d60f73c",
+        "name": "server-export.csv",
+        "size": 59,
+        "path": "reports/server-export.csv",
+        "downloadUrl": "/api/files/5810b745-2fdd-4dc7-9e5e-123f7d60f73c/download"
+      },
+      "auditTransitions": [
+        {
+          "status": "pending",
+          "at": "2026-11-02T16:57:17.081Z"
+        },
+        {
+          "status": "running",
+          "at": "2026-11-02T16:57:17.658Z"
+        },
+        {
+          "status": "done",
+          "at": "2026-11-02T16:57:17.942Z"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "id": "5810b745-2fdd-4dc7-9e5e-123f7d60f73c",
+      "name": "server-export.csv",
+      "size": 59,
+      "sha256": "4827b563373a9d4298c6719d8845ce68177e99242264c112f74f81e43b8614bb",
+      "libraryPath": "data/workspace/server-export.csv",
+      "sourcePath": "reports/server-export.csv",
+      "downloadPath": "/api/files/5810b745-2fdd-4dc7-9e5e-123f7d60f73c/download",
+      "createdAt": "2026-11-02T16:57:17.940Z",
+      "verifiedAt": "2026-11-04T13:54:02Z"
+    },
+    {
+      "id": "f2663e0b-4602-460b-9f81-7ff9f0cabc25",
+      "name": "browser-export.csv",
+      "size": 86,
+      "sha256": "a76b8a3b2fe1a74b9df6891b23aad209de247da9d9491110db0520321103bfbb",
+      "libraryPath": "data/workspace/browser-export.csv",
+      "sourcePath": "reports/browser-export.csv",
+      "downloadPath": "/api/files/f2663e0b-4602-460b-9f81-7ff9f0cabc25/download",
+      "createdAt": "2026-11-02T16:57:17.622Z",
+      "verifiedAt": "2026-11-04T13:54:02Z"
+    }
+  ],
+  "downloadedCopy": {
+    "path": "~/Downloads/browser-export.csv",
+    "size": 86,
+    "sha256": "a76b8a3b2fe1a74b9df6891b23aad209de247da9d9491110db0520321103bfbb",
+    "matchesLibraryBytes": true,
+    "verifiedAt": "2026-11-04T13:54:02Z"
+  },
+  "originalBytesCheck": {
+    "independentComparisonReportedByAcceptanceOperator": true,
+    "recheckedAgainstOriginalWorkerFilesDuringDocumentation": false,
+    "reason": "原验收已独立核对原字节；本轮临时测试页面、Worker 工作区与原始证据目录已不存在，只重新核对保存的资料库文件和实际下载副本。"
+  },
+  "finalAnswerAfterToolCards": true,
+  "finalMessageId": "44861b51-7831-4724-9524-78b9df67c0c9",
+  "finalMessageCreatedAt": "2026-11-02T16:57:18.090Z",
+  "screenshots": [
+    {
+      "path": "screenshots/model-browser-export.png",
+      "size": 60702,
+      "sha256": "48e6c679ed136d9f0a4b22de36816f67b794d61b7fcc6ad1166e3a2cf2775e55",
+      "shows": [
+        "指定验收会话",
+        "两次导出结果",
+        "两个可点击文件交付链接"
+      ]
+    }
+  ],
+  "documentationVerification": {
+    "databaseOpenedReadOnly": true,
+    "databaseTablesQueried": [
+      "conversations",
+      "messages",
+      "files"
+    ],
+    "auditFilteredToListedActionIds": true,
+    "modelSecretsRead": false,
+    "databaseOrSettingsModified": false,
+    "filesRehashed": true
+  },
+  "cleanupObserved": {
+    "checkedAt": "2026-11-04T13:54:02Z",
+    "temporaryPathPattern": "/private/tmp/openbot-export-*",
+    "matchingTemporaryPathsExist": false,
+    "fixturePort3197Listening": false,
+    "formalServicePort3001Listening": false,
+    "workerProcessExitIndependentlyVerified": false,
+    "computerConnectionRestorationVerified": false,
+    "note": "目录及端口状态仅代表本轮只读复核时的观察；没有启动服务，未据此推断原 Worker 的退出过程或正式电脑连接恢复状态。"
+  },
+  "limitations": [
+    "同机独立 Worker 验收，不代表跨公网部署已验证。",
+    "本轮未重新运行模型或导出任务，未读取模型凭据。",
+    "没有原生桌面截图、键鼠输入或整机权限变更。",
+    "当前目录中不存在临时 Worker 原件，不能再次比较原始生成字节。"
+  ]
+}

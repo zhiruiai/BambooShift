@@ -1,0 +1,23 @@
+{
+  "mobileRosterTitle": "管理会话",
+  "mobileRosterPinned": "已置顶",
+  "mobileRosterPin": "置顶",
+  "mobileRosterUnpin": "取消置顶",
+  "mobileRosterHidden": "已隐藏的会话",
+  "mobileRosterHide": "隐藏",
+  "mobileRosterRestore": "恢复到列表",
+  "mobileRosterOther": "其他会话",
+  "mobileRosterNewSection": "新建分区",
+  "mobileRosterSectionName": "分区名称",
+  "mobileRosterRename": "重命名",
+  "mobileRosterMove": "移至分区",
+  "mobileRosterActions": "会话操作",
+  "mobileRosterSectionActions": "分区操作",
+  "mobileRosterPersonal": "这些设置只改变你在当前空间的个人列表。Bot 的设置应用于其私聊，群聊单独管理。",
+  "mobileRosterDeleteConfirm": "删除这个分区？其中的会话将移至其他会话，聊天内容会保留。",
+  "mobileRosterUnknown": "上一次更改可能已保存。请先核对当前列表，再进行其他更改。应用不会自动重发。",
+  "mobileRosterCheck": "核对当前列表",
+  "mobileRosterAcknowledge": "采用当前列表并清除本机恢复记录",
+  "mobileRosterAcknowledgeConfirm": "清除本机恢复记录，并从刚核对的列表继续？这不会取消服务端已收到的请求。后续更改会校验当前列表版本；若服务端已更新，会提示冲突。",
+  "mobileRosterConfirm": "确认"
+}

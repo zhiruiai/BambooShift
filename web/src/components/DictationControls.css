@@ -1,0 +1,89 @@
+.dictation-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: light-dark(#fff, var(--text));
+  background: light-dark(#29252d, var(--surface-raised));
+}
+.dictation-button:hover {
+  background: light-dark(#504259, var(--surface-hover));
+}
+.dictation-button.is-recording {
+  background: light-dark(#a15c70, var(--danger-border));
+}
+.dictation-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.dictation-button:focus-visible {
+  outline: 2px solid light-dark(#aa8cbd, var(--accent));
+  outline-offset: 3px;
+}
+.dictation-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 3px;
+  padding: 10px 12px;
+  border: 1px solid light-dark(#e8e0ee, var(--border));
+  border-radius: 10px;
+  background: light-dark(#f7f3fa, var(--surface-subtle));
+  color: light-dark(#725f80, var(--text-secondary));
+  font-size: 12px;
+}
+.dictation-status.has-error {
+  color: light-dark(#986d68, var(--danger));
+  background: light-dark(#fbf6f4, var(--danger-soft));
+  border-color: light-dark(#eee0da, var(--danger-border));
+}
+.dictation-status-copy {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.dictation-status-copy small {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+  color: light-dark(#98859f, var(--text-muted));
+}
+.dictation-status-actions {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.dictation-status-actions button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: light-dark(#fff, var(--surface));
+  border: 1px solid light-dark(#e6dceb, var(--border));
+  color: light-dark(#80648f, var(--text-secondary));
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .dictation-button {
+    width: 44px;
+    height: 44px;
+  }
+  .dictation-status {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .dictation-status-actions {
+    justify-content: flex-end;
+  }
+  .dictation-status-actions button {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+}

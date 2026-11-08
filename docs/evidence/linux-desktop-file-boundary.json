@@ -1,0 +1,57 @@
+{
+  "recordedAt": "2026-11-04T21:17:48Z",
+  "scope": "Actual Linux filesystem helpers in the existing single VM; synthetic temporary files only. This is not product GUI acceptance or evidence of per-Bot parallel desktops.",
+  "runtime": "/opt/node/bin/node --test; root test process; separate UID/GID 65532 read subprocess",
+  "testSource": "server/computer-files-safety.test.ts",
+  "sourceSha256": {
+    "server/computer-files.ts": "7684c86fd806f860bedb1725a4963070180a722571ff90d2bfe9d5f9cd4f5c0a",
+    "server/computer-files-safety.test.ts": "f8483264d6483329f29f1ede0eeb78973a8780548f4ad0bd802e761c8cc0c942"
+  },
+  "bundleSha256": "531a9655a543a5b000401a49cf199be6753bafbf3fe72f77f5084894b7eb8181",
+  "result": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 2193.327411,
+    "exitCode": 0
+  },
+  "checks": [
+    {
+      "name": "Text overwrite and listing compatibility",
+      "verified": true,
+      "details": "Explicit ordinary-file overwrite, decimal 200000-byte read cap, link name/type listing without traversal."
+    },
+    {
+      "name": "Hard links and symbolic links",
+      "verified": true,
+      "details": "Read and overwrite reject hard links/final symlinks; workspace-root symlinks rejected including trailing slash. Outside synthetic private content unchanged."
+    },
+    {
+      "name": "Special files",
+      "verified": true,
+      "details": "FIFO rejected by read/write without blocking; omitted from both listings."
+    },
+    {
+      "name": "Directory replacement race",
+      "verified": true,
+      "details": "100 rounds, 600 attempted operations across binary/text reads, both listings, explicit text overwrite and exclusive upload while another thread replaces the parent with an outside symlink. At least 10 actual directory replacements, both successful in-workspace operations and refusals. No outside sentinel content returned/listed; outside read/write canaries and directory entries unchanged."
+    },
+    {
+      "name": "Desktop identity ownership",
+      "verified": true,
+      "details": "When workspace is UID 65532 and service UID 0, newly created directories/files have UID/GID 65532 via descriptor chown and modes 0700/0600. UID/GID 65532 subprocess actually reads upload bytes. Existing root-owned file owner/mode and ordinary root-owned workspace semantics remain unchanged."
+    }
+  ],
+  "cleanup": {
+    "exclusiveTemporaryDirectory": "/opt/openbot/files-acceptance-<random UUID>",
+    "removed": true,
+    "formalDataRead": false,
+    "workerRestarted": false,
+    "desktopOperated": false
+  },
+  "limits": [
+    "Configured workspace ancestors must remain trusted; workspace root itself is opened without following symlinks.",
+    "macOS retains best-effort path validation and is not claimed to provide the Linux descriptor isolation boundary.",
+    "Interrupted explicit overwrite may leave a partially modified ordinary workspace file; writes are not rolled back."
+  ]
+}

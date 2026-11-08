@@ -1,0 +1,84 @@
+{
+  "checkedAt": "2026-11-05T13:23:11.377Z",
+  "scope": "Explicit latest-Bot review within an existing intelligent team plan; persistent response recovery; atomic plan edit/commit/cancel",
+  "sourceFiles": 402,
+  "sourceSha256": "fe462610e34d00bd60162792ec3c9cb6b91c214db7815d0215c9b5e6d90cb348",
+  "changedCodeFiles": [
+    "server/app.ts",
+    "server/bot-team-catalog-review.test.ts",
+    "server/bot-team-plan-atomic.test.ts",
+    "server/bot-team-plans.ts",
+    "server/bot-team-routes.test.ts",
+    "shared/bot-team-plans.ts",
+    "src/components/SmartTeamPanel.css",
+    "src/components/SmartTeamPanel.tsx",
+    "src/teamCatalogReview.test.ts",
+    "src/teamCatalogReview.ts"
+  ],
+  "serverStandardSuite": {
+    "total": 824,
+    "passed": 812,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 98834.548375,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 407,
+    "passed": 407,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 15298.671833,
+    "concurrency": 2
+  },
+  "totalTests": 1231,
+  "totalPassed": 1219,
+  "totalFailed": 0,
+  "totalSkipped": 12,
+  "newTests": {
+    "catalogDomain": 11,
+    "atomicRegression": 6,
+    "http": 4,
+    "frontend": 13,
+    "total": 34
+  },
+  "skipped": "10 unchanged opt-in browser/computer-engine checks and 2 Linux-only checks, excluded from the passing count.",
+  "beforeAfterEvidence": {
+    "file": "server/bot-team-plan-atomic.test.ts",
+    "before": {
+      "passed": 1,
+      "failed": 5
+    },
+    "after": {
+      "passed": 6,
+      "failed": 0
+    },
+    "sameAssertions": true
+  },
+  "behavior": {
+    "review": "Read-only selected-Bot profile snapshot, HMAC binds plan/revision/normalized draft and every displayed profile field. Shared source avatar metadata participates, with local historical hashes preserved.",
+    "refresh": "One transaction rechecks current plan, owner session, source, selected Bot versions and final shared projection before persisting draft plus selected catalog versions and a request receipt. Does not generate, create Bots/groups, or start work.",
+    "recovery": "Same payload/request returns its application revision and current authoritative plan. Other payloads are rejected; later edit/cancellation is never reverted. Frontend stores only request metadata, retains original payload in memory, checks receipts without automatic replay, and supports explicit CAS fencing while preserving local drafts.",
+    "atomicity": "Plan version checks, reuse checks, writes, duplicate confirmation resolution and final authorization are inside one SQLite transaction for revise/commit/cancel. Competing connections cannot reopen a committed plan or duplicate the group. Shutdown fences new plan mutations before other cleanup waits.",
+    "ui": "Selected current profile/identity/draft changes invalidate previews. Acceptance is explicit, preserves proposed new Bot profiles and current assignments, and distinguishes this receipt from later plan edits. Invalidated shared sources are not accepted."
+  },
+  "service": {
+    "checks": 69,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeRead": false,
+    "nativePackageRebuilt": false,
+    "nativeSourceAndArchiveUnchanged": true
+  },
+  "vite": {
+    "modules": 1986
+  },
+  "externalModelRequests": 0,
+  "remoteComputerChanges": false,
+  "productGuiAccepted": false,
+  "guiBlocker": "Browser works; authenticated UI testing awaits explicit consent for the synthetic temporary account after automatic approval review rejected creation.",
+  "remaining": [
+    "Authenticated product UI acceptance",
+    "Durable manual Bot/group creation response recovery",
+    "Other explicit gaps in docs/reference-audit.md"
+  ]
+}

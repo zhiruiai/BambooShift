@@ -1,0 +1,30 @@
+.website-share-dialog .website-share-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.website-share-dialog .website-share-actions > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.website-share-dialog .website-share-check,
+.website-share-viewers > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.website-share-viewers {
+  display: grid;
+  gap: 6px;
+  max-height: min(250px, 35dvh);
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.website-share-dialog .website-share-check input,
+.website-share-viewers > label input {
+  flex: none;
+  width: auto;
+}

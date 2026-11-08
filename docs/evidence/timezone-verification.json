@@ -1,0 +1,179 @@
+{
+  "checkedAt": "2026-11-05T11:21:48.839Z",
+  "scope": "Workspace default time zone, explicit routine and primary check-in zones, source-preserving Bot templates, calendar/DST scheduling and fixed-account settings recovery",
+  "reference": [
+    "https://docs.x.ai/grok-bot/settings-and-notifications",
+    "https://tc39.es/proposal-temporal/docs/timezone.html",
+    "https://github.com/js-temporal/temporal-polyfill"
+  ],
+  "serverStandardSuite": {
+    "total": 741,
+    "passed": 729,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 93151.283375,
+    "concurrency": 2
+  },
+  "clientAndDesktop": {
+    "total": 357,
+    "passed": 357,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 16450.43925,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 108422.23425,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "totalFinalUniqueTests": 1098,
+  "totalFinalUniquePassed": 1096,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "server": 29,
+    "frontend": 10,
+    "total": 39
+  },
+  "behaviorEvidence": {
+    "defaults": "Separate SQLite workspace_time_zone settings are read-only on first GET, use fixed-account owner authorization and transactional revision comparison. Members can read. Equivalent canonical values do not rotate revisions. Default changes affect new plans only and do not rewrite existing routines, primary preferences or next-run times.",
+    "compatibility": "New routines and initial primary check-in configuration snapshot explicit IANA zones. Old missing fields always mean Asia/Shanghai and are not silently backfilled. Template capture preserves omitted old fields and their serialization/hash; copies and installs use source zones rather than destination defaults. Explicit timing changes replan future execution, while title/prompt edits and equivalent aliases preserve next-run times.",
+    "calendar": "Temporal local-calendar calculation skips nonexistent wall-clock times and selects only the earlier occurrence of repeated times, including when calculation begins between the two occurrences. Cases cover New York DST, Lord Howe half-hour DST, Kathmandu 45-minute offset, Apia date skip, leap/year boundaries and host time-zone independence. Interval schedules remain elapsed minutes.",
+    "scheduler": "Actual application scheduler tests use controlled clock and runtime execution stubs for weekly local-day expiration, restart, maintenance freeze, invalid-zone pause and intervals. Existing daily downtime catch-up remains and is tested; this does not claim all missed runs are skipped. Primary check-in tests use actual Pi with local synthetic model responses to verify local-day journal/revision deduplication, gaps, folds, restart and repaired invalid settings.",
+    "ui": "Existing general settings, routine/primary dialogs, template previews and admin labels share time-zone helpers. New drafts snapshot defaults; old plans retain their zones; invalid saved values remain visible for explicit repair. Settings recovery keeps the original CAS payload for explicit retry only, can inspect current state, and offers an explicit reload/rebase on conflict. Matching current target establishes current state rather than proving original-request causality.",
+    "integration": "Fixed account/workspace headers and old-handler guards prevent late actions after account or scope change. Settings aggregate memory-import and timezone activity without losing either dirty/pending state; navigation preserves both mounted drafts and prevents leaving with unresolved time-zone edits. Saving only signals the existing ordered synchronization controller instead of replacing the whole bootstrap with a stale response."
+  },
+  "focusedEvidence": {
+    "calendarHttpAndScheduler": {
+      "total": 24,
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 4341.564
+    },
+    "domain": {
+      "total": 46,
+      "passed": 46,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 2205.636333
+    },
+    "templateAndMemoryAdjacent": {
+      "total": 29,
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 6624.819792
+    },
+    "timeZoneUi": {
+      "total": 33,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 2071.698792
+    },
+    "settingsAndTeamAdjacent": {
+      "total": 13,
+      "passed": 13,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 991.443584
+    }
+  },
+  "dependency": {
+    "package": "@js-temporal/polyfill",
+    "version": "0.5.1",
+    "integrity": "sha512-hloP58zRVCRSpgDxmqCWJNlizAlUgJFqG2ypq79DCvyv9tHjRYMDOcPFjzfl/A1/YxDvRCZz8wvZvmapQnKwFQ==",
+    "transitive": {
+      "package": "jsbi",
+      "version": "4.3.2",
+      "integrity": "sha512-9fqMSQbhJykSeii05nxKl4m6Eqn2P6rOlYiS+C5Dr/HPIU/7yZxu5qzbs40tgaFORiw2Amd0mirjxatXYMkIew=="
+    },
+    "importStyle": "Namespaced Temporal import; no global polyfill installation.",
+    "calendarData": "Uses current server runtime IANA/Intl data; named zones are canonicalized with Intl."
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 37,
+  "vite": {
+    "modules": 1981,
+    "duration": "2.21s"
+  },
+  "sourceFreeze": {
+    "files": 380,
+    "includesPackageManifests": true,
+    "snapshotSha256": "80ca91656dd2630b115b882a12a8015c58ea0704c71d15024ec46c8924f1d96b",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "51569a5468e1d6165cb5632e2426cbea019d79de6be8e66d783b6945e15dac4b"
+  },
+  "sourceSha256": {
+    "package-lock.json": "ef48628a1a75de56ee1195cab656751acd451774ee505806c7957e7d984969ec",
+    "package.json": "f69e98cf2d55dd4d96b5837c47d27a130fe9d6fb8fedfbd239aeb699b2ee2745",
+    "server/app.ts": "977c1f5b9b2bc5d321c52ef496b40515ef2280bb75c6e04493a882a431e86979",
+    "server/bot-installs.test.ts": "2f2903f4828ad879b9db0b457f285a592ddb775139d90df0aa79b936d0314f94",
+    "server/bot-installs.ts": "580b3c46313d719ad3cd728411408ee79ebf38bc621779f74200eaaa0c9ec3d4",
+    "server/platform-app.ts": "f765c3fcd155d4f5b5979dbcb8462e5c70ddaaa413a23a08f429c3d7f4f83c3a",
+    "server/primary-bot.test.ts": "4b2bc56a942c3067631ade5bedd09910381a64b495e6789d0adb4ba4545c115c",
+    "server/primary-bot.ts": "7e06638f3fc369c387650ee4b877f2861d7ef005eb982b116c922feb7dba006d",
+    "server/primary-check-ins.test.ts": "3d580b3adca23fdb8b331ce55ed60352c8daf1602883bd4d3bc240d4693cdd88",
+    "server/primary-check-ins.ts": "348b7710709dec7951cce1ee47b13395bc82d0c040d4b22e87876c8894c9208b",
+    "server/routine-time-zone.test.ts": "2dcd86c4133e6a7b276713b1c7ba3be0f8049191b032e13a8ee94967671f4ef2",
+    "server/time-zone.test.ts": "5d97a99af166f91d49f8074fdb0745a1d1adaf920dcad901e02b9f9f323843a5",
+    "server/workspace-time-zone-http.test.ts": "17c74229b1fb7153fcbec10cdc2a6a031e41c26f71f76b7e2bf83c595c1cc090",
+    "server/workspace-time-zone.test.ts": "c7cd43d753eb9299a37918de664d4c8fd00c3733a79421610194b9c3928cdb7a",
+    "server/workspace-time-zone.ts": "1b3e429ec362946017dabdd7a23eb133933934cc065239cae91a3cf7de02cddb",
+    "shared/bot-blueprint.ts": "f9a4512e2aada6a803717e583c8de95de1b4debe2c5d78c4ea4c4d62d448d65e",
+    "shared/primary-bot.ts": "14b6a40cc92d2e97cbbc2098e24c36bc3adcf3438db73aacf707a623dca1dee2",
+    "shared/routine-schedule.ts": "a4baf3e1976dbe26e192a1c57f8eb8b9922def1c7155eef71dfc6f75e9b271e8",
+    "shared/time-zone.ts": "bae692a92df77922b4fdaa8f40e4d1de5db2bf810e38dee097e2d0d544739e6c",
+    "shared/types.ts": "33b4ec13798ce37479386b75c9824d0961866c9bc86ee9dae1b34d8604e2a6c8",
+    "shared/workspace-time-zone.ts": "914db2a9c130a65eaa7d83fd2af3284186b65db831ef34fbae246e70e0ad0533",
+    "src/App.tsx": "926598b695ac625295e812d1f191266c952ab286a9030c5e384313adc0d75e26",
+    "src/admin/AdminApp.tsx": "66e03f2e4e570934657a8bc2d6d4447379865996bd36ab1a5ae9e139bab08db1",
+    "src/admin/AdminPanels.tsx": "9354fe0388def9ca7bc16527d797ca7e132ed9aa692d06eaee8e20f0ada8c77e",
+    "src/components/BotTemplatePreview.tsx": "5776c2cddacfc3dc4e5fc9d98df2cf2fcf3e988b4f67222a2750c3bde1b33fb0",
+    "src/components/PrimaryBotDialog.tsx": "d34e54aeb75379349428dac5e365d4c6b0ed01842704750b3df5cf51b5de20ae",
+    "src/components/PrimaryBotEntry.tsx": "bc47be7888ca7a0330f5d19bbf8b4a9c49da5340997665e3c386ab645306da3c",
+    "src/components/RoutineDialog.tsx": "f8d9a75a716281edb49a002a77a243d68ae9db19fc67a36cd95afde604d53f40",
+    "src/components/TimeZoneSelect.tsx": "6aa18c0ebe97f15634716e6c83bfee8f6d3a60b97a0e1e47eece01af26f14184",
+    "src/components/TimeZoneSettings.css": "81cc68eac105045c732d54dc1ddeee83c3e53c21816b5eb8bca13aec3ab14119",
+    "src/components/WorkspaceSettingsDialog.tsx": "d831bb9272cc403c5b9ff1cbbbbce4395610bf65327c4f1dc99f34d1b7395c4e",
+    "src/components/WorkspaceTimeZoneSettings.tsx": "b4ee3a3fa8d4c1753ee22a86196e07d44fab461af289490ec2e7dd7ed4a44e7d",
+    "src/memoryImportSettings.test.ts": "5c83b8b26c3877cbfabbfa79f865367c95fac362f5da77e2c3b12ade015bb91b",
+    "src/primaryBot.test.ts": "4094b1f53dab51b01ae08d4b34ddc4ea9c557f3eba1e5475c1a62e6a1fea06cf",
+    "src/routineDraft.ts": "e2b6d5273eaf0e343a7b236bba4a204f6a437987562d5b9f764605c881e1fce8",
+    "src/timeZones.test.ts": "661ad53dc2af4296736dfe68ced777dc4ae550c8fe658d4b6d72ac0e003d9f78",
+    "src/timeZones.ts": "8f1f8e4b2debbe0836ba7a84e4ddc0ef4d48226fab0ea55775bd549729cf4c40"
+  },
+  "serviceProof": "timezone-service.json",
+  "serviceChecks": 61,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "appearance-client-package.json",
+    "runtimeFilesVerified": 9,
+    "sourceChanges": [],
+    "archiveSha256": "b722e596a78dbea51821b7c9d6d1c89b9227dbb7a15224a6c998f7d5107cd7e6",
+    "note": "Native runtime files and packaged archive remain byte-identical to the prior proof. No repackaging or new native GUI acceptance."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "externalModelRequests": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control remains disabled. React event tests and controlled engine tests are not product visual/focus/touch acceptance.",
+    "Tests use controlled calendar instants rather than waiting for a real daily or DST cycle; no external GLM request was made for this scheduling stage.",
+    "Daily routine downtime may catch up once; weekly and primary check-in policies are documented separately. Generic routine creation and manual-run uncertain-result retries do not gain durable idempotency in this stage.",
+    "Model-created routine tools, other reference feature gaps and multi-device acceptance remain recorded in reference-audit.md; original goal stays active."
+  ]
+}

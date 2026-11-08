@@ -1,0 +1,105 @@
+.starter-catalog {
+  display: grid;
+  gap: 18px;
+  font-size: 14px;
+  min-width: 0;
+}
+.starter-catalog p {
+  line-height: 1.6;
+  margin: 0;
+}
+.starter-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+.starter-filters > input {
+  flex: 1;
+  min-width: 180px;
+}
+.starter-filters label {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+}
+.starter-filters input,
+.starter-filters select {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 14px;
+}
+.starter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 12px;
+}
+.starter-card {
+  display: flex;
+  gap: 12px;
+  text-align: left;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  color: var(--text);
+  background: var(--bg);
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+}
+.starter-card:hover,
+.starter-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.starter-card > span:last-child {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.starter-card strong {
+  font-size: 15px;
+}
+.starter-card small,
+.starter-review-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+.starter-card p {
+  font-size: 13px;
+}
+.starter-selected {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.starter-selected > button {
+  justify-self: start;
+  font-size: 14px;
+}
+.starter-notice {
+  color: var(--muted);
+  font-size: 12px;
+}
+.starter-trigger {
+  justify-self: start;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+@media (max-width: 520px) {
+  .starter-filters > input,
+  .starter-filters > label {
+    width: 100%;
+  }
+  .starter-selected {
+    padding: 12px;
+  }
+}

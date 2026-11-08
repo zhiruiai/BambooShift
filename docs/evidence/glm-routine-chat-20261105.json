@@ -1,0 +1,230 @@
+{
+  "checkedAt": "2026-11-05T12:35:44.087Z",
+  "modelIdentifier": "sodu-prd-medium",
+  "modelLabel": "用户指定GLM 5.3 Flash；未独立核验提供商内部型号",
+  "syntheticOnly": true,
+  "formalConfigurationChanged": false,
+  "schedulerEnabled": false,
+  "harnessLimits": {
+    "maximumModelHttpRequests": 8,
+    "outputTokensPerRequest": 2048,
+    "modelRequestTimeoutMs": 65000,
+    "totalDeadlineMs": 180000,
+    "modelOriginOnly": true,
+    "nonRoutineToolExecutionBlocked": true
+  },
+  "stages": [
+    {
+      "stage": "create",
+      "input": "这是合成验收，请只用例行任务工具为你自己创建一项计划：名称「合成资料摘要」，每周一、三、五09:30，时区Asia/Shanghai，任务内容「整理合成资料并给出简短摘要」。启用计划。本次只保存计划，不执行任务，不访问外部资源。",
+      "routines": [
+        {
+          "id": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299",
+          "agentId": "synthetic-routine-bot",
+          "conversationId": "d33d79ee-4d1b-41d4-adb6-94b0f457490f",
+          "title": "合成资料摘要",
+          "prompt": "整理合成资料并给出简短摘要",
+          "schedule": "weekly:1,3,5:09:30",
+          "timeZone": "Asia/Shanghai",
+          "enabled": true,
+          "nextRunAt": "2026-11-06T01:30:00.000Z"
+        }
+      ],
+      "replies": [
+        {
+          "status": "done",
+          "content": "已为你创建例行计划「合成资料摘要」：\n\n- **频率**：每周一、三、五 09:30\n- **时区**：Asia/Shanghai\n- **任务内容**：整理合成资料并给出简短摘要\n- **状态**：已启用\n- **下次执行时间**：2026-11-06 09:30（Asia/Shanghai）\n\n本次仅保存计划设置，未立即执行任务。"
+        }
+      ]
+    },
+    {
+      "stage": "update_and_pause",
+      "input": "将刚才创建的「合成资料摘要」修改为每周一、三、五10:15（Asia/Shanghai），并暂停这项计划。请先查询当前版本，保存后报告真实设置；本次不执行任务。",
+      "routines": [
+        {
+          "id": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299",
+          "agentId": "synthetic-routine-bot",
+          "conversationId": "d33d79ee-4d1b-41d4-adb6-94b0f457490f",
+          "title": "合成资料摘要",
+          "prompt": "整理合成资料并给出简短摘要",
+          "schedule": "weekly:1,3,5:10:15",
+          "timeZone": "Asia/Shanghai",
+          "enabled": false,
+          "nextRunAt": "2026-11-06T02:15:00.000Z"
+        }
+      ],
+      "replies": [
+        {
+          "status": "done",
+          "content": "已为你创建例行计划「合成资料摘要」：\n\n- **频率**：每周一、三、五 09:30\n- **时区**：Asia/Shanghai\n- **任务内容**：整理合成资料并给出简短摘要\n- **状态**：已启用\n- **下次执行时间**：2026-11-06 09:30（Asia/Shanghai）\n\n本次仅保存计划设置，未立即执行任务。"
+        },
+        {
+          "status": "done",
+          "content": "已完成对「合成资料摘要」的修改与暂停，真实设置如下：\n\n- **名称**：合成资料摘要\n- **频率**：每周一、三、五 10:15\n- **时区**：Asia/Shanghai\n- **任务内容**：整理合成资料并给出简短摘要\n- **状态**：已暂停（enabled: false）\n- **revision**：ae9095dad1127577f7cdc7ee2974e9ed309eda541ef4c35bf01c13aca8c11d49\n\n本次仅保存计划设置，未执行任何任务。"
+        }
+      ]
+    }
+  ],
+  "success": true,
+  "finalRoutine": {
+    "id": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299",
+    "agentId": "synthetic-routine-bot",
+    "conversationId": "d33d79ee-4d1b-41d4-adb6-94b0f457490f",
+    "title": "合成资料摘要",
+    "prompt": "整理合成资料并给出简短摘要",
+    "schedule": "weekly:1,3,5:10:15",
+    "timeZone": "Asia/Shanghai",
+    "enabled": false,
+    "nextRunAt": "2026-11-06T02:15:00.000Z"
+  },
+  "modelRequests": 6,
+  "blockedRequests": 0,
+  "requests": [
+    {
+      "index": 1,
+      "stage": "create",
+      "maxOutputTokens": 2048,
+      "toolNames": [
+        "routine_create"
+      ],
+      "startedAt": "2026-11-05T12:35:44.859Z",
+      "status": 200,
+      "finishReasons": [
+        "tool_calls"
+      ],
+      "usage": {
+        "prompt_tokens": 5597,
+        "total_tokens": 5693,
+        "completion_tokens": 96
+      },
+      "finishedAt": "2026-11-05T12:35:47.368Z"
+    },
+    {
+      "index": 2,
+      "stage": "create",
+      "maxOutputTokens": 2048,
+      "toolNames": [],
+      "startedAt": "2026-11-05T12:35:47.415Z",
+      "status": 200,
+      "finishReasons": [
+        "stop"
+      ],
+      "usage": {
+        "prompt_tokens": 6111,
+        "total_tokens": 6214,
+        "completion_tokens": 103
+      },
+      "finishedAt": "2026-11-05T12:35:50.087Z"
+    },
+    {
+      "index": 3,
+      "stage": "update_and_pause",
+      "maxOutputTokens": 2048,
+      "toolNames": [
+        "routine_list"
+      ],
+      "startedAt": "2026-11-05T12:35:50.134Z",
+      "status": 200,
+      "finishReasons": [
+        "tool_calls"
+      ],
+      "usage": {
+        "prompt_tokens": 6546,
+        "total_tokens": 6603,
+        "completion_tokens": 57
+      },
+      "finishedAt": "2026-11-05T12:35:52.996Z"
+    },
+    {
+      "index": 4,
+      "stage": "update_and_pause",
+      "maxOutputTokens": 2048,
+      "toolNames": [
+        "routine_update"
+      ],
+      "startedAt": "2026-11-05T12:35:53.010Z",
+      "status": 200,
+      "finishReasons": [
+        "tool_calls"
+      ],
+      "usage": {
+        "prompt_tokens": 6917,
+        "total_tokens": 7071,
+        "completion_tokens": 154
+      },
+      "finishedAt": "2026-11-05T12:35:56.332Z"
+    },
+    {
+      "index": 5,
+      "stage": "update_and_pause",
+      "maxOutputTokens": 2048,
+      "toolNames": [
+        "routine_pause"
+      ],
+      "startedAt": "2026-11-05T12:35:56.351Z",
+      "status": 200,
+      "finishReasons": [
+        "tool_calls"
+      ],
+      "usage": {
+        "prompt_tokens": 7491,
+        "total_tokens": 7629,
+        "completion_tokens": 138
+      },
+      "finishedAt": "2026-11-05T12:35:58.199Z"
+    },
+    {
+      "index": 6,
+      "stage": "update_and_pause",
+      "maxOutputTokens": 2048,
+      "toolNames": [],
+      "startedAt": "2026-11-05T12:35:58.216Z",
+      "status": 200,
+      "finishReasons": [
+        "stop"
+      ],
+      "usage": {
+        "prompt_tokens": 8044,
+        "total_tokens": 8194,
+        "completion_tokens": 150
+      },
+      "finishedAt": "2026-11-05T12:36:00.394Z"
+    }
+  ],
+  "toolExecutions": [
+    {
+      "name": "routine_create",
+      "stage": "create",
+      "operation": "create",
+      "status": "created",
+      "operationId": "aeded031-001a-4b9d-9534-05e4c160bef8",
+      "routineId": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299"
+    },
+    {
+      "name": "routine_list",
+      "stage": "update_and_pause",
+      "operation": "list",
+      "count": 1
+    },
+    {
+      "name": "routine_update",
+      "stage": "update_and_pause",
+      "operation": "update",
+      "status": "updated",
+      "operationId": "85ab8431-2d4d-4bf7-b973-4595fd11d118",
+      "routineId": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299"
+    },
+    {
+      "name": "routine_pause",
+      "stage": "update_and_pause",
+      "operation": "pause",
+      "status": "paused",
+      "operationId": "da72e5f8-2f94-4814-900a-e1b53372cf91",
+      "routineId": "19aa3d1e-aea4-4ca5-971c-cb8b5fa80299"
+    }
+  ],
+  "blockedTools": [],
+  "elapsedMs": 16327,
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true
+}

@@ -1,0 +1,190 @@
+.roster-action-host {
+  position: relative;
+}
+.roster-conversation {
+  padding-right: 43px;
+}
+.roster-more {
+  position: absolute;
+  right: 0;
+  top: 9px;
+  width: 44px;
+  height: 44px;
+  color: light-dark(#918399, var(--text-secondary));
+}
+.roster-menu {
+  z-index: 1100;
+  width: 226px;
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+}
+.roster-menu button {
+  min-height: 44px;
+}
+.roster-primary {
+  border-bottom: 1px solid light-dark(#e9e2ee, var(--border));
+  margin-bottom: 9px;
+  padding-bottom: 8px;
+}
+.roster-conversation .primary-bot-badge {
+  margin-left: 6px;
+}
+.roster-section {
+  margin-bottom: 10px;
+}
+.roster-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 7px 9px;
+  color: light-dark(#968a9f, var(--text-muted));
+  font-size: 12px;
+  text-align: left;
+}
+.roster-section-title > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roster-section-title small {
+  color: light-dark(#b2a8b7, var(--text-muted));
+  margin-left: 2px;
+}
+.roster-section-toggle {
+  width: 100%;
+  padding-right: 43px;
+}
+.roster-section > .roster-action-host > .roster-more {
+  top: 0;
+}
+.roster-section-empty {
+  color: light-dark(#a89aad, var(--text-muted));
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 2px 12px 14px;
+}
+.roster-list-tools {
+  border-top: 1px solid light-dark(#e9e2ee, var(--border));
+  padding: 8px 2px;
+  display: grid;
+  gap: 2px;
+}
+.roster-list-tools button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  text-align: left;
+  padding: 8px;
+  color: light-dark(#908097, var(--text-secondary));
+  border-radius: 8px;
+  font-size: 12px;
+}
+.roster-list-tools button:hover {
+  background: light-dark(#f0ebf4, var(--surface-hover));
+}
+.roster-list-tools button > span {
+  margin-left: auto;
+  color: light-dark(#b1a4b9, var(--text-muted));
+  font-size: 12px;
+}
+.roster-note,
+.roster-feedback {
+  color: light-dark(#97899f, var(--text-muted));
+  font-size: 12px;
+  line-height: 1.7;
+  padding: 0 10px 12px;
+}
+.roster-feedback button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  color: light-dark(#8a6e9e, var(--text-secondary));
+}
+.roster-hidden-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid light-dark(#eee6f2, var(--border));
+}
+.roster-hidden-row > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.roster-hidden-row strong {
+  font-size: 13px;
+  font-weight: 500;
+  color: light-dark(#786782, var(--text-secondary));
+  display: block;
+}
+.roster-hidden-row small {
+  display: block;
+  color: light-dark(#a08fa9, var(--text-muted));
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 5px;
+}
+.roster-hidden-row .primary-bot-badge {
+  display: inline-block;
+  margin: 0 0 0 8px;
+}
+.roster-hidden-row > div:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 180px;
+}
+.roster-hidden-row button {
+  min-height: 44px;
+}
+.roster-text-button {
+  color: light-dark(#9d83b0, var(--accent));
+  font-size: 12px;
+}
+.roster-hidden-indicator {
+  color: light-dark(#a18fae, var(--text-muted));
+  font-size: 12px;
+  margin-left: 8px;
+}
+.roster-hidden-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: light-dark(#a18fae, var(--text-muted));
+  font-size: 12px;
+  margin-left: 8px;
+}
+.roster-dialog select {
+  min-height: 44px;
+}
+.roster-dialog .dialog-actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 760px) {
+  .roster-more {
+    top: 14px;
+  }
+  .roster-section-toggle {
+    min-height: 44px;
+  }
+  .roster-list-tools {
+    padding-bottom: 8px;
+  }
+}
+@media (max-width: 480px) {
+  .roster-hidden-row {
+    flex-wrap: wrap;
+  }
+  .roster-hidden-row > div:last-child {
+    max-width: none;
+    width: 100%;
+    padding-left: 49px;
+  }
+  .roster-hidden-row > span {
+    flex-basis: calc(100% - 60px);
+  }
+}

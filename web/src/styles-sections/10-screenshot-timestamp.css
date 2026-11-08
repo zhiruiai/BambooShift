@@ -1,0 +1,320 @@
+.screenshot-timestamp {
+  font-size: 12px;
+  color: light-dark(#77707f, var(--text-secondary));
+  padding: 9px 1px 0;
+  line-height: 1.6;
+}
+.computer-result {
+  margin-top: 10px;
+  border-top: 1px solid light-dark(#ebe5f1, var(--border));
+  padding-top: 10px;
+}
+.computer-result summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 12px;
+  color: light-dark(#745c87, var(--accent));
+  list-style: none;
+  padding: 3px 0;
+}
+.computer-result summary::-webkit-details-marker {
+  display: none;
+}
+.computer-result[open] summary svg {
+  transform: rotate(180deg);
+}
+.computer-result summary:focus-visible {
+  outline: 2px solid light-dark(#aa91bc, var(--accent));
+  outline-offset: 3px;
+}
+.computer-result-body {
+  padding-top: 10px;
+}
+.result-request-time {
+  font-size: 12px;
+  color: light-dark(#8b7e95, var(--text-secondary));
+  margin-bottom: 10px;
+}
+.computer-result-body h4 {
+  font-size: 13px;
+  line-height: 1.6;
+  color: light-dark(#55495e, var(--text));
+  font-weight: 550;
+}
+.result-url {
+  font-size: 12px;
+  color: light-dark(#85728f, var(--text-secondary));
+  overflow-wrap: anywhere;
+  margin: 5px 0 10px;
+}
+.result-path {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: light-dark(#7d6d88, var(--text-secondary));
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.result-label {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#887590, var(--text-secondary));
+  margin-bottom: 7px;
+  line-height: 1.6;
+}
+.result-text {
+  margin-top: 13px;
+}
+.result-text pre,
+.result-fallback {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.8;
+  color: light-dark(#655b6e, var(--text-secondary));
+  background: light-dark(#f8f5fb, var(--code-block));
+  border: 1px solid light-dark(#eee7f4, var(--border));
+  border-radius: 7px;
+  padding: 11px;
+  margin: 0;
+  max-height: 210px;
+  overflow: auto;
+}
+.result-controls {
+  margin-top: 16px;
+  max-height: 230px;
+  overflow: auto;
+}
+.result-controls > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid light-dark(#f0eaf6, var(--border));
+  font-size: 12px;
+}
+.result-controls > div > span {
+  font-size: 12px;
+  color: light-dark(#9278a0, var(--text-secondary));
+  background: light-dark(#f3edf8, var(--surface-subtle));
+  border-radius: 4px;
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+.result-controls > div > p {
+  color: light-dark(#6f617b, var(--text-secondary));
+  line-height: 1.6;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.result-controls small {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#96849f, var(--text-muted));
+  margin-top: 3px;
+}
+.result-file-list {
+  margin-top: 13px;
+  max-height: 180px;
+  overflow: auto;
+}
+.result-file-list > p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: light-dark(#7e6f8b, var(--text-secondary));
+  font-size: 12px;
+  padding: 5px 0;
+  overflow-wrap: anywhere;
+}
+.takeover-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid light-dark(#e7e1ed, var(--border));
+  border-radius: 10px;
+  background: light-dark(#faf8fc, var(--surface));
+}
+.takeover-bar > div {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+}
+.takeover-icon {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  border-radius: 8px;
+  background: light-dark(#eee8f5, var(--surface-subtle));
+  color: light-dark(#9275aa, var(--text-secondary));
+  flex-shrink: 0;
+}
+.takeover-bar strong {
+  font-size: 12px;
+  font-weight: 550;
+  color: light-dark(#61536b, var(--text-secondary));
+  display: block;
+}
+.takeover-bar small {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#8b7b96, var(--text-secondary));
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.takeover-bar.active {
+  background: light-dark(#f2f7f3, var(--accent-soft));
+  border-color: light-dark(#dce9df, var(--accent-border));
+}
+.takeover-bar.active .takeover-icon {
+  background: light-dark(#e3efe6, var(--accent-soft));
+  color: light-dark(#799b82, var(--success));
+}
+.takeover-bar .secondary-button {
+  font-size: 12px;
+  min-height: 30px;
+  padding: 7px 9px;
+}
+.takeover-help {
+  font-size: 12px;
+  color: light-dark(#80768a, var(--text-secondary));
+  line-height: 1.75;
+  margin: 0 2px 12px;
+}
+.computer-screen {
+  position: relative;
+}
+.screen-interactive {
+  border-color: light-dark(#b9ccbd, var(--accent-border));
+}
+.screen-interactive img {
+  cursor: crosshair;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.screen-busy img {
+  cursor: wait;
+}
+.screen-working {
+  position: absolute;
+  bottom: 9px;
+  right: 9px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: light-dark(#24202bbb, var(--surface-raised));
+  color: light-dark(white, var(--text));
+  padding: 6px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  pointer-events: none;
+}
+.computer-screen-toolbar > div {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+}
+.manual-controls {
+  padding: 12px;
+  border: 1px solid light-dark(#e4e9e5, var(--border));
+  background: light-dark(#f8faf8, var(--surface));
+  border-radius: 10px;
+  margin-top: 12px;
+}
+.manual-controls label {
+  font-size: 12px;
+  color: light-dark(#637268, var(--text-secondary));
+  display: block;
+  margin-bottom: 7px;
+}
+.manual-controls form > div {
+  display: flex;
+  gap: 7px;
+}
+.manual-controls input {
+  min-width: 0;
+  flex: 1;
+  background: light-dark(white, var(--surface));
+  border: 1px solid light-dark(#dce4df, var(--border));
+  border-radius: 7px;
+  padding: 9px;
+  font-size: 12px;
+}
+.manual-controls input::placeholder {
+  color: light-dark(#99a29b, var(--text-muted));
+  font-size: 12px;
+}
+.manual-controls form small {
+  font-size: 12px;
+  color: light-dark(#8a968e, var(--text-secondary));
+  display: block;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.manual-controls .secondary-button {
+  font-size: 12px;
+  color: light-dark(#6e8977, var(--success));
+}
+.manual-keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+}
+.manual-keyboard button {
+  border: 1px solid light-dark(#e0e5e1, var(--border));
+  border-radius: 6px;
+  font-size: 12px;
+  background: light-dark(white, var(--surface));
+  color: light-dark(#738078, var(--text-secondary));
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  min-height: 29px;
+  padding: 6px 9px;
+}
+.manual-keyboard button:hover {
+  background: light-dark(#edf3ee, var(--surface-hover));
+}
+.computer-activity .section-label small {
+  font-weight: 400;
+  color: light-dark(#9989a3, var(--text-muted));
+  font-size: 12px;
+}
+.vision-setting {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start;
+  padding: 11px 12px;
+  background: light-dark(#f8f5fc, var(--surface-subtle));
+  border: 1px solid light-dark(#ece4f4, var(--border));
+  border-radius: 8px;
+  gap: 9px !important;
+}
+.vision-setting input {
+  width: 15px !important;
+  height: 15px;
+  margin: 2px 0 0;
+  accent-color: light-dark(#9673af, var(--accent));
+  flex-shrink: 0;
+}
+.vision-setting span {
+  font-size: 12px;
+  color: light-dark(#706078, var(--text-secondary));
+  line-height: 1.5;
+}
+.vision-setting small {
+  display: block;
+  margin-top: 4px;
+}

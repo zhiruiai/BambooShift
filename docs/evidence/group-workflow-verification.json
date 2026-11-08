@@ -1,0 +1,153 @@
+{
+  "checkedAt": "2026-11-05T08:25:14.507Z",
+  "scope": "Created-group settings, explicit leader and assignments, stable in-flight group context, existing Bot conversation entry, model setup and return to preserved team drafts",
+  "reference": [
+    "https://docs.x.ai/grok-bot/chat-and-collaboration",
+    "https://docs.x.ai/grok-bot/bots"
+  ],
+  "serverStandardSuite": {
+    "total": 661,
+    "passed": 649,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 80358.931791,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 106905.425083,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "clientAndDesktop": {
+    "total": 296,
+    "passed": 296,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 9261.46,
+    "concurrency": 2
+  },
+  "totalFinalUniqueTests": 957,
+  "totalFinalUniquePassed": 955,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS.",
+  "newTests": {
+    "groupDomainAndHttp": 5,
+    "realPiGroupSnapshots": 2,
+    "modelAccountHttp": 1,
+    "groupSettingsUi": 8,
+    "botConversationEntryUi": 2,
+    "teamModelReturnUi": 7,
+    "total": 25
+  },
+  "behaviorEvidence": {
+    "groupSettings": "Existing group rows are updated atomically with a configuration-only CAS hash. One-member groups remain groups; first member is the explicit leader; planned groups require complete exact-member assignments. No Bot definitions or primary Bot state are changed.",
+    "activity": "Read status and message activity do not invalidate the settings revision. GET and no-op saves do not write configuration. Invalid input, stale revisions and authorization failures leave the transaction unchanged.",
+    "scope": "Real platform HTTP checks members retain existing group-edit rights, while anonymous/foreign accounts and stale or missing expected-account headers are rejected. Source shared main DMs are protected and ordinary DMs are not group settings.",
+    "legacy": "Existing membership edits and Bot deletion reconcile stored lead/assignments rather than leaving contradictions; new members receive an explicit pending-assignment label.",
+    "runtime": "Actual Pi SDK against a synthetic endpoint verifies planned and manual group root/child snapshots, unchanged in-flight instructions, rejected new candidates in an old root, new-root leader/configuration, and current-member checks for later delegation.",
+    "runtimeBoundary": "Removing a member blocks subsequent delegation; it does not automatically cancel already started root/child tasks. Previously queued messages keep their selected delivery agent.",
+    "conversationEntry": "Actual React and App handlers open only an existing matching one-Bot conversation, preserve dirty-setting confirmation, and do not create conversations or restore hidden roster entries. Team-visible and personal-private labels remain distinct.",
+    "modelReturn": "The original team subtree remains mounted while only the model settings dialog is active. Goal and edited plan survive return; generation still requires a separate click. Per-profile drafts and explicit activation behavior are preserved.",
+    "modelIdentity": "Model settings requests pin the opening workspace/account and ignore late results after unmount, identity or navigation changes. Actual HTTP validates supplied expected-account headers on listing/save/activation/deletion while retaining older headerless API compatibility."
+  },
+  "focusedEvidence": {
+    "groupDomainAndPi": {
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 1514.76525
+    },
+    "relatedRuntimeAndPlatform": {
+      "total": 121,
+      "passed": 121,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 8475.49225
+    },
+    "groupAndBotUi": {
+      "total": 35,
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 3100.189875
+    },
+    "modelReturnUi": {
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 745.934459
+    },
+    "modelIdentityHttp": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 682.016291
+    }
+  },
+  "testCorrections": [
+    "The first new model-account fixture assumed a new workspace had no seeded messages. Its no-task assertion was corrected to compare the actual initial message baseline; authorization assertions were unchanged. Existing CreateDialog tests were updated to locate the Dialog under its new fragment wrapper without removing event assertions."
+  ],
+  "typescript": "passed",
+  "formatCheckedFiles": 19,
+  "vite": {
+    "modules": 1959,
+    "duration": "1.75s"
+  },
+  "sourceFreeze": {
+    "files": 336,
+    "snapshotSha256": "598b947a5bf453175ca2aec01268ffc4d84553ce709398b76b6f7a985fc12302",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "6f9c8d14dd325ad7f0a4f5a352333856cabe79e2ad204d566ac474ce269ea1aa"
+  },
+  "sourceSha256": {
+    "server/app.ts": "c68f093ca19985151b004c80886b719fe733f9d59f8c69e0962e3e96aa64077a",
+    "server/group-settings.test.ts": "c284544c4bc5ad45303dd2fdb3afa6f32fd723e5aa577a98a2836d635d54ac2b",
+    "server/group-settings.ts": "efc38a65a045f759a7b3e73b106538651c9e7067294d5d1a9465045bf2601895",
+    "server/model-profiles-requester.test.ts": "4a2cae7960f68e6a9ce11900e9a893b52ca21ecf057cf9d8c8ced3003a78a8a9",
+    "server/runtime-team-brief.test.ts": "f4160aac58f8e2be21bfef5ad8e654cf19ba0596c223a8b38b871e12d86f41fa",
+    "server/runtime.ts": "633c246be28a5bb24c3eb17b48619658b660b1bd3d01a40a0ec4cb6f10003d96",
+    "shared/group-settings.ts": "16f930e243cd24b30dda7e0d876c33c7202c78d4c702d1e432edde3d1538567c",
+    "src/App.tsx": "914b500fd1afaeb7b69238c630877e90038f8a61c7280e913a4c798387ccc9d5",
+    "src/botProfiles.test.ts": "e8faa10ea840603df98396893636d89d7403f4733551b2282a461c5b80e6d333",
+    "src/components/AgentDialog.tsx": "ee6f849d74e1b56c2cd905d08bde70e38275ecf65ee183cd7998f7b9a719a64d",
+    "src/components/BotTeamBrief.tsx": "694413a80834ae2b33790d301decb494a55f6210069f239265c3c1f621cf10da",
+    "src/components/CreateDialog.tsx": "c36cca2f13f59df5134e462fb65d3d321c79460bdf4d5f40746788c31930352b",
+    "src/components/GroupSettingsDialog.css": "869b37d43d3aa2bda13c35986ad472f4a68fb8e5b81c56738c1b69b9db59377a",
+    "src/components/GroupSettingsDialog.tsx": "8f63a696c4516bc7379e53fa3c61d3c279520bd9d570e0640869fdfbcecfda6c",
+    "src/components/SettingsDialog.tsx": "6f96a28dfeefc48a945966f509db8ff3ff2c6f4df5ba23a76b6eb69bf81bc25c",
+    "src/components/SmartTeamPanel.tsx": "ceead7f92e9bea53e4f4fb6a4f5e26cb231664cf111d4ff287ad60794f6a4957",
+    "src/components/UI.tsx": "5095bfaee011a67c87843ef417b4aa4f001b6ce7b80c544435c55c8c6f5975ac",
+    "src/groupSettings.test.ts": "04b75ad2c542fcf6d348c15a604bf2bf1529fde63fe1cd7b1a591ac120527591",
+    "src/smartTeamSettings.test.ts": "460281ec492d885ead71db245d6a38a58fdedb86ab415563370cb3cfa02c3674"
+  },
+  "serviceProof": "group-workflow-service.json",
+  "serviceChecks": 49,
+  "desktopPackage": {
+    "changed": false,
+    "priorProof": "shared-bot-files-client-package.json",
+    "note": "Native client code is unchanged; the client loads the updated web UI from the separately running service. No repackaging or native GUI acceptance is claimed this stage."
+  },
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "paidModelCalls": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control again reports Local browser use is disabled in Work settings; source-render/event/focus-listener tests are not visual, native or touch acceptance.",
+    "Existing group edits support 1–20 members and smart planning supports 1–5; official manual creation describes 2–6. This difference remains tracked, not declared 1:1.",
+    "Independent source-app/team-knowledge grants, avatar generation, full voice conversation and remaining multi-device product acceptance are still incomplete; the original goal remains active."
+  ]
+}

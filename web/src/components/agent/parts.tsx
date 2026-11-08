@@ -1,0 +1,26 @@
+import type { BotAgent, ComputerState } from '../../../../shared/types';
+import '../BotProfiles.css';
+export type Props = {
+  agent: BotAgent;
+  computer: ComputerState;
+  workspaceId?: string;
+  userId?: string;
+  workspaceKind?: string;
+  readOnly: boolean;
+  busy: boolean;
+  deleteBlocked: string;
+  skillCount: number;
+  fileCount: number;
+  onComputer: () => void;
+  onSkills: () => void;
+  onFiles: () => void;
+  onCopy?: () => void;
+  onShare?: () => void;
+  onManageSharing?: () => void;
+  onSharedApps?: () => void;
+  onOpenConversation?: () => void;
+  conversationAvailable?: boolean;
+  onClose: () => void;
+  onSaved: (agent: BotAgent) => void;
+  onDeleted: () => void;
+};

@@ -1,0 +1,204 @@
+.file-card.file-card-preview {
+  padding: 0;
+  gap: 0;
+}
+.file-card-open {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  padding: 11px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.file-card-open .file-icon {
+  flex-shrink: 0;
+}
+.file-card-download {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  width: 42px;
+  flex-shrink: 0;
+  color: inherit;
+  border-left: 1px solid var(--border);
+  border-radius: 0 9px 9px 0;
+}
+.file-card-open:focus-visible,
+.file-card-download:focus-visible {
+  outline: 2px solid var(--accent, #8a65ad);
+  outline-offset: -3px;
+}
+.file-card-download:hover {
+  background: var(--surface-hover);
+}
+.file-preview-dialog {
+  width: min(1000px, calc(100vw - 56px));
+  height: min(780px, calc(100dvh - 56px));
+  max-height: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.file-preview-dialog .modal-header,
+.file-preview-toolbar,
+.file-preview-note {
+  flex-shrink: 0;
+}
+.file-preview-dialog .modal-header {
+  min-height: 55px;
+  margin: 0;
+  padding: 9px 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+.file-preview-dialog .modal-header > div:first-child {
+  min-width: 0;
+}
+.file-preview-dialog .modal-header h2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  letter-spacing: 0;
+}
+.file-preview-dialog .modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.file-preview-dialog .modal-header-actions > .icon-button {
+  margin: 0;
+  width: 34px;
+  height: 34px;
+}
+.file-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.file-preview-tabs {
+  display: flex;
+  gap: 4px;
+}
+.file-preview-tabs button {
+  padding: 5px 16px;
+  min-height: 30px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+}
+.file-preview-tabs button[aria-selected='true'] {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.file-preview-download {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0 10px;
+  min-height: 34px;
+  border-radius: 18px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.file-preview-download:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.file-preview-body {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: var(--surface);
+}
+.file-preview-body:has(.file-preview-html) {
+  overflow: hidden;
+}
+.file-preview-body > p,
+.file-preview-error {
+  padding: 28px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.file-preview-error button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+.file-preview-source {
+  margin: 0;
+  padding: 18px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    13px/1.7 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  color: var(--text);
+}
+.file-preview-image {
+  display: block;
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  margin: auto;
+}
+.file-preview-html {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #fff;
+  color-scheme: light;
+}
+.file-preview-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.file-preview-note > svg {
+  flex: none;
+  margin-top: 2px;
+}
+@media (max-width: 600px) {
+  .modal-overlay:has(> .file-preview-dialog) {
+    padding: 0;
+  }
+  .file-preview-dialog {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+  .file-preview-dialog .modal-header {
+    padding-top: max(9px, env(safe-area-inset-top));
+  }
+  .file-preview-note {
+    padding-bottom: max(6px, env(safe-area-inset-bottom));
+  }
+  .file-preview-source {
+    padding: 12px;
+  }
+}

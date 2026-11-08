@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "artifact": ".build/backend-package-delivery",
+  "profile": "debug",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "manifestSha256": "1f9be0bdb0af8808c59c755b9641f9aac54fe3b6aa87c3ae60e25681404d2084",
+  "ownFiles": 100,
+  "executables": [
+    {
+      "path": "openbot-backend",
+      "bytes": 32186992,
+      "sha256": "a9d7d42b7bcb32c2cdf61731069aa90ec0183616b930df96980a232fc60320f5"
+    },
+    {
+      "path": "openbot-image-worker",
+      "bytes": 2606232,
+      "sha256": "ea009295248ba565cbe1e1d2ef1921071063d8586d5660641dabf27958300294"
+    }
+  ],
+  "publicAssets": 89,
+  "installation": {
+    "command": "npm ci --omit=dev --offline --ignore-scripts",
+    "installedPackages": 228,
+    "scriptsExecuted": false,
+    "existingNodeModulesLinked": false,
+    "cacheSource": "Verified pinned public npm archives; no private npm configuration was read.",
+    "reportedVulnerabilities": 0
+  },
+  "acceptance": {
+    "version": 1,
+    "packageProfile": "debug",
+    "health": true,
+    "publicUi": true,
+    "nativeImageWorkerCrop": true,
+    "productionSharpCodec": true,
+    "registration": true,
+    "privateWorkspace": true,
+    "expectedUserMismatchRejected": true,
+    "actualPiModelRequests": 2,
+    "rustOwnedMemoryWrite": true,
+    "duplicateInputNotReplayed": true,
+    "logoutRevocation": true,
+    "gracefulShutdown": true,
+    "dependencies": "clean production npm installation",
+    "data": "temporary synthetic account and local mock model; removed after validation",
+    "productionCutover": false
+  },
+  "tests": {
+    "packageAssembly": 2,
+    "packageAssemblyFailed": 0,
+    "format": "passed"
+  },
+  "constraints": {
+    "migrationProbeIncluded": false,
+    "previousNodeBusinessServerIncluded": false,
+    "applicationSourceTreeIncluded": false,
+    "privateConfigurationOrDataIncluded": false,
+    "allOwnSourceAndTestsAtMost500Lines": true
+  },
+  "limitations": [
+    "This is a local debug build for acceptance; an optimized release build was not performed.",
+    "No real model account, GUI session, remote VM or existing user database was used.",
+    "Browser executables and desktop prerequisites remain separate explicit deployment dependencies.",
+    "Package acceptance used temporary data and did not perform the production cutover; the completed production cutover is recorded separately in docs/refactor-validation.md."
+  ],
+  "verifiedAt": "2026-11-06T04:46:55.023159+00:00",
+  "logs": {
+    "productionInstall": {
+      "fileName": "openbot-package-final-ci.log",
+      "sha256": "2c127b4de7cc14b4420c9d4f7be33f183083b48a0ae103f8cebf62c0bb4df2a4",
+      "bytes": 236
+    },
+    "packageAcceptance": {
+      "fileName": "openbot-package-final-acceptance.log",
+      "sha256": "f8511ae4a9f82fa37f926826396e8719471473f80c98262e862ab477f0098316",
+      "bytes": 502
+    }
+  },
+  "ownFileBytes": 37734566
+}

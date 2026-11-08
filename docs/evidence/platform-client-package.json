@@ -1,0 +1,30 @@
+{
+  "signature": "codesign --verify --deep --strict: PASS",
+  "workspaceDownloadRoute": "PASS (valid, no gesture, invalid UUID, foreign redirect)",
+  "verifiedFiles": [
+    "main.cjs",
+    "package.json",
+    "preload.cjs",
+    "security.cjs",
+    "ui/app.js",
+    "ui/index.html",
+    "ui/logo.svg",
+    "ui/styles.css"
+  ],
+  "byteIdenticalFiles": [
+    "main.cjs",
+    "preload.cjs",
+    "security.cjs",
+    "ui/app.js",
+    "ui/index.html",
+    "ui/logo.svg",
+    "ui/styles.css"
+  ],
+  "packageJson": "Equivalent after Packager removes private publishing field",
+  "archiveBytes": 51388,
+  "archiveSha256": "f212e16f1c03a62e7e94115ea84a10e5cd4e343e2e0e71bf40b4ea4c0acc86c7",
+  "iconBytes": 125468,
+  "packagedAt": "2026-11-04T16:15:58.535Z",
+  "serviceIncluded": false,
+  "guiStarted": false
+}

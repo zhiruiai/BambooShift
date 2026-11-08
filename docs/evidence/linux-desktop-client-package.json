@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-11-04T21:29:59.181Z",
+  "clientFilesIdentical": 7,
+  "packageMetadataMatches": true,
+  "archiveSha256": "3115ae4a878d1eea335e21a69369996bbd5a83177382ad8329a10a1be8dba22b",
+  "strictSignatureVerified": true,
+  "desktopPolicyTests": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "repackaged": false,
+  "reason": "Client shell source is unchanged; virtual desktop UI is served by the configured backend.",
+  "productGuiVerified": false,
+  "applicationLaunched": false
+}

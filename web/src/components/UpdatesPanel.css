@@ -1,0 +1,76 @@
+.updates-panel {
+  display: grid;
+  gap: 14px;
+  font-size: 13px;
+}
+.updates-panel p {
+  margin: 0;
+  line-height: 1.6;
+}
+.updates-versions {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  display: grid;
+  gap: 12px;
+}
+.updates-versions > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+.updates-versions dt {
+  color: var(--text-secondary);
+}
+.updates-versions dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.updates-error {
+  color: var(--danger);
+}
+.updates-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.updates-actions button,
+.updates-release a {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.updates-release {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+}
+.updates-release h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.updates-release pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  max-height: 280px;
+  overflow: auto;
+}
+.updates-release summary {
+  cursor: pointer;
+  font-size: 13px;
+}
+.updates-release small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}

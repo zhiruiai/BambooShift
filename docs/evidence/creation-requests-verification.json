@@ -1,0 +1,72 @@
+{
+  "checkedAt": "2026-11-05T13:48:36.490Z",
+  "scope": "Durable manual Bot/group creation and explicit original-result recovery",
+  "sourceFiles": 409,
+  "sourceSha256": "09daf414ddf2261dae3991f82fb9b277e3e95b3c8b7ba7b081b1fb7318d71844",
+  "changedCodeFiles": [
+    "server/app.ts",
+    "server/creation-requests-http.test.ts",
+    "server/creation-requests.test.ts",
+    "server/creation-requests.ts",
+    "shared/creation-requests.ts",
+    "src/App.tsx",
+    "src/botProfiles.test.ts",
+    "src/components/CreateDialog.tsx",
+    "src/creationFlow.test.ts",
+    "src/creationRequests.test.ts",
+    "src/creationRequests.ts",
+    "src/groupRecipients.test.ts",
+    "src/smartTeamSettings.test.ts"
+  ],
+  "serverStandardSuite": {
+    "tests": 845,
+    "pass": 833,
+    "fail": 0,
+    "skipped": 12,
+    "durationMs": 102972.142708
+  },
+  "clientAndDesktop": {
+    "tests": 431,
+    "pass": 431,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 15057.022333
+  },
+  "totalTests": 1276,
+  "totalPassed": 1264,
+  "totalFailed": 0,
+  "totalSkipped": 12,
+  "newTests": {
+    "domain": 13,
+    "http": 8,
+    "controller": 15,
+    "reactFlows": 9,
+    "total": 45
+  },
+  "skipped": "10 unchanged opt-in browser/computer-engine and 2 Linux-only checks; excluded from passed counts.",
+  "behavior": {
+    "atomicity": "Bot, its original DM, avatar publication and receipt commit together. Group and receipt commit together. Live original identity, owner-only fresh Bot creation and shared members rechecked before commit. No model or tasks start.",
+    "idempotence": "Actor/request identity binds a digest and immutable entity IDs. Changed payloads conflict. Retry and restart return current original entities, without restoring deleted results.",
+    "cancellation": "A durable tombstone rejects late create attempts. Cancelling accepted work only returns its receipt. GET 404 never automatically permits a new request.",
+    "ui": "One intent per user/workspace stored as metadata only. Frozen body stays in memory. Same-ID retries are explicit after checking; reopen/reload reads only. Creation success, navigation and refresh failures are distinct. Opening rechecks current entities.",
+    "roles": "Members create groups. Only a live owner creates a fresh Bot. A creator who remains a member can recover an accepted Bot receipt after demotion."
+  },
+  "service": {
+    "checks": 73,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeRead": false,
+    "nativePackageRebuilt": false,
+    "nativeSourceAndArchiveUnchanged": true
+  },
+  "vite": {
+    "modules": 1987
+  },
+  "externalModelRequests": 0,
+  "remoteComputerChanges": false,
+  "productGuiAccepted": false,
+  "guiBlocker": "Browser works; authenticated product acceptance awaits explicit consent for a synthetic temporary account after automatic approval review rejected creation.",
+  "remaining": [
+    "Authenticated product UI acceptance",
+    "Other explicit gaps in docs/reference-audit.md"
+  ]
+}

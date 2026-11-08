@@ -1,0 +1,22 @@
+{
+  "mobileUpdatesTitle": "更新",
+  "mobileUpdatesScope": "此处检查所连接的 PandaMate 服务，移动端安装包单独更新。打开页面不会查询 GitHub 或安装更新。",
+  "mobileUpdatesServiceVersion": "当前服务版本",
+  "mobileUpdatesInvalid": "更新信息与当前空间不匹配。",
+  "mobileUpdatesOpenFailed": "无法打开发行页面。",
+  "mobileUpdatesCheck": "检查服务更新",
+  "mobileUpdatesOpen": "在 GitHub 查看发行版",
+  "mobileUpdatesCheckedAt": "上次检查（UTC）",
+  "mobileUpdatesStatus_unconfigured": "尚未配置发行仓库。",
+  "mobileUpdatesStatus_unavailable": "暂时无法获取更新信息。",
+  "mobileUpdatesStatus_current": "当前服务已是最新版本。",
+  "mobileUpdatesStatus_update_available": "有新的服务版本可用。",
+  "mobileUpdatesStatus_unknownVersion": "无法将发行版与当前服务版本比较。",
+  "mobileUpdatesReason_not_checked": "准备好后可手动检查。",
+  "mobileUpdatesReason_network": "暂时无法连接发行服务器。",
+  "mobileUpdatesReason_timeout": "检查更新超时。",
+  "mobileUpdatesReason_rate_limited": "GitHub 请求次数受限，请稍后重试。",
+  "mobileUpdatesReason_not_found": "配置的仓库中尚未找到稳定发行版。",
+  "mobileUpdatesReason_invalid_release": "发行信息无效。",
+  "mobileUpdatesReason_response_too_large": "发行信息过大。"
+}

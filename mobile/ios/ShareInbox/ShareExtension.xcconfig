@@ -1,0 +1,13 @@
+#include "../Flutter/Generated.xcconfig"
+
+APPLICATION_EXTENSION_API_ONLY = YES
+CODE_SIGN_ENTITLEMENTS = ShareInbox/ShareExtension.entitlements
+CODE_SIGN_STYLE = Automatic
+INFOPLIST_FILE = ShareInbox/Info.plist
+IPHONEOS_DEPLOYMENT_TARGET = 15.0
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @executable_path/Frameworks @executable_path/../../Frameworks
+PRODUCT_BUNDLE_IDENTIFIER = dev.openbot.openbotMobile.ShareExtension
+PRODUCT_NAME = OpenBotShare
+SKIP_INSTALL = YES
+SWIFT_VERSION = 5.0
+TARGETED_DEVICE_FAMILY = 1,2

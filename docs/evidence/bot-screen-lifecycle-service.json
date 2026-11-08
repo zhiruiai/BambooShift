@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-04T23:50:45.803Z",
+  "formalUsers": 0,
+  "formalSessions": 0,
+  "runningMessages": 0,
+  "legacyDatabaseBaselineUnchanged": true,
+  "operatorSetupCodeConsumed": false,
+  "formalBotBindingsCreated": false,
+  "privateFilesMode0600": true,
+  "publicRoutes": {
+    "http://127.0.0.1:3001/login": 200,
+    "http://127.0.0.1:3001/register": 200,
+    "http://127.0.0.1:3001/admin/login": 200,
+    "http://127.0.0.1:3001/admin/setup": 200,
+    "http://127.0.0.1:5173/login": 200,
+    "http://127.0.0.1:5173/register": 200,
+    "http://127.0.0.1:5173/admin/login": 200,
+    "http://127.0.0.1:5173/admin/setup": 200,
+    "/api/platform/users": 401,
+    "/api/platform/workspaces": 401,
+    "/api/workspaces/94133b15-42d7-467a-b356-a0cec2d84067/computer/bots": 401,
+    "bot/release": 401,
+    "bot/reset": 401,
+    "bot/lifecycle/resume": 401
+  }
+}

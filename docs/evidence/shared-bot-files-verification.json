@@ -1,0 +1,146 @@
+{
+  "checkedAt": "2026-11-05T07:46:11.231Z",
+  "scope": "Explicit source-file versions in shared Bot settings, private recipient views, Pi read capability, Web and native-client downloads",
+  "reference": [
+    "https://docs.x.ai/grok-bot/shared-bots",
+    "https://docs.x.ai/grok-bot/bots",
+    "https://docs.x.ai/grok-bot/chat-and-collaboration"
+  ],
+  "serverStandardSuite": {
+    "total": 653,
+    "passed": 641,
+    "failed": 0,
+    "skipped": 12,
+    "durationMs": 77842.274167,
+    "concurrency": 2
+  },
+  "optInComputerEngineSupplement": {
+    "total": 13,
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 106772.800792,
+    "concurrency": 1,
+    "newlyCovered": 10,
+    "repeatedFromStandardSuite": 3,
+    "productGuiAcceptance": false
+  },
+  "clientAndDesktop": {
+    "total": 279,
+    "passed": 279,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 7472.965375,
+    "concurrency": 2
+  },
+  "totalFinalUniqueTests": 932,
+  "totalFinalUniquePassed": 930,
+  "totalFinalUniqueFailed": 0,
+  "totalFinalUniqueSkipped": 2,
+  "skipped": "Existing Linux-only file-descriptor race and dedicated UID checks on macOS; the new source-file Linux branch also lacks real Linux acceptance.",
+  "newTests": {
+    "domainAndFilesystem": 13,
+    "runtimeAndByteParsing": 10,
+    "realAccountHttpAndPi": 4,
+    "frontend": 12,
+    "nativeClient": 37,
+    "total": 76
+  },
+  "behaviorEvidence": {
+    "ownerSettings": "Only explicitly selected file IDs and captured byte revisions enter the existing CAS/idempotent sharing save. Bounded remote search finds candidates beyond the first 200; selected stale/missing entries remain visible until explicitly changed.",
+    "sourceRead": "No source context initialization or writes; descriptor and identity checks reject links, special files, limits and read-time changes. Sequential grant validation enforces actual total bytes without retaining every file buffer.",
+    "recipientIsolation": "Real account HTTP verifies recipient, source owner, peer, operator, expected-account and active sharing boundaries. Only approved file metadata is visible; full source workspace listing, paths and credentials remain private.",
+    "versionAndRevocation": "Same-size content edits invalidate the approved revision. Reconfirmation rotates grants; old requests cannot restore removed files. Used-file checks remain in root authorization after delegated runs finish.",
+    "runtime": "Actual Pi SDK against a synthetic endpoint reads only listed shared file IDs through bounded text/PDF/DOCX/image parsing. Recipient model credentials and private workspace remain separate; source bytes are not copied to personal file storage.",
+    "frontend": "Actual React handlers preserve immutable sharing drafts and pin downloads to account, shared revision and selected file. Same-count updates refresh; late lists and bytes cannot overwrite the current view or trigger stale saves.",
+    "desktop": "Native save bridge accepts only exact authenticated file routes after recent user input. It validates account/version after file I/O, cancels on lifecycle changes, and guards destination identity. Tests use synthetic Electron events and real temporary files; they are not native UI acceptance.",
+    "cleanup": "Independent review reproduced a renamed-parent plaintext temporary-file leak in the initial bridge. Keeping the original file handle permits truncate/sync before identity-matched best-effort unlink. Published files are marked immediately and never truncated by later cleanup failures."
+  },
+  "regressionHistory": {
+    "firstFullServer": {
+      "total": 653,
+      "passed": 641,
+      "failed": 0,
+      "skipped": 12,
+      "durationMs": 79443.611292
+    },
+    "finalFullServer": "Passed after final server changes; all 178 server/shared source hashes remain unchanged.",
+    "beforeDesktopCleanup": {
+      "total": 272,
+      "passed": 272,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 6781.416917
+    },
+    "desktopCleanup": {
+      "total": 50,
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "durationMs": 279.556542
+    },
+    "finalClient": "All 279 source/client and desktop tests rerun after cleanup fixes; source snapshot unchanged afterward.",
+    "targetedTestCorrection": "A focused HTTP assertion initially expected 409 for a revision no longer granted after owner reconfirmation; corrected to the intended 403. No production authorization was weakened."
+  },
+  "typescript": "passed",
+  "formatCheckedFiles": 27,
+  "vite": {
+    "modules": 1956,
+    "duration": "4.99s"
+  },
+  "sourceFreeze": {
+    "files": 328,
+    "serverFiles": 178,
+    "snapshotSha256": "3276ef6e6c48646e38690f59a72e13a2435e08b5d8e030b93addaabee038058a",
+    "postSuiteChanges": [],
+    "finalTreeSha256": "0dee9707ccff59c29ca5766f86216217b5f6425834f1610d8243ea9932153f66"
+  },
+  "sourceSha256": {
+    "shared/shared-bots.ts": "b3019aa170291d29bac6217087d46cced49275189970f3f11ee75c1dac80da18",
+    "server/shared-bots.ts": "108762658f3198cd07ef5d88f5c2742f333f5c0f19b51de85eeed653655cb26a",
+    "server/shared-bots.test.ts": "e447c44344dd2a9aab4e507c18b9ff19b790c34894200f3c5a51288577afa9bd",
+    "server/shared-bot-files.ts": "f286c3e9672a325fb0ced4a8cd8025630a26259d0fa78bf1ef38b38f6fb94b76",
+    "server/shared-bot-files.test.ts": "57fef806e1ce38fcbf0618e8f346167d34dcbd6247c2e10d76798ae27ffd3029",
+    "server/shared-bot-source.ts": "4fe9ff8c4b3db3138434e993dae12f0b67484f76b94e21a7f05eaf1a320383da",
+    "server/shared-bot-http.ts": "a05e29f337ca62bf1a0ccfae73eaed375c4282806228aef1b5d3bebde4f0bbe1",
+    "server/shared-bot-files-http.test.ts": "8fa0d425b96306727050e623c079afb71c3c0b286ff1b6b992674ed961e06cbb",
+    "server/shared-bot-references.ts": "6e040a68691bb9158e8a24a41103711686ea73e116defe96f4849131520e3013",
+    "server/app.ts": "e0ec4c2a331b5d3d511f1a417c98b58aa793a48fffddcbf6528a5634be8e2964",
+    "server/bot-run-definition.ts": "3182d91326c54f54b0543c78e26dddaa79b08957ee3ceee95ab62b32c439d9e5",
+    "server/runtime.ts": "0ddc8c5905cb9ee74061a8de109a31003a14276e01887b60ab62a6546e49b050",
+    "server/runtime-shared-bots.test.ts": "ca7583b12d6dcfda0bc0d6ec7b9b40b7d4d8f49d2adfe4f249a4e7835a8cf645",
+    "server/attachments.ts": "20cb5c2020029cfd71784b2f4d7a3baed00b186239d98ab2ac1c34e6f1046c95",
+    "server/attachments-bytes.test.ts": "b411efbe72560e9081387c0dc4e5f9897db1d5c9100fea407cdf09f87cfd1c7a",
+    "src/sharedBotFiles.ts": "746467e31e4ca770d70ad58de11d4b1c6c6fd729b6958d89d5421f171f934c46",
+    "src/components/SharedBotFiles.tsx": "04cf274f9d38c5898d4aeb70c506c7fc392405b4d9651d7a90ce58cd060aef73",
+    "src/sharedBots.ts": "9d2bc5c59b98dd4242ad3a572e94471c7dcaa3e69dffca8cefd699845ed4c708",
+    "src/sharedBots.test.ts": "55c4b47d168409a277846a0b525c0d749e8760bba656311056a5f5c142d99443",
+    "src/components/SharedBotsDialog.tsx": "2f012c7dd3afd6d7f257737b0c90d3b0d40fa66feb4849fd9d1d7a7a706b18b8",
+    "src/components/SharedBots.css": "8527d9c752b13b151f82f6b4fd658ed8e53238f39142545bc189d715fc5d906f",
+    "src/App.tsx": "7b87e6fdfdef95a14710cbc30668df940aae5e202381c052e1a20698d3da9d5e",
+    "src/components/AgentDialog.tsx": "240a5fe742427d98f03c7b4089d58694c3d1efa81c4d8e765b58f02e571fc705",
+    "desktop/main.cjs": "51272609715624f0f95a29b7378ae01cce2e952a9c9ad6cf69b2b24610993d54",
+    "desktop/security.cjs": "294d563af556646259ef84a1ab1eb499d876bc22de81c8ad2c6d8799f3152131",
+    "desktop/remote-preload.cjs": "b21ae1292db386470102371c352c6736a75bfa7b5d210a03fc657c8dc3f3d8a4",
+    "desktop/security.test.cjs": "5f27cea482be3e919dcc6383f28358dc243f19c46b8fe6f242cb593f5d98878f"
+  },
+  "serviceProof": "shared-bot-files-service.json",
+  "serviceChecks": 46,
+  "clientPackageProof": "shared-bot-files-client-package.json",
+  "dataAndExternalEffects": {
+    "syntheticAccountsOnly": true,
+    "paidModelCalls": 0,
+    "formalUsersCreated": 0,
+    "formalDataBaselineUnchanged": true,
+    "operatorSetupCodeReadOrConsumed": false,
+    "remoteVmTouched": false
+  },
+  "limitations": [
+    "Product browser control still reports Local browser use is disabled in Work settings; no product visual, focus, touch or native-save-dialog acceptance.",
+    "New Linux source-read branch was not run on a real Linux VM; macOS descriptor/path identity checks are not OS isolation.",
+    "Source applications and team knowledge still have no granular sharing grants; private computer capacity is not automatically allocated.",
+    "Revocation cannot retract already downloaded copies or erase prior personal messages/model context.",
+    "An extreme parent-directory rename can leave a zero-byte temporary file. Post-publication unlink failure may leave a temporary hard link to the successfully saved file. Cross-platform file replacement is not an atomic compare-and-swap guarantee.",
+    "Desktop package is local macOS arm64 ad-hoc signed, not distribution signed or notarized."
+  ]
+}

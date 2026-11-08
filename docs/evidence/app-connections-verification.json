@@ -1,0 +1,58 @@
+{
+  "checkedAt": "2026-11-05T00:21:15.537556+00:00",
+  "fullRegression": {
+    "total": 448,
+    "passed": 446,
+    "failed": 0,
+    "skipped": 2,
+    "durationMs": 336770.133125,
+    "command": "OPENBOT_BROWSER_TEST=1 node scripts/run.mjs --test --test-concurrency=1 server/*.test.ts src/*.test.ts"
+  },
+  "addedChecks": {
+    "MCPAndConnections": 18,
+    "actionApprovals": 5,
+    "realPiWithOwnedModelEndpoint": 6,
+    "platformHttpIsolation": 2,
+    "reactComponentAndHandlerChecks": 9
+  },
+  "typescript": "passed",
+  "formatCodeFiles": 17,
+  "productionBuild": {
+    "passed": true,
+    "vite": "6.4.5",
+    "modules": 1908,
+    "durationSeconds": 4.92
+  },
+  "realThirdPartyAccountsConnected": false,
+  "paidModelCalls": 0,
+  "vmChanged": false,
+  "productGuiVerified": false,
+  "browserControlError": "Local browser use is disabled in Work settings",
+  "limits": [
+    "Bearer or unauthenticated HTTP MCP only; no OAuth catalog or private personal connections inside teams.",
+    "Temporary owned HTTP/SSE and model endpoints verify protocol and Pi execution, not third-party account integrations.",
+    "React rendering/handlers do not prove product browser layout, focus or touch behavior.",
+    "Cancellation and session DELETE do not roll back a remote tool action."
+  ],
+  "sourceSha256": {
+    "server/app-connections.ts": "ffad52eeadbd05b7ae40632152410b6feca9f65cf79af1b1f4a72ac191b3dfdf",
+    "server/app-transport.ts": "8b85764f9713d0ccb46de6507171d88932ff9fe79b23690b042d828f2b38fe19",
+    "server/app-actions.ts": "e9f7f751742c5eb13a7f45aeafe1ecfd7c73c21d6b9e13b7ce27e8e8f33af498",
+    "server/app-connections.test.ts": "af89264ac11b6d6aa19e18f4aaed919462d3d9ce0b7453acf7718ef2d7737d82",
+    "server/app-actions.test.ts": "8c39140b4935335b3ffde3a3a4ada50567bfa139d3f86fc50eb8e8377b3fcaa6",
+    "server/runtime-app-actions.test.ts": "976b83f9508182bfcfcf60fed2c8608bc5cf79e8767bd7078f598546807fef90",
+    "server/app-connection-routes.test.ts": "6062a61d3da99b2b5bd8cb41dace5c370cef72ac039a51bd63bcef2bb2eaa66d",
+    "server/runtime.ts": "f43a2aa0fb861a8ff76ffc2694bf9212eb9359a97019652f7af69e82c0a6c731",
+    "server/app.ts": "6b513f59c8148de79db15d73af93db65b2b67cc70e77779b7397a3b9683822dc",
+    "server/platform-app.ts": "5f48f049702bda8a3d1098d4a741d2d3247347b2f469aa4d82bbba6e99975a26",
+    "shared/app-connections.ts": "aa5b7f1863d79f9ccfda1a7d31b8db049a11026a4b4dc657ad061e2899c808b3",
+    "src/appConnections.ts": "fe2219301b70366b3f60b7cea5974c98ee98191190f340394cc3d0a22a0ab8bb",
+    "src/components/AppsDialog.tsx": "7dfde92a54f7f23133b950acbb7675476b0a8502beeceaed3f3d10ce6300c834",
+    "src/components/AppsDialog.css": "728260f617a8a16c76e9cc1c8c851f9d3750abfb6b662b85e79e073c8eea5ea2",
+    "src/components/AppActionCard.tsx": "c1d4841dcbf3bd5b35d6b2d3ae22dcf548297d528bc169dcd0490e8016d532ff",
+    "src/apps.test.ts": "fed61521244ea3d65141dfd6b9294888824bde5fa1f282859fa124583586a8e8",
+    "src/App.tsx": "fc3167d4744d0e0bdd563116028dfb218655f54556012e68f8c266df2bac50b1",
+    "package.json": "322db27f86153e2d451f9a47cab4e8f161667ed283471fdd2efbb431245040c4",
+    "package-lock.json": "01329a1390c02f90b56fc13fa107ce75db681ab6e5a57cd2dfdf6a37c6af3928"
+  }
+}

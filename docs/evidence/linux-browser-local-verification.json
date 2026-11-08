@@ -1,0 +1,79 @@
+{
+  "scope": "Managed Linux headed-browser source and local component verification",
+  "remoteDeployed": false,
+  "linuxKernelIsolationVerified": false,
+  "productGuiVerified": false,
+  "remoteProbe": {
+    "fixedPrivateBindingsMatched": true,
+    "lastReadOnlyApiState": "paused",
+    "configuredCpuCount": 2,
+    "configuredMemoryMB": 2000,
+    "availableGuestMemoryMeasured": false,
+    "resumeOrGuestProbeExecuted": false,
+    "blockedByAutomaticApproval": true
+  },
+  "tests": [
+    {
+      "suite": "Login state and pinned Linux browser lifecycle",
+      "passed": 11,
+      "log": "/private/tmp/openbot-linux-browser-node-final.log"
+    },
+    {
+      "suite": "Two real temporary Chromium processes with controlled launcher",
+      "passed": 1,
+      "log": "/private/tmp/openbot-linux-browser-real-chromium-final.log"
+    },
+    {
+      "suite": "Existing desktop, cancellation, pool, lifecycle and network",
+      "passed": 40,
+      "log": "/private/tmp/openbot-linux-browser-runtime-regression.log"
+    },
+    {
+      "suite": "Existing real Chromium engine",
+      "passed": 4,
+      "log": "/private/tmp/openbot-linux-browser-engine-regression.log"
+    },
+    {
+      "suite": "Python browser protocol and real loopback relay",
+      "passed": 8,
+      "log": "/private/tmp/openbot-linux-browser-python-final.log"
+    },
+    {
+      "suite": "Python desktop control",
+      "passed": 16,
+      "log": "/private/tmp/openbot-linux-browser-control-final.log"
+    },
+    {
+      "suite": "Python desktop session and concurrent child cgroup cleanup",
+      "passed": 8,
+      "log": "/private/tmp/openbot-linux-browser-session-final.log"
+    },
+    {
+      "suite": "Python reproducible program assembly",
+      "passed": 5,
+      "log": "/private/tmp/openbot-linux-browser-builder-final.log"
+    },
+    {
+      "suite": "Service-field localization",
+      "passed": 3,
+      "log": "/private/tmp/openbot-linux-browser-status-locale-final.log"
+    }
+  ],
+  "typecheck": { "passed": true, "log": "/private/tmp/openbot-linux-browser-types-final.log" },
+  "sourcePolicy": {
+    "violations": 0,
+    "log": "/private/tmp/openbot-linux-browser-source-policy-final.log"
+  },
+  "sourceFreeze": "/private/tmp/openbot-linux-browser-freeze.json",
+  "initialFailuresResolved": [
+    "Real Chromium omitted an emptied localStorage origin; synchronization now recognizes deletion and preserves edits made after observation.",
+    "Independent review found session cleanup could race browser child-cgroup removal; both sides now handle only the verified empty child idempotently and still wait for descendants.",
+    "Local socket tests initially required sandbox network permission; reruns used only loopback synthetic fixtures."
+  ],
+  "limitations": [
+    "Real Chromium tests use temporary headless macOS processes with a controlled launcher; they do not prove Linux namespace or headed-display behavior.",
+    "Linux requires fixed root-installed full Chromium, dynamic dependencies, user namespaces, cgroup v2 kill and a valid existing desktop session.",
+    "Existing total 768 MiB, per-screen 384 MiB and 64-process limits were not changed.",
+    "Only unpartitioned HTTP(S) cookies and localStorage are synchronized; IndexedDB, sessionStorage, partitioned cookies, passkeys and password managers remain separate."
+  ]
+}

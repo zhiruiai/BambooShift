@@ -1,0 +1,50 @@
+.chat-computer-approval-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 4px;
+}
+.chat-computer-approval-buttons button,
+.chat-computer-approval-refresh {
+  min-height: 40px;
+  font-size: 13px;
+}
+.chat-computer-approval-refresh {
+  margin-top: 8px;
+}
+.chat-computer-approval .error-text,
+.chat-computer-approval .field-help {
+  overflow-wrap: anywhere;
+}
+.chat-computer-request {
+  margin-top: 10px;
+  font-size: 12px;
+}
+.chat-computer-request summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+.chat-computer-request dl {
+  margin: 4px 0;
+}
+.chat-computer-request dt {
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+.chat-computer-request dd {
+  margin: 4px 0 0;
+}
+.chat-computer-request pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  font: inherit;
+}
+@media (max-width: 720px) {
+  .chat-computer-approval-buttons button,
+  .chat-computer-approval-refresh {
+    min-height: 44px;
+  }
+}

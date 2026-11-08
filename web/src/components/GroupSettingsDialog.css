@@ -1,0 +1,122 @@
+.group-settings-dialog {
+  max-width: 620px;
+}
+.group-settings-notice,
+.group-settings-observed {
+  padding: 13px 15px;
+  margin: 14px 0;
+  border: 1px solid var(--border, #e8e3ed);
+  border-radius: 12px;
+  background: var(--purple-soft, #f6f2fc);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.group-settings-notice p {
+  margin: 0 0 8px;
+}
+.group-settings-notice button {
+  margin: 4px 8px 0 0;
+  min-height: 44px;
+}
+.group-settings-observed h3,
+.group-plan-fields h3 {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+.group-settings-observed p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.group-settings-observed summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.group-settings-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.group-settings-actions button {
+  min-height: 44px;
+}
+.group-member-picker {
+  border: 1px solid var(--border, #e8e3ed);
+  border-radius: 12px;
+  padding: 10px;
+  max-height: 300px;
+  overflow: auto;
+}
+.group-member-picker legend {
+  font-size: 12px;
+  padding: 0 6px;
+  color: var(--muted, #787184);
+}
+.group-member-picker label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 7px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.group-member-picker label > span:not(.avatar) {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+.group-member-picker small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted, #787184);
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
+.group-member-picker input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--purple, #8a61ee);
+  flex: none;
+}
+.group-plan-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 5px;
+}
+.group-settings-dialog > .modal-body > .field-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.7;
+}
+.group-settings-dialog select {
+  min-height: 44px;
+}
+.group-settings-dialog .dialog-actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 600px) {
+  .group-member-picker {
+    max-height: 260px;
+  }
+  .group-settings-actions button {
+    flex: 1;
+  }
+  .group-settings-notice {
+    padding: 11px;
+  }
+}
+.bot-conversation-entry {
+  margin: 14px 0 18px;
+}
+.bot-conversation-entry .primary-button {
+  min-height: 44px;
+}
+.bot-conversation-entry .field-help {
+  margin: 8px 0;
+}

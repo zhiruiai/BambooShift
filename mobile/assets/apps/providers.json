@@ -1,0 +1,112 @@
+[
+  {
+    "id": "notion",
+    "name": "Notion",
+    "category": "productivity",
+    "mark": "N",
+    "url": "https://mcp.notion.com/mcp",
+    "authType": "oauth",
+    "descriptionKey": "providerNotion",
+    "keywords": "notebook workspace pages notes 笔记 页面 知识库",
+    "documentation": "https://developers.notion.com/guides/mcp/get-started-with-mcp"
+  },
+  {
+    "id": "linear",
+    "name": "Linear",
+    "category": "productivity",
+    "mark": "L",
+    "url": "https://mcp.linear.app/mcp/readonly",
+    "authType": "oauth",
+    "descriptionKey": "providerLinear",
+    "keywords": "issue tracker projects 议题 缺陷 项目管理",
+    "documentation": "https://linear.app/docs/mcp"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "category": "code",
+    "mark": "G",
+    "url": "https://api.githubcopilot.com/mcp/readonly",
+    "authType": "bearer",
+    "descriptionKey": "providerGitHub",
+    "keywords": "repository issue pull request 代码仓库 议题 拉取请求",
+    "documentation": "https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md"
+  },
+  {
+    "id": "sentry",
+    "name": "Sentry",
+    "category": "code",
+    "mark": "S",
+    "url": "https://mcp.sentry.dev/mcp",
+    "authType": "oauth",
+    "descriptionKey": "providerSentry",
+    "keywords": "errors exceptions observability 错误 异常 监控",
+    "documentation": "https://github.com/getsentry/toolkit#readme"
+  },
+  {
+    "id": "atlassian",
+    "name": "Atlassian",
+    "category": "productivity",
+    "mark": "A",
+    "url": "https://mcp.atlassian.com/v2/mcp",
+    "authType": "oauth",
+    "descriptionKey": "providerAtlassian",
+    "keywords": "Jira Confluence issue wiki 项目管理 议题 知识库",
+    "documentation": "https://support.atlassian.com/atlassian-ai-gateway/docs/get-started-with-the-remote-mcp-server/"
+  },
+  {
+    "id": "slack",
+    "name": "Slack",
+    "category": "productivity",
+    "mark": "S",
+    "url": "https://mcp.slack.com/mcp",
+    "authType": "oauth",
+    "descriptionKey": "providerSlack",
+    "keywords": "messages channels chat thread 消息 频道 聊天 讨论串",
+    "documentation": "https://docs.slack.dev/ai/slack-mcp-server/"
+  },
+  {
+    "id": "gitlab",
+    "name": "GitLab",
+    "category": "code",
+    "mark": "GL",
+    "url": "https://gitlab.com/api/v4/mcp",
+    "authType": "oauth",
+    "descriptionKey": "providerGitLab",
+    "keywords": "repository issue merge request 代码仓库 议题 合并请求",
+    "documentation": "https://docs.gitlab.com/user/model_context_protocol/mcp_server/"
+  },
+  {
+    "id": "microsoft-learn",
+    "name": "Microsoft Learn",
+    "category": "code",
+    "mark": "ML",
+    "url": "https://learn.microsoft.com/api/mcp",
+    "authType": "none",
+    "descriptionKey": "providerMicrosoftLearn",
+    "keywords": "Microsoft Azure documentation SDK docs 微软 开发文档",
+    "documentation": "https://learn.microsoft.com/en-us/training/support/mcp"
+  },
+  {
+    "id": "cloudflare-docs",
+    "name": "Cloudflare Docs",
+    "category": "code",
+    "mark": "CF",
+    "url": "https://docs.mcp.cloudflare.com/mcp",
+    "authType": "none",
+    "descriptionKey": "providerCloudflareDocs",
+    "keywords": "Cloudflare Workers Pages D1 R2 edge DNS documentation docs 开发文档 边缘计算",
+    "documentation": "https://developers.cloudflare.com/agents/model-context-protocol/cloudflare/servers-for-cloudflare/"
+  },
+  {
+    "id": "deepwiki",
+    "name": "DeepWiki",
+    "category": "code",
+    "mark": "DW",
+    "url": "https://mcp.deepwiki.com/mcp",
+    "authType": "none",
+    "descriptionKey": "providerDeepWiki",
+    "keywords": "public GitHub repository architecture codebase wiki documentation 公开仓库 源码解析 架构 文档",
+    "documentation": "https://docs.devin.ai/work-with-devin/deepwiki-mcp"
+  }
+]

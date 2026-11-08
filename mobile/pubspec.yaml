@@ -1,0 +1,46 @@
+name: openbot_mobile
+description: Native PandaMate client for personal and team workspaces.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: '>=3.10.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  http: ^1.6.0
+  flutter_secure_storage: ^11.2.0
+  flutter_svg: ^2.3.2
+  flutter_markdown_plus: 1.0.12
+  markdown: 7.3.1
+  intl: ^0.20.3
+  url_launcher: 6.3.3
+  file_selector: 1.1.0
+  image_picker: 1.2.3
+  crypto: 3.0.8
+  share_plus: 13.3.1
+  path_provider: 2.1.6
+  web: 1.1.2
+  webview_flutter: 4.14.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - path: assets/fonts/OpenBotSansSC-Regular.woff2
+      platforms: [web]
+    - path: assets/fonts/OFL-NotoSansSC.txt
+      platforms: [web]
+    - assets/l10n/
+    - assets/apps/
+    - assets/skills/
+    - assets/templates/
+    - assets/website_preview/
+    - assets/avatars/companions/
+    - assets/avatars/pandas/
+    - assets/avatars/dinosaurs/
+    - assets/avatars/chicks/
+    - assets/avatars/elephants/

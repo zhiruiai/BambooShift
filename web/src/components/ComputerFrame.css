@@ -1,0 +1,114 @@
+.computer-frame {
+  margin: 11px 0 0;
+}
+.computer-frame-preview {
+  overflow: hidden;
+  border: 1px solid light-dark(#e6dfeb, var(--border));
+  border-radius: 8px;
+  background: light-dark(#ede9f0, var(--surface-subtle));
+}
+.computer-frame-open {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+}
+.computer-frame-thumbnail {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.computer-frame-expand {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 7px;
+  border: 1px solid light-dark(#e7e0ed, var(--border));
+  border-radius: 6px;
+  background: light-dark(#ffffffed, var(--surface));
+  color: light-dark(#6c547c, var(--text-secondary));
+  font-size: 12px;
+}
+.computer-frame-open:focus-visible {
+  outline: 2px solid light-dark(#9d7bb5, var(--accent));
+  outline-offset: -3px;
+}
+.computer-frame figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+  color: light-dark(#897793, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.6;
+}
+.computer-frame figcaption small {
+  color: light-dark(#9b8ba5, var(--text-muted));
+  font-size: 12px;
+}
+.computer-frame-unavailable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  margin-top: 9px;
+  border: 1px solid light-dark(#e9e2ef, var(--border));
+  border-radius: 8px;
+  background: light-dark(#f3eff6, var(--surface-subtle));
+  color: light-dark(#887493, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.computer-frame-unavailable > svg {
+  flex-shrink: 0;
+}
+.computer-frame-preview > .computer-frame-unavailable {
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  justify-content: center;
+}
+.modal.computer-frame-dialog {
+  width: min(1100px, calc(100vw - 56px));
+  max-width: 100%;
+}
+.computer-frame-scroll {
+  max-height: 65dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid light-dark(#e8e1ed, var(--border));
+  border-radius: 9px;
+  background: light-dark(#f2eef5, var(--surface-subtle));
+  -webkit-overflow-scrolling: touch;
+}
+.computer-frame-full {
+  display: block;
+  max-width: none;
+  margin: 0 auto;
+}
+.computer-frame-note {
+  margin-top: 12px;
+  color: light-dark(#918199, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.7;
+}
+@media (max-width: 760px) {
+  .modal.computer-frame-dialog {
+    width: 100%;
+    padding: 18px;
+  }
+  .computer-frame-dialog .modal-header .icon-button {
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+  }
+  .computer-frame-scroll {
+    max-height: 60dvh;
+  }
+}

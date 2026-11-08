@@ -1,0 +1,22 @@
+{
+  "mobileUpdatesTitle": "Updates",
+  "mobileUpdatesScope": "This page checks the connected PandaMate service. Mobile app installations are updated separately. Opening this page does not check GitHub or install updates.",
+  "mobileUpdatesServiceVersion": "Connected service version",
+  "mobileUpdatesInvalid": "The update response does not match this workspace.",
+  "mobileUpdatesOpenFailed": "Unable to open the release page.",
+  "mobileUpdatesCheck": "Check for service updates",
+  "mobileUpdatesOpen": "Open release on GitHub",
+  "mobileUpdatesCheckedAt": "Last checked (UTC)",
+  "mobileUpdatesStatus_unconfigured": "Release repository is not configured.",
+  "mobileUpdatesStatus_unavailable": "Update information is unavailable.",
+  "mobileUpdatesStatus_current": "The connected service is current.",
+  "mobileUpdatesStatus_update_available": "A newer service release is available.",
+  "mobileUpdatesStatus_unknownVersion": "The release cannot be compared with this service version.",
+  "mobileUpdatesReason_not_checked": "Check manually when you are ready.",
+  "mobileUpdatesReason_network": "The release server could not be reached.",
+  "mobileUpdatesReason_timeout": "The release check timed out.",
+  "mobileUpdatesReason_rate_limited": "GitHub is limiting requests. Please try later.",
+  "mobileUpdatesReason_not_found": "No stable release was found in the configured repository.",
+  "mobileUpdatesReason_invalid_release": "The release information is not valid.",
+  "mobileUpdatesReason_response_too_large": "The release information is too large."
+}

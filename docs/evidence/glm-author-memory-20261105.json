@@ -1,0 +1,64 @@
+{
+  "checkedAt": "2026-11-04T18:31:09.509Z",
+  "label": "GLM 5.3 Flash（用户配置标签，未独立验证模型身份）",
+  "modelIdentifier": "sodu-prd-medium",
+  "syntheticOnly": true,
+  "toolScope": "production remember implementation only",
+  "maxRootTasks": 2,
+  "maxRequests": 4,
+  "maxOutputTokensPerRequest": 384,
+  "success": true,
+  "authorChecks": [
+    {
+      "userId": "d6b30326-98c1-429c-80da-f034d60983d5",
+      "marker": "合成偏好甲-5827",
+      "matched": true
+    },
+    {
+      "userId": "5b4fde7e-5697-48cc-b767-61b430947de0",
+      "marker": "合成偏好乙-6941",
+      "matched": true
+    }
+  ],
+  "rememberCalls": 2,
+  "persistedMemoryCount": 2,
+  "memoryEvidence": [
+    {
+      "author": "d6b30326-98c1-429c-80da-f034d60983d5",
+      "content": "用户 userId: d6b30326-98c1-429c-80da-f034d60983d5，姓名: 同名验收成员，偏好：工作简报只写两个要点，验证标记是合成偏好甲-5827。",
+      "memoryId": "e85fd213-6bfa-4990-966b-d7540b3b47ab"
+    },
+    {
+      "author": "5b4fde7e-5697-48cc-b767-61b430947de0",
+      "content": "用户 userId: 5b4fde7e-5697-48cc-b767-61b430947de0，姓名: 同名验收成员，偏好：工作简报使用编号列出三个要点，验证标记是合成偏好乙-6941。",
+      "memoryId": "5ef843f1-ed59-40c9-b73d-0b4f9eb29d1d"
+    }
+  ],
+  "failure": null,
+  "rootTasks": 2,
+  "networkRequests": 4,
+  "usage": [
+    {
+      "input": 1108,
+      "output": 104,
+      "total": 1212
+    },
+    {
+      "input": 1394,
+      "output": 8,
+      "total": 1402
+    },
+    {
+      "input": 1926,
+      "output": 104,
+      "total": 2030
+    },
+    {
+      "input": 2211,
+      "output": 8,
+      "total": 2219
+    }
+  ],
+  "sourceSettingsUnchanged": true,
+  "temporaryDataRemoved": true
+}

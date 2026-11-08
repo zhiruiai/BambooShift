@@ -1,0 +1,46 @@
+{
+  "verifiedAt": "2026-11-04T17:00:26.628Z",
+  "scope": "Temporary isolated app context against the one previously authorized Cube VM; no formal accounts created, no pause/create/delete, no model call.",
+  "initialRead": {
+    "status": 200,
+    "state": "running",
+    "workerConnected": true
+  },
+  "pendingApproval": {
+    "startStatus": 409,
+    "approvalPreserved": true,
+    "expiresAtUnchanged": true,
+    "approved": false
+  },
+  "start": {
+    "status": 200,
+    "state": "running",
+    "workerConnected": true,
+    "operationCleared": true,
+    "requestedSeconds": 7200,
+    "expiresAtBefore": "2026-11-04T18:58:58.370Z",
+    "expiresAtAfter": "2026-11-04T19:00:26.311Z",
+    "publicResponseContainsCredentialsOrInfrastructureIds": false,
+    "omittedCredentialsPreservedByteForByte": true
+  },
+  "harnessCorrection": "The first run completed cloud start but stopped because the checker incorrectly expected download_file to require approval. Existing product semantics execute this read-only transfer immediately; no product behavior was changed.",
+  "delivery": {
+    "operation": "download_file",
+    "classification": "read-only transfer initiated explicitly by this verification",
+    "bytes": 251,
+    "sha256": "3416226bacf76ac6552281380a48ea391e34dabbb70cb978e1b720562c4c972b"
+  },
+  "formalConnectionUnchanged": true,
+  "guiTested": false,
+  "regression": {
+    "tests": 122,
+    "passed": 122,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 193755.533959
+  },
+  "finalTypecheck": "passed",
+  "productionBuild": "passed",
+  "liveServiceUpdated": true,
+  "legacyDatabaseRowsUnchangedAfterRestart": true
+}

@@ -1,0 +1,14 @@
+{
+  "dataDir": "/ABSOLUTE/PATH/TO/private-data",
+  "bind": "127.0.0.1:3001",
+  "publicOrigin": "https://openbot.example.test",
+  "webOrigin": null,
+  "runtimeDir": "/ABSOLUTE/PATH/TO/pandamate/runtime",
+  "nodeBinary": "/ABSOLUTE/PATH/TO/node",
+  "operations": {
+    "bind": "127.0.0.1:3002",
+    "publicOrigin": "https://operations.example.test",
+    "webOrigin": null
+  },
+  "releases": null
+}

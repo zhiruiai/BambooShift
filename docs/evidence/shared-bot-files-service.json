@@ -1,0 +1,241 @@
+{
+  "checkedAt": "2026-11-05T07:37:19.863Z",
+  "users": 0,
+  "operators": 0,
+  "sessions": 0,
+  "runningMessages": 0,
+  "queuedMessages": 0,
+  "spacesChecked": 1,
+  "appConnections": 0,
+  "appActions": 0,
+  "botTeamPlans": 0,
+  "primaryBots": 0,
+  "primaryCheckIns": 0,
+  "avatarSources": 0,
+  "avatarAssets": 0,
+  "sidebarRosters": 0,
+  "botInstallReceipts": 0,
+  "sharedBotReferences": 0,
+  "sharedBotAddReceipts": 0,
+  "legacyDatabaseBaselineUnchanged": true,
+  "botTemplates": 0,
+  "templateVersions": 0,
+  "templateLinks": 0,
+  "templateMutations": 0,
+  "templatePolicies": 0,
+  "sharedBots": 0,
+  "sharedBotMutations": 0,
+  "sharedFileGrants": 0,
+  "operatorSetupCodeExists": true,
+  "routes": [
+    {
+      "port": 3001,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/templates/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "status": 200
+    },
+    {
+      "port": 3001,
+      "path": "/shared-bots/00000000-0000-4000-8000-000000000001",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/register",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/login",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/admin/setup",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/templates/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "status": 200
+    },
+    {
+      "port": 5173,
+      "path": "/shared-bots/00000000-0000-4000-8000-000000000001",
+      "status": 200
+    },
+    {
+      "path": "/api/shared-bots",
+      "status": 401
+    },
+    {
+      "path": "/api/shared-bots/00000000-0000-4000-8000-000000000001",
+      "status": 401
+    },
+    {
+      "path": "/api/shared-bots/00000000-0000-4000-8000-000000000001/avatar?revision=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": 401
+    },
+    {
+      "path": "/api/platform/users",
+      "status": 401
+    },
+    {
+      "path": "/api/platform/workspaces",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/apps",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bootstrap",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-team-plans",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/primary-bot",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/sidebar-roster",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-templates",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-sharing-policy",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-copy-source/chief",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-template-imports/00000000-0000-4000-8000-000000000001",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/bot-avatars/00000000-0000-4000-8000-000000000001",
+      "status": 401
+    },
+    {
+      "path": "/api/app-oauth/result",
+      "status": 200
+    },
+    {
+      "path": "/api/app-oauth/callback",
+      "status": 400
+    },
+    {
+      "path": "/api/bot-template-gallery",
+      "status": 200
+    },
+    {
+      "path": "/api/bot-template-links/:missing-token",
+      "status": 404
+    },
+    {
+      "path": "/api/workspaces/:id/computer/actions",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/computer/actions/missing/approve",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/app-actions/missing/decision",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/conversations/welcome/stop",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/shared-bot-references",
+      "method": "POST",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/shared-bot-references/00000000-0000-4000-8000-000000000001",
+      "status": 401
+    },
+    {
+      "path": "/api/shared-bots/00000000-0000-4000-8000-000000000001/files",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/shared-bots/00000000-0000-4000-8000-000000000001/files/fixture/download?revision=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/shared-bots/00000000-0000-4000-8000-000000000001/files/fixture/download?revision=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "method": "HEAD",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing/files",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing/files?query=fixture",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing/files/fixture",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing/files/fixture/download?revision=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "method": "GET",
+      "status": 401
+    },
+    {
+      "path": "/api/workspaces/:id/agents/chief/sharing/files/fixture/download?revision=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "method": "HEAD",
+      "status": 401
+    }
+  ]
+}

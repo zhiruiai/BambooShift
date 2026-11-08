@@ -1,0 +1,75 @@
+.app-approval-scope {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 4px 12px;
+  margin: 9px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-approval-scope dt {
+  color: var(--text-secondary);
+}
+.app-approval-scope dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.app-approval-scope code {
+  font-size: inherit;
+}
+.app-approval-review,
+.app-approval-rule-list li {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-raised);
+  font-size: 13px;
+}
+.app-approval-review {
+  margin-block: 10px;
+}
+.app-approval-review .field-help {
+  margin: 4px 0 0;
+}
+.app-approval-review .app-action-buttons {
+  margin-block-start: 10px;
+}
+.app-approval-audit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-block: 4px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.app-approval-audit > svg {
+  flex: none;
+  color: var(--accent);
+}
+.app-approval-rules-heading,
+.app-approval-rule-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.app-approval-rules-heading {
+  margin-block-end: 12px;
+}
+.app-approval-rules-heading p {
+  flex: 1 1 220px;
+  margin: 0;
+}
+.app-approval-rule-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (max-width: 640px) {
+  .app-approval-rules-heading button,
+  .app-approval-rule-heading button {
+    min-height: 44px;
+  }
+}

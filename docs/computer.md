@@ -1,0 +1,191 @@
+# PandaMate 电脑执行层
+
+PandaMate 把聊天服务与执行电脑分开。Web、Electron 和 Flutter 都通过同一套工作空间 API 查看画面和提交操作。Pi 请求电脑工具，Rust 核验权限、目标和审批，再调用相应的 Worker。关闭查看窗口会停止客户端观察，后台任务的生命周期由服务端和执行电脑决定。
+
+当前平台按空间创建独立电脑控制器。下文单空间实现中的 `/api/computer/*`，在产品入口实际使用 `/api/workspaces/<workspaceId>/computer/*` 并要求产品账户及空间成员身份；Worker 自身路径不变。连接、断开、重新连接与环境设置由空间拥有者管理，成员可参与已有电脑的工作、审批和接管。新注册空间禁止控制平台宿主机及远程主机的整机桌面，但拥有者可明确启用通过会话校验的 Linux 专用虚拟桌面；成员不能修改电脑界面配置。原有空间的 macOS 兼容适配仍需明确启用及系统授权。
+
+## 选择执行位置
+
+每个空间当前使用一个活动工作电脑。配置好的云电脑和服务所在电脑都可以显式选择，切到服务所在电脑时会保留已保存的远程连接。浏览器和手机上的“服务所在电脑”指运行 PandaMate 服务的机器。若要使用另一台物理电脑，可在该设备运行独立 Worker 并连接。已配置的云电脑离线时，Bot 会报告状态，用户可以显式恢复。
+
+电脑面板分别显示执行位置与画面类型。服务所在电脑的 Bot 共享一个独立浏览器，任务排队运行。支持画面池的远程或云端 Worker 可为 Bot 分配独立画面。Flutter 可查看位置和云状态。拥有者可在手机上显式启动已配置的云电脑并为 Bot 分配可用画面，然后预览或接管。Worker 地址和连接凭据仍在 Web 或桌面端管理。
+
+切换前由服务端检查任务、待执行操作和接管，必要时要求释放已分配的画面。每次连接有独立的 `targetRevision`，用于客户端及时丢弃旧画面与接管状态；真正的操作仍受 Worker 实例、画面会话和服务端审批校验。若以后允许多台电脑同时为同一空间工作，目标身份必须贯穿任务、画面绑定、审批、接管和文件传输，再按目标隔离维护和清理。现有客户端可以继续使用默认目标的 API。
+
+## 已配置的云电脑
+
+运维可以为一个空间绑定已有 CubeSandbox 电脑，电脑面板显示真实状态、到期时间及连接状态。只有拥有者可以点击启动或恢复并连接；服务申请从现在起至少两小时，不缩短已有更晚期限，不自动续期。团队成员只查看状态和使用已有工作电脑。
+
+`GET /api/workspaces/<workspaceId>/cloud-computer` 只查询 CubeAPI，不探测 Worker 或调用恢复。`POST …/cloud-computer/start` 只接受空请求体，使用服务端固定的空间与实例绑定，浏览器不能指定实例 ID、地址、路径或凭据。启动前同步阻止新的任务和电脑操作；若已有任务、待审批操作、人工接管或电脑请求，返回冲突并保留原工作。运行中的远端接管也会复核，不能仅依赖本端缓存。恢复成功后重新验证 Worker 协议及连接绑定，旧审批不重放。
+
+私有绑定位于 `<spaceDir>/computer/cloud.json`，文件权限 `0600`，必须与平台登记的空间 ID 对应。新空间需单独分配执行电脑。当前接入使用明确的 loopback CubeAPI 入口与预先保存的 Worker 连接。绑定声明 `autoResume: false`，状态查询只读取实例状态。基础设施地址和凭据留在服务端。接入步骤见 [CubeSandbox 说明](cubesandbox.md)。
+
+启动请求发出后发生超时或连接失败，会提示实例可能已恢复、需要刷新确认，不宣称已经撤销恢复。关闭服务会中止等待并释放维护状态；身份失效后不再保存连接。现阶段不提供实例创建、删除、暂停或批量分配入口，SSH 隧道及连接桥仍需保持运行。
+
+## 本机运行
+
+拥有者选择服务所在电脑后，Worker 使用该空间的工作目录。可以列出和读取工作区文件，执行 `pwd`、`ls`、`date`、`uname` 四个只读命令。写入文件、操作工作浏览器和输入会生成待批准操作。在聊天卡片核对参数后，可允许本次操作或拒绝，也可打开电脑面板查看画面。通过隔离检查的远程 Worker 可使用下文的 `remote_shell`；本机终端限于上面的只读命令。
+
+浏览器使用 `playwright-core` 启动本机 Chrome 的独立用户目录 `data/browser-profile`，不会导入个人 Chrome 的登录信息。首次使用可在电脑面板点击人工接管，或请求 Bot 打开网址并批准。截图来自这一个真实浏览器页面，没有打开时返回明确错误，不使用示意图冒充直播。
+
+可选环境变量：
+
+- `OPENBOT_BROWSER_EXECUTABLE`：自备 Chromium/Chrome 的可执行文件路径。
+- `OPENBOT_BROWSER_HEADLESS=false`：显示独立浏览器窗口，供手动登录或接管；默认在后台运行。
+- `OPENBOT_BROWSER_ALLOWED_ORIGINS`：仅用于你控制的本地测试网页，填写逗号分隔的完整 origin，例如 `http://127.0.0.1:48080`。不能包含 PandaMate 控制面常用端口。
+
+独立浏览器默认拒绝访问本机、私有网络与云元数据地址；HTTP CONNECT 代理逐个连接检查并固定目标 IP，因此页面重定向和子请求也会受限。Chromium 的隐式 loopback 绕过已关闭，原生自动下载默认禁用，Service Worker 被禁用；明确批准的 `browser_download` 通过有界读取保存导出文件。不要为不可信页面增加内网例外。外部页面仍可能产生联网副作用，因此浏览器操作需要批准。
+
+远程部署时，聊天服务和 Worker 都必须设置同一 `OPENBOT_PUBLIC_ORIGIN`。这个控制台域名在所有端口上都被浏览器硬性拒绝，测试白名单也不能覆盖；连接时聊天服务核对 Worker 声明的受保护域名，不一致则拒绝连接。这样即使控制台使用公网域名，Bot 也无法通过工作浏览器打开控制台自行批准操作。
+
+当前 Worker 协议为 `openbot-computer-v2`。聊天服务在连接时记录 Worker 本次启动的随机实例 ID 与完整控制台 origin，并在每次操作、截图、接管和状态请求前重新核对健康声明。请求同时携带期望实例与 origin，Worker 在接收及串行队列开始执行时再次校验，防止健康检查后恰好重启而执行旧审批。实例 ID 是连接约束，不代替 Bearer 令牌认证。
+
+健康检查失败、实例变化或隔离声明变化会使原连接失效，撤销未完成审批、待执行队列和本端接管凭据；网络恢复不会自动复活旧连接，需用户重新连接。旧实例的延迟清理请求只能被拒绝，不能撤销新实例上的接管。已开始的操作可能已产生效果，失效不代表回滚。旧版 Worker 会被明确拒绝，请同时升级聊天服务和 Worker，再重新连接。
+
+默认模式覆盖远程浏览器、文件和受控终端。另有明确启用的 macOS 主屏适配，以及已在唯一 VM 实测的 [Linux 专用虚拟桌面](linux-desktop.md)；这些界面均使用截图，不提供音频/视频串流。
+
+## macOS 整机桌面
+
+在 macOS 14+ 的工作电脑安装 Apple Command Line Tools 后，运行 `npm run desktop:build`。产物是项目 `data/native/` 中的桌面控制助手，使用项目内本地签名；不会安装到系统应用目录或修改系统权限。`npm run desktop:check` 只检查权限与主显示器元信息，不读取屏幕内容。
+
+在电脑面板选择“整机桌面”只展示范围与权限，只有点击“使用整机桌面”才会启用。用户需要在 macOS 的“屏幕与系统音频录制”和“辅助功能”中允许助手或系统列出的启动应用。整机范围包括主屏上的原生应用，具有该空间权限且已登录的设备可查看截图；视觉模型观察时，截图会发给用户配置的模型。完整权限步骤、协议和源码参考 [原生助手说明](../server/native/macos/README.md)。
+
+| 接口                         | 作用                                             |
+| ---------------------------- | ------------------------------------------------ |
+| `GET /api/computer/status`   | 返回 `surface`、主屏尺寸与两项有效权限，只读检查 |
+| `POST /api/computer/surface` | `{surface:'browser'                              | 'desktop',confirm:true}`，桌面必须显式确认且权限就绪 |
+| Worker `POST /surface`       | 同一合同，需 Worker 令牌                         |
+
+模型动作包括 `desktop_click`、`desktop_type`、`desktop_key`、`desktop_scroll`、`desktop_drag`，每次输入都需用户批准。人工接管使用同一短期租约，期间模型输入和截图被阻止。截图尺寸来自实际 PNG，主屏最长不超过 1600 × 1000；Retina 输入按逻辑屏幕坐标映射，屏幕布局改变会拒绝旧坐标。单击、双击、右键与两点拖动均可在 UI 操作；Unicode 输入不修改剪贴板。
+
+切换操作范围会结束接管、撤销旧审批与排队动作。重启或连接另一台 Worker 后恢复为浏览器；不能让上次的桌面授权悄悄沿用。取消原生操作先释放按下的输入，再等待辅助进程退出。
+
+整机模式具有当前系统用户的操作范围，**浏览器代理及工作区路径限制不能限制其它原生应用**。它不构成 OS 沙箱；远程生产使用应将执行电脑与控制台、密钥和其它用户数据分离。主屏外的窗口暂不支持。当前已验证原生编译、纯坐标测试和模拟执行协议；本机实际桌面权限尚未授予，真实截图和键鼠效果仍未验收。
+
+## 独立 Worker
+
+在一台装有 Node 22.19+ 和 Chrome 的电脑上检出项目，安装依赖。用至少 24 字符随机令牌启动（不要把令牌提交到 Git）：
+
+```sh
+export OPENBOT_WORKER_TOKEN="$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))')"
+npm run computer:worker
+```
+
+默认监听 `127.0.0.1:3002`。本机连接可在设置中填入 `http://127.0.0.1:3002` 与同一令牌；真正远程访问应通过 VPN 或 HTTPS 反向代理，服务不会接受非本机明文 HTTP 地址。不要把令牌放在 URL 中。令牌具有执行权限，应只提供给可信 PandaMate 服务。
+
+可配置 `OPENBOT_WORKER_HOST`、`OPENBOT_WORKER_PORT`、`OPENBOT_WORKER_WORKSPACE`。默认工作区为 `data/worker/workspace`，浏览器资料也留在该执行电脑。连接选择、远程地址、令牌及实例绑定由聊天服务原子保存到 `data/computer/connection.json`（权限 0600），不会把令牌返回前端。启动先验证同一个 Worker 的实例 ID 与控制台声明，通过后才恢复连接；不可达或实例变化时保持远程选择并显示重连提示，不回退本机，也不重放旧批准。
+
+电脑弹窗的“重新连接”可使用后台已保存凭据。主动断开会保留远程地址但禁止下次启动自动连接。明确切回本机会清除远程选择。配置损坏或非法时拒绝恢复。接入和重新连接见 [CubeSandbox 说明](cubesandbox.md)。
+
+聊天资料库与独立 Worker 工作区是不同位置。资料库中的「发送到电脑」可把选中文件复制到目标相对路径；电脑面板的「文件」可浏览目录，将结果存入当前会话资料库。单文件最多 10 MiB，支持图片、PDF 等二进制内容，不会自动同步整个资料库。
+
+Pi 通过 `computer_action` 的 `upload_file` 使用 `workspace_list` 返回的 `fileId` 请求发送，批准前不会写入。审批绑定文件名、大小和 SHA256，来源文件在等待期间变更后须重新申请。`download_file` 按工作区相对路径取回文件，返回资料库 `fileId` 与可下载链接，并记录来源电脑和路径。UI 直接点击「发送文件」只批准这次明确选中的文件，不会批准其它模型操作。
+
+上传不覆盖同名文件；取回时自动使用唯一文件名保存副本。电脑工作区接口拒绝越界路径、符号链接、硬链接和非普通文件，传输过程限制读取字节数。Linux 文件操作逐层固定目录句柄，直到读取、写入或目录列举结束；持续运行的桌面程序替换父目录不能把操作转向工作区外。服务为 root、工作区属于 UID 65532 时，新建文件与目录通过句柄交给该专用身份，使桌面应用可读取上传内容；已有文件不改所有权。切换连接会取消尚未完成的传输；已在原电脑完成的写入不会因此回滚。新 Worker 声明 `binary-file-transfer` 能力，旧版本会得到升级提示。
+
+Worker API（每个请求都需要 `Authorization: Bearer …`）：初次 `GET /health` 返回 `protocol`、`instanceId`、`controlOrigin`；随后请求必须携带 `X-OpenBot-Worker-Instance` 和 `X-OpenBot-Control-Origin`，无控制台 origin 时使用字面值 `none`。握手不匹配返回 `WORKER_CONNECTION_INVALID`。聊天服务会自动维护这些请求头，前端不会直接获取 Worker 令牌。
+
+对于 `kind:'virtual'` 的桌面，健康响应还提供 `session:{id,generation}`；可用且已授权、身份合法时才包含 `virtual-desktop-v1`。控制器固定此身份，桌面动作也保存申请时的身份。进入桌面、桌面截图/动作、桌面接管启动与输入都须携带匹配的 `X-OpenBot-Desktop-Session`、`X-OpenBot-Desktop-Generation`，出队时再次核验；旧、缺失或不完整的身份拒绝执行。健康、文件、退出到浏览器和结束接管无需这对桌面身份，仍须原有 Worker 鉴权与实例绑定。
+
+| 路径                        | 作用                                                                |
+| --------------------------- | ------------------------------------------------------------------- |
+| `GET /health`               | 主机名称、系统、协议版本与能力                                      |
+| `GET /screenshot`           | 当前浏览器或已启用桌面的 PNG，画面不可用时返回 503                  |
+| `POST /execute`             | 执行聊天服务已批准的操作                                            |
+| `POST /execute-with-frame`  | 在同一执行锁中完成支持的动作并返回当时画面，需 `action-frames` 能力 |
+| `GET /files?path=…`         | 工作区目录列表，最多返回 200 项                                     |
+| `GET /files/content?path=…` | 读取单个文件，返回有大小限制的二进制内容                            |
+| `PUT /files/content?path=…` | 接收 `application/octet-stream`，独占创建文件                       |
+| `GET /takeover/status`      | 接管状态和画面尺寸，不返回接管凭据                                  |
+| `POST /takeover/start`      | 启动人工接管，返回短期凭据                                          |
+| `POST /takeover/input`      | 执行持有接管凭据的用户输入                                          |
+| `POST /takeover/end`        | 结束人工接管                                                        |
+
+Worker 拒绝带 `Origin` 的浏览器直连请求。聊天服务默认只监听本机；跨设备使用需启用 [设备认证](devices.md) 并配置 HTTPS 入口。
+
+## 操作与审批
+
+`POST /api/computer/actions` 及 Pi 工具接受同一结构，例如：
+
+```json
+{ "type": "browser_navigate", "url": "https://example.com" }
+```
+
+返回 `pending` 操作后，可使用 `POST /api/computer/actions/:id/approve` 批准，或 `…/reject` 拒绝。操作进入串行队列，避免多个 Bot 同时抢占页面。动作结果包含真实网页可见文本与控件信息供 Pi 后续工作。重复批准返回 409。切换/断开电脑会拒绝未批准的请求，重启不会恢复未批准操作。
+
+切换电脑会失效旧连接的整个待执行队列，关闭本机浏览器和代理，并终止正在等待的远程请求；旧队列不会在新电脑上执行。已经发送到远程 Worker 的操作仍可能在原电脑完成，断开连接不等于回滚。服务关闭时调用 `closeComputer()` 释放资源；`GET /api/computer/status` 会主动检查远程 Worker 是否仍在线。
+
+可用类型：`list_files`、`read_file`、`write_file`、`upload_file`、`download_file`、`terminal_command`、`remote_shell`、`browser_navigate`、`browser_click`、`browser_type`、`browser_scroll`、`browser_back`。网站输入 `text` 与文件正文 `content` 不写入持久审计，文件传输仅记录路径、大小和状态等元数据；远程命令的 `command` 会保留在审批记录中。审批对象包含完整输入，用户应先核对操作。HTTP 文件传输请求另须提供有效 `conversationId`；Pi 工具自动使用当前会话。
+
+`remote_shell` 必须连接声明 `isolated-shell-v1` 的远程电脑，且每次批准后才运行。例如 `{"type":"remote_shell","command":"python3 -c 'print(6*7)'","path":"."}`。命令固定最长 30 秒、无网络、只在工作区持久读写；输出合计最多 256 KiB，结果包含真实退出码、取消、超时与资源限制状态。生成文件仍需用 `download_file` 取回聊天。命令 ID 通过 `X-OpenBot-Action-Id` 绑定，取消另走固定 `POST /shell/cancel`，停止清理无法确认时停用连接。部署和维护细节见 [远程代码执行](remote-shell.md)。
+
+网站导出另使用 `browser_download`，必须指定待点击的 `selector` 与保存文件的相对 `path`，例如 `{"type":"browser_download","selector":"#export-csv","path":"reports/monthly.csv"}`。批准后才点击，最多等待 30 秒、接收最多 10 MiB，不覆盖已有文件。支持 HTTP(S) 附件响应、页面中明确带 `download` 属性的链接，以及当前页生成的 Blob/Data 下载；没有可识别下载意图的普通网页导航会失败，不会把 HTML 错当报表。下载结果先留在电脑工作区，随后可用 `download_file` 取回聊天。
+
+浏览器仍保持默认禁止自动下载，只有本次已批准的导出会被捕获。收到文件时逐段限制大小，不先让浏览器无限落盘再检查。停止任务、接管、切换连接及超时都会取消；若网页自身的 Blob 读取挂住，会关闭当前独立工作页以结束读取，浏览器登录资料保留，后续可重新导航。
+
+## 人工接管与模型观察
+
+点击人工接管后，前端取得 5 分钟有效的 `leaseId` 和对应操作范围的画面尺寸。浏览器模式为 `1440 × 900`，macOS 整机桌面使用主屏实际尺寸，当前 Linux 专用虚拟桌面为 `1440 × 900`。首次浏览器接管会启动浏览器；可在地址栏输入网址、点击截图中的控件、填写输入框、发送允许的按键或滚动，完成网站登录。所有这些都是用户的即时操作，无须再次批准。
+
+| 聊天 API                            | 请求和结果                                                  |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `POST /api/computer/takeover/start` | 返回 `leaseId, expiresAt, width, height`                    |
+| `GET /api/computer/takeover/status` | 返回 `active, expiresAt?, width, height`，不含 lease        |
+| `POST /api/computer/takeover/input` | `{leaseId,type,...}`，成功返回 `ok,capturedAt,width,height` |
+| `POST /api/computer/takeover/end`   | `{leaseId}`，结束后返回状态                                 |
+| `GET /api/computer/screenshot`      | PNG 和 `X-Captured-At` 响应头，可定时刷新                   |
+
+输入类型包括 `click`（画面坐标 `x,y`）、`type`（`text`）、`key`（`key`）、`scroll`（`deltaY`）和 `navigate`（`url`）。客户端必须按图片实际显示尺寸把点击映射到返回的 viewport，不能把 CSS 像素直接当作浏览器坐标。允许的键为 Enter、Tab、Escape、Backspace、Delete、方向键、Home、End、PageUp、PageDown、ControlOrMeta+A。没有任意 JavaScript、shell 或系统键组合入口。
+
+接管凭据只返回给发起接管的 UI，不进入 Bot 工具结果、消息、状态接口或审计。服务器和 Worker 都检查有效期。断开或切换电脑会使控制端凭据立即失效，并尝试通知 Worker 结束接管；网络已经中断时，远端依靠最多 5 分钟的有效期释放锁。接管期间 Bot 的浏览器动作保留为待批准，结束接管后可继续原审批流程；其它文件任务可继续。
+
+截图预览和人工输入请求取消时，控制器与 Worker 都会撤销尚未执行的队列请求；运行中的桌面助手收到取消后释放输入状态并退出，Worker 等待清理结束再执行下一项。该链路经过固定 Cube 连接桥仍保留取消信号。已产生的输入效果不会回滚；页面关闭也不等于取消已交给 Pi 的后台任务。
+
+Bot 观察截图使用 `captureComputerScreenshot({forAgent:true,signal})`。本机和 Worker 都会在接管期间拒绝模型观察，避免把用户输入登录凭据时的画面交给模型。Worker 的 `browser_screenshot` / `desktop_screenshot` 动作向可信聊天服务返回 PNG base64，聊天服务将其作为模型 image block 传入；操作卡只保留截图元数据，不保存图像。用户 UI 的截图接口在接管期间继续可用。
+
+人工接管审计保存在 `data/computer/takeover.jsonl`（Worker 为其自身工作区相邻目录），记录动作、坐标、按键或文本长度。输入文本、接管凭据、截图像素不写入审计；导航地址去掉查询参数和片段。
+
+文件路径必须为工作区内相对路径，拒绝目录穿越和绝对路径。Linux 文件边界依赖可信的工作区祖先和操作期间持续持有的目录句柄；macOS 的兼容路径检查不提供同等的 Linux 竞态隔离保证。文件访问限制本身不是进程或网络隔离，独立浏览器仍以启动它的 OS 用户运行；专用虚拟桌面的 namespace 与身份限制另见 [Linux 桌面说明](linux-desktop.md)。
+
+## 验证
+
+`npm test` 中的电脑测试覆盖路径穿越与符号链接、真实文件读写、终端命令限制、Worker token 与 Origin、审批前不写入与重复批准拒绝。浏览器验证依赖本机 Chrome；如 Chrome 启动或网络访问失败，API 返回实际错误，不宣称已完成。
+
+远程协议回归另覆盖：无需 UI 轮询发现声明漂移、健康检查到执行之间重启、同令牌旧实例请求拒绝、排队操作与接管凭据失效、旧清理请求不打断新接管，以及多客户端并发批准不会重复执行。
+
+文件传输回归使用独立工作区验证真实二进制往返、资料库交付链接、来源摘要变化、重名、超限和取消。真实 Pi 的慢速下载测试确认停止任务会关闭下载，迟到的响应不入库；来源检查和排队阶段也可取消，不会因此关闭共用电脑连接。
+
+`npm run test:browser` 运行真实 Chrome 集成测试（合同位于 [Worker 浏览器测试](../server/workers/computer-runtime/tests/computer.browser.test.ts)及相邻浏览器测试文件），仅打开测试自动创建的本机网页，验证输入、点击、PNG 截图、重定向阻断、本机/远程接管、接管期间阻止 Bot 操作和观察、凭据过期及结束后的恢复。默认测试跳过此项，以免在没有 Chrome 的构建环境启动浏览器。
+
+## Linux 虚拟桌面现状与剩余工作
+
+本轮已加入可实例化的 Linux `DesktopAdapter`、固定 helper/manifest 验证、Xvfb/Openbox/终端会话、会话 ID 与 generation 绑定，以及截图和人工输入取消传播。桌面程序以 UID/GID 65532 运行，使用独立 namespace、只读运行环境和有限可写目录；控制凭据留在 root 私有目录。现有两个离线桌面通过固定画面池接入，独立 Bot 分配、并行、会话身份和人工接管隔离已在指定 VM 实测。配置、资源上限与维护流程集中在 [Linux 专用虚拟桌面](linux-desktop.md)。
+
+文件句柄边界已在该 VM 的临时工作区验证：600 次并发目录替换期间的读取、列举、覆盖写入与上传尝试没有改动工作区外合成文件，新上传文件可由专用 UID 实际读取。记录见 [文件边界证据](evidence/linux-desktop-file-boundary.json)。HTTP 会话绑定与取消回归使用合成桌面，真实 Xvfb 组件检查也只证明执行层，二者均不能代替产品页面的视觉与交互验收。
+
+虚拟桌面的“粘贴文本”已改为受控的临时 X11 selection；真实中文、表情与换行文本逐字节通过，300 单位上限及取消后临时内容清理也已验证。当前桌面没有网络或带窗口的图形浏览器，原有独立 Chrome 的资料和登录不会自动出现在桌面中；联网网页仍需切回独立浏览器。
+
+`/computer/bots/:agentId/*` 只访问服务器为该 Bot 保存的 screen/session/generation，绑定在后台私有文件中持久化。`status` 仅查询，拥有者可明确 `POST /prepare`，Bot 首次电脑任务也可请求分配已有画面。最多两个，满额、身份变化或清理未知时明确拒绝，不借用其他画面。共享文件与隔离命令仍通过电脑级路径执行。`GET /computer/bots` 提供实际容量、绑定与任务状态，同 Bot 跨聊天任务先排队；停止 Pi 后仍等待远端实际清理和历史图保存。
+
+两个浏览器页面共享同一空间的 cookies，并保持自己的标签页和弹窗。带窗口的图形浏览器登录同步仍未实现。双桌面和远程 Chrome 的受控验收范围见 [CubeSandbox 验收说明](cubesandbox.md#验收范围)。不同用户和团队需独立分配执行电脑。
+
+### 释放、恢复与继续处理画面
+
+空间拥有者在所选 Bot 的电脑面板中确认“释放画面”，关闭该 Bot 的浏览器页面和远程应用，成功后腾出固定两个槽位中的一个。未保存的应用内容会丢失；共享工作区文件和同空间浏览器登录状态保留。旧桌面 home 留在服务器，不自动迁移给后续 Bot，也不保证恢复应用状态。释放不删除 Bot；确认已无画面绑定和未完成操作后，才能另行删除 Bot。普通成员及独立的平台运营身份不会因此得到空间电脑维护权限。
+
+故障或清理未知时可用的“恢复画面”执行重置，不能用普通释放掩盖未知清理。运行中的电脑任务、等待队列、待批准操作及人工接管会阻止新释放或重置；正常空闲画面只有释放入口。未配置 `screen-lifecycle-v1` 的旧 Worker 不开放这些操作，部署变量见 [Linux 专用虚拟桌面](linux-desktop.md)。没有自动回收、定时清理或状态刷新触发的维护。
+
+空间 API 使用以下固定路由，路径前缀为 `/api/workspaces/:workspaceId/computer`：
+
+| 请求                                   | 内容与结果                                                                       |
+| -------------------------------------- | -------------------------------------------------------------------------------- |
+| `POST /bots/:agentId/release`          | `{confirm:true, assignmentRevision}`；成功后 Bot 为 `unassigned`，名额可重新分配 |
+| `POST /bots/:agentId/reset`            | 同上；成功提交新的绑定 revision，仍属于同一 Bot                                  |
+| `POST /bots/:agentId/lifecycle/resume` | 另带 `operationId`，仅继续服务器保存的同一次释放或重置                           |
+| `GET /bots/:agentId/status`            | 只读显示实际状态及 `botScreen.lifecycle`，不会新建或继续维护事务                 |
+
+事务可能需要约 90 秒。确认固定当前 Bot 和 `assignmentRevision`；Worker 还核验画面 revision、会话及 generation。换代后的旧审批、接管或维护请求不能控制新画面；已完成事务的重复请求只查询回执，不再次执行。请求断开不代表维护停止。HTTP 成功但状态仍是 `changing` 或 `blocked` 时，界面仍显示未完成；未知结果保留名额与绑定，只能刷新状态并明确“继续处理”已有事务。除服务器明确拒绝接纳事务外，不自动发起新操作。服务重启读取持久记录，不自动恢复维护事务。
+
+重置返回同 Bot 的新 revision、无待处理 operation 且生命周期为 `ready`，表示事务已完成；如果新画面暂时连接失败，界面提示“重置已完成，画面暂不可用，请检查连接”，仍禁用截图和输入。检查连接、刷新状态确认画面可用后才恢复控制。
+
+画面释放、恢复与继续处理已通过受控接口、真实组件事件及实际 VM 验收。验收后核对原工作文件、旧 home 与共享浏览器资料目录保留。产品界面验收单独见 [验收记录](verification.md)。

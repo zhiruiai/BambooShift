@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-11-05T10:30:10.005Z",
+  "manifest": {
+    "name": "OpenBot",
+    "bundleId": "com.openbot.client",
+    "version": "0.1.0",
+    "electronVersion": "45.2.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "packagedAt": "2026-11-05T10:27:54.187Z",
+    "sourceFiles": [
+      "main.cjs",
+      "package.json",
+      "preload.cjs",
+      "remote-preload.cjs",
+      "security.cjs",
+      "ui/app.js",
+      "ui/index.html",
+      "ui/logo.svg",
+      "ui/styles.css"
+    ],
+    "bundles": [
+      "OpenBot-darwin-arm64"
+    ],
+    "localSignature": "ad-hoc",
+    "signedForDistribution": false,
+    "serviceIncluded": false
+  },
+  "archiveSha256": "b722e596a78dbea51821b7c9d6d1c89b9227dbb7a15224a6c998f7d5107cd7e6",
+  "archiveFiles": 9,
+  "sourceSha256": {
+    "desktop/main.cjs": "9a9c0639e1637f6263206aea594324eb15fdef7fd813ac8bf3db1aca2490eff7",
+    "desktop/package.json": "52c89ddd3492254cb9af605387653ffc99f81e436f7662f47fe55491b6093eda",
+    "desktop/preload.cjs": "7d62fd43029cc97afd5882cd5037de75ba7a8e88fbb8139602aa9056df181b83",
+    "desktop/remote-preload.cjs": "b21ae1292db386470102371c352c6736a75bfa7b5d210a03fc657c8dc3f3d8a4",
+    "desktop/security.cjs": "294d563af556646259ef84a1ab1eb499d876bc22de81c8ad2c6d8799f3152131",
+    "desktop/ui/app.js": "ef79e5c7ab383096841b30b9b79ff99d9da931a049880cb37678e57338d44e44",
+    "desktop/ui/index.html": "b911d6e6f0e74b37ddd46191def3c8f5a11a1c3e43eaec29878bebf5baaeb8ba",
+    "desktop/ui/logo.svg": "3aec59ac43529b3de932bdc309c08a883ddabb42c5df407eaca5d61119dc7fe6",
+    "desktop/ui/styles.css": "99f2258eee82fa370f433141d4b9a826b56fc7af6bee05bea53288697b7bf13e"
+  },
+  "allRuntimeFilesMatchCurrentSource": true,
+  "packageMetadataMatchesExpectedSanitization": true,
+  "normalizedPackageFields": [
+    "private (removed by Electron Packager)"
+  ],
+  "noExtraArchiveFiles": true,
+  "signatureVerified": true,
+  "bundleIcon": "electron.icns",
+  "microphonePurposePresent": true,
+  "guiAcceptance": false,
+  "limitations": [
+    "macOS arm64 local ad-hoc package only; not notarized or signed for distribution.",
+    "Native spelling UI, dictionaries, visual theme and product browser have not been accepted through GUI control."
+  ]
+}

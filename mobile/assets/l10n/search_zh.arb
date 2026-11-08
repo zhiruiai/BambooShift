@@ -1,0 +1,19 @@
+{
+  "mobileSearchTitle": "搜索工作空间",
+  "mobileSearchHint": "在当前工作空间内搜索",
+  "mobileSearchClear": "清空搜索",
+  "mobileSearchAll": "全部",
+  "mobileSearchMessages": "消息",
+  "mobileSearchGroups": "群聊",
+  "mobileSearchFiles": "文件",
+  "mobileSearchWebsites": "网站",
+  "mobileSearchLinks": "链接",
+  "mobileSearchRoutines": "例行任务",
+  "mobileSearchEmpty": "没有搜索结果",
+  "mobileSearchTruncated": "选择分类可查看该类的全部匹配项。",
+  "mobileSearchLatest": "返回最新消息",
+  "mobileChatLibraryTitle": "会话资料库",
+  "mobileChatLibraryOpenLink": "在浏览器中打开链接",
+  "mobileChatLibraryMoreLinks": "查看更多链接",
+  "mobileChatLibrarySourceHint": "打开原消息"
+}

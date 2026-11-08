@@ -1,0 +1,94 @@
+.markdown-file-preview {
+  max-width: 82ch;
+  min-width: 0;
+  margin-inline: auto;
+  padding: clamp(16px, 4vw, 36px);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.markdown-file-preview > :first-child {
+  margin-block-start: 0;
+}
+.markdown-file-preview > :last-child {
+  margin-block-end: 0;
+}
+.markdown-file-preview :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.35em 0 0.45em;
+  line-height: 1.3;
+}
+.markdown-file-preview h1 {
+  font-size: 26px;
+}
+.markdown-file-preview h2 {
+  font-size: 20px;
+}
+.markdown-file-preview h3 {
+  font-size: 17px;
+}
+.markdown-file-preview :is(h4, h5, h6) {
+  font-size: 14px;
+}
+.markdown-file-preview :is(p, ul, ol, pre, blockquote, .markdown-table-scroll) {
+  margin-block: 0.8em;
+}
+.markdown-file-preview :is(ul, ol) {
+  padding-inline-start: 1.65em;
+}
+.markdown-file-preview li > :is(ul, ol, p) {
+  margin-block: 0.3em;
+}
+.markdown-file-preview .task-list-item {
+  list-style: none;
+}
+.markdown-file-preview blockquote {
+  margin-inline: 0;
+  padding-inline-start: 12px;
+  border-inline-start: 3px solid var(--border-strong);
+  color: var(--text-secondary);
+}
+.markdown-file-preview :is(code, pre) {
+  background: var(--code-block);
+  border-radius: 5px;
+  font:
+    13px/1.6 ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+}
+.markdown-file-preview code {
+  padding: 1px 4px;
+}
+.markdown-file-preview pre {
+  padding: 12px;
+  overflow: auto;
+  white-space: pre;
+}
+.markdown-file-preview pre code {
+  padding: 0;
+  background: transparent;
+}
+.markdown-file-preview .markdown-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+.markdown-file-preview table {
+  border-collapse: collapse;
+}
+.markdown-file-preview :is(th, td) {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+.markdown-file-preview th {
+  background: var(--surface-subtle);
+}
+.markdown-file-preview hr {
+  border: 0;
+  border-block-start: 1px solid var(--border);
+}
+.markdown-file-image-label {
+  color: var(--text-secondary);
+  font-style: italic;
+}

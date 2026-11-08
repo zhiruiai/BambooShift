@@ -1,0 +1,12 @@
+include: package:flutter_lints/flutter.yaml
+analyzer:
+  errors:
+    invalid_use_of_visible_for_testing_member: error
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+linter:
+  rules:
+    avoid_print: true
+    use_build_context_synchronously: true

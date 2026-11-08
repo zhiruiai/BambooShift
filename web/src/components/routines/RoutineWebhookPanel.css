@@ -1,0 +1,53 @@
+.routine-webhook-panel {
+  min-width: 0;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding: 10px 0;
+}
+.routine-webhook-settings,
+.routine-webhook-key,
+.routine-webhook-confirm {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.routine-webhook-settings p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.routine-webhook-key > button {
+  justify-self: start;
+}
+.routine-webhook-credential,
+.routine-webhook-actions {
+  display: flex;
+  gap: 8px;
+  align-items: end;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.routine-webhook-credential label {
+  display: grid;
+  flex: 1 1 190px;
+  gap: 6px;
+  min-width: 0;
+}
+.routine-webhook-credential input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+.routine-webhook-credential > p {
+  flex-basis: 100%;
+}

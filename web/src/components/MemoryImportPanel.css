@@ -1,0 +1,69 @@
+.memory-import-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.memory-import-panel h3 {
+  font-size: 14px;
+  margin: 0;
+  font-weight: 550;
+}
+.memory-import-panel > .field-help {
+  margin: 0;
+  line-height: 1.7;
+}
+.memory-import-panel > label {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted, #787184);
+  line-height: 1.6;
+}
+.memory-import-panel textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 100px;
+  border: 1px solid var(--border, #e8e1f1);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+  line-height: 1.7;
+  color: var(--text, #333038);
+  background: var(--panel, #fff);
+}
+.memory-import-panel textarea[readonly] {
+  background: var(--purple-soft, #f8f6fb);
+}
+.memory-import-panel textarea:focus-visible {
+  outline: 2px solid var(--purple, #9363ed);
+  outline-offset: 2px;
+}
+.memory-import-panel button,
+.memory-import-panel a {
+  min-height: 44px;
+}
+.memory-import-count {
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--muted, #787184);
+  margin-top: -8px;
+}
+.memory-import-notice {
+  border: 1px solid var(--border, #e8e1f1);
+  border-radius: 11px;
+  padding: 12px 14px;
+  width: 100%;
+  background: var(--purple-soft, #f8f6fb);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.memory-import-notice p {
+  margin: 0 0 8px;
+}
+.memory-import-notice button {
+  margin: 4px 8px 0 0;
+}

@@ -1,0 +1,116 @@
+.skill-version-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 18px 0 14px;
+  padding: 4px;
+  background: light-dark(#f5f1f8, var(--surface-subtle));
+  border-radius: 9px;
+}
+.skill-version-tabs button {
+  flex: 1;
+  min-height: 38px;
+  padding: 7px;
+  border-radius: 6px;
+  color: light-dark(#887695, var(--text-secondary));
+  font-size: 12px;
+}
+.skill-version-tabs button[aria-pressed='true'] {
+  background: light-dark(white, var(--accent-soft));
+  color: light-dark(#594168, var(--text-secondary));
+  box-shadow: 0 1px 3px light-dark(#5e3e6712, var(--shadow-soft));
+}
+.skill-version-tabs small {
+  margin-left: 5px;
+  color: light-dark(#9d87ad, var(--text-muted));
+}
+.skill-version-review > p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: light-dark(#7d7088, var(--text-secondary));
+}
+.skill-review-back {
+  min-height: 38px;
+  margin-bottom: 12px;
+}
+.skill-review-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.skill-review-heading strong {
+  font-size: 15px;
+  color: light-dark(#554361, var(--text));
+  overflow-wrap: anywhere;
+}
+.skill-review-content {
+  max-height: 300px;
+}
+.skill-version-compare {
+  margin-top: 14px;
+}
+.skill-version-compare summary {
+  font-size: 12px;
+  color: light-dark(#85708f, var(--text-secondary));
+  cursor: pointer;
+  padding: 8px 0;
+}
+.skill-history-note {
+  font-size: 12px;
+  line-height: 1.7;
+  color: light-dark(#91839c, var(--text-secondary));
+  margin: 7px 0;
+}
+.pill.skill-muted {
+  color: light-dark(#877b90, var(--text-secondary));
+  background: light-dark(#f1eef4, var(--surface-subtle));
+}
+.skill-version-review .dialog-actions {
+  flex-wrap: wrap;
+}
+.team-skill-entry {
+  margin-top: 12px;
+}
+.team-skills {
+  display: grid;
+  gap: 12px;
+}
+.team-skill-toolbar,
+.team-skill-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.team-skill-toolbar h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.team-skill-item summary {
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.team-skill-item p {
+  margin-block: 8px;
+}
+.team-skill-preview {
+  max-height: 280px;
+  overflow: auto;
+}
+.team-skill-sources {
+  display: grid;
+  gap: 6px;
+}
+@media (max-width: 760px) {
+  .skill-version-tabs button,
+  .skill-review-back,
+  .skill-version-review .dialog-actions button,
+  .approve-skill {
+    min-height: 44px;
+  }
+}

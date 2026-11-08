@@ -1,0 +1,352 @@
+.account-menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  padding: 9px 10px;
+  border-radius: 7px;
+  text-align: left;
+  color: light-dark(#74627f, var(--text-secondary));
+  font-size: 12px;
+}
+.account-menu-item > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.account-menu-item small {
+  display: block;
+  font-size: 12px;
+  color: light-dark(#938b9a, var(--text-muted));
+  margin-top: 3px;
+}
+.account-menu-item:hover:not([aria-disabled='true']) {
+  background: light-dark(#f5f0f9, var(--surface-hover));
+  text-decoration: none;
+}
+.account-menu-item[aria-disabled='true'] {
+  opacity: 0.55;
+}
+.platform-dialog .primary-button,
+.platform-dialog .secondary-button {
+  min-height: 40px;
+}
+.platform-team-page {
+  min-height: 100dvh;
+  background: light-dark(#faf9fb, var(--surface));
+}
+.platform-team-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 15px 30px;
+  border-bottom: 1px solid light-dark(#e9e3ee, var(--border));
+  background: light-dark(#fff, var(--surface));
+}
+.platform-team-header > .platform-brand {
+  flex-shrink: 0;
+}
+.platform-team-header > .account-menu {
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.platform-team-header .account-menu-trigger {
+  width: 100%;
+}
+.platform-team-header a[aria-disabled='true'],
+.platform-back[aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: wait;
+  text-decoration: none;
+}
+.platform-team-content {
+  max-width: 1080px;
+  padding: 30px 28px 50px;
+  margin: auto;
+}
+.platform-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: light-dark(#796885, var(--text-secondary));
+  font-size: 12px;
+  margin-bottom: 22px;
+  min-height: 30px;
+}
+.platform-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+.platform-page-heading h1 {
+  color: light-dark(#3e3547, var(--text));
+  font-size: 24px;
+  font-weight: 550;
+  letter-spacing: -0.5px;
+  overflow-wrap: anywhere;
+}
+.platform-page-heading p {
+  color: light-dark(#74747b, var(--text-secondary));
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.platform-page-heading > div:last-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.platform-page-heading > div:first-child {
+  display: block;
+}
+.platform-section {
+  border: 1px solid light-dark(#e7e1ec, var(--border));
+  border-radius: 12px;
+  background: light-dark(white, var(--surface));
+  margin: 20px 0;
+  overflow: hidden;
+}
+.platform-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  border-bottom: 1px solid light-dark(#eee8f2, var(--border));
+  padding: 20px;
+  color: light-dark(#9a82a9, var(--text-muted));
+}
+.platform-section-heading > div {
+  flex: 1;
+  min-width: 180px;
+}
+.platform-section-heading h2 {
+  font-size: 15px;
+  font-weight: 550;
+  color: light-dark(#4a3c56, var(--text));
+}
+.platform-section-heading p {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: light-dark(#74747b, var(--text-secondary));
+}
+.platform-member-list,
+.platform-invitation-list {
+  padding: 0 20px;
+}
+.platform-member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 17px 0;
+  border-bottom: 1px solid light-dark(#efeaf4, var(--border));
+}
+.platform-member-row:last-child,
+.platform-invitation-row:last-child {
+  border-bottom: 0;
+}
+.platform-member-copy {
+  flex: 1;
+  min-width: 0;
+}
+.platform-member-copy strong {
+  display: block;
+  color: light-dark(#493f52, var(--text));
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.platform-member-copy small {
+  display: block;
+  margin-top: 4px;
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.platform-member-copy .platform-inline-label {
+  display: inline;
+  margin-left: 7px;
+  color: light-dark(#91729e, var(--text-secondary));
+}
+.platform-badge {
+  display: inline-flex;
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: light-dark(#f1ecf7, var(--surface-subtle));
+  color: light-dark(#80638e, var(--text-secondary));
+  font-size: 12px;
+  white-space: nowrap;
+}
+.platform-generated-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 17px 20px;
+  background: light-dark(#faf8fc, var(--surface));
+  border-bottom: 1px solid light-dark(#eee8f2, var(--border));
+}
+.platform-generated-link label {
+  display: flex;
+  flex: 1;
+  min-width: 170px;
+  flex-direction: column;
+  gap: 8px;
+  color: light-dark(#6f6079, var(--text-secondary));
+  font-size: 12px;
+}
+.platform-generated-link input {
+  min-width: 0;
+  width: 100%;
+  border: 1px solid light-dark(#e5dcea, var(--border));
+  border-radius: 8px;
+  padding: 10px;
+  color: light-dark(#5a4866, var(--text-secondary));
+  background: light-dark(#fff, var(--surface));
+  font-size: 12px;
+}
+.platform-generated-link > small {
+  flex-basis: 100%;
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+  line-height: 1.7;
+}
+.platform-invitation-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid light-dark(#efeaf4, var(--border));
+}
+.platform-invitation-row strong {
+  display: block;
+  color: light-dark(#5f4c6a, var(--text-secondary));
+  font-size: 12px;
+  font-weight: 500;
+}
+.platform-invitation-row small {
+  display: block;
+  margin-top: 5px;
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+}
+.platform-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.platform-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.platform-operator .platform-user-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 150px;
+}
+.platform-operator .platform-user-name > div {
+  min-width: 0;
+}
+.platform-operator .platform-confirm-message {
+  color: light-dark(#74747b, var(--text-secondary));
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .platform-auth {
+    padding: 20px 16px;
+  }
+  .platform-auth-card {
+    padding: 25px 21px;
+    margin: 30px 0 auto;
+    border-radius: 15px;
+  }
+  .platform-auth-card h1 {
+    font-size: 21px;
+  }
+  .platform-auth .primary-button,
+  .platform-auth .secondary-button,
+  .platform-text-button,
+  .platform-dialog .primary-button,
+  .platform-dialog .secondary-button,
+  .platform-team-page .primary-button,
+  .platform-team-page .secondary-button,
+  .account-menu-item,
+  .platform-back {
+    min-height: 44px;
+  }
+  .platform-form input,
+  .platform-generated-link input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  .platform-kind-picker button {
+    min-height: 44px;
+  }
+  .platform-team-header {
+    padding: 12px 14px;
+    gap: 9px;
+  }
+  .platform-team-header .platform-brand {
+    font-size: 14px;
+  }
+  .platform-team-header .account-menu-trigger strong {
+    max-width: 130px;
+  }
+  .platform-team-content {
+    padding: 21px 16px 35px;
+  }
+  .platform-page-heading h1 {
+    font-size: 21px;
+  }
+  .platform-section-heading {
+    padding: 17px 16px;
+  }
+  .platform-member-list,
+  .platform-invitation-list {
+    padding: 0 16px;
+  }
+  .platform-member-row {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .platform-member-copy {
+    flex: 1 1 calc(100% - 50px);
+  }
+  .platform-member-row .platform-badge {
+    margin-left: 44px;
+  }
+  .platform-member-row .platform-text-button {
+    margin-left: auto;
+  }
+  .platform-generated-link {
+    padding: 17px 16px;
+  }
+  .platform-invitation-row {
+    flex-wrap: wrap;
+  }
+  .platform-invitation-row > div {
+    flex: 1;
+    min-width: 170px;
+  }
+  .platform-operator .platform-pagination .secondary-button {
+    min-height: 44px;
+  }
+}

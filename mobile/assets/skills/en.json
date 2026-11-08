@@ -1,0 +1,44 @@
+[
+  {
+    "id": "source-research",
+    "name": "Source-grounded technical research",
+    "description": "Identify the exact subject and version, then check claims against primary sources.",
+    "content": "## Workflow\n\n1. Capture the user's latest confirmed subject, version, and deliverable. Preserve exact names and links when delegating.\n2. Prefer official docs, release announcements, or the source at the relevant revision. Read public page text when available and distinguish inspected pages from search excerpts.\n3. Tie each material claim to a specific source. Separate verified facts, inferences, and questions that remain open.\n4. Check the title, revision, and date of cited sources before delivery. Explain the scope of any conflicting evidence."
+  },
+  {
+    "id": "systematic-debugging",
+    "name": "Systematic debugging",
+    "description": "Reproduce the failure, find the first incorrect state, and verify a focused fix.",
+    "content": "## Workflow\n\n1. Record the expected behavior, observed failure, environment, and smallest reliable reproduction. Preserve error details with secrets removed.\n2. Trace inputs and state through the real entry point to find the first divergence. State a falsifiable cause and run a focused experiment.\n3. Fix the confirmed cause with the smallest change. For an external action with an uncertain outcome, inspect its current state before considering a retry.\n4. Repeat the original reproduction and adjacent regression checks. Report the observed outcomes and remaining gaps."
+  },
+  {
+    "id": "behavior-first",
+    "name": "Behavior-first verification",
+    "description": "Verify user-visible behavior in small slices and keep checks that catch regressions.",
+    "content": "## Workflow\n\n1. Pick one observable behavior and define its successful result and a meaningful failure condition.\n2. Run a focused check through the existing public entry point and confirm it exposes the gap. Add a test when existing checks would miss the regression.\n3. Make the smallest change that satisfies that behavior. Repeat the same check and run neighboring regressions. Keep tests focused on outcomes and constraints.\n4. Report the exercised entry points, observed results, and gaps. The existing permission and approval rules apply throughout."
+  },
+  {
+    "id": "frontend-design",
+    "name": "Frontend design",
+    "description": "Choose a visual direction around the main task and verify it in the running interface.",
+    "content": "## Workflow\n\n1. Identify the audience, situation, and primary interaction. Review the references, existing components, and design tokens, then choose a direction that fits the product.\n2. Build one complete flow with coherent layout, typography, color, and feedback. Reuse product components and keep text and control labels at least 12px.\n3. Exercise long content, loading, empty states, errors, and keyboard focus. Check contrast and readability. Use the same business contract across clients.\n4. Run the interface on desktop and a narrow screen using representative data. Inspect screenshots and actual interactions, fix clipping or inaccessible controls, and report what was verified."
+  },
+  {
+    "id": "issue-triage",
+    "name": "Issue triage",
+    "description": "Turn a reported defect into a verified issue brief.",
+    "content": "## Steps\n\n1. Confirm the affected product, environment, time range, and expected behavior. Record the shortest reproducible steps.\n2. Read matching issues, logs, or monitoring data through an authorized connector. Stop for required approvals. Keep secrets and unnecessary personal data out of the brief.\n3. Separate symptoms, corroborating evidence, and hypotheses. Identify likely duplicates and link the original records.\n4. Return a draft with impact, reproduction, evidence, and the next diagnostic step. Ask before creating, editing, or closing an external issue."
+  },
+  {
+    "id": "release-readiness",
+    "name": "Release readiness review",
+    "description": "Check a proposed release against test results, changes, and unresolved risks.",
+    "content": "## Steps\n\n1. Identify the exact release candidate, affected services, and owner. Confirm what evidence is available.\n2. Compare test results and changes for that exact revision. Separate verified checks, skipped checks, and stale results.\n3. Summarize blockers, mitigation owners, and rollback criteria. Link the build, pull requests, and test output used.\n4. Return a ready, blocked, or insufficient-evidence assessment. Ask for explicit approval before publishing, deploying, or changing a release."
+  },
+  {
+    "id": "meeting-followup",
+    "name": "Meeting follow-up",
+    "description": "Convert authorized notes into a reviewable decision and action log.",
+    "content": "## Steps\n\n1. Confirm which meeting and notes to use. Read only the authorized material and redact sensitive details from the draft.\n2. Separate decisions, open questions, and actions. Record owners and due dates only when the notes support them.\n3. Flag conflicting notes and missing owners instead of guessing. Include pointers to the relevant source passages.\n4. Return a summary and editable follow-up draft for review. Ask before sending messages, creating tasks, or changing calendars."
+  }
+]
