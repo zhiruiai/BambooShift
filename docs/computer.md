@@ -2,13 +2,13 @@
 
 PandaMate 把聊天服务与执行电脑分开。Web、Electron 和 Flutter 都通过同一套工作空间 API 查看画面和提交操作。Pi 请求电脑工具，Rust 核验权限、目标和审批，再调用相应的 Worker。关闭查看窗口会停止客户端观察，后台任务的生命周期由服务端和执行电脑决定。
 
-当前平台按空间创建独立电脑控制器。下文单空间实现中的 `/api/computer/*`，在产品入口实际使用 `/api/workspaces/<workspaceId>/computer/*` 并要求产品账户及空间成员身份；Worker 自身路径不变。连接、断开、重新连接与环境设置由空间拥有者管理，成员可参与已有电脑的工作、审批和接管。新注册空间禁止控制平台宿主机及远程主机的整机桌面，但拥有者可明确启用通过会话校验的 Linux 专用虚拟桌面；成员不能修改电脑界面配置。原有空间的 macOS 兼容适配仍需明确启用及系统授权。
+当前平台按空间创建独立电脑控制器。下文单空间实现中的 `/api/computer/*`，在产品入口实际使用 `/api/workspaces/<workspaceId>/computer/*` 并要求产品账户及空间成员身份；Worker 自身路径不变。连接、断开、重新连接与环境设置由空间拥有者管理，成员可参与已有电脑的工作、审批和接管。默认本机模式使用隔离浏览器。配置了专用 Worker 后，拥有者也可以开启已授权的 macOS 整机桌面或通过会话校验的 Linux 虚拟桌面。
 
 ## 选择执行位置
 
-每个空间当前使用一个活动工作电脑。配置好的云电脑和服务所在电脑都可以显式选择，切到服务所在电脑时会保留已保存的远程连接。浏览器和手机上的“服务所在电脑”指运行 PandaMate 服务的机器。若要使用另一台物理电脑，可在该设备运行独立 Worker 并连接。已配置的云电脑离线时，Bot 会报告状态，用户可以显式恢复。
+每个空间当前使用一个活动工作电脑。配置好的云电脑和服务所在电脑都可以显式选择，切到服务所在电脑时会保留已保存的远程连接。浏览器和手机上的“服务所在电脑”指运行 PandaMate 服务的机器。若要操作当前 Mac 的原生应用、另一台物理电脑或自有云服务器，可在该设备运行独立 Worker 并连接。已配置的云电脑离线时，Bot 会报告状态，用户可以显式恢复。
 
-电脑面板分别显示执行位置与画面类型。服务所在电脑的 Bot 共享一个独立浏览器，任务排队运行。支持画面池的远程或云端 Worker 可为 Bot 分配独立画面。Flutter 可查看位置和云状态。拥有者可在手机上显式启动已配置的云电脑并为 Bot 分配可用画面，然后预览或接管。Worker 地址和连接凭据仍在 Web 或桌面端管理。
+电脑面板分别显示执行位置与画面类型。服务所在电脑和绑定到空间的单画面 Worker 由 Bot 轮流使用。启用画面池的 Worker 可为 Bot 分配独立画面。Web 和 Electron 的电脑面板会在工作期间自动更新截图，可随时暂停。Flutter 可查看位置和云状态。拥有者可在手机上显式启动已配置的云电脑并为 Bot 分配可用画面，然后预览或接管。Worker 地址和连接凭据仍在 Web 或桌面端管理。
 
 切换前由服务端检查任务、待执行操作和接管，必要时要求释放已分配的画面。每次连接有独立的 `targetRevision`，用于客户端及时丢弃旧画面与接管状态；真正的操作仍受 Worker 实例、画面会话和服务端审批校验。若以后允许多台电脑同时为同一空间工作，目标身份必须贯穿任务、画面绑定、审批、接管和文件传输，再按目标隔离维护和清理。现有客户端可以继续使用默认目标的 API。
 
@@ -46,9 +46,13 @@ PandaMate 把聊天服务与执行电脑分开。Web、Electron 和 Flutter 都�
 
 ## macOS 整机桌面
 
-在 macOS 14+ 的工作电脑安装 Apple Command Line Tools 后，运行 `npm run desktop:build`。产物是项目 `data/native/` 中的桌面控制助手，使用项目内本地签名；不会安装到系统应用目录或修改系统权限。`npm run desktop:check` 只检查权限与主显示器元信息，不读取屏幕内容。
+在 macOS 14+ 的工作电脑安装 Apple Command Line Tools 后，运行 `npm run desktop:build` 构建桌面控制助手。`npm run desktop:check` 可以检查权限与主显示器信息。
 
-在电脑面板选择“整机桌面”只展示范围与权限，只有点击“使用整机桌面”才会启用。用户需要在 macOS 的“屏幕与系统音频录制”和“辅助功能”中允许助手或系统列出的启动应用。整机范围包括主屏上的原生应用，具有该空间权限且已登录的设备可查看截图；视觉模型观察时，截图会发给用户配置的模型。完整权限步骤、协议和源码参考 [原生助手说明](../server/native/macos/README.md)。
+1. 在自己的 Mac 上按照下节启动独立 Worker，同时设置 `OPENBOT_WORKER_ALLOW_HOST_DESKTOP=true` 和 `OPENBOT_WORKER_WORKSPACE_ID`。可用 `OPENBOT_MACOS_DESKTOP_HELPER` 指定助手可执行文件的绝对路径。
+2. 打开专用工作空间的电脑面板，在远程 Worker 连接设置填入地址和令牌。如果 PandaMate 服务也在这台 Mac 上，可用 Worker 的本机监听地址。
+3. 在 Mac 上授予系统权限后，回到电脑面板选择“整机桌面”，检查两项权限并点击“使用整机桌面”。
+
+用户需要在 macOS 的“屏幕与系统音频录制”和“辅助功能”中允许助手或系统列出的启动应用。整机范围包括主屏上的原生应用，具有该空间权限且已登录的设备可查看截图。视觉模型观察时，截图会发给用户配置的模型。请使用只包含有权操作这台 Mac 的成员的专用空间。完整权限步骤、协议和源码参考 [原生助手说明](../server/native/macos/README.md)。
 
 | 接口                         | 作用                                             |
 | ---------------------------- | ------------------------------------------------ |
@@ -64,14 +68,17 @@ PandaMate 把聊天服务与执行电脑分开。Web、Electron 和 Flutter 都�
 
 ## 独立 Worker
 
-在一台装有 Node 22.19+ 和 Chrome 的电脑上检出项目，安装依赖。用至少 24 字符随机令牌启动（不要把令牌提交到 Git）：
+在装有 Node 22.19+ 和 Chrome 的物理电脑或云服务器上检出项目并安装依赖。从 PandaMate 工作空间链接的 `/w/…` 部分复制空间 UUID，在 Worker 的私有环境中设置。每个空间使用独立令牌、工作区和浏览器资料目录。
 
 ```sh
+export OPENBOT_WORKER_WORKSPACE_ID='<你的工作空间 UUID>'
 export OPENBOT_WORKER_TOKEN="$(node -e 'process.stdout.write(require("crypto").randomBytes(32).toString("hex"))')"
 npm run computer:worker
 ```
 
-默认监听 `127.0.0.1:3002`。本机连接可在设置中填入 `http://127.0.0.1:3002` 与同一令牌；真正远程访问应通过 VPN 或 HTTPS 反向代理，服务不会接受非本机明文 HTTP 地址。不要把令牌放在 URL 中。令牌具有执行权限，应只提供给可信 PandaMate 服务。
+Worker 会核对工作空间身份。单画面配置只开放一个共享画面，Bot 的任务按顺序使用。要为 Bot 分配不同画面，使用 [Linux 虚拟桌面画面池](linux-desktop.md)。
+
+Worker 默认监听本机端口 3002。如果 PandaMate 服务与 Worker 在同一台电脑，请先通过 `OPENBOT_WORKER_PORT` 为 Worker 指定一个空闲端口，再在连接设置中填入对应的本机地址和令牌。跨设备访问使用 HTTPS 反向代理或部署者管理的本机隧道。不要把令牌放在 URL 中。令牌具有执行权限，应只提供给可信 PandaMate 服务。
 
 可配置 `OPENBOT_WORKER_HOST`、`OPENBOT_WORKER_PORT`、`OPENBOT_WORKER_WORKSPACE`。默认工作区为 `data/worker/workspace`，浏览器资料也留在该执行电脑。连接选择、远程地址、令牌及实例绑定由聊天服务原子保存到 `data/computer/connection.json`（权限 0600），不会把令牌返回前端。启动先验证同一个 Worker 的实例 ID 与控制台声明，通过后才恢复连接；不可达或实例变化时保持远程选择并显示重连提示，不回退本机，也不重放旧批准。
 
@@ -155,7 +162,7 @@ Bot 观察截图使用 `captureComputerScreenshot({forAgent:true,signal})`。本
 
 文件传输回归使用独立工作区验证真实二进制往返、资料库交付链接、来源摘要变化、重名、超限和取消。真实 Pi 的慢速下载测试确认停止任务会关闭下载，迟到的响应不入库；来源检查和排队阶段也可取消，不会因此关闭共用电脑连接。
 
-`npm run test:browser` 运行真实 Chrome 集成测试（合同位于 [Worker 浏览器测试](../server/workers/computer-runtime/tests/computer.browser.test.ts)及相邻浏览器测试文件），仅打开测试自动创建的本机网页，验证输入、点击、PNG 截图、重定向阻断、本机/远程接管、接管期间阻止 Bot 操作和观察、凭据过期及结束后的恢复。默认测试跳过此项，以免在没有 Chrome 的构建环境启动浏览器。
+`npm run test:browser` 运行真实 Chrome 集成测试（合同位于 [Worker 浏览器测试](../server/workers/computer-runtime/tests/computer.browser.test.ts)及相邻浏览器测试文件），仅打开测试自动创建的本机网页，验证输入、点击、PNG 截图、重定向阻断、本机/远程接管、接管期间阻止 Bot 操作和观察、凭据过期及结束后的恢复。默认测试跳过此项，以免在没有 Chrome 的构建环境启动浏览器。GitHub Actions 另在 Ubuntu 上运行 `OPENBOT_BROWSER_TEST=1 npm run backend:test -- --test computer_shared`，用实际 Pi、独立 Worker 和 Chrome 验证批准前不导航、工作空间隔离及页面内容读取。
 
 ## Linux 虚拟桌面现状与剩余工作
 

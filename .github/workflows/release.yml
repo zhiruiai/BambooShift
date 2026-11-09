@@ -5,6 +5,9 @@ on:
   schedule:
     - cron: '17 9 * * *'
       timezone: Asia/Shanghai
+    # Retry if GitHub drops the first event or a build fails.
+    - cron: '43 11 * * *'
+      timezone: Asia/Shanghai
 
 permissions:
   contents: read
@@ -50,7 +53,7 @@ jobs:
           if [[ -n "$source_sha" ]]; then
             git merge-base --is-ancestor "$source_sha" "$GITHUB_SHA"
           else
-            echo "A release was already published for this Shanghai calendar day."
+            echo "A release was already published for this Shanghai calendar day." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
   build:
@@ -167,3 +170,5 @@ jobs:
           set -euo pipefail
           git show "${GITHUB_SHA}:scripts/publishing/publish-release.sh" > "$RUNNER_TEMP/pandamate-publish-release.sh"
           bash "$RUNNER_TEMP/pandamate-publish-release.sh"
+          printf 'Published [PandaMate %s](%s/%s/releases/tag/%s).\n' \
+            "$RELEASE_TAG" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"

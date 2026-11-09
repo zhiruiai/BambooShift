@@ -7,6 +7,7 @@ import 'package:openbot_mobile/core/api.dart';
 import 'package:openbot_mobile/features/chat/action_card.dart';
 import 'package:openbot_mobile/features/chat/action_data.dart';
 import 'package:openbot_mobile/features/chat/chat_screen.dart';
+import 'package:openbot_mobile/features/chat/chat_timeline.dart';
 import 'package:openbot_mobile/features/chat/file_preview_data.dart';
 import 'package:openbot_mobile/features/chat/file_preview_screen.dart';
 
@@ -53,13 +54,24 @@ void main() {
         testApp(ChatScreen(scope: f.scope, conversationId: 'chat-a')),
       );
       await tester.pumpAndSettle();
-      expect(find.text('synthetic.html'), findsOneWidget);
       expect(find.textContaining('Shared researcher'), findsOneWidget);
       expect(
         find.text('Only the requester of this task can decide.'),
         findsOneWidget,
       );
       expect(find.text('Approve action'), findsNothing);
+      final file = find.text('synthetic.html');
+      await tester.scrollUntilVisible(
+        file,
+        160,
+        scrollable: find
+            .descendant(
+              of: find.byType(ChatTimeline),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      expect(file.hitTestable(), findsOneWidget);
       expect(calls, 0);
       await tester.pumpWidget(const SizedBox());
       f.scope.dispose();

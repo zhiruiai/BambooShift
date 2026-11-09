@@ -37,6 +37,12 @@ class AvatarThemePicker extends StatelessWidget {
           builder: (context, constraints) {
             const gap = 8.0;
             final width = constraints.maxWidth;
+            final columns = width >= 456
+                ? 3
+                : width >= 270
+                ? 2
+                : 1;
+            final optionWidth = (width - (columns - 1) * gap) / columns;
             return Wrap(
               spacing: gap,
               runSpacing: gap,
@@ -44,21 +50,27 @@ class AvatarThemePicker extends StatelessWidget {
                 for (final family in avatarThemes)
                   _option(
                     context,
-                    width: width >= 270 ? (width - gap) / 2 : width,
+                    width: optionWidth,
+                    horizontal: columns == 1,
                     name: context.tr(family),
                     selected: !generatedSelected && selected == family,
-                    preview: AvatarThemePreview(family: family),
+                    preview: AvatarThemePreview(
+                      family: family,
+                      selected: !generatedSelected && selected == family,
+                    ),
                     onTap: onChanged == null ? null : () => onChanged!(family),
                   ),
                 if (custom != null)
                   _option(
                     context,
-                    width: width >= 270 ? (width - gap) / 2 : width,
+                    width: optionWidth,
+                    horizontal: columns == 1,
                     name: custom.name,
                     selected: generatedSelected,
                     preview: AvatarThemePreview(
                       family: custom.motif,
                       generated: custom,
+                      selected: generatedSelected,
                     ),
                     onTap: onSelectGenerated,
                   ),
@@ -73,12 +85,33 @@ class AvatarThemePicker extends StatelessWidget {
   Widget _option(
     BuildContext context, {
     required double width,
+    required bool horizontal,
     required String name,
     required bool selected,
     required Widget preview,
     required VoidCallback? onTap,
   }) {
     final colors = Theme.of(context).colorScheme;
+    final caption = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: selected ? colors.onSecondaryContainer : colors.onSurface,
+              fontWeight: selected ? FontWeight.w600 : null,
+            ),
+          ),
+        ),
+        if (selected)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(start: 4),
+            child: Icon(Icons.check, size: 15, color: colors.primary),
+          ),
+      ],
+    );
     return SizedBox(
       width: width,
       child: Semantics(
@@ -97,13 +130,17 @@ class AvatarThemePicker extends StatelessWidget {
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-              child: Column(
-                children: [
-                  preview,
-                  const SizedBox(height: 4),
-                  Text(name, textAlign: TextAlign.center),
-                ],
-              ),
+              child: horizontal
+                  ? Row(
+                      children: [
+                        SizedBox(width: width * .36, child: preview),
+                        const SizedBox(width: 8),
+                        Expanded(child: caption),
+                      ],
+                    )
+                  : Column(
+                      children: [preview, const SizedBox(height: 4), caption],
+                    ),
             ),
           ),
         ),

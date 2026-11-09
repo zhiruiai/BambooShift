@@ -43,8 +43,7 @@ class ComputerStatus {
     final shared = b['shared'] == true;
     if (b['status'] == 'ready' &&
         (shared
-            ? value['surface'] != 'browser' ||
-                  value['targetRevision'] is! String ||
+            ? value['targetRevision'] is! String ||
                   !RegExp(
                     r'^[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}$',
                   ).hasMatch(value['targetRevision'])

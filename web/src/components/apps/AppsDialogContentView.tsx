@@ -30,9 +30,13 @@ export function AppsDialogContentView(model: AppsDialogContentModel) {
       <p className="apps-sharing">
         <ShieldCheck size={16} />
         <span>
-          {uiText('apps:text_5d66e5c7df87')}
-          {props.team ? uiText('apps:text_9c355cebc5ef') : ''}
-          {uiText('apps:text_de9a8e7d0608')}
+          {[
+            uiText('apps:text_5d66e5c7df87'),
+            props.team ? uiText('apps:text_9c355cebc5ef') : '',
+            uiText('apps:text_de9a8e7d0608'),
+          ]
+            .filter(Boolean)
+            .join(' ')}
         </span>
       </p>
       {!props.canManage && <p className="field-help">{uiText('apps:text_172dacbe79fe')}</p>}

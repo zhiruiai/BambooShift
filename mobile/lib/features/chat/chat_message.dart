@@ -45,6 +45,29 @@ class ChatMessage extends StatelessWidget {
   final ValueChanged<String>? onJump;
   final VoidCallback? onThread;
   final VoiceMemoController? memoController;
+
+  Widget _withActionAvatar(Widget card, BotAvatarMotion? motion) {
+    final agentId = message['agentId'];
+    final agent = agentId is String ? scope.find('agents', agentId) : null;
+    if (agent == null) return card;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: BotAvatar(
+            bot: agent,
+            family: scope.session.avatarTheme,
+            scope: scope,
+            size: 28,
+            motion: motion,
+          ),
+        ),
+        Expanded(child: card),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (message['kind'] == 'web_research') {
@@ -59,10 +82,13 @@ class ChatMessage extends StatelessWidget {
     if (message['kind'] == 'question') {
       final question = ChatQuestion.parse(message);
       if (question == null) return const SizedBox.shrink();
-      return ChatQuestionCard(
-        key: ValueKey((scope, question.id, question.conversationId)),
-        scope: scope,
-        question: question,
+      return _withActionAvatar(
+        ChatQuestionCard(
+          key: ValueKey((scope, question.id, question.conversationId)),
+          scope: scope,
+          question: question,
+        ),
+        question.canAnswer(scope) ? BotAvatarMotion.attention : null,
       );
     }
     if (message['kind'] == 'voice_call' && message['role'] == 'system') {
@@ -108,11 +134,23 @@ class ChatMessage extends StatelessWidget {
     }
     final action = ChatAction.fromMessage(message);
     if (action != null) {
-      return ActionCard(
-        key: ValueKey('${scope.workspaceId}:${message['id']}:${action.id}'),
-        scope: scope,
-        message: message,
-        action: action,
+      final result = action.value['result'];
+      final motion = switch (action.status) {
+        'pending' when action.canDecide(scope.userId, scope.owner) =>
+          BotAvatarMotion.attention,
+        'running' => BotAvatarMotion.working,
+        'done' when result is! Map || result['isError'] != true =>
+          BotAvatarMotion.done,
+        _ => null,
+      };
+      return _withActionAvatar(
+        ActionCard(
+          key: ValueKey('${scope.workspaceId}:${message['id']}:${action.id}'),
+          scope: scope,
+          message: message,
+          action: action,
+        ),
+        motion,
       );
     }
     if (message['kind'] == 'file') {
@@ -177,6 +215,12 @@ class ChatMessage extends StatelessWidget {
               family: scope.session.avatarTheme,
               size: 32,
               scope: currentAgent == null ? null : scope,
+              motion: switch (message['status']) {
+                'running' when message['metadata']?['streamEnded'] != true =>
+                  BotAvatarMotion.working,
+                'done' => BotAvatarMotion.done,
+                _ => null,
+              },
             ),
             const SizedBox(width: 8),
           ],

@@ -1,9 +1,17 @@
 import { uiText } from '../i18n';
 import { ChatMentionStatus } from '../components/ChatMentionStatus';
 import { Check, Info, MessageSquare } from 'lucide-react';
-import { Fragment, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type MouseEvent,
+} from 'react';
 import type { Message } from '../../../shared/types';
-import { Avatar } from '../components/Avatar';
+import { ChatMessageAvatar, ChatWorkingAvatar } from './ChatAvatar';
 import { MessageActions, type MessagePopup } from '../components/MessageActions';
 import { MessageActivity } from '../components/MessageActivity';
 import { DeliveryNotice, MessageReactions, QuotedMessage } from '../components/MessageExtras';
@@ -122,7 +130,15 @@ export function ChatMessages({
   timelineWorking?: boolean;
 }) {
   const scope = `${navigationScope}:${conversation?.id || ''}:${threadRoot?.id || ''}`;
-  const timeline = chatTimeline(messages, timelineWorking);
+  const timeline = useMemo(
+    () => chatTimeline(messages, timelineWorking),
+    [messages, timelineWorking],
+  );
+  const actor = { userId: currentUserId, isOwner: canManage };
+  const agentsById = useMemo(
+    () => new Map(data.agents.map((agent) => [agent.id, agent])),
+    [data.agents],
+  );
   const bodyActions = {
     account,
     canManage,
@@ -154,7 +170,6 @@ export function ChatMessages({
     setMore((old) => (old?.scope !== scope || modal ? null : old));
     if (modal) setReactionPicker(null);
   }, [scope, modal, setReactionPicker]);
-
   function showPopup(id: string, popup: MessagePopup | null) {
     if (!current()) return;
     setMore((old) => (popup === 'more' ? { id, scope } : old?.id === id || popup ? null : old));
@@ -251,7 +266,7 @@ export function ChatMessages({
                 groupedWithNext,
                 streaming,
               }) => {
-                const liveAgent = data.agents.find((a) => a.id === m.agentId);
+                const liveAgent = m.agentId ? agentsById.get(m.agentId) : undefined;
                 const agent =
                   liveAgent || historicalAuthor(m) || (m.agentId ? removedAuthor(m.agentId) : lead);
                 const dateDivider = startsDay ? (
@@ -345,16 +360,15 @@ export function ChatMessages({
                       className={`message-row ${m.role === 'user' && ownMessage(m) ? 'outgoing' : 'incoming'} ${groupedWithNext ? 'message-row-linked' : ''} ${highlight}`}
                       onContextMenu={(event) => openContext(event, m.id)}
                     >
-                      <div className="message-avatar">
-                        {!groupedWithNext && m.role === 'assistant' && (
-                          <Avatar agent={agent} size={23} />
-                        )}
-                        {!groupedWithNext && m.role === 'user' && !ownMessage(m) && (
-                          <span className="user-avatar teammate-avatar">
-                            {Array.from(userName(m))[0]}
-                          </span>
-                        )}
-                      </div>
+                      <ChatMessageAvatar
+                        key={scope}
+                        message={m}
+                        agent={agent}
+                        actor={actor}
+                        streaming={streaming}
+                        grouped={groupedWithNext}
+                        teammate={m.role === 'user' && !ownMessage(m) ? userName(m) : undefined}
+                      />
                       <div
                         className="message-content"
                         data-bot-accent={
@@ -473,19 +487,11 @@ export function ChatMessages({
           )}
         </div>
         {timeline.showWorking && (
-          <div className="working-line" role="status">
-            <Avatar agent={currentWorker} size={22} />
-            <span className="typing-dots" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>
-              {currentWorker
-                ? uiText('workspace:timelineWorker', { name: currentWorker.name })
-                : uiText('workspace:text_e556fe53f2b0')}
-            </span>
-          </div>
+          <ChatWorkingAvatar
+            agent={currentWorker}
+            last={timeline.rows.at(-1)?.message}
+            actor={actor}
+          />
         )}
         <div className="scroll-padding" />
       </div>

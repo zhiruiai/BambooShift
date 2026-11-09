@@ -11,7 +11,12 @@ async fn starter_is_an_editable_idempotent_plan_without_model_or_implicit_work()
         .request("GET", &catalog_path, None, false, Some(&f.owner))
         .await;
     assert_eq!(status, 200);
-    assert_eq!(catalog.as_array().unwrap().len(), 3);
+    let rows = catalog.as_array().unwrap();
+    let ids: Vec<_> = rows
+        .iter()
+        .map(|item| item["id"].as_str().unwrap())
+        .collect();
+    assert_eq!(ids, ["launch", "close", "support", "study", "creator", "office"]);
     assert_eq!(catalog[0]["draft"]["title"], "产品发布小组");
     assert_eq!(
         f.request("GET", &catalog_path, None, true, Some(&f.member))

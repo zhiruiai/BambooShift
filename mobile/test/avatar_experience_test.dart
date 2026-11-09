@@ -7,11 +7,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:openbot_mobile/core/api.dart';
 import 'package:openbot_mobile/features/bots/avatar_crop.dart';
 import 'package:openbot_mobile/features/bots/avatar_crop_dialog.dart';
+import 'package:openbot_mobile/features/chat/chat_screen.dart';
 import 'package:openbot_mobile/features/settings/avatar_theme_picker.dart';
 import 'package:openbot_mobile/widgets/bot_avatar.dart';
+import 'package:openbot_mobile/widgets/idle_avatar_blink.dart';
 
+import 'action_card_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp, waitFor;
 
@@ -69,6 +73,173 @@ void main() {
     f.session.dispose();
   });
 
+  testWidgets(
+    'avatar states use finite, distinct motion and respect reduced motion',
+    (tester) async {
+      Widget scene(BotAvatarMotion? motion, {bool reduced = false}) => testApp(
+        MediaQuery(
+          data: MediaQueryData(disableAnimations: reduced),
+          child: Scaffold(
+            body: BotAvatar(
+              bot: const {'avatar': 'orb'},
+              family: 'pandas',
+              motion: motion,
+            ),
+          ),
+        ),
+      );
+      final reaction = find.byType(TweenAnimationBuilder<double>);
+      Transform transform() => tester
+          .widgetList<Transform>(
+            find.descendant(of: reaction, matching: find.byType(Transform)),
+          )
+          .first;
+
+      await tester.pumpWidget(scene(BotAvatarMotion.done));
+      await tester.pumpAndSettle();
+      expect(reaction, findsNothing);
+
+      await tester.pumpWidget(scene(BotAvatarMotion.working));
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(transform().transform.entry(1, 3), lessThan(0));
+      expect(transform().transform.entry(0, 0), greaterThan(1));
+
+      await tester.pumpWidget(scene(BotAvatarMotion.done));
+      await tester.pump(const Duration(milliseconds: 140));
+      expect(transform().transform.entry(1, 3), lessThan(0));
+      expect(transform().transform.entry(0, 0), 1);
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(scene(BotAvatarMotion.attention));
+      await tester.pump(const Duration(milliseconds: 80));
+      expect(transform().transform.entry(1, 3), 0);
+      expect(transform().transform.entry(1, 0), lessThan(0));
+
+      await tester.pumpWidget(scene(BotAvatarMotion.attention, reduced: true));
+      await tester.pumpAndSettle();
+      expect(reaction, findsNothing);
+      expect(find.byType(SvgPicture), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'only the active chat header blinks once and respects reduced motion',
+    (tester) async {
+      final f = await fixture((_) async => jsonResponse({}));
+      f.scope.data = bootstrap(
+        agents: [
+          {'id': 'bot-a', 'name': 'Research', 'avatar': 'orb'},
+        ],
+        messages: [
+          {
+            'id': 'previous-reply',
+            'conversationId': 'chat-a',
+            'role': 'assistant',
+            'kind': 'text',
+            'status': 'done',
+            'agentId': 'bot-a',
+            'content': 'Historical reply',
+          },
+        ],
+      );
+      Widget scene({bool reduced = false}) => testApp(
+        MediaQuery(
+          data: MediaQueryData(disableAnimations: reduced),
+          child: ChatScreen(scope: f.scope, conversationId: 'chat-a'),
+        ),
+      );
+
+      final enabled = find.byType(IdleAvatarBlink);
+      final blink = find.byKey(const ValueKey('idle-avatar-blink'));
+      await tester.pumpWidget(scene());
+      expect(
+        find.descendant(of: find.byType(AppBar), matching: enabled),
+        findsOneWidget,
+      );
+      expect(enabled, findsOneWidget);
+      expect(blink, findsNothing);
+      for (
+        var attempt = 0;
+        attempt < 100 && blink.evaluate().isEmpty;
+        attempt++
+      ) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 5)),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(blink, findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 280));
+      expect(blink, findsNothing);
+      await tester.pump(const Duration(seconds: 2));
+      expect(blink, findsNothing);
+
+      await tester.pumpWidget(scene(reduced: true));
+      await tester.pumpAndSettle();
+      expect(enabled, findsNothing);
+      expect(find.byType(SvgPicture), findsWidgets);
+      await tester.pumpWidget(const SizedBox());
+      f.scope.dispose();
+      f.session.dispose();
+    },
+  );
+
+  testWidgets('only current-thread actions for this user hold the idle blink', (
+    tester,
+  ) async {
+    final f = await fixture((_) async => jsonResponse({}));
+    Json question(String requester) => {
+      'id': 'question-a',
+      'conversationId': 'chat-a',
+      'role': 'assistant',
+      'kind': 'question',
+      'status': 'done',
+      'agentId': 'bot-a',
+      'metadata': {
+        'question': {
+          'version': 1,
+          'question': 'Which note should I prepare?',
+          'mode': 'single',
+          'runId': 'run-a',
+          'requester': {'userId': requester, 'messageId': 'input-a'},
+          'options': [
+            {'id': 'summary', 'label': 'Summary'},
+            {'id': 'report', 'label': 'Full report'},
+          ],
+          'status': 'pending',
+        },
+      },
+    };
+    Future<void> show(List<Json> messages) async {
+      f.scope.data = bootstrap(
+        agents: [
+          {'id': 'bot-a', 'name': 'Research'},
+        ],
+        messages: messages,
+      );
+      await tester.pumpWidget(
+        testApp(ChatScreen(scope: f.scope, conversationId: 'chat-a')),
+      );
+    }
+
+    final enabled = find.byType(IdleAvatarBlink);
+    await show([
+      actionMessage(requester: 'user-b'),
+      question('user-b'),
+      actionMessage()..['threadRootId'] = 'another-thread',
+    ]);
+    expect(enabled, findsOneWidget);
+    await show([question('user-a')]);
+    expect(enabled, findsNothing);
+    await show([actionMessage(kind: 'computer')]);
+    expect(enabled, findsNothing);
+    await show([actionMessage(status: 'done')]);
+    expect(enabled, findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+    f.scope.dispose();
+    f.session.dispose();
+  });
+
   testWidgets('workspace avatars show the uploaded image and clear on logout', (
     tester,
   ) async {
@@ -88,11 +259,13 @@ void main() {
             scope: f.scope,
             bot: const {'name': 'Research', 'avatarImageId': _asset},
             family: 'pandas',
+            blinkWhenIdle: true,
           ),
         ),
       ),
     );
     await waitFor(tester, () => find.byType(Image).evaluate().isNotEmpty);
+    expect(find.byType(IdleAvatarBlink), findsNothing);
     expect(reads, 1);
     f.session.user = null;
     f.session.notifyListeners();

@@ -8,6 +8,7 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'chat_controller.dart';
 import 'chat_composer_input.dart';
+import 'chat_header_title.dart';
 import 'chat_mentions.dart';
 import 'chat_pending_controls.dart';
 import 'chat_project_library.dart';
@@ -355,10 +356,16 @@ class _ChatScreenState extends State<ChatScreen> {
           active == null;
       return Scaffold(
         appBar: AppBar(
-          title: Text(
-            thread == null
+          title: ChatHeaderTitle(
+            key: ValueKey((scope, id, thread)),
+            title: thread == null
                 ? ((conversation?['title'] as String?) ?? context.tr('chats'))
                 : context.tr('chatThread'),
+            scope: scope,
+            bot: lead,
+            working: active != null && chatThreadRoot(active) == thread,
+            messages: messages,
+            threadRootId: thread,
           ),
           actions: [
             if (thread == null && !voice.active) ChatProjectLibrary(scope, id),

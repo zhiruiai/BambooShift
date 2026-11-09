@@ -1,11 +1,6 @@
 :root {
   font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'PingFang SC',
-    'Microsoft YaHei',
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   color: light-dark(#232323, var(--text));
   background: light-dark(#f4f5f6, var(--bg-canvas));
   font-synthesis: none;
@@ -233,26 +228,62 @@ button {
   overflow: visible;
   display: block;
 }
-.avatar-alive .avatar-eyes {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: blink 9s infinite;
-}
-.conversation-row:nth-child(2n) .avatar-eyes {
-  animation-delay: 1.7s;
-}
-.conversation-row:nth-child(3n) .avatar-eyes {
-  animation-delay: 3s;
-}
-@keyframes blink {
-  0%,
-  44%,
-  46%,
-  100% {
-    opacity: 1;
+@media (prefers-reduced-motion: no-preference) {
+  .avatar[data-avatar-motion='idle'] .avatar-eyes {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: avatar-idle-blink 260ms ease-in-out 360ms;
   }
+  .avatar[data-avatar-motion='working'] > svg {
+    animation: avatar-breathe 850ms ease-in-out 2;
+  }
+  .avatar[data-avatar-motion='attention'] > svg {
+    animation: avatar-attention 620ms ease-in-out;
+  }
+  .avatar[data-avatar-motion='done'] > svg {
+    animation: avatar-settle 480ms ease-out;
+  }
+  .avatar[data-avatar-motion='preview'] > svg,
+  .appearance-avatar-option[aria-pressed='true']:enabled
+    .appearance-avatar-preview
+    > svg:first-child {
+    animation: avatar-greet 520ms ease-out;
+  }
+}
+@keyframes avatar-idle-blink {
+  42% {
+    scale: 1 0.12;
+  }
+}
+@keyframes avatar-breathe {
   45% {
-    opacity: 0.05;
+    transform: translateY(-6%) scale(1.07);
+  }
+}
+@keyframes avatar-attention {
+  24%,
+  70% {
+    transform: rotate(-9deg);
+  }
+  46%,
+  86% {
+    transform: rotate(9deg);
+  }
+}
+@keyframes avatar-settle {
+  26% {
+    transform: translateY(-9%);
+  }
+  59% {
+    transform: scaleX(1.08) scaleY(0.91);
+  }
+}
+@keyframes avatar-greet {
+  36% {
+    transform: translateY(-6%) rotate(-7deg);
+  }
+  68% {
+    transform: rotate(3deg);
   }
 }
 .group-avatar {

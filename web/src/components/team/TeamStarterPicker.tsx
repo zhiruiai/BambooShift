@@ -1,9 +1,27 @@
 import { useState } from 'react';
-import { Layers3 } from 'lucide-react';
+import {
+  BookOpen,
+  Calculator,
+  ChevronRight,
+  ClipboardList,
+  Headphones,
+  Layers3,
+  Rocket,
+  Video,
+} from 'lucide-react';
 import type { BotTeamDraft, CreateBotTeamPlan } from '../../../../shared/bot-team-plans';
 import catalog from '../../../../shared/team-starter-templates.json';
 import { currentLanguage, uiText } from '../../i18n';
 import '../SmartTeamPanel.css';
+
+const starterIcons = {
+  launch: Rocket,
+  close: Calculator,
+  support: Headphones,
+  study: BookOpen,
+  creator: Video,
+  office: ClipboardList,
+};
 
 type TeamStarter = { id: string; draft: BotTeamDraft };
 export type TeamStarterSelection = NonNullable<CreateBotTeamPlan['template']> & { summary: string };
@@ -27,27 +45,35 @@ export function TeamStarterPicker({
       </div>
       <p className="field-help">{uiText('workspace:teamStarterHelp')}</p>
       <div className="team-starter-options">
-        {teams.map((team) => (
-          <button
-            type="button"
-            className="secondary-button"
-            key={team.id}
-            aria-pressed={id === team.id}
-            disabled={disabled}
-            onClick={() => setId(id === team.id ? '' : team.id)}
-          >
-            {team.draft.title}
-          </button>
-        ))}
+        {teams.map((team) => {
+          const Icon = starterIcons[team.id as keyof typeof starterIcons] ?? Layers3;
+          return (
+            <button
+              type="button"
+              className="team-starter-option"
+              key={team.id}
+              aria-pressed={id === team.id}
+              disabled={disabled}
+              onClick={() => setId(id === team.id ? '' : team.id)}
+            >
+              <span className="team-starter-option-icon">
+                <Icon size={17} aria-hidden="true" />
+              </span>
+              <strong>{team.draft.title}</strong>
+              <ChevronRight className="team-starter-option-arrow" size={15} aria-hidden="true" />
+            </button>
+          );
+        })}
       </div>
       {selected && (
-        <>
-          <p>{selected.draft.summary}</p>
+        <div className="team-starter-preview" aria-label={selected.draft.title}>
+          <p className="team-starter-summary">{selected.draft.summary}</p>
           <ul className="team-starter-roles">
             {selected.draft.members.map((member) =>
               member.kind === 'create' ? (
                 <li key={member.key}>
                   <strong>{member.name}</strong>
+                  <span>{member.role}</span>
                   <p>{member.assignment}</p>
                 </li>
               ) : null,
@@ -61,7 +87,7 @@ export function TeamStarterPicker({
           >
             {uiText('workspace:teamStarterUse')}
           </button>
-        </>
+        </div>
       )}
     </section>
   );

@@ -8,6 +8,7 @@ import { AppearanceSettings } from '../components/AppearanceSettings';
 import { CreateDialog } from '../components/CreateDialog';
 import { initializeLanguage } from '../i18n';
 import { useAppearance } from '../useAppearance';
+import { ChatHeader } from '../workspace/ChatHeader';
 import { ChatMessages } from '../workspace/ChatMessages';
 import { currentWorkspaceId } from '../workspace-scope';
 import '../styles.css';
@@ -87,6 +88,7 @@ function Fixture() {
   const [dialog, setDialog] = useState(scene === 'bot');
   const [draft, setDraft] = useState<BotProfileDraft>();
   const [stage, setStage] = useState(0);
+  const [groupHeader, setGroupHeader] = useState(false);
   const [owner, setOwner] = useState(true);
   const userId = owner ? ownerId : 'synthetic-member';
   const scope = useMemo(() => createAppConnectionScope({ workspaceId, userId }), [userId]);
@@ -94,6 +96,35 @@ function Fixture() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const nearBottom = useRef(true);
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const chatMessages = [
+    ...messages,
+    message('tail', {
+      status: stage < 2 ? 'running' : 'done',
+      content: stage === 0 ? '' : 'The two drafts are ready to review.',
+    }),
+    ...(stage < 3
+      ? []
+      : [
+          message('follow-up-question', {
+            kind: 'question',
+            content: 'Which draft should I keep?',
+            metadata: {
+              question: {
+                version: 1,
+                question: 'Which draft should I keep?',
+                mode: 'single',
+                options: [
+                  { id: 'short', label: 'Short' },
+                  { id: 'full', label: 'Full' },
+                ],
+                status: 'pending',
+                requester: { userId: ownerId, messageId: 'input' },
+                runId: 'synthetic-question-run',
+              },
+            },
+          }),
+        ]),
+  ];
   return (
     <main style={{ maxWidth: 750, margin: '20px auto', padding: 16 }}>
       {scene === 'theme' && (
@@ -105,6 +136,43 @@ function Fixture() {
           <button onClick={() => setOwner(!owner)}>
             {owner ? 'View as member' : 'View as owner'}
           </button>
+          <button onClick={() => setGroupHeader((value) => !value)}>Toggle group header</button>
+          <ChatHeader
+            draggingFiles={false}
+            uploading={new Set()}
+            selected={conversation.id}
+            conversation={groupHeader ? { ...conversation, isGroup: true } : conversation}
+            showConversationList={noOp}
+            toggleDetails={noOp}
+            members={groupHeader ? [agent, { ...agent, id: 'synthetic-teammate' }] : [agent]}
+            lead={agent}
+            working={stage < 2}
+            messages={chatMessages}
+            canManage={owner}
+            currentUserId={userId}
+            account={null}
+            currentRosterEntry={undefined}
+            openComputer={noOp}
+            showDetail={false}
+            setMenuOpen={noOp}
+            menuOpen={false}
+            openSearch={noOp}
+            setInspected={noOp}
+            setModal={noOp}
+            rosterLocked={false}
+            changeRoster={async () => {}}
+            openRoster={noOp}
+            roster={{
+              busy: false,
+              needsSync: false,
+              error: '',
+              write: async () => ({ ok: false, review: false, message: '' }),
+              read: async () => undefined,
+            }}
+            online
+            connectionLabel=""
+            refresh={async () => {}}
+          />
           <ChatMessages
             scrollRef={scrollRef}
             nearBottom={nearBottom}
@@ -114,13 +182,7 @@ function Fixture() {
             openRoster={noOp}
             data={{ agents: [agent], conversations: [conversation] } as ChatProps['data']}
             openPrimary={noOp}
-            messages={[
-              ...messages,
-              message('tail', {
-                status: stage < 2 ? 'running' : 'done',
-                content: stage === 0 ? '' : 'The two drafts are ready to review.',
-              }),
-            ]}
+            messages={chatMessages}
             lead={agent}
             setDraft={noOp}
             composerRef={composerRef}

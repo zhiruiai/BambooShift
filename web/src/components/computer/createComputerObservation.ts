@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { uiText } from '../../i18n';
 import { ApiError } from '../../api';
 import { PRIVATE_FRAME_DENIED, readScreenFrame } from '../../computerFrameMedia';
@@ -280,4 +281,37 @@ export function createComputerObservation(read: () => ComputerObservationContext
     checkStatus,
     screenshot,
   };
+}
+
+export function useComputerFramePolling(
+  visible: boolean,
+  screenIdentity: string,
+  leaseId: string | undefined,
+  otherControlled: boolean,
+  autoRefresh: boolean,
+  task: ComputerState['botScreen'] | undefined,
+  actions: ComputerAction[],
+  capture: () => Promise<void>,
+) {
+  const latest = useRef(capture);
+  latest.current = capture;
+  const observingWork =
+    visible &&
+    !leaseId &&
+    !otherControlled &&
+    (task?.task?.status === 'running' || actions.some((action) => action.status === 'running'));
+  const following = visible && autoRefresh && (!!leaseId || observingWork);
+  useEffect(() => {
+    if (visible && (typeof document === 'undefined' || !document.hidden)) void latest.current();
+  }, [visible, screenIdentity, leaseId, otherControlled]);
+  useEffect(() => {
+    if (!following) return;
+    const refresh = () => {
+      if (typeof document === 'undefined' || !document.hidden) void latest.current();
+    };
+    refresh();
+    const timer = setInterval(refresh, leaseId ? 2000 : 3500);
+    return () => clearInterval(timer);
+  }, [following, leaseId]);
+  return observingWork;
 }

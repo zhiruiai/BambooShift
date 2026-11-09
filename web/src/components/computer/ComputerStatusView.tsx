@@ -155,13 +155,25 @@ export function ComputerStatusView(model: ComputerDialogModel) {
                 ? uiText('computer:text_60e92744fead', { value0: agent.name })
                 : uiText('computer:text_3d0cdfaab8a0')}
             </strong>
-            <p>{serviceText(computer.botScreen?.reason || computer.status)}</p>
+            <p>
+              {serviceText(
+                computer.botScreen?.shared
+                  ? computer.status
+                  : computer.botScreen?.reason || computer.status,
+              )}
+            </p>
             {botTaskLabel(computer.botScreen) && (
               <p role="status">{botTaskLabel(computer.botScreen)}</p>
             )}
             <p>
               {computer.botScreen?.shared
-                ? uiText('computer:local_shared_browser')
+                ? uiText(
+                    computer.surface === 'desktop'
+                      ? 'computer:shared_desktop_description'
+                      : computer.mode === 'local'
+                        ? 'computer:local_shared_browser'
+                        : 'computer:remote_shared_browser',
+                  )
                 : uiText('computer:text_e01450c21d66')}
             </p>
           </div>

@@ -23,7 +23,7 @@ CI 在推送或拉取请求时构建 Rust 与两个网站，并运行后端、�
 
 ## GitHub 自动发布
 
-[发布工作流](../.github/workflows/release.yml) 在 GitHub Actions 运行。首发可在默认分支的 **Actions → PandaMate Release → Run workflow** 手动启动。定时构建每天北京时间 **09:17** 触发，使用默认分支当时的代码。GitHub 可能延迟启动排队中的任务。
+[发布工作流](../.github/workflows/release.yml) 在 GitHub Actions 运行。每天北京时间 **09:17** 从默认分支启动构建，**11:43** 再检查一次。当天已经发布时，第二次运行会在构建前结束。第一次未触发或失败时，第二次运行会补建。GitHub 可能延迟或丢弃定时事件。可在 **Actions → PandaMate Release** 查看实际触发时间和发布结果，也可选择 **Run workflow** 手动补跑。
 
 版本从 `v0.0.1` 开始，随后递增补丁号。一次构建成功会生成一个版本，同一北京时间日期的重复运行会跳过已发布版本。源码、桌面客户端、Rust 服务和移动源码使用同一个版本号。每日版本写入带标签的源码快照。
 

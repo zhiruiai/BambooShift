@@ -10,17 +10,20 @@ import './AvatarPicker.css';
 import { useAvatarAppearance } from '../avatarAppearance';
 import { AvatarArtwork } from './AvatarArtwork';
 import { GeneratedAvatarArtwork } from './GeneratedAvatarArtwork';
+
+export type AvatarMotion = 'idle' | 'working' | 'attention' | 'done' | 'preview';
+
 export function Avatar({
   agent,
   size = 38,
   className = '',
-  animate = true,
+  motion,
   userId,
 }: {
   agent?: Partial<BotAgent>;
   size?: number;
   className?: string;
-  animate?: boolean;
+  motion?: AvatarMotion;
   userId?: string;
 }) {
   const account = useAccount();
@@ -74,9 +77,35 @@ export function Avatar({
   const [failed, setFailed] = useState<string>();
   const image = url && failed !== url;
   const shape = agent?.avatar || 'orb';
+  const previousMotion = useRef(motion);
+  const [justFinished, setJustFinished] = useState(false);
+  useEffect(() => {
+    const previous = previousMotion.current;
+    if (previous === motion) return;
+    previousMotion.current = motion;
+    if (
+      motion === 'done' &&
+      previous === 'working' &&
+      !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setJustFinished(true);
+    } else if (previous === 'done') {
+      setJustFinished(false);
+    }
+  }, [motion]);
+  const effect =
+    image || sharedPath || agent?.avatarImageId
+      ? undefined
+      : motion === 'done'
+        ? justFinished
+          ? 'done'
+          : undefined
+        : motion;
   return (
     <span
-      className={`avatar ${animate && !image ? 'avatar-alive' : ''} ${className}`}
+      className={`avatar ${className}`}
+      data-avatar-motion={effect}
+      onAnimationEnd={effect === 'done' ? () => setJustFinished(false) : undefined}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -100,7 +129,15 @@ export function Avatar({
     </span>
   );
 }
-export function GroupAvatar({ agents, size = 40 }: { agents: BotAgent[]; size?: number }) {
+export function GroupAvatar({
+  agents,
+  size = 40,
+  idle = false,
+}: {
+  agents: BotAgent[];
+  size?: number;
+  idle?: boolean;
+}) {
   return (
     <span className="group-avatar" style={{ width: size, height: size }} aria-hidden="true">
       {agents.slice(0, 3).map((a, i) => (
@@ -109,7 +146,7 @@ export function GroupAvatar({ agents, size = 40 }: { agents: BotAgent[]; size?: 
           agent={a}
           size={size * 0.62}
           className={`group-avatar-${i}`}
-          animate={false}
+          motion={idle && i === 0 ? 'idle' : undefined}
         />
       ))}
     </span>

@@ -263,6 +263,8 @@ async fn takeover_cancels_approval_and_virtual_surface_has_explicit_permission_a
         .await;
     assert_eq!(status, 200, "{desktop}");
     assert_eq!(desktop["surface"], "desktop");
+    assert_eq!(desktop["botScreen"]["agentId"], agent);
+    assert_eq!(desktop["botScreen"]["status"], "ready");
     assert_eq!(
         f.request(
             "POST",

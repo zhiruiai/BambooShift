@@ -67,6 +67,10 @@ export function AppProviderCatalog({
           {providers.map((provider) => {
             const app = providerConnection(provider, apps);
             const connected = app?.status === 'connected';
+            const actionLabel = uiText(
+              connected ? 'workspace:providerConnectedLabel' : 'workspace:providerConfigureLabel',
+              { name: provider.name },
+            );
             return (
               <article key={provider.id} className="provider-card">
                 <span className="provider-mark" aria-hidden="true">
@@ -93,22 +97,20 @@ export function AppProviderCatalog({
                     type="button"
                     className="secondary-button"
                     disabled={busy || (!app && !canManage)}
-                    aria-label={uiText(
-                      connected
-                        ? 'workspace:providerConnectedLabel'
-                        : 'workspace:providerConfigureLabel',
-                      { name: provider.name },
-                    )}
+                    aria-label={actionLabel}
+                    title={actionLabel}
                     onClick={() => (app ? onOpen(app.id) : onSelect(provider.id))}
                   >
                     {connected ? <Check size={14} /> : <Plus size={14} />}
-                    {uiText(
-                      connected
-                        ? 'workspace:providerConnected'
-                        : app
-                          ? 'workspace:providerContinue'
-                          : 'workspace:providerConfigure',
-                    )}
+                    <span>
+                      {uiText(
+                        connected
+                          ? 'workspace:providerConnected'
+                          : app
+                            ? 'workspace:providerContinue'
+                            : 'workspace:providerConfigure',
+                      )}
+                    </span>
                   </button>
                 </div>
               </article>

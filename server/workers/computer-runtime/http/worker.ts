@@ -25,8 +25,10 @@ import {
   type ScreenLifecycleKind,
 } from '../../../../shared/computer-screen-lifecycle.js';
 import {
+  HOST_DESKTOP_CAPABILITY,
   SCREEN_ID_HEADER,
   SCREEN_POOL_CAPABILITY,
+  SHARED_SCREEN_CAPABILITY,
   WORKSPACE_SCOPE_HEADER,
 } from '../../../../shared/computer-screens.js';
 import { ISOLATED_SHELL_CAPABILITY } from '../../../../shared/isolated-shell.js';
@@ -59,6 +61,7 @@ export function createComputerWorker(options: {
   workspaceScopeId?: string;
   screenOnly?: boolean;
   screenPool?: boolean;
+  hostDesktop?: boolean;
   screenLifecycle?: boolean;
   isolatedShell?: IsolatedShellConfiguration;
   linuxDesktop?: Pick<
@@ -68,6 +71,9 @@ export function createComputerWorker(options: {
 }) {
   if (options.token.length < 24)
     throw new Error('OPENBOT_WORKER_TOKEN must be at least 24 characters.');
+  const sharedScreen = !!options.workspaceScopeId && !options.screenPool && !options.screenId;
+  if (options.hostDesktop && (!sharedScreen || !options.desktopAdapter))
+    throw new Error('A host desktop requires a workspace-scoped standalone worker.');
   const desktopAdapter =
     options.desktopAdapter ??
     (options.linuxDesktop ? createLinuxDesktopAdapter(options.linuxDesktop) : undefined);
@@ -129,6 +135,8 @@ export function createComputerWorker(options: {
     PRIVATE_TAKEOVER_FRAMES_CAPABILITY,
     ...(operations.available ? [OPERATION_CLEANUP_CAPABILITY] : []),
     ...(options.screenPool ? [SCREEN_POOL_CAPABILITY] : []),
+    ...(sharedScreen ? [SHARED_SCREEN_CAPABILITY] : []),
+    ...(options.hostDesktop ? [HOST_DESKTOP_CAPABILITY] : []),
     ...(options.screenLifecycle ? [SCREEN_LIFECYCLE_CAPABILITY] : []),
     ...(!runtime.shellCleanupUnknown && (await shell.available())
       ? [ISOLATED_SHELL_CAPABILITY]
@@ -231,7 +239,8 @@ export function createComputerWorker(options: {
       if (
         (options.screenId && screen !== options.screenId) ||
         (!options.screenId && screen !== undefined) ||
-        (scope !== undefined && scope !== options.workspaceScopeId)
+        (scope !== undefined && scope !== options.workspaceScopeId) ||
+        (sharedScreen && req.path !== '/health' && scope !== options.workspaceScopeId)
       )
         throw Object.assign(new Error('电脑画面或工作空间身份不匹配。'), {
           code: 'SCREEN_IDENTITY_INVALID',
@@ -292,6 +301,9 @@ export function createComputerWorker(options: {
     const state = await computer.refreshStatus();
     return {
       ...state,
+      ...(options.hostDesktop && state.desktop
+        ? { desktop: { ...state.desktop, kind: 'host' as const } }
+        : {}),
       capabilities: await workerCapabilities(state.capabilities),
       mode: 'remote' as const,
       protocol: COMPUTER_WORKER_PROTOCOL,

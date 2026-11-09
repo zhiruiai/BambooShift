@@ -1,4 +1,6 @@
-import { resolve } from 'node:path';
+import { isAbsolute, resolve } from 'node:path';
+import { isComputerOperationId } from '../../../../shared/computer-operations.js';
+import { createDesktopAdapter } from '../desktop.js';
 import { createSharedBrowserEngine } from '../browser-engine.js';
 import { readComputerScreenPoolConfiguration } from '../computer-screen-pool.js';
 import { createBrowserNetworkProxy } from '../../computer-worker/index.js';
@@ -16,6 +18,24 @@ export async function startComputerWorker() {
   const desktopHelper = process.env.OPENBOT_LINUX_DESKTOP_HELPER;
   const desktopManifest = process.env.OPENBOT_LINUX_DESKTOP_MANIFEST;
   const screenConfigurationPath = process.env.OPENBOT_WORKER_SCREENS_CONFIG;
+  const workspaceScopeId = process.env.OPENBOT_WORKER_WORKSPACE_ID;
+  const hostDesktop = process.env.OPENBOT_WORKER_ALLOW_HOST_DESKTOP === 'true';
+  const desktopHelperPath = process.env.OPENBOT_MACOS_DESKTOP_HELPER;
+  if (workspaceScopeId !== undefined && !isComputerOperationId(workspaceScopeId))
+    throw new Error('OPENBOT_WORKER_WORKSPACE_ID must be the PandaMate workspace UUID.');
+  if (workspaceScopeId && screenConfigurationPath)
+    throw new Error('Set the workspace ID in the screen pool configuration.');
+  if (
+    hostDesktop &&
+    (process.platform !== 'darwin' ||
+      !workspaceScopeId ||
+      screenConfigurationPath ||
+      desktopPython ||
+      desktopHelper ||
+      desktopManifest ||
+      (desktopHelperPath !== undefined && !isAbsolute(desktopHelperPath)))
+  )
+    throw new Error('Host desktop access requires a dedicated macOS worker and workspace ID.');
   const browserLauncher = process.env.OPENBOT_LINUX_BROWSER_LAUNCHER;
   if (browserLauncher && (!screenConfigurationPath || !desktopPython))
     throw new Error('受管 Linux 浏览器需要固定画面池和桌面运行器。');
@@ -69,6 +89,10 @@ export async function startComputerWorker() {
     : createComputerWorker({
         token,
         workspaceDir,
+        workspaceScopeId,
+        ...(hostDesktop
+          ? { hostDesktop, desktopAdapter: createDesktopAdapter({ helperPath: desktopHelperPath }) }
+          : {}),
         ...(interpreterPath && supervisorPath
           ? { isolatedShell: { interpreterPath, supervisorPath } }
           : {}),
@@ -88,7 +112,9 @@ export async function startComputerWorker() {
     await sharedBrowser?.close();
   };
   const server = app.listen(port, host, () => {
-    console.log(`OpenBot Computer Worker: http://${host}:${port}`);
+    const address = server.address();
+    const boundPort = address && typeof address !== 'string' ? address.port : port;
+    console.log(`OpenBot Computer Worker: http://${host}:${boundPort}`);
     console.log(`Workspace: ${workspaceDir}`);
   });
   const shutdown = () => {

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Message } from '../../shared/types';
 import { chatTimeline } from './chatTimeline';
+import { messageTime } from './dates';
+import { initializeLanguage } from './i18n';
 
 function bot(id: string, partial: Partial<Message> = {}): Message {
   return {
@@ -98,4 +100,33 @@ test('clusters only adjacent replies by one sender within the local day and time
     rows.filter((row) => row.startsDay).map((row) => row.message.id),
     ['first', 'next-day'],
   );
+});
+
+test('chat times keep the native local clock across language, zone and daylight-saving changes', () => {
+  const language = initializeLanguage();
+  const priorLocale = language.getSnapshot().locale;
+  const priorZone = process.env.TZ;
+  const dates = ['2026-01-01T05:12:00Z', '2026-07-01T13:00:00Z', '2026-11-01T06:45:00Z'];
+  try {
+    for (const locale of ['zh-CN', 'en'] as const) {
+      language.setLanguage(locale);
+      for (const zone of ['America/New_York', 'Asia/Kathmandu', 'UTC']) {
+        process.env.TZ = zone;
+        for (const date of dates) {
+          assert.equal(
+            messageTime(date),
+            new Date(date).toLocaleTimeString(locale, {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            }),
+          );
+        }
+      }
+    }
+  } finally {
+    if (priorZone === undefined) delete process.env.TZ;
+    else process.env.TZ = priorZone;
+    language.setLanguage(priorLocale);
+  }
 });

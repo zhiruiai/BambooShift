@@ -15,6 +15,7 @@ import {
   Play,
   Square,
 } from 'lucide-react';
+import { HOST_DESKTOP_CAPABILITY } from '../../../../shared/computer-screens';
 import { ComputerFiles } from '../ComputerFiles';
 import { ComputerSurface } from '../ComputerSurface';
 import { ComputerActionEntry } from './ComputerActionEntry';
@@ -61,6 +62,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
     shotError,
     controlError,
     autoRefresh,
+    observingWork,
     setZoomed,
     setAutoRefresh,
     loading,
@@ -120,7 +122,11 @@ export function ComputerScreenView(model: ComputerDialogModel) {
           </>
         ) : (
           <>
-            {computer.botScreen?.shared ? null : screenReady && canManage ? (
+            {screenReady &&
+            canManage &&
+            (!computer.botScreen?.shared ||
+              computer.desktop?.kind === 'virtual' ||
+              computer.capabilities?.includes(HOST_DESKTOP_CAPABILITY)) ? (
               <ComputerSurface
                 computer={computer}
                 busy={busy || inputBusy || otherControlled}
@@ -128,9 +134,9 @@ export function ComputerScreenView(model: ComputerDialogModel) {
                 onCheck={() => void checkComputer()}
                 onSelect={(surface) => void selectSurface(surface)}
               />
-            ) : (
+            ) : !computer.botScreen?.shared ? (
               <p className="field-help">{uiText('computer:text_ed1e4dc0d3d2')}</p>
-            )}
+            ) : null}
             <div className={`takeover-bar ${controlled ? 'active' : ''}`}>
               <div>
                 <span className="takeover-icon">
@@ -314,7 +320,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
               <p className="screenshot-timestamp">
                 {uiText('computer:text_e3576b511c1d')}
                 {new Date(shotAt).toLocaleString(currentLanguage(), { hour12: false })} ·{' '}
-                {controlled && autoRefresh
+                {(controlled || observingWork) && autoRefresh
                   ? uiText('computer:text_52bedba79dac')
                   : uiText('computer:text_6e487586e277')}
               </p>
@@ -334,9 +340,9 @@ export function ComputerScreenView(model: ComputerDialogModel) {
                   ? uiText('computer:text_5be0323e8adc')
                   : uiText('computer:text_3d52574ce150')}{' '}
                 ·{' '}
-                {computer.mode === 'local'
-                  ? uiText('computer:text_8a94c4a1cdbd')
-                  : uiText('computer:text_3535087994d0')}
+                {uiText(
+                  `computer:location_${computer.executionLocation ?? (computer.mode === 'local' ? 'server' : 'remote')}`,
+                )}
               </span>
               <div>
                 <button
@@ -351,7 +357,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
                     ? uiText('computer:text_f8d01c881e34')
                     : uiText('computer:text_7527e6d25083')}
                 </button>
-                {controlled && (
+                {(controlled || observingWork) && (
                   <button
                     type="button"
                     className="text-button"

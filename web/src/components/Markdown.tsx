@@ -1,10 +1,31 @@
-import { uiText } from '../i18n';
+import { memo } from 'react';
+import { currentLanguage, uiText } from '../i18n';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { workspaceApiUrl } from '../workspace-scope';
+import { currentWorkspaceId, workspaceApiUrl } from '../workspace-scope';
+
+type MarkdownProps = { text: string; passive?: boolean };
 
 /** Shared renderer for messages and skill review. Raw HTML stays disabled. */
-export function Markdown({ text, passive = false }: { text: string; passive?: boolean }) {
+export function Markdown({ text, passive = false }: MarkdownProps) {
+  // Preserve rendered history while the composer or latest reply changes. Scope and
+  // language changes must still re-render relative links and accessible labels.
+  return (
+    <MarkdownContent
+      text={text}
+      passive={passive}
+      locale={currentLanguage()}
+      workspace={currentWorkspaceId()}
+    />
+  );
+}
+const MarkdownContent = memo(function MarkdownContent({
+  text,
+  passive,
+}: MarkdownProps & {
+  locale: ReturnType<typeof currentLanguage>;
+  workspace?: string;
+}) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -46,4 +67,4 @@ export function Markdown({ text, passive = false }: { text: string; passive?: bo
       {text}
     </ReactMarkdown>
   );
-}
+});

@@ -23,6 +23,10 @@ jobs:
         run: npm run check:source && npm run check:privacy
       - name: Check Rust and build both sites
         run: npm run build
+      - name: Check a real work browser through Pi and the standalone computer Worker
+        env:
+          OPENBOT_BROWSER_TEST: '1'
+        run: npm run backend:test -- --test computer_shared
       - name: Run backend, web, runtime and client tests
         run: npm test
   mobile-source:

@@ -1,6 +1,8 @@
 import type { ComputerState } from './types.js';
 import type { DesktopSessionRef } from './linux-desktop.js';
 export const SCREEN_POOL_CAPABILITY = 'screen-pool-v1';
+export const SHARED_SCREEN_CAPABILITY = 'workspace-shared-screen-v1';
+export const HOST_DESKTOP_CAPABILITY = 'workspace-host-desktop-v1';
 export const SCREEN_POOL_PROTOCOL = 'openbot-screen-pool-v1';
 export const SCREEN_ID_HEADER = 'X-OpenBot-Screen-Id';
 export const WORKSPACE_SCOPE_HEADER = 'X-OpenBot-Workspace-Scope';

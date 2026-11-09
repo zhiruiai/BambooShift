@@ -1,6 +1,7 @@
 import { LanguageSettings } from './LanguageSettings';
 import { uiText } from '../i18n';
 import { useEffect, useRef } from 'react';
+import { Check } from 'lucide-react';
 import type { AppearancePreferences } from '../appearance';
 import { useAvatarAppearance } from '../avatarAppearance';
 import type { AvatarThemePatch } from '../avatarThemeSync';
@@ -108,6 +109,9 @@ export function AppearanceSettings({
               </span>
               <span>{AVATAR_THEME_NAMES[theme]}</span>
               <small>
+                {!appearance.useCustomAvatarTheme && appearance.avatarTheme === theme && (
+                  <Check size={13} aria-hidden="true" />
+                )}
                 {!appearance.useCustomAvatarTheme && appearance.avatarTheme === theme
                   ? uiText('settings:text_3f4ebc4aad97')
                   : uiText('settings:text_37aea2b389a4')}
@@ -134,6 +138,7 @@ export function AppearanceSettings({
               </span>
               <span>{appearance.customAvatarTheme.name}</span>
               <small>
+                {appearance.useCustomAvatarTheme && <Check size={13} aria-hidden="true" />}
                 {uiText(
                   appearance.useCustomAvatarTheme
                     ? 'settings:text_3f4ebc4aad97'

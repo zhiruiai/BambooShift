@@ -179,7 +179,7 @@ export function NewChatPicker(props: NewChatPickerProps) {
               {choice.conversation.isGroup ? (
                 <GroupAvatar agents={choice.agents} size={34} />
               ) : (
-                <Avatar agent={choice.agents[0]} size={34} animate={false} />
+                <Avatar agent={choice.agents[0]} size={34} />
               )}
               <span className="new-chat-choice-copy">
                 <strong>{choice.title}</strong>

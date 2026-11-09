@@ -23,7 +23,7 @@ pub struct Lease {
     pub target: Arc<Target>,
 }
 pub(super) async fn key(controller: &Controller, agent: Option<&str>) -> String {
-    if controller.is_local().await {
+    if controller.uses_shared_screen().await {
         "default".into()
     } else {
         agent.unwrap_or("default").into()
@@ -34,11 +34,14 @@ pub async fn target(
     agent: Option<&str>,
     authorize: Authority,
 ) -> Result<Arc<Target>> {
-    if controller.tasks.blocked(if controller.is_local().await {
-        None
-    } else {
-        agent
-    }) {
+    if controller
+        .tasks
+        .blocked(if controller.uses_shared_screen().await {
+            None
+        } else {
+            agent
+        })
+    {
         return Err(model::blocked());
     }
     match agent {
@@ -117,7 +120,7 @@ pub async fn start(
     {
         return Err(model::private_takeover());
     }
-    let scope = if controller.is_local().await {
+    let scope = if controller.uses_shared_screen().await {
         None
     } else {
         agent
@@ -274,13 +277,20 @@ pub async fn surface(
     let _guard = controller.management.lock().await;
     controller.active()?;
     authorize().await?;
-    let scope = if controller.is_local().await {
+    let target = target(controller, agent, authorize.clone()).await?;
+    let state = target.state().await;
+    if surface == "desktop"
+        && state["desktop"]["kind"] != "virtual"
+        && !target.saved.has(model::HOST_DESKTOP)
+    {
+        return Err(ApiError::new(403, "平台工作空间不能控制宿主整机桌面。"));
+    }
+    let scope = if controller.uses_shared_screen().await {
         None
     } else {
         agent
     };
     super::approvals::cancel_scope(controller, scope, "电脑界面已切换，原操作已失效。").await?;
-    let target = target(controller, agent, authorize.clone()).await?;
     if let Some(lease) = controller
         .takeovers
         .lock()
@@ -299,14 +309,15 @@ pub async fn surface(
             return Err(model::blocked());
         }
     }
-    let state = target.state().await;
-    if surface == "desktop" && state["desktop"]["kind"] != "virtual" {
-        return Err(ApiError::new(403, "平台工作空间不能控制宿主整机桌面。"));
-    }
     target
         .request(Request::post("/surface", body), authorize.clone())
         .await?;
-    target.request(Request::get("/health"), authorize).await?;
+    target
+        .request(Request::get("/health"), authorize.clone())
+        .await?;
     controller.changed();
-    Ok(target.state().await)
+    match agent {
+        Some(agent) => screen_bindings::status(controller, agent, authorize).await,
+        None => Ok(controller.state().await),
+    }
 }

@@ -72,6 +72,8 @@ const generated = new Set([
 ]);
 const documentationText = new Set(['.md', '.json']);
 const reviewedDocumentationMedia = new Set([
+  'docs/demo/avatar-states.en.gif',
+  'docs/demo/avatar-states.gif',
   'docs/demo/avatar-themes.en.gif',
   'docs/demo/avatar-themes.gif',
   'docs/demo/chat-choices.en.gif',
@@ -80,10 +82,16 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/founder-debate.gif',
   'docs/demo/group-chat.en.gif',
   'docs/demo/group-chat.gif',
+  'docs/demo/meeting-actions.en.gif',
+  'docs/demo/meeting-actions.gif',
   'docs/demo/orbital-landing.en.gif',
   'docs/demo/orbital-landing.gif',
+  'docs/demo/pizza-fractions.en.gif',
+  'docs/demo/pizza-fractions.gif',
   'docs/demo/scheduled-brief.en.gif',
   'docs/demo/scheduled-brief.gif',
+  'docs/demo/short-video-storyboard.en.gif',
+  'docs/demo/short-video-storyboard.gif',
   'docs/demo/skill-library.en.gif',
   'docs/demo/skill-library.gif',
   'docs/demo/smart-bot.en.gif',

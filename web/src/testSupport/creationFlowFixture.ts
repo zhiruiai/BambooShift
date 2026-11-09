@@ -262,6 +262,17 @@ export async function harness(
       const index = cursor++;
       return (slots[index] ||= { current: initial });
     },
+    useMemo(compute: () => unknown, deps: unknown[]) {
+      const index = cursor++,
+        before = slots[index];
+      if (
+        !before ||
+        deps.length !== before.deps.length ||
+        deps.some((value, i) => !Object.is(value, before.deps[i]))
+      )
+        slots[index] = { deps, value: compute() };
+      return slots[index].value;
+    },
     useEffect(effect: () => void | (() => void), deps?: unknown[]) {
       const index = cursor++,
         before = slots[index];

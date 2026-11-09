@@ -134,7 +134,7 @@ pub async fn prepare(
     require_agent(&controller.store, agent).await?;
     authorize().await?;
     controller.active()?;
-    if controller.is_local().await {
+    if controller.uses_shared_screen().await {
         return status(controller, agent, authorize).await;
     }
     let existing = controller
@@ -182,13 +182,26 @@ pub async fn target(
     authorize: Authority,
     allow_prepare: bool,
 ) -> Result<Arc<Target>> {
-    if controller.is_local().await {
+    if controller.uses_shared_screen().await {
         require_agent(&controller.store, agent).await?;
         authorize().await?;
         if controller.tasks.blocked(None) {
             return Err(model::blocked());
         }
-        return controller.target(authorize).await;
+        let target = controller.target(authorize).await?;
+        if !target.saved.has(model::SHARED_SCREEN)
+            && !controller
+                .local
+                .lock()
+                .await
+                .as_ref()
+                .is_some_and(|executor| {
+                    executor.url == target.saved.url && executor.token == target.saved.token
+                })
+        {
+            return Err(selection_changed());
+        }
+        return Ok(target);
     }
     if controller.tasks.blocked(Some(agent)) {
         return Err(model::blocked());
@@ -219,7 +232,7 @@ pub async fn status(
 ) -> Result<Value> {
     require_agent(&controller.store, agent).await?;
     authorize().await?;
-    if controller.is_local().await {
+    if controller.uses_shared_screen().await {
         let mut value = controller.refresh(authorize).await;
         value["botScreen"] = shared_screen(&value, agent, &controller.tasks.state("default"))?;
         return Ok(value);
@@ -284,8 +297,8 @@ pub async fn status(
     Ok(value)
 }
 pub async fn list(controller: &Arc<Controller>, authorize: Authority) -> Result<Value> {
-    if controller.is_local().await {
-        // One health request and one task snapshot represent the shared browser,
+    if controller.uses_shared_screen().await {
+        // One health request and one task snapshot represent the shared screen,
         // regardless of how many Bot summaries this workspace contains.
         let state = controller.refresh(authorize.clone()).await;
         let task = controller.tasks.state("default");
@@ -300,7 +313,7 @@ pub async fn list(controller: &Arc<Controller>, authorize: Authority) -> Result<
         validate_shared_state(&state)?;
         return Ok(json!({"shared":true,"capacity":{"max":1,"configured":1,
             "ready":if state["connected"] == true {1}else{0},"assigned":0},"bots":bots,
-            "reason":"所有 Bot 共用一个本机独立浏览器；任务按顺序执行。"}));
+            "reason":shared_reason(&state)}));
     }
     let inventory = inventory(controller, authorize.clone()).await;
     let assigned = controller.bindings.lock().await.bindings.len();
@@ -321,18 +334,35 @@ pub async fn list(controller: &Arc<Controller>, authorize: Authority) -> Result<
     }
     Ok(result)
 }
+fn selection_changed() -> ApiError {
+    ApiError::new(409, "电脑连接已变化，请刷新后重试。")
+}
 fn validate_shared_state(value: &Value) -> Result<()> {
-    if value["mode"] != "local" || value["executionLocation"] != "server" {
-        return Err(ApiError::new(409, "电脑连接已变化，请刷新后重试。"));
+    let location = value["executionLocation"].as_str();
+    let local = value["mode"] == "local" && location == Some("server");
+    let remote = value["mode"] == "remote"
+        && matches!(location, Some("cloud" | "remote"))
+        && value["capabilities"]
+            .as_array()
+            .is_some_and(|caps| caps.iter().any(|cap| cap == model::SHARED_SCREEN));
+    if !local && !remote {
+        return Err(selection_changed());
     }
     Ok(())
+}
+fn shared_reason(value: &Value) -> &'static str {
+    match (value["mode"].as_str(), value["surface"].as_str()) {
+        (_, Some("desktop")) => "所有 Bot 共用这台电脑的桌面，任务按顺序执行。",
+        (Some("local"), _) => "所有 Bot 共用一个本机独立浏览器；任务按顺序执行。",
+        _ => "所有 Bot 共用这台电脑上的独立浏览器，任务按顺序执行。",
+    }
 }
 fn shared_screen(value: &Value, agent: &str, task: &Value) -> Result<Value> {
     validate_shared_state(value)?;
     Ok(json!({
         "agentId":agent,"shared":true,
         "status":if value["connected"] == true {"ready"} else {"unavailable"},
-        "reason":"所有 Bot 共用一个本机独立浏览器；任务按顺序执行。",
+        "reason":shared_reason(value),
         "task":task,
         "lifecycle":{"state":if task["status"] == "blocked" {"blocked"}else{"ready"},
             "releaseAllowed":false,"resetAllowed":false}

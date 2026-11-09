@@ -14,6 +14,16 @@
 
 These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
 
+### Learn, create, and get work done
+
+| Scenario | What to watch | Demo |
+| --- | --- | --- |
+| After-School Adventure Crew | Try a wrong answer, then use two quarters of a pizza to make one half. | [Pizza Fraction Lab](docs/demo/pizza-fractions.en.gif) |
+| Short Video Studio | One water drop, one phone, three shots. Switch between the shot list and voiceover in the delivered project. | [A Film in One Drop](docs/demo/short-video-storyboard.en.gif) |
+| Meeting Action Team | Create a team from a template and turn fictional meeting notes into an action list with owners and due dates. | [Meeting action list](docs/demo/meeting-actions.en.gif) |
+
+Find all three in **Bot template library → Team templates**. Review the roles and edit them before creating a team. Watch the avatar react when a Bot is [idle, working, waiting for you, or finished](docs/demo/avatar-states.en.gif).
+
 ### Three stories for short videos
 
 **Dress the workspace as a space elephant crew.** Describe an avatar theme, review the proposed colorways, and save it to see the characters change.
@@ -103,7 +113,8 @@ Run `configure:local` once to create the local configuration. Use `npm run dev` 
 | AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
 | Web research and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
 | Workflow automation and reusable skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
-| MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP) and approve specific tool calls. Browser control, remote computers, and local speech transcription can be configured separately. |
+| Local and cloud computers | Use an isolated browser on the service host or run a dedicated Worker on your own cloud server. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
+| MCP tools and human approvals | Connect apps through the Model Context Protocol (MCP). Approvals apply to specific requests. Taking over the computer pauses Bot input and observation. |
 
 The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
 

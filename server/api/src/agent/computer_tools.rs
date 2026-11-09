@@ -108,10 +108,10 @@ async fn acquire(
     authorize: &Authority,
 ) -> Result<()> {
     let active = context.active;
-    // Delegated Bots in one root task share the local resource lease. Otherwise
-    // a parent holding the one local surface would deadlock waiting for a child.
-    let lease_key = if controller.is_local().await {
-        "/local-shared".to_owned()
+    // Delegated Bots in one root task share the resource lease. Otherwise
+    // a parent holding the shared surface would deadlock waiting for a child.
+    let lease_key = if controller.uses_shared_screen().await {
+        "/shared-screen".to_owned()
     } else {
         active.agent_id.clone()
     };

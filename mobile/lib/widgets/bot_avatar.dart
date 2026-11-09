@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,6 +10,7 @@ import '../core/avatar_preferences.dart';
 import '../core/byte_read.dart';
 import '../core/workspace_controller.dart';
 import 'avatar_appearance.dart';
+import 'idle_avatar_blink.dart';
 
 // Base fills in the SVGs produced by scripts/export-avatars.ts.
 const _exportedColors = {
@@ -20,6 +22,8 @@ const _exportedColors = {
   'gem': Color(0xffed7299),
 };
 
+enum BotAvatarMotion { working, attention, done, preview }
+
 class BotAvatar extends StatelessWidget {
   const BotAvatar({
     super.key,
@@ -30,6 +34,8 @@ class BotAvatar extends StatelessWidget {
     this.onUnavailable,
     this.previewTheme,
     this.useDeviceTheme = true,
+    this.motion,
+    this.blinkWhenIdle = false,
   });
   final Json bot;
   final String family;
@@ -38,6 +44,8 @@ class BotAvatar extends StatelessWidget {
   final Widget Function(BuildContext context, Widget fallback)? onUnavailable;
   final GeneratedAvatarTheme? previewTheme;
   final bool useDeviceTheme;
+  final BotAvatarMotion? motion;
+  final bool blinkWhenIdle;
   @override
   Widget build(BuildContext context) {
     final candidate = bot['avatar'];
@@ -57,24 +65,46 @@ class BotAvatar extends StatelessWidget {
     final color = hex is String && RegExp(r'^#[0-9a-fA-F]{6}$').hasMatch(hex)
         ? Color(int.parse(hex.substring(1), radix: 16) | 0xff000000)
         : base;
-    final glyph = SvgPicture.asset(
-      'assets/avatars/$theme/$shape.svg',
-      colorMapper: AvatarColorMapper(color, baseColor: base),
-      semanticsLabel: bot['name'] as String?,
-    );
-    final fallback = SizedBox(
-      width: size,
-      height: size,
-      child: generated == null
-          ? glyph
-          : GeneratedAvatarDecoration(
-              theme: generated,
-              color: color,
-              child: glyph,
-            ),
-    );
     final workspace = scope;
     final path = workspace == null ? null : botAvatarPath(workspace, bot);
+    final asset = 'assets/avatars/$theme/$shape.svg';
+    final mapper = AvatarColorMapper(color, baseColor: base);
+    final original = SvgPicture.asset(
+      asset,
+      colorMapper: mapper,
+      semanticsLabel: bot['name'] as String?,
+    );
+    final glyph =
+        blinkWhenIdle &&
+            motion == null &&
+            path == null &&
+            bot['avatarImageId'] == null &&
+            MediaQuery.maybeDisableAnimationsOf(context) != true
+        ? IdleAvatarBlink(
+            key: ValueKey((asset, mapper)),
+            asset: asset,
+            colorMapper: mapper,
+            fallback: original,
+          )
+        : original;
+    final artwork = generated == null
+        ? glyph
+        : GeneratedAvatarDecoration(
+            theme: generated,
+            color: color,
+            child: glyph,
+          );
+    final fallback = SizedBox.square(
+      dimension: size,
+      child: path == null && motion != null
+          ? _AvatarReaction(
+              key: ValueKey((theme, shape, color)),
+              motion: motion!,
+              size: size,
+              child: artwork,
+            )
+          : artwork,
+    );
     if (workspace == null || path == null) return fallback;
     return _AvatarImage(
       key: ValueKey((workspace, path)),
@@ -84,6 +114,94 @@ class BotAvatar extends StatelessWidget {
       label: bot['name'] as String?,
       fallback: fallback,
       onUnavailable: onUnavailable,
+    );
+  }
+}
+
+class _AvatarReaction extends StatefulWidget {
+  const _AvatarReaction({
+    super.key,
+    required this.motion,
+    required this.size,
+    required this.child,
+  });
+
+  final BotAvatarMotion motion;
+  final double size;
+  final Widget child;
+
+  @override
+  State<_AvatarReaction> createState() => _AvatarReactionState();
+}
+
+class _AvatarReactionState extends State<_AvatarReaction> {
+  bool justFinished = false;
+
+  @override
+  void didUpdateWidget(_AvatarReaction oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.motion != widget.motion) {
+      justFinished =
+          widget.motion == BotAvatarMotion.done &&
+          oldWidget.motion == BotAvatarMotion.working;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final motion = widget.motion;
+    if (MediaQuery.maybeDisableAnimationsOf(context) == true ||
+        (motion == BotAvatarMotion.done && !justFinished)) {
+      return widget.child;
+    }
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(motion),
+      duration: Duration(
+        milliseconds: switch (motion) {
+          BotAvatarMotion.working => 1700,
+          BotAvatarMotion.attention => 620,
+          BotAvatarMotion.done => 480,
+          BotAvatarMotion.preview => 520,
+        },
+      ),
+      tween: Tween(begin: 0, end: 1),
+      child: widget.child,
+      builder: (context, progress, child) {
+        final phase = progress * math.pi;
+        final transform = Matrix4.identity();
+        switch (motion) {
+          case BotAvatarMotion.working:
+            final breath = math.sin(2 * phase);
+            final lift = breath * breath;
+            final scale = 1 + .07 * lift;
+            transform
+              ..translateByDouble(0, -.06 * widget.size * lift, 0, 1)
+              ..scaleByDouble(scale, scale, 1, 1);
+          case BotAvatarMotion.attention:
+            transform.rotateZ(-.16 * math.sin(4 * phase));
+          case BotAvatarMotion.done:
+            if (progress < .5) {
+              transform.translateByDouble(
+                0,
+                -.09 * widget.size * math.sin(2 * phase),
+                0,
+                1,
+              );
+            } else {
+              final settle = -math.sin(2 * phase);
+              transform.scaleByDouble(1 + .08 * settle, 1 - .09 * settle, 1, 1);
+            }
+          case BotAvatarMotion.preview:
+            transform
+              ..translateByDouble(0, -.06 * widget.size * math.sin(phase), 0, 1)
+              ..rotateZ(-.12 * math.sin(2 * phase));
+        }
+        return Transform(
+          transform: transform,
+          alignment: Alignment.center,
+          child: child,
+        );
+      },
     );
   }
 }

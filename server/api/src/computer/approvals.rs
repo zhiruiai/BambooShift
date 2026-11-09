@@ -126,7 +126,7 @@ pub async fn request(
     if kind.starts_with("desktop_") {
         action["desktopSession"] = current["desktop"]["session"].clone();
     }
-    let recovery_scope = if controller.is_local().await {
+    let recovery_scope = if controller.uses_shared_screen().await {
         "default"
     } else {
         context.agent_id.as_deref().unwrap_or("default")

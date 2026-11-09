@@ -5,6 +5,8 @@ use serde_json::{Value, json};
 pub const PROTOCOL: &str = "openbot-computer-v2";
 pub const CLEANUP: &str = "operation-cleanup-v1";
 pub const SCREEN_POOL: &str = "screen-pool-v1";
+pub const SHARED_SCREEN: &str = "workspace-shared-screen-v1";
+pub const HOST_DESKTOP: &str = "workspace-host-desktop-v1";
 pub const LIFECYCLE: &str = "screen-lifecycle-v1";
 pub const PRIVATE_TAKEOVER: &str = "private-takeover-frames-v1";
 pub const MAX_FILE: usize = 10 * 1024 * 1024;
@@ -62,6 +64,9 @@ pub struct SavedRemote {
     pub capabilities: Vec<String>,
 }
 impl SavedRemote {
+    pub fn has(&self, capability: &str) -> bool {
+        self.capabilities.iter().any(|value| value == capability)
+    }
     pub fn validate(&self) -> Result<()> {
         worker_url(&self.url)?;
         validate_token(&self.token)?;
@@ -120,6 +125,22 @@ pub fn health(
         .map(|v| v.as_str().filter(|s| uuid(s)).ok_or_else(invalid))
         .transpose()?;
     if scope.is_some_and(|v| v != workspace) {
+        return Err(invalid());
+    }
+    if (saved.has(SHARED_SCREEN)
+        && (scope != Some(workspace) || screen.is_some() || saved.has(SCREEN_POOL)))
+        || (saved.has(HOST_DESKTOP)
+            && (!saved.has(SHARED_SCREEN) || raw["desktop"]["kind"] != "host"))
+        || (raw["surface"] == "desktop"
+            && raw["desktop"]["kind"] != "virtual"
+            && !saved.has(HOST_DESKTOP))
+        || (screen.is_none()
+            && expected.is_some_and(|previous| {
+                [SHARED_SCREEN, HOST_DESKTOP, SCREEN_POOL]
+                    .iter()
+                    .any(|capability| saved.has(capability) != previous.has(capability))
+            }))
+    {
         return Err(invalid());
     }
     let session = if raw["desktop"]["kind"] == "virtual" {

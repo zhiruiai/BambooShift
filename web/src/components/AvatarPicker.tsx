@@ -120,7 +120,12 @@ function AvatarPickerContent(props: Props) {
       </div>
       {tab === 'original' ? (
         <div className="avatar-picker bot-identity-picker">
-          <Avatar agent={props.draft} size={68} />
+          <Avatar
+            key={`${props.draft.avatar}:${props.draft.color}`}
+            agent={props.draft}
+            size={68}
+            motion="preview"
+          />
           <div className="avatar-picker-options">
             <p className="field-help">{uiText('common:text_e3b5c7f70826')}</p>
             <div className="color-choices">
@@ -151,7 +156,7 @@ function AvatarPickerContent(props: Props) {
                   className={props.draft.avatar === avatar ? 'chosen' : ''}
                   onClick={() => props.onChange({ avatar, avatarImageId: null })}
                 >
-                  <Avatar agent={{ color: props.draft.color, avatar }} size={29} animate={false} />
+                  <Avatar agent={{ color: props.draft.color, avatar }} size={29} />
                 </button>
               ))}
             </div>

@@ -1,5 +1,4 @@
-import { currentLanguage } from './i18n';
-import { uiText } from './i18n';
+import { currentLanguage, uiText } from './i18n';
 /** Calendar labels use the viewer's local calendar, including daylight-saving transitions. */
 export function validDate(value: string | number | Date): Date | null {
   const date =
@@ -42,14 +41,24 @@ export function calendarLabel(
     value2: date.getDate(),
   });
 }
+const clockFormatters = new Map<string, Intl.DateTimeFormat>();
 export function messageTime(value: string | number | Date): string {
-  return (
-    validDate(value)?.toLocaleTimeString(currentLanguage(), {
+  const date = validDate(value);
+  if (!date) return uiText('common:text_664939a1fa2e');
+  const language = currentLanguage();
+  let formatter = clockFormatters.get(language);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(language, {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
-    }) || uiText('common:text_664939a1fa2e')
-  );
+      timeZone: 'UTC',
+    });
+    clockFormatters.set(language, formatter);
+  }
+  // Format the local clock fields, so a cached formatter never freezes a
+  // previous system time zone or applies today's offset to older messages.
+  return formatter.format((date.getHours() * 60 + date.getMinutes()) * 60_000);
 }
 export function conversationTime(
   value: string | number | Date,

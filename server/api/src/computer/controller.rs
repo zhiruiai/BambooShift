@@ -115,6 +115,16 @@ impl Controller {
             .as_ref()
             .is_some_and(|saved| saved.selection == "local")
     }
+    pub(crate) async fn uses_shared_screen(&self) -> bool {
+        self.saved.lock().await.as_ref().is_some_and(|saved| {
+            saved.selection == "local"
+                || (saved.selection == "remote"
+                    && saved
+                        .remote
+                        .as_ref()
+                        .is_some_and(|remote| remote.has(model::SHARED_SCREEN)))
+        })
+    }
     pub async fn state(&self) -> Value {
         let (target, saved) = {
             let target = self.target.lock().await;
@@ -128,6 +138,12 @@ impl Controller {
         let remote = saved.as_ref().and_then(|saved| saved.remote.as_ref());
         if let Some(remote) = remote {
             value["savedRemote"] = json!({"name":remote.name,"url":remote.url});
+        }
+        if value["targetRevision"].is_null()
+            && selection == Some("remote")
+            && remote.is_some_and(|remote| remote.has(model::SHARED_SCREEN))
+        {
+            value["capabilities"] = json!([model::SHARED_SCREEN]);
         }
         if selection == Some("local") {
             value["mode"] = json!("local");
@@ -327,7 +343,7 @@ impl Controller {
         Ok(())
     }
     pub async fn busy(&self, agent_id: Option<&str>) -> bool {
-        let task_scope = if agent_id.is_some() && self.is_local().await {
+        let task_scope = if agent_id.is_some() && self.uses_shared_screen().await {
             None
         } else {
             agent_id

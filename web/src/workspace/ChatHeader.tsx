@@ -18,6 +18,7 @@ import { conversationVisibility } from '../approvalUi';
 import { Avatar, GroupAvatar } from '../components/Avatar';
 import { IconButton } from '../components/UI';
 import type { WorkspaceModel } from './types';
+import { messageAvatarMotion } from './ChatAvatar';
 
 export function ChatHeader({
   draggingFiles,
@@ -29,6 +30,9 @@ export function ChatHeader({
   members,
   lead,
   working,
+  messages,
+  canManage,
+  currentUserId,
   account,
   currentRosterEntry,
   openComputer,
@@ -56,6 +60,9 @@ export function ChatHeader({
   | 'members'
   | 'lead'
   | 'working'
+  | 'messages'
+  | 'canManage'
+  | 'currentUserId'
   | 'account'
   | 'currentRosterEntry'
   | 'openComputer'
@@ -73,6 +80,22 @@ export function ChatHeader({
   | 'connectionLabel'
   | 'refresh'
 >) {
+  const ready = online && !working && lead?.status === 'idle';
+  const recentAction = ready
+    ? messages.findLast(
+        (message) =>
+          message.role === 'user' ||
+          (message.role === 'assistant' &&
+            (message.kind === 'question' ||
+              message.kind === 'computer' ||
+              message.kind === 'approval')),
+      )
+    : undefined;
+  const activity =
+    recentAction?.role === 'assistant'
+      ? messageAvatarMotion(recentAction, false, { isOwner: canManage, userId: currentUserId })
+      : undefined;
+  const idle = ready && activity !== 'attention' && activity !== 'working';
   return (
     <>
       {draggingFiles && (
@@ -104,10 +127,15 @@ export function ChatHeader({
             <ArrowLeft size={20} />
           </IconButton>
           <button className="chat-title" onClick={() => toggleDetails()}>
-            {conversation?.isGroup ? (
-              <GroupAvatar agents={members} size={29} />
+            {conversation.isGroup ? (
+              <GroupAvatar key={conversation.id} agents={members} size={29} idle={idle} />
             ) : (
-              <Avatar agent={lead} size={28} />
+              <Avatar
+                key={`${conversation.id}:${lead?.id || ''}`}
+                agent={lead}
+                size={28}
+                motion={idle ? 'idle' : undefined}
+              />
             )}
             <span>
               {conversation?.title || uiText('workspace:text_56ca721193c9')}

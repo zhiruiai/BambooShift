@@ -94,15 +94,15 @@
   font-size: 12px;
   padding-inline: 8px;
 }
-@media (min-width: 980px) {
+@media (min-width: 980px) and (hover: hover) and (pointer: fine) {
   .provider-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(188px, 1fr));
   }
   .provider-card {
     grid-template-columns: 28px minmax(0, 1fr) auto auto;
     grid-template-rows: auto 1fr;
     gap: 5px;
-    padding: 8px;
+    padding: 6px 8px;
   }
   .provider-mark {
     width: 28px;
@@ -124,7 +124,9 @@
   .provider-card-actions > button {
     grid-column: 4;
     grid-row: 1;
-    min-height: 34px;
+    justify-content: center;
+    width: 34px;
+    padding-inline: 0;
   }
   .provider-card-actions a {
     grid-column: 3;
@@ -138,7 +140,7 @@
   .provider-card-actions a:hover {
     background: var(--surface-subtle);
   }
-  .provider-card-actions a span {
+  .provider-card-actions span {
     display: none;
   }
 }

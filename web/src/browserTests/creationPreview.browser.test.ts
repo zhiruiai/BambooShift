@@ -196,16 +196,56 @@ test(
       assert.equal(await page.getByText('Avatar theme draft', { exact: true }).count(), 1);
       assert.equal(await page.locator('.typing-cursor').count(), 0);
       assert.equal(await page.locator('#message-tail').count(), 0);
-      await page.locator('.working-line').waitFor();
-      await page.getByRole('button', { name: 'Advance synthetic run' }).press('Enter');
+      const worker = page.locator('.working-line .avatar > svg');
+      const headerAvatar = page.locator('.chat-header [data-avatar-motion="idle"] .avatar-eyes');
+      const avatarAnimation = (element: Element) => getComputedStyle(element).animationName;
+      await worker.waitFor();
+      assert.equal(await worker.evaluate(avatarAnimation), 'none');
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      assert.equal(await worker.evaluate(avatarAnimation), 'avatar-breathe');
+      assert.equal(await headerAvatar.count(), 0, 'working does not animate the header');
+      const advance = page.getByRole('button', { name: 'Advance synthetic run' });
+      await advance.press('Enter');
       await page.locator('#message-tail .typing-cursor').waitFor();
       assert.equal(await page.locator('.typing-cursor').count(), 1);
-      await page.getByRole('button', { name: 'Advance synthetic run' }).press('Enter');
+      const activeAvatar = page.locator('#message-tail .avatar > svg');
+      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-breathe');
+      await advance.press('Enter');
       await page.locator('#message-tail .typing-cursor').waitFor({ state: 'detached' });
+      const completion = page.locator('#message-tail [data-avatar-motion="done"]');
+      await completion.waitFor();
+      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-settle');
+      assert.equal(await headerAvatar.evaluate(avatarAnimation), 'avatar-idle-blink');
+      assert.equal(
+        await headerAvatar.evaluate((eyes) => getComputedStyle(eyes).animationIterationCount),
+        '1',
+      );
+      await completion.waitFor({ state: 'detached' });
+      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'none');
+      await page.waitForFunction(
+        () =>
+          document
+            .querySelector('.chat-header [data-avatar-motion="idle"] .avatar-eyes')
+            ?.getAnimations().length === 0,
+      );
+      const toggleGroupHeader = page.getByRole('button', { name: 'Toggle group header' });
+      await toggleGroupHeader.press('Enter');
+      assert.equal(await page.locator('.chat-header .group-avatar .avatar').count(), 2);
+      assert.equal(await headerAvatar.count(), 1, 'only the group lead blinks');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      assert.equal(await headerAvatar.evaluate(avatarAnimation), 'none');
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await toggleGroupHeader.press('Enter');
+      await advance.press('Enter');
+      const questionAvatar = page.locator('#message-follow-up-question .avatar > svg');
+      await questionAvatar.waitFor();
+      assert.equal(await questionAvatar.evaluate(avatarAnimation), 'avatar-attention');
+      assert.equal(await headerAvatar.count(), 0, 'needs input has a static header');
       assert.equal(await page.getByText('Bot profile draft', { exact: true }).count(), 1);
       assert.equal(await page.getByText('Avatar theme draft', { exact: true }).count(), 1);
 
       await page.getByRole('button', { name: 'View as member' }).press('Enter');
+      assert.equal(await questionAvatar.evaluate(avatarAnimation), 'none');
       assert.equal(await page.getByRole('button', { name: 'Review and edit Bot' }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Apply on this device' }).count(), 0);
       await page.getByRole('button', { name: 'View as owner' }).press('Enter');

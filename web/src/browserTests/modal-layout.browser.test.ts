@@ -158,7 +158,10 @@ test(
         appProviders.filter((provider) => provider.category === 'code').length,
       );
       await search.fill('GitHub');
-      assert.equal(await apps.locator('.provider-card').count(), 1);
+      assert.deepEqual(await apps.locator('.provider-title').allTextContents(), [
+        'GitHub',
+        'DeepWiki',
+      ]);
       await footer.locator('.apps-environment-link').nth(1).click();
       assert.equal(await page.locator('body').getAttribute('data-action'), 'files');
 

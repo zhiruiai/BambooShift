@@ -23,7 +23,7 @@ import { createComputerInput } from './createComputerInput';
 import type { ComputerInputContext } from './createComputerInput.types';
 import { createComputerLifecycleActions } from './createComputerLifecycleActions';
 import type { ComputerLifecycleActionsContext } from './createComputerLifecycleActions.types';
-import { createComputerObservation } from './createComputerObservation';
+import { createComputerObservation, useComputerFramePolling } from './createComputerObservation';
 import type { ComputerObservationContext } from './createComputerObservation.types';
 import {
   type ComputerAction,
@@ -232,11 +232,11 @@ export function useComputerDialog({
     mounted.current = true;
     void checkComputer();
     const timer = setInterval(() => {
-      if (document.hidden) return;
+      if (typeof document !== 'undefined' && document.hidden) return;
       void loadActions();
       void checkStatus();
       void checkComputer();
-      setClock(Date.now());
+      if (leaseRef.current) setClock(Date.now());
     }, 3000);
     const visibility = () => {
       if (!document.hidden) void screenshot();
@@ -301,17 +301,16 @@ export function useComputerDialog({
     void checkStatus();
     void loadActions();
   }, [screenReady]);
-  useEffect(() => {
-    if (screenReady && panel === 'screen' && typeof document !== 'undefined' && !document.hidden)
-      void screenshot();
-  }, [screenReady, panel, currentScreenIdentity, lease?.leaseId, takeover?.active]);
-  useEffect(() => {
-    if (panel !== 'screen' || !lease || !autoRefresh || dragStart) return;
-    const timer = setInterval(() => {
-      if (!document.hidden) void screenshot();
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [lease?.leaseId, autoRefresh, dragStart, panel]);
+  const observingWork = useComputerFramePolling(
+    screenReady && panel === 'screen',
+    currentScreenIdentity,
+    lease?.leaseId,
+    otherControlled,
+    autoRefresh && !dragStart && !inputBusy,
+    computer.botScreen,
+    actions,
+    screenshot,
+  );
   const { startTakeover, endTakeover, finish, manual, clickScreen } =
     createComputerInput(readActionContext);
   const setPanel = (next: 'screen' | 'files') => {
@@ -478,6 +477,7 @@ export function useComputerDialog({
     shotSize,
     controlError,
     autoRefresh,
+    observingWork,
     manual,
     url,
     run,

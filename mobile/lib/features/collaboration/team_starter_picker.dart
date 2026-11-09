@@ -57,10 +57,20 @@ class _TeamStarterDialogState extends State<_TeamStarterDialog> {
                           Text(context.tr('mobileTeamStarterHelp')),
                           for (final row in rows)
                             ExpansionTile(
+                              key: ValueKey(row['id']),
                               tilePadding: EdgeInsets.zero,
+                              leading: Icon(switch (row['id']) {
+                                'launch' => Icons.rocket_launch_outlined,
+                                'close' => Icons.calculate_outlined,
+                                'support' => Icons.headset_mic_outlined,
+                                'study' => Icons.auto_stories_outlined,
+                                'creator' => Icons.video_library_outlined,
+                                'office' => Icons.fact_check_outlined,
+                                _ => Icons.group_outlined,
+                              }),
                               title: Text(row['draft']['title'] as String),
+                              subtitle: Text(row['draft']['summary'] as String),
                               children: [
-                                Text(row['draft']['summary'] as String),
                                 for (final member
                                     in row['draft']['members'] as List)
                                   ListTile(

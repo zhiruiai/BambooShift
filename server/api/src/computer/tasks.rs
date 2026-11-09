@@ -125,7 +125,7 @@ pub async fn acquire(
     // Reserve the selected surface while connection management is excluded.
     // A local browser is one shared resource, not one resource per Bot.
     let management = controller.management.lock().await;
-    let shared = controller.is_local().await;
+    let shared = controller.uses_shared_screen().await;
     let slot = controller
         .tasks
         .slot(if shared { "default" } else { agent });

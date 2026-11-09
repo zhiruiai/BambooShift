@@ -6,7 +6,7 @@ import './BotScreenPicker.css';
 
 export function botScreenLabel(screen?: ComputerState['botScreen']) {
   return screen?.status === 'ready'
-    ? uiText(screen.shared ? 'computer:shared_browser_label' : 'bots:text_f9b3750987f5')
+    ? uiText(screen.shared ? 'computer:shared_screen_label' : 'bots:text_f9b3750987f5')
     : screen?.status === 'unavailable'
       ? uiText('bots:text_f36cac96220b')
       : uiText('bots:text_b3c034ec9fc6');
@@ -76,7 +76,7 @@ export function BotScreenPicker({
       </label>
       {inventory && (
         <small>
-          {(inventory.shared && uiText('computer:local_shared_browser')) ||
+          {(inventory.shared && uiText('computer:shared_screen_description')) ||
             serviceText(inventory.reason) ||
             (inventory.capacity.configured
               ? uiText('bots:text_a3f91cfb9e4c', {

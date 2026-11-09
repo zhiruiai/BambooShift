@@ -31,6 +31,14 @@ test('a retry or manual run does not publish twice on the same Shanghai day', ()
   assert.equal(plan({ releases, startedAt: '2026-11-10T01:17:00Z' }).tag, 'v0.0.2');
 });
 
+test('a later scheduled run builds after a missed release and skips after success', () => {
+  const startedAt = '2026-11-09T03:43:00Z';
+  const yesterday = release('v0.0.1', '2026-11-08T05:00:00Z');
+  assert.equal(plan({ startedAt, releases: [yesterday] }).tag, 'v0.0.2');
+  const today = release('v0.0.2', '2026-11-09T02:35:00Z');
+  assert.deepEqual(plan({ startedAt, releases: [yesterday, today] }), { publish: false });
+});
+
 test('resumes the version and source of an interrupted release', () => {
   const tagLines = `v0.0.1\ttag\tPandaMate release from ${olderSource}\n`;
   const releases = [
