@@ -2,7 +2,7 @@
   "name": "openbot-client",
   "productName": "PandaMate",
   "version": "0.0.1",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "private": true,
   "description": "PandaMate desktop client for connecting to your workspace.",
   "main": "main.cjs",

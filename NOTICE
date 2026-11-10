@@ -1,7 +1,7 @@
 PandaMate
 Copyright 2026 PandaMate contributors
 
-PandaMate's original source code is licensed under the Apache License, Version 2.0.
+PandaMate's original source code is licensed under the MIT License.
 
 Third-party dependencies retain their respective licenses and copyright notices.
 The source distribution identifies exact dependency versions in its lockfiles.

@@ -199,4 +199,4 @@ Lockfiles record dependency versions. Dependencies retain their original license
 
 Bug reproductions, documentation improvements, and code changes are welcome. Use sample data in reproductions and include the checks you ran. [Contribution guide](CONTRIBUTING.md)
 
-PandaMate's source is licensed under the [Apache License 2.0](LICENSE).
+PandaMate’s original code is available under the [MIT License](LICENSE). See the [third-party notices](THIRD_PARTY.md) for dependency licenses.

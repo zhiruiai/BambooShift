@@ -77,7 +77,7 @@ export async function exportSource({ sourceRoot = root, output, privateValues } 
     const manifest = {
       version: 1,
       name: 'openbot',
-      license: 'Apache-2.0',
+      license: 'MIT',
       generatedAt: new Date().toISOString(),
       includesRuntimeData: false,
       includesPrivateConfiguration: false,

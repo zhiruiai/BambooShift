@@ -30,4 +30,4 @@ Built product and operations listeners default to 3001 and 3002. Use separate HT
 
 Remote computers, local speech models and third-party accounts require separate configuration. Flutter installation builds and device acceptance are deferred. Source exports exclude private data, credentials, dependencies and toolchains. The tool does not create or push a GitHub repository.
 
-PandaMate original source uses [Apache-2.0](../LICENSE). Keep [NOTICE](../NOTICE) and third-party licenses.
+PandaMate original source uses [the MIT License](../LICENSE). Keep [NOTICE](../NOTICE) and third-party licenses.

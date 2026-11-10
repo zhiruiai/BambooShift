@@ -11,7 +11,7 @@ test('service assembly includes exactly two binaries and public assets without s
   try {
     const sourceRoot = join(directory, 'source');
     await mkdir(sourceRoot);
-    await writeFile(join(sourceRoot, 'LICENSE'), 'Synthetic Apache-2.0 license');
+    await writeFile(join(sourceRoot, 'LICENSE'), 'Synthetic project license');
     await writeFile(join(sourceRoot, 'NOTICE'), 'Synthetic OpenBot notice');
     await writeFile(join(sourceRoot, 'THIRD_PARTY.md'), 'Synthetic dependency licensing guide');
     await mkdir(join(sourceRoot, 'dist/assets'), { recursive: true });
@@ -68,7 +68,7 @@ test('service assembly includes exactly two binaries and public assets without s
       !manifest.files.some((file) => /private|migration-probe|\/src\/|\/server\//.test(file.path)),
     );
     assert.match(result.manifestSha256, /^[a-f0-9]{64}$/);
-    assert.equal(await readFile(join(output, 'LICENSE'), 'utf8'), 'Synthetic Apache-2.0 license');
+    assert.equal(await readFile(join(output, 'LICENSE'), 'utf8'), 'Synthetic project license');
     assert.equal(await readFile(join(output, 'NOTICE'), 'utf8'), 'Synthetic OpenBot notice');
     assert.equal(
       JSON.parse(await readFile(join(output, 'third-party/index.json'), 'utf8')).synthetic,

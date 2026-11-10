@@ -1,5 +1,5 @@
 [package]
-license = "Apache-2.0"
+license = "MIT"
 name = "openbot-backend"
 version = "0.0.1"
 edition = "2024"

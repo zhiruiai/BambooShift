@@ -79,7 +79,7 @@ test('source export selects original source without local data, generated files 
         ),
       ),
     );
-    assert.equal(manifest.license, 'Apache-2.0');
+    assert.equal(manifest.license, 'MIT');
     assert.equal(result.manifestSha256, createHash('sha256').update(bytes).digest('hex'));
     assert.equal(result.files, paths.length);
     for (const file of manifest.files)

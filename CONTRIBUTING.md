@@ -38,4 +38,4 @@ Explain the observable change and validation in a pull request. Keep credentials
 private addresses, runtime databases, browser profiles, build artifacts and local
 machine paths out of commits. Configuration examples must use placeholders.
 
-Contributions are provided under the project's [Apache 2.0 license](LICENSE).
+Contributions are provided under the project's [MIT License](LICENSE).

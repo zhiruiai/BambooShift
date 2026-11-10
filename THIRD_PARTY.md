@@ -1,6 +1,6 @@
 # Third-party software
 
-PandaMate's original source is licensed under Apache-2.0. Third-party dependencies retain their own licenses. The project is independently developed and is not affiliated with or endorsed by xAI or Grok.
+PandaMate's original source is licensed under the [MIT License](LICENSE). Third-party dependencies retain their own licenses. The project is independently developed and is not affiliated with or endorsed by xAI or Grok.
 
 The npm, Cargo and Flutter lockfiles identify the exact dependency versions. Installing those dependencies brings their license files; keep those files when redistributing a service or client. In particular, do not remove dependency notices from `node_modules`, the Electron runtime, or the Chromium distribution used by the computer worker.
 

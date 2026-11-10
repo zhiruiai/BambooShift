@@ -199,4 +199,4 @@ PandaMate 是独立开发的项目。作为产品参照，可查阅 [Grok Bot �
 
 欢迎提交缺陷复现、文档补充与代码改进。请使用示例数据复现问题，并注明相关验证。 [贡献指南](CONTRIBUTING.md)
 
-PandaMate 源码采用 [Apache License 2.0](LICENSE)。
+PandaMate 自有代码采用 [MIT 许可证](LICENSE)。第三方组件的许可见 [第三方声明](THIRD_PARTY.md)。
