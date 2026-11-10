@@ -54,6 +54,7 @@ void main() {
         );
         final c = current(tester);
         await waitFor(tester, () => c.frame != null && !c.busy);
+        await reach(tester, find.text(language == 'en' ? 'Watching' : '正在观看'));
         expect(s.starts, 0);
         expect(s.inputs, isEmpty);
         final start = find.widgetWithText(
@@ -71,6 +72,10 @@ void main() {
         );
         await tester.tap(confirm);
         await waitFor(tester, () => c.canInput);
+        await reach(
+          tester,
+          find.text(language == 'en' ? 'You have control' : '你已接管'),
+        );
         expect(s.starts, 1);
         final picture = find.byKey(const ValueKey('computer-frame'));
         await reach(tester, picture);
@@ -123,6 +128,12 @@ void main() {
         await waitFor(tester, () => c.lease == null && !c.busy);
         expect(s.ends, 1);
         expect(s.active, false);
+        expect(
+          find.text(
+            language == 'en' ? 'Control returned to the Bot.' : '已将控制权交还给 Bot。',
+          ),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
         await tester.pumpWidget(const SizedBox());
         f.scope.dispose();

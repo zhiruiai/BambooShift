@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createElement } from 'react';
 import type { Message } from '../../shared/types';
-import { deferred, harness, json } from './testSupport/appsFixture';
+import { compile, deferred, harness, json, render } from './testSupport/appsFixture';
 
 const workspaceId = '11111111-1111-4111-8111-111111111111';
 const otherWorkspace = '22222222-2222-4222-8222-222222222222';
+const assignmentRevision = '33333333-3333-4333-8333-333333333333';
 const action = {
   id: 'action-a',
   agentId: 'bot-a',
@@ -13,7 +15,7 @@ const action = {
   createdAt: '2026-11-07T10:00:00Z',
   payload: { type: 'browser_click', selector: '#publish' },
   requester: { userId: 'member-a', name: 'Reader' },
-  screenBinding: { screenId: 'screen-a', assignmentRevision: 'revision-a' },
+  screenBinding: { screenId: 'screen-a', assignmentRevision },
 };
 const message = (value: Record<string, unknown> = action): Message => ({
   id: 'message-a',
@@ -269,4 +271,107 @@ test('pending cards expose the exact typed text and full address for review with
   } finally {
     ui.dispose();
   }
+});
+
+test('read-only actions can start without presenting approval or premature result controls', async () => {
+  const calls: string[] = [];
+  for (const type of [
+    'list_files',
+    'read_file',
+    'download_file',
+    'terminal_command',
+    'browser_screenshot',
+    'desktop_screenshot',
+  ]) {
+    const { ui } = await open(
+      (async (url) => {
+        calls.push(String(url));
+        return json([]);
+      }) as typeof fetch,
+      { message: message({ ...action, type, result: { title: 'Unconfirmed result' } }) },
+      environment('en'),
+    );
+    try {
+      assert.match(ui.copy, /Starting/);
+      assert.doesNotMatch(ui.copy, /Waiting for|Unconfirmed result/);
+      assert.equal(ui.maybeButton('Allow once'), undefined);
+      assert.equal(ui.maybeButton('Deny'), undefined);
+      assert.ok(ui.button('View computer'));
+    } finally {
+      ui.dispose();
+    }
+  }
+  assert.deepEqual(calls, []);
+});
+
+test('receipts expose a screen assignment only when it belongs to the recorded action', async () => {
+  for (const [record, assigned] of [
+    [{ ...action }, true],
+    [{ ...action, agentId: 'other-bot' }, false],
+    [{ ...action, conversationId: 'other-chat' }, false],
+    [{ ...action, screenBinding: { screenId: 'screen-a' } }, false],
+    [{ ...action, screenBinding: { screenId: 'screen-a', assignmentRevision: 'invalid' } }, false],
+    [{ ...action, screenBinding: undefined, executionLocation: 'cloud' }, false],
+  ] as const) {
+    const { ui } = await open(
+      (async () => json([])) as typeof fetch,
+      { message: message({ ...record, status: 'done', result: { ok: true } }) },
+      environment('en'),
+    );
+    try {
+      assert.match(ui.copy, /Completed/);
+      assert.equal(ui.copy.includes('Assigned Bot screen'), assigned);
+      assert.doesNotMatch(ui.copy, /screen-a|cloud|Watching|Take control|Result/);
+      assert.ok(!ui.copy.includes(assignmentRevision));
+      assert.ok(ui.button('Open computer panel'));
+    } finally {
+      ui.dispose();
+    }
+  }
+});
+
+test('completed receipts show real output and a single file card with a workspace-scoped download', async () => {
+  const { AccountContext, ComputerRecord } = await compile(
+    'web/src/components/ChatComputerCard.tsx',
+    "\nexport { AccountContext } from '../AccountContext';",
+    environment('en'),
+  );
+  const web = render(ComputerRecord, {
+    message: message({
+      ...action,
+      type: 'browser_navigate',
+      status: 'done',
+      payload: { url: 'https://example.test/start?private=1' },
+      result: {
+        title: 'Public results',
+        url: 'https://example.test/result?private=2',
+        text: 'The page returned a real result.',
+      },
+    }),
+  });
+  assert.match(web, /Public results/);
+  assert.match(web, /The page returned a real result/);
+  assert.match(web, /https:\/\/example\.test\/result/);
+  assert.doesNotMatch(web, /private=|电脑操作等待发起人批准/);
+
+  const file = render(AccountContext.Provider, {
+    value: { session: { user: { id: 'member-a' } }, workspace: { id: workspaceId } },
+    children: createElement(ComputerRecord, {
+      message: message({
+        ...action,
+        type: 'download_file',
+        status: 'done',
+        payload: { path: 'example/report.md' },
+        result: {
+          fileId: 'synthetic-file',
+          path: 'example/report.md',
+          name: 'report.md',
+          size: 18,
+        },
+      }),
+    }),
+  });
+  assert.equal(file.match(/example\/report\.md/g)?.length, 1);
+  assert.match(file, new RegExp(`/api/workspaces/${workspaceId}/files/synthetic-file/download`));
+  assert.match(file, /aria-label="Preview report\.md"/);
 });

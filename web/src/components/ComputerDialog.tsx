@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { uiText } from '../i18n';
 import { Dialog } from './UI';
 import { TeachingPanel } from './TeachingPanel';
@@ -6,6 +7,31 @@ import { ComputerScreenView } from './computer/ComputerScreenView';
 import { ComputerStatusView } from './computer/ComputerStatusView';
 import type { ComputerDialogProps } from './computer/types';
 import { useComputerDialog } from './computer/useComputerDialog';
+
+export function ComputerSettingsPanel({
+  onBusyChange,
+  onWatch,
+  ...props
+}: Pick<ComputerDialogProps, 'data' | 'agentId' | 'busy' | 'onAction' | 'refresh'> & {
+  onBusyChange: (busy: boolean) => void;
+  onWatch: () => void;
+}) {
+  const model = useComputerDialog({
+    ...props,
+    watch: false,
+    conversationId: '',
+    conversationTitle: '',
+    onClose: onWatch,
+    onSelectBot: () => {},
+  });
+  const changing = model.inputBusy || model.connectionPending !== null;
+  useEffect(() => {
+    onBusyChange(changing);
+  }, [changing, onBusyChange]);
+  useEffect(() => () => onBusyChange(false), [onBusyChange]);
+  return <ComputerConnectionSettingsView {...model} onWatch={onWatch} />;
+}
+
 export function ComputerDialog(props: ComputerDialogProps) {
   const model = useComputerDialog(props);
   const { agent, isDesktop, desktopScreenLabel, finish } = model;

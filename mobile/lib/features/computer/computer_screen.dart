@@ -124,6 +124,19 @@ class _ComputerScreenState extends State<ComputerScreen>
     if (mounted) await controller.start();
   }
 
+  Future<void> releaseControl() async {
+    final current = controller;
+    if (!await current.end() ||
+        !mounted ||
+        controller != current ||
+        !current.active) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.tr('mobileComputerControlReturned'))),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([
@@ -216,6 +229,18 @@ class _ComputerScreenState extends State<ComputerScreen>
                 ),
                 const SizedBox(height: 8),
               ],
+              if (!c.releaseUnknown && (c.frame != null || c.lease != null))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    context.tr(
+                      c.lease == null
+                          ? 'mobileComputerWatching'
+                          : 'mobileComputerControlling',
+                    ),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ),
               ComputerPicture(key: ObjectKey(c), controller: c),
               const SizedBox(height: 8),
               Text(
@@ -241,7 +266,9 @@ class _ComputerScreenState extends State<ComputerScreen>
                     )
                   else
                     OutlinedButton(
-                      onPressed: c.busy || c.releaseUnknown ? null : c.end,
+                      onPressed: c.busy || c.releaseUnknown
+                          ? null
+                          : releaseControl,
                       child: Text(context.tr('mobileComputerEnd')),
                     ),
                 ],

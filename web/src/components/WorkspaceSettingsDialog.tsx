@@ -1,5 +1,5 @@
 import { uiText } from '../i18n';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ArrowUpRight, Bot, ChevronRight } from 'lucide-react';
 import {
   SettingsNavigation,
@@ -30,7 +30,11 @@ type Props = {
   userId?: string;
   canManage: boolean;
   team: boolean;
-  initialView?: 'general' | 'models';
+  initialView?: 'general' | 'computer' | 'models';
+  computerSettings?: (
+    onBusyChange: (busy: boolean) => void,
+    navigate: (work: () => void) => void,
+  ) => ReactNode;
   personalHref?: string;
   onClose: () => void;
   onSettingsChanged: (settings: AppSettings) => void;
@@ -50,9 +54,7 @@ function WorkspaceSettingsContent(props: Props) {
   const [scope] = useState(() =>
     createPrimaryBotScope({ ...props, identity: () => latest.current }),
   );
-  const [view, setView] = useState<SettingsSection | 'primary'>(() =>
-    props.canManage ? props.initialView || 'general' : 'general',
-  );
+  const [view, setView] = useState<SettingsSection | 'primary'>(props.initialView || 'general');
   const currentView =
     !props.canManage && (view === 'models' || view === 'primary') ? 'general' : view;
   const returnView = useRef<Exclude<SettingsSection, 'models'>>('general');
@@ -63,6 +65,7 @@ function WorkspaceSettingsContent(props: Props) {
     timeZone: { dirty: false, busy: false, pending: false },
   });
   const [blocked, setBlocked] = useState(false);
+  const [computerBusy, setComputerBusy] = useState(false);
   const [leave, setLeave] = useState<(() => void) | null>(null);
   useEffect(() => {
     scope.resume();
@@ -93,7 +96,7 @@ function WorkspaceSettingsContent(props: Props) {
     setView(next);
   }
   function selectSection(next: SettingsSection) {
-    if (!current() || activity.current.busy) return;
+    if (!current() || activity.current.busy || computerBusy) return;
     if (
       activity.current.pending &&
       !(
@@ -109,7 +112,7 @@ function WorkspaceSettingsContent(props: Props) {
     }
   }
   function navigate(work: () => void) {
-    if (!current() || activity.current.busy) return;
+    if (!current() || activity.current.busy || computerBusy) return;
     if (activity.current.dirty || activity.current.pending) setLeave(() => work);
     else work();
   }
@@ -128,7 +131,8 @@ function WorkspaceSettingsContent(props: Props) {
           <SettingsNavigation
             value={shellActive ? currentView : returnView.current}
             canManage={props.canManage}
-            blocked={blocked}
+            blocked={blocked || computerBusy}
+            hasComputer={!!props.computerSettings}
             recoverable={[
               ...(activities.current.memory.pending ? ['memory' as const] : []),
               ...(activities.current.timeZone.pending ? ['work' as const] : []),
@@ -195,6 +199,15 @@ function WorkspaceSettingsContent(props: Props) {
                 }
               />
             </section>
+            {currentView === 'computer' && (
+              <section
+                className="workspace-settings-panel"
+                aria-labelledby="settings-section-computer"
+              >
+                <h2 id="settings-section-computer">{settingsSectionLabel('computer')}</h2>
+                {props.computerSettings?.(setComputerBusy, navigate)}
+              </section>
+            )}
             <section
               className="workspace-settings-panel"
               hidden={currentView !== 'work'}
@@ -332,7 +345,7 @@ function WorkspaceSettingsContent(props: Props) {
               <button
                 type="button"
                 className="secondary-button"
-                disabled={activity.current.busy}
+                disabled={activity.current.busy || computerBusy}
                 onClick={close}
               >
                 {uiText('settings:text_c0b3fbff51cc')}

@@ -53,7 +53,9 @@ export function useWorkspaceState({
   const [appsShareId, setAppsShareId] = useState<string>();
   const [appsProviderId, setAppsProviderId] = useState<string>();
   const [appsCustomProposal, setAppsCustomProposal] = useState<CustomAppProposalEntry>();
-  const [settingsInitialView, setSettingsInitialView] = useState<'general' | 'models'>('general');
+  const [settingsInitialView, setSettingsInitialView] = useState<'general' | 'computer' | 'models'>(
+    'general',
+  );
   const [showDetail, setShowDetail] = useState(() => window.innerWidth > 1150),
     [mobileChat, setMobileChat] = useState(
       () => !!new URLSearchParams(window.location.search).get('conversation'),

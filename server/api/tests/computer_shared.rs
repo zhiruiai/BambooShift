@@ -74,6 +74,20 @@ async fn standalone_worker_runs_bot_operations_without_a_screen_pool() {
         .unwrap()
         .unwrap();
     let url = ready.strip_prefix("OpenBot Computer Worker: ").unwrap();
+    let (code, pairing) = f
+        .request(
+            "POST",
+            &f.path("/computer/connect/check"),
+            Some(json!({"url":url,"token":token})),
+            false,
+            Some(&f.owner),
+        )
+        .await;
+    assert_eq!(code, 200, "{pairing}");
+    assert_eq!(
+        pairing,
+        json!({"topology":"shared","browser":"supported","desktop":"unavailable"})
+    );
     let connect = json!({"mode":"remote","url":url,"token":token});
     let (code, connected) = f
         .request(

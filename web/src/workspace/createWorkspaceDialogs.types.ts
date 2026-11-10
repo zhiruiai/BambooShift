@@ -68,7 +68,7 @@ export interface WorkspaceDialogsContext {
   setRosterDialog: import('react').Dispatch<import('react').SetStateAction<RosterDialogRequest>>;
   setMenuOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   setSettingsInitialView: import('react').Dispatch<
-    import('react').SetStateAction<'general' | 'models'>
+    import('react').SetStateAction<'general' | 'computer' | 'models'>
   >;
   canManage: boolean;
   setAppsCustomProposal: import('react').Dispatch<

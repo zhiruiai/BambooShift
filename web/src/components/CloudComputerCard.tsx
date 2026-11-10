@@ -107,7 +107,8 @@ export function CloudComputerCard({
       disabled ||
       startPending.current ||
       readPending.current ||
-      loading
+      loading ||
+      readError
     )
       return;
     startPending.current = true;
@@ -169,7 +170,10 @@ export function CloudComputerCard({
           className="secondary-button"
           type="button"
           disabled={loading || starting}
-          onClick={() => void readState()}
+          onClick={() => {
+            setActionError('');
+            void readState();
+          }}
           aria-label={uiText('computer:text_3f06c918588c')}
         >
           {loading ? <Loader2 size={14} className="spin" /> : <RefreshCw size={14} />}
@@ -204,6 +208,11 @@ export function CloudComputerCard({
           <span>{serviceText(error)}</span>
         </p>
       )}
+      {owner &&
+        !operating &&
+        (error || state?.state === 'unknown' || state?.state === 'pausing') && (
+          <p className="cloud-computer-notice">{uiText('computer:location_cloud_recovery')}</p>
+        )}
       <div className="cloud-computer-footer">
         <p>
           {owner ? uiText('computer:text_55dab53322ab') : uiText('computer:text_2d4ee8c6b0ce')}
@@ -218,7 +227,7 @@ export function CloudComputerCard({
           <button
             className="secondary-button"
             type="button"
-            disabled={disabled || loading || operating || !state.canStart}
+            disabled={disabled || loading || operating || !state.canStart || !!readError}
             onClick={() => void start()}
           >
             {starting ? <Loader2 size={14} className="spin" /> : <Play size={14} />}

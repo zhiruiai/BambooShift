@@ -3,6 +3,7 @@ import { uiText } from '../i18n';
 import { isSharedBot } from '../../../shared/shared-bots';
 import { AppsDialog } from '../components/AppsDialog';
 import { BotTemplateDialog } from '../components/BotTemplateDialog';
+import { ComputerSettingsPanel } from '../components/ComputerDialog';
 import { ConversationSearch } from '../components/ConversationSearch';
 import { FilePreviewDialog } from '../components/FilePreviewDialog';
 import { Dialog } from '../components/UI';
@@ -42,6 +43,9 @@ export function WorkspaceResourceDialogs({
   fileRef,
   openComputer,
   openSettings,
+  selectedComputerAgentId,
+  busy,
+  action,
   templateDialog,
   navigateTemplatePage,
   openConversation,
@@ -83,6 +87,9 @@ export function WorkspaceResourceDialogs({
   | 'fileRef'
   | 'openComputer'
   | 'openSettings'
+  | 'selectedComputerAgentId'
+  | 'busy'
+  | 'action'
   | 'templateDialog'
   | 'navigateTemplatePage'
   | 'openConversation'
@@ -187,6 +194,18 @@ export function WorkspaceResourceDialogs({
       {modal === 'settings' && (
         <WorkspaceSettingsDialog
           initialView={settingsInitialView}
+          computerSettings={(onBusyChange, navigate) => (
+            <ComputerSettingsPanel
+              key={`${navigationScope}:${selectedComputerAgentId || ''}`}
+              data={data}
+              agentId={selectedComputerAgentId}
+              busy={busy}
+              onAction={action}
+              refresh={refresh}
+              onBusyChange={onBusyChange}
+              onWatch={() => navigate(() => openComputer())}
+            />
+          )}
           data={data}
           workspaceId={account?.workspace.id || currentWorkspaceId()}
           userId={currentUserId}
@@ -275,7 +294,7 @@ export function WorkspaceResourceDialogs({
             setModal(null);
             fileRef.current?.click();
           }}
-          onComputer={() => openComputer()}
+          onComputer={() => openSettings('computer')}
           onSettings={() => openSettings('models')}
           onChanged={() => {
             sync.written();

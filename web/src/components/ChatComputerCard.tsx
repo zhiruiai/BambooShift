@@ -1,4 +1,4 @@
-import { serviceText } from '../i18n/serviceText';
+import { isComputerReceiptStatusMessage, serviceText } from '../i18n/serviceText';
 import { uiText, localizedData } from '../i18n';
 import { Check, ChevronRight, FolderOpen, Loader2, Maximize2, Monitor } from 'lucide-react';
 import type { Message } from '../../../shared/types';
@@ -12,6 +12,7 @@ import {
 } from './computer/useChatComputerApproval';
 import { ChatComputerApprovalView } from './computer/ChatComputerApprovalView';
 import { ChatComputerRequestView } from './computer/ChatComputerRequestView';
+import { computerActionNeedsApproval, hasAssignedComputerScreen } from './computer/chatApproval';
 import {
   RemoteShellDetails,
   RemoteShellResult,
@@ -155,7 +156,10 @@ export function computerRecordStatus(
   const error = typeof action.error === 'string' ? action.error : '';
   if (message.status === 'error' && (status === 'pending' || status === 'running'))
     return { label: uiText('computer:text_a4dcd29d3cc4'), kind: 'cancelled' };
-  if (status === 'pending') return { label: uiText('computer:text_f755b01e2711'), kind: 'pending' };
+  if (status === 'pending' && typeof action.type === 'string' && action.type)
+    return computerActionNeedsApproval(action.type)
+      ? { label: uiText('computer:text_f755b01e2711'), kind: 'pending' }
+      : { label: uiText('computer:receiptStarting'), kind: 'starting' };
   if (status === 'running') return { label: uiText('computer:text_dc9591e56d50'), kind: 'running' };
   if (action.type === 'remote_shell' && (status === 'done' || status === 'error')) {
     const outcome = remoteShellResultStatus(action.result);
@@ -187,6 +191,17 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
   const type = typeof action.type === 'string' ? action.type : '';
   const isFileTransfer = type === 'upload_file' || type === 'download_file';
   const isRemoteShell = type === 'remote_shell';
+  const pending = status.kind === 'pending';
+  const active = status.kind === 'starting' || status.kind === 'running';
+  const showActionResult =
+    !pending && !active && action.status !== 'pending' && action.status !== 'running';
+  const error = typeof action.error === 'string' ? action.error : '';
+  const extraMessage =
+    !approval.received &&
+    message.content !== error &&
+    !(approval.action && isComputerReceiptStatusMessage(message.content))
+      ? message.content
+      : '';
   const target =
     typeof payload.url === 'string'
       ? recordLocation(payload.url)
@@ -212,74 +227,93 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
   ]
     .filter((value): value is string => typeof value === 'string' && !!value)
     .join('\n');
-  const entries = Array.isArray(result.entries) ? result.entries.map(objectValue) : [];
-  const hasResult = typeof action.result === 'string' || Object.keys(result).length > 0;
+  const entries = Array.isArray(result.entries) ? result.entries.map(objectValue) : undefined;
+  const title = typeof result.title === 'string' ? result.title : '';
+  const location = typeof result.url === 'string' ? recordLocation(result.url) : '';
+  const path = typeof result.path === 'string' && result.path !== payload.path ? result.path : '';
+  const bytes = typeof result.bytes === 'number' ? result.bytes : undefined;
+  const hasResult =
+    title ||
+    (location && location !== target) ||
+    path ||
+    bytes !== undefined ||
+    !!entries ||
+    resultText;
   return (
     <div className={`computer-message-card computer-record-card record-${status.kind}`}>
       <div className="computer-card-title">
         <span>
-          <Monitor size={13} />
-          {computerActionLabels[type] || uiText('computer:text_c9cf30817de5')}
+          <Monitor size={14} aria-hidden="true" />
+          {Object.hasOwn(computerActionLabels, type)
+            ? computerActionLabels[type]
+            : uiText('computer:text_c9cf30817de5')}
         </span>
-        <span className={`work-status status-${status.kind}`}>
-          {status.kind === 'running' && <Loader2 size={10} className="spin" />}
-          {status.kind === 'pending'
-            ? approvalPendingLabel(action.requester, userId)
-            : status.label}
+        <span className={`work-status status-${status.kind}`} role="status">
+          {active && <Loader2 size={12} className="spin" aria-hidden="true" />}
+          {pending ? approvalPendingLabel(action.requester, userId) : status.label}
         </span>
       </div>
+      {hasAssignedComputerScreen(message, approval.action) && (
+        <p className="computer-record-screen">{uiText('computer:receiptAssignedScreen')}</p>
+      )}
       {isRemoteShell ? (
         <RemoteShellDetails payload={payload} />
       ) : isFileTransfer ? (
-        <ComputerFileSummary type={type} payload={payload} />
+        <ComputerFileSummary
+          type={type}
+          payload={payload}
+          result={showActionResult ? result : undefined}
+        />
       ) : (
         target && <div className="computer-record-target">{target}</div>
       )}
-      <div className="computer-record-message">
-        <Markdown
-          text={
-            status.kind === 'pending'
-              ? approvalHelp(action.requester, userId)
-              : approval.received
-                ? status.label
-                : message.content
-          }
-        />
-      </div>
-      {typeof action.error === 'string' && action.error && action.error !== message.content && (
-        <p className="computer-record-error">{serviceText(action.error)}</p>
+      {(pending || extraMessage) && (
+        <div className="computer-record-message">
+          {pending ? (
+            <p>{approvalHelp(action.requester, userId)}</p>
+          ) : (
+            <Markdown text={extraMessage} />
+          )}
+        </div>
       )}
-      <ComputerFrame frame={action.frame} unavailable={action.frameUnavailable} />
-      {hasResult && isRemoteShell && <RemoteShellResult result={action.result} />}
-      {hasResult && !isRemoteShell && (
+      {error && <p className="computer-record-error">{serviceText(error)}</p>}
+      {showActionResult && (
+        <ComputerFrame frame={action.frame} unavailable={action.frameUnavailable} />
+      )}
+      {showActionResult && isRemoteShell && Object.keys(result).length > 0 && (
+        <RemoteShellResult result={result} />
+      )}
+      {showActionResult && !isRemoteShell && !isFileTransfer && hasResult && (
         <div className="computer-record-result">
-          <span className="record-result-label">{uiText('computer:text_5276286f6b93')}</span>
-          {isFileTransfer && <ComputerFileSummary type={type} payload={payload} result={result} />}
-          {typeof result.title === 'string' && result.title && <strong>{result.title}</strong>}
-          {!isFileTransfer && typeof result.url === 'string' && (
-            <p className="record-result-location">{recordLocation(result.url)}</p>
-          )}
-          {!isFileTransfer && typeof result.path === 'string' && (
-            <p className="record-result-location">{result.path}</p>
-          )}
-          {typeof result.bytes === 'number' && (
+          <span className="record-result-label">{uiText('computer:receiptResult')}</span>
+          {title && <strong>{title}</strong>}
+          {location && location !== target && <p className="record-result-location">{location}</p>}
+          {path && <p className="record-result-location">{path}</p>}
+          {bytes !== undefined && (
             <p>
               {uiText('computer:text_3b367ebe9b03')}
-              {result.bytes}
+              {bytes}
               {uiText('computer:text_f5d87a8b74a0')}
             </p>
           )}
-          {entries.length > 0 && (
-            <p>
-              {entries.length}
-              {uiText('computer:text_041d96aa4db0')}
-              {entries
-                .slice(0, 6)
-                .map((entry) => String(entry.name || uiText('computer:text_67bee6acfc3c')))
-                .join(uiText('common:punct_c4a40ea8fe35'))}
-              {entries.length > 6 ? '…' : ''}
-            </p>
-          )}
+          {entries &&
+            (entries.length ? (
+              <p>
+                {entries.length}
+                {uiText('computer:text_041d96aa4db0')}
+                {entries
+                  .slice(0, 6)
+                  .map((entry) =>
+                    typeof entry.name === 'string' && entry.name
+                      ? entry.name
+                      : uiText('computer:text_67bee6acfc3c'),
+                  )
+                  .join(uiText('common:punct_c4a40ea8fe35'))}
+                {entries.length > 6 ? '…' : ''}
+              </p>
+            ) : (
+              <p>{uiText('computer:text_fe6428bcfea8')}</p>
+            ))}
           {resultText && (
             <>
               <p className="record-result-excerpt">
@@ -289,7 +323,7 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
               {resultText.length > 240 && (
                 <details>
                   <summary>{uiText('computer:text_21f57853693d')}</summary>
-                  <pre>{resultText.slice(0, 12000)}</pre>
+                  <pre tabIndex={0}>{resultText.slice(0, 12000)}</pre>
                   {resultText.length > 12000 && (
                     <small>{uiText('computer:text_f04644f58c62')}</small>
                   )}
@@ -297,22 +331,15 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
               )}
             </>
           )}
-          {!isFileTransfer &&
-            !resultText &&
-            !result.title &&
-            !result.url &&
-            !result.path &&
-            typeof result.bytes !== 'number' &&
-            !entries.length && <p>{uiText('computer:text_f68f8447e7b1')}</p>}
         </div>
       )}
-      {status.kind === 'pending' && !isRemoteShell && !isFileTransfer && (
+      {pending && !isRemoteShell && !isFileTransfer && (
         <ChatComputerRequestView payload={payload} />
       )}
       <ChatComputerApprovalView model={approval} />
       <button type="button" className="computer-record-open" onClick={onClick}>
-        {uiText('computer:text_510e7927b89b')}
-        <ChevronRight size={13} />
+        {active ? uiText('computer:receiptViewComputer') : uiText('computer:text_510e7927b89b')}
+        <ChevronRight size={14} aria-hidden="true" />
       </button>
     </div>
   );

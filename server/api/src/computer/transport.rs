@@ -1,3 +1,4 @@
+use super::discovery;
 use super::model::{self, DesktopSession, Health, SavedRemote, ScreenBinding};
 use super::response::read;
 use crate::error::{ApiError, Result};
@@ -91,58 +92,16 @@ impl Target {
         expected: Option<&SavedRemote>,
         authorize: Authority,
     ) -> Result<Arc<Self>> {
-        model::validate_token(token)?;
-        let url = model::worker_url(url)?;
-        let client = Client::builder()
-            .redirect(reqwest::redirect::Policy::none())
-            .connect_timeout(Duration::from_secs(8))
-            .build()
-            .map_err(|_| model::invalid())?;
-        authorize().await?;
-        let prefix = binding
-            .as_ref()
-            .map(|b| format!("/screens/{}", b.screen_id))
-            .unwrap_or_default();
-        let mut request = client
-            .get(format!("{url}{prefix}/health"))
-            .bearer_auth(token)
-            .timeout(Duration::from_secs(8));
-        if let Some(b) = &binding {
-            b.validate()?;
-            request = request
-                .header("X-OpenBot-Screen-Id", &b.screen_id)
-                .header("X-OpenBot-Workspace-Scope", workspace);
-            if let Some(revision) = &b.screen_revision {
-                request = request.header("X-OpenBot-Screen-Revision", revision);
-            }
-        }
-        if let Some(expected) = expected {
-            request = request
-                .header("X-OpenBot-Worker-Instance", &expected.instance_id)
-                .header(
-                    "X-OpenBot-Control-Origin",
-                    expected.control_origin.as_deref().unwrap_or("none"),
-                );
-        }
-        let reply = read(
-            request.send().await.map_err(|_| model::invalid())?,
-            64 * 1024,
-        )
-        .await?;
-        if reply.status != 200 {
-            return Err(model::invalid());
-        }
-        let health = model::health(
-            reply.json()?,
-            &url,
+        let (client, health) = discovery::discover(
+            url,
             token,
             workspace,
             origin,
-            expected,
             binding.as_ref(),
-            None,
-        )?;
-        authorize().await?;
+            expected,
+            &authorize,
+        )
+        .await?;
         let (closed, _) = watch::channel(false);
         Ok(Arc::new(Self {
             saved: health.saved,

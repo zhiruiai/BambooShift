@@ -11,6 +11,20 @@ export type ChatComputerAction = Record<string, unknown> & {
 const identifier = (value: unknown): value is string =>
   typeof value === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(value);
 
+// The API persists a pending record just before starting these read-only actions.
+const autoStartedActions = new Set([
+  'list_files',
+  'read_file',
+  'download_file',
+  'terminal_command',
+  'browser_screenshot',
+  'desktop_screenshot',
+]);
+
+export function computerActionNeedsApproval(type: unknown) {
+  return typeof type === 'string' && !autoStartedActions.has(type);
+}
+
 export function parseChatComputerAction(value: unknown): ChatComputerAction | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return;
   const action = value as ChatComputerAction;
@@ -75,6 +89,18 @@ export function computerApprovalPath(message: Message, action: ChatComputerActio
     : undefined;
 }
 
+export function hasAssignedComputerScreen(message: Message, action?: ChatComputerAction) {
+  if (!action || !identifier(action.agentId) || action.agentId !== message.agentId) return false;
+  const binding = action.screenBinding as Record<string, unknown> | undefined;
+  const revision = binding?.assignmentRevision;
+  return (
+    !!computerApprovalPath(message, action) &&
+    identifier(binding?.screenId) &&
+    typeof revision === 'string' &&
+    /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(revision)
+  );
+}
+
 export function mayDecideComputerAction(
   message: Message,
   action: ChatComputerAction | undefined,
@@ -84,6 +110,7 @@ export function mayDecideComputerAction(
     !!action &&
     message.status !== 'error' &&
     action.status === 'pending' &&
+    computerActionNeedsApproval(action.type) &&
     !!computerApprovalPath(message, action) &&
     canDecideAction(action.requester, actor)
   );

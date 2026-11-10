@@ -25,6 +25,7 @@
     "test:web": "node scripts/run.mjs scripts/test-suite.mjs web",
     "computer": "node scripts/run.mjs scripts/computer-worker.ts",
     "computer:worker": "node scripts/run.mjs scripts/computer-worker.ts",
+    "computer:pair": "node scripts/run.mjs scripts/pair-computer.mjs",
     "computer:services": "node scripts/run.mjs scripts/computer-services.ts",
     "desktop:build": "node scripts/build-desktop.mjs",
     "desktop:check": "node scripts/check-desktop.mjs",

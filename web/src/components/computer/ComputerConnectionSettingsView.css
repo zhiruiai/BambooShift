@@ -63,16 +63,29 @@
 .computer-location-option svg {
   flex-shrink: 0;
 }
+.computer-location-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.computer-location-actions > button {
+  min-height: 40px;
+  white-space: normal;
+}
+.computer-location-actions:empty {
+  display: none;
+}
 .computer-location-detail {
   display: grid;
   gap: 8px;
 }
-.computer-location-detail p a {
+.computer-location-detail p a,
+.computer-pair-guide a {
   color: inherit;
   text-underline-offset: 2px;
 }
-.computer-location-detail > button,
-.computer-location-remote > button {
+.computer-location-detail > button {
   justify-self: start;
 }
 .computer-location-detail .cloud-computer-card {
@@ -84,15 +97,14 @@
 .computer-location-status {
   overflow-wrap: anywhere;
 }
-.computer-location-remote {
-  display: grid;
-  gap: 8px;
-}
 .computer-location-form {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: end;
   gap: 8px;
+}
+.computer-location-form > :not(label) {
+  grid-column: 1 / -1;
 }
 .computer-location-form label {
   display: grid;
@@ -108,6 +120,53 @@
   border-radius: 8px;
   background: var(--surface);
   color: var(--text);
+}
+.computer-pair-guide,
+.computer-pair-result {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.computer-pair-guide > summary,
+.computer-pair-result > strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.computer-pair-guide > summary {
+  cursor: pointer;
+}
+.computer-pair-guide > ol {
+  margin: 8px 0;
+  padding-inline-start: 20px;
+}
+.computer-pair-guide li + li,
+.computer-pair-guide p + p {
+  margin-top: 5px;
+}
+.computer-pair-native,
+.computer-pair-command {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.computer-pair-command {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: var(--surface);
+}
+.computer-pair-command code,
+.computer-pair-result {
+  overflow-wrap: anywhere;
+}
+.computer-pair-result[role='alert'] {
+  border-color: var(--danger);
 }
 @media (max-width: 760px) {
   .computer-location-option {
@@ -129,7 +188,7 @@
   .computer-location-form input {
     font-size: 16px;
   }
-  .computer-location-form button {
-    justify-self: start;
+  .computer-location-actions > button {
+    min-height: 44px;
   }
 }

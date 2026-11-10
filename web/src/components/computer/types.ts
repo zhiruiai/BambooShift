@@ -49,6 +49,7 @@ export type ComputerDialogProps = {
   conversationId: string;
   conversationTitle: string;
   initialPanel?: 'screen' | 'files';
+  watch?: boolean;
   busy: boolean;
   onClose: () => void;
   onAction: (w: () => Promise<unknown>, s?: string) => Promise<void>;

@@ -4,6 +4,7 @@ import {
   Brain,
   ChartNoAxesColumn,
   Monitor,
+  Laptop,
   RefreshCw,
   Settings,
   Sparkles,
@@ -11,13 +12,22 @@ import {
 import { uiText } from '../../i18n';
 
 export type SettingsSection =
-  'general' | 'work' | 'memory' | 'devices' | 'models' | 'usage' | 'notifications' | 'updates';
+  | 'general'
+  | 'computer'
+  | 'work'
+  | 'memory'
+  | 'devices'
+  | 'models'
+  | 'usage'
+  | 'notifications'
+  | 'updates';
 
 export function settingsSectionLabel(value: SettingsSection) {
   return uiText(
     (
       {
         general: 'workspace:settingsGeneral',
+        computer: 'computer:location_entry',
         usage: 'workspace:usageTitle',
         notifications: 'workspace:notificationsTitle',
         updates: 'workspace:updatesTitle',
@@ -35,21 +45,26 @@ export function SettingsNavigation({
   canManage,
   blocked,
   recoverable = [],
+  hasComputer = false,
   onChange,
 }: {
   value: SettingsSection;
   canManage: boolean;
   blocked: boolean;
   recoverable?: SettingsSection[];
+  hasComputer?: boolean;
   onChange: (value: SettingsSection) => void;
 }) {
   const items = [
     { id: 'general', label: uiText('workspace:settingsGeneral'), icon: Settings },
+    ...(hasComputer
+      ? [{ id: 'computer', label: settingsSectionLabel('computer'), icon: Monitor }]
+      : []),
     { id: 'work', label: uiText('workspace:settingsBotWork'), icon: Bot },
     { id: 'memory', label: uiText('workspace:settingsMemory'), icon: Brain },
     { id: 'usage', label: uiText('workspace:usageTitle'), icon: ChartNoAxesColumn },
     { id: 'notifications', label: uiText('workspace:notificationsTitle'), icon: Bell },
-    { id: 'devices', label: uiText('workspace:settingsDevices'), icon: Monitor },
+    { id: 'devices', label: uiText('workspace:settingsDevices'), icon: Laptop },
     { id: 'updates', label: uiText('workspace:updatesTitle'), icon: RefreshCw },
     ...(canManage
       ? [{ id: 'models', label: uiText('workspace:settingsModels'), icon: Sparkles }]

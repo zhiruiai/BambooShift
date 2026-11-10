@@ -6,7 +6,8 @@ import { initializeLanguage } from '../i18n';
 import { BotTemplateDialog } from '../components/BotTemplateDialog';
 import { SettingsDialog } from '../components/SettingsDialog';
 import { SkillsDialog } from '../components/SkillsDialog';
-import { ComputerDialog } from '../components/ComputerDialog';
+import { ComputerDialog, ComputerSettingsPanel } from '../components/ComputerDialog';
+import { WorkspaceSettingsDialog } from '../components/WorkspaceSettingsDialog';
 import { AccountContext } from '../AccountContext';
 import type { AppSettings, Bootstrap, BotAgent, Skill } from '../../../shared/types';
 
@@ -77,7 +78,7 @@ const data: Bootstrap = {
     executionLocation: scenario.has('unconnected') ? 'none' : 'server',
     surface: 'browser',
     platform: 'test',
-    status: 'Connected',
+    status: scenario.has('unconnected') ? '未连接电脑' : 'Connected',
     capabilities: [],
     targetRevision: 'fixture-target',
   },
@@ -88,7 +89,7 @@ function Fixture() {
   const close = () => setMode('');
   return (
     <>
-      {['templates', 'skills', 'settings', 'computer'].map((value) => (
+      {['templates', 'skills', 'settings', 'computer', 'workspace-settings'].map((value) => (
         <button key={value} id={`open-${value}`} onClick={() => setMode(value)}>
           {value}
         </button>
@@ -123,6 +124,37 @@ function Fixture() {
           onClose={close}
           onSettingsChanged={noop}
         />
+      )}
+      {mode === 'workspace-settings' && (
+        <AccountContext.Provider
+          value={{ workspace, session: { authenticated: true, user, workspaces: [workspace] } }}
+        >
+          <WorkspaceSettingsDialog
+            data={data}
+            workspaceId={workspaceId}
+            userId={user.id}
+            canManage={workspace.role === 'owner'}
+            team={false}
+            onClose={close}
+            onSettingsChanged={noop}
+            onPrimaryChanged={noop}
+            onImported={async () => {}}
+            onTimeZoneChanged={noop}
+            computerSettings={(onBusyChange, navigate) => (
+              <ComputerSettingsPanel
+                data={data}
+                agentId={agent.id}
+                busy={scenario.has('busy')}
+                onAction={async (work) => {
+                  await work();
+                }}
+                refresh={async () => {}}
+                onBusyChange={onBusyChange}
+                onWatch={() => navigate(() => setMode('computer'))}
+              />
+            )}
+          />
+        </AccountContext.Provider>
       )}
       {mode === 'computer' && (
         <AccountContext.Provider

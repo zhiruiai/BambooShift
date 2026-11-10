@@ -5,11 +5,13 @@ pub mod cloud_config;
 pub mod cloud_provider;
 pub mod controller;
 pub mod controls;
+mod discovery;
 pub mod frames;
 mod job_retirement;
 pub mod lifecycle;
 pub mod local_executor;
 pub mod model;
+mod pairing;
 pub mod private_config;
 pub mod reconnect;
 mod response;
@@ -30,6 +32,11 @@ pub fn router() -> axum::Router<crate::db::State> {
         .route(
             "/api/workspaces/{wid}/cloud-computer/start",
             axum::routing::post(routes::cloud_start),
+        )
+        .route(
+            "/api/workspaces/{wid}/computer/connect/check",
+            axum::routing::post(pairing::check)
+                .layer(axum::extract::DefaultBodyLimit::max(64 * 1024)),
         )
         .route(
             "/api/workspaces/{wid}/computer/{*tail}",

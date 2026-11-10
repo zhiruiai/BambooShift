@@ -38,6 +38,7 @@ export function useComputerDialog({
   conversationId,
   conversationTitle,
   initialPanel = 'screen',
+  watch = true,
   busy: externalBusy,
   onClose,
   onAction,
@@ -214,10 +215,11 @@ export function useComputerDialog({
     pausePrivateFrames,
     clearShot,
     observe,
-    loadActions,
+    loadActions: observeActions,
     checkStatus,
     screenshot,
   } = createComputerObservation(readActionContext);
+  const loadActions = watch ? observeActions : () => Promise.resolve();
 
   const { prepareCloudStart, run, decideAction, connection } =
     createComputerConnectionActions(readActionContext);
@@ -234,7 +236,7 @@ export function useComputerDialog({
       if (leaseRef.current) setClock(Date.now());
     }, 3000);
     const visibility = () => {
-      if (!document.hidden) void screenshot();
+      if (watch && !document.hidden) void screenshot();
       else if (leaseRef.current) clearShot();
     };
     const forget = () => {
@@ -297,7 +299,7 @@ export function useComputerDialog({
     void loadActions();
   }, [screenReady]);
   const observingWork = useComputerFramePolling(
-    screenReady && panel === 'screen',
+    watch && screenReady && panel === 'screen',
     currentScreenIdentity,
     lease?.leaseId,
     otherControlled,

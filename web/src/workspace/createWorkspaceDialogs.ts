@@ -124,11 +124,11 @@ export function createWorkspaceDialogs(read: () => WorkspaceDialogsContext) {
     setMenuOpen(false);
     setModal('roster');
   }
-  function openSettings(view: 'general' | 'models' = 'general') {
+  function openSettings(view: 'general' | 'computer' | 'models' = 'general') {
     const { sendScope, setSettingsInitialView, canManage, setModal } = read();
 
     if (!sendScope.current(sendScope.ticket())) return;
-    setSettingsInitialView(canManage ? view : 'general');
+    setSettingsInitialView(view === 'models' && !canManage ? 'general' : view);
     setModal('settings');
   }
   function openApps(shareId?: string) {
@@ -232,6 +232,7 @@ export function createWorkspaceDialogs(read: () => WorkspaceDialogsContext) {
   }
   function openComputer(agentId?: string | null, panel: 'screen' | 'files' = 'screen') {
     const {
+      sendScope,
       selectedComputerAgentId,
       data,
       setToast,
@@ -244,6 +245,7 @@ export function createWorkspaceDialogs(read: () => WorkspaceDialogsContext) {
       setModal,
     } = read();
 
+    if (!sendScope.current(sendScope.ticket())) return;
     const chosen = agentId === null ? undefined : agentId || selectedComputerAgentId;
     if (agentId && !data?.agents.some((a) => a.id === agentId)) {
       setToast(uiText('workspace:text_d8b29de9e616'));

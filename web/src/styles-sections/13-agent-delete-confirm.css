@@ -33,32 +33,47 @@
   padding: 12px 13px;
 }
 .computer-record-card .computer-card-title {
-  font-size: 12px;
-  color: light-dark(#73637e, var(--text-secondary));
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 13px;
+  color: var(--text);
+}
+.computer-record-card .computer-card-title svg,
+.computer-record-open svg {
+  flex: none;
 }
 .computer-record-card .work-status {
   display: flex;
   align-items: center;
   gap: 3px;
-  white-space: nowrap;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
   font-size: 12px;
+  background: var(--surface-hover);
+  color: var(--text-secondary);
 }
-.work-status.status-pending {
-  background: light-dark(#fbf1df, var(--warning-soft));
-  color: light-dark(#ad8b55, var(--warning));
+.computer-record-card .status-pending {
+  background: var(--warning-soft);
+  color: var(--warning);
 }
-.work-status.status-running {
-  background: light-dark(#eee6f7, var(--surface-subtle));
-  color: light-dark(#9872b4, var(--accent));
+.computer-record-card .status-running,
+.computer-record-card .status-starting {
+  background: var(--accent-soft);
+  color: var(--accent);
 }
-.work-status.status-error {
-  background: light-dark(#f7e7e4, var(--danger-soft));
-  color: light-dark(#ba8073, var(--danger));
+.computer-record-card .status-error {
+  background: var(--danger-soft);
+  color: var(--danger);
 }
-.work-status.status-cancelled {
-  background: light-dark(#eeeaf0, var(--surface-subtle));
-  color: light-dark(#9a8da4, var(--text-muted));
+.computer-record-card .status-done {
+  background: var(--success-soft);
+  color: var(--success);
+}
+.computer-record-screen {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin: 4px 0 0;
 }
 .computer-record-target {
   font-size: 12px;
@@ -66,14 +81,14 @@
   border: 1px solid light-dark(#ebe5f1, var(--border));
   border-radius: 6px;
   padding: 7px 9px;
-  color: light-dark(#97829f, var(--text-secondary));
+  color: var(--text-secondary);
   line-height: 1.6;
   overflow-wrap: anywhere;
   margin: 8px 0;
 }
 .computer-record-message {
   font-size: 12px;
-  color: light-dark(#81708e, var(--text-secondary));
+  color: var(--text-secondary);
   line-height: 1.75;
 }
 .computer-record-message p + p {
@@ -81,9 +96,13 @@
 }
 .computer-record-error {
   font-size: 12px;
-  color: light-dark(#b28b7d, var(--danger));
+  color: var(--danger);
   line-height: 1.7;
   margin-top: 7px;
+}
+.computer-record-card .computer-frame-thumbnail {
+  max-height: min(180px, 40dvh);
+  object-fit: contain;
 }
 .computer-record-result {
   border-top: 1px solid light-dark(#e9e2ef, var(--border));
@@ -97,7 +116,7 @@
 .record-result-label {
   display: block;
   font-size: 12px;
-  color: light-dark(#a291ad, var(--text-muted));
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 .computer-record-result > strong {
@@ -147,7 +166,9 @@
   width: 100%;
   font-size: 12px;
   color: light-dark(#9677ab, var(--text-secondary));
-  padding: 10px 0 0;
+  min-height: 34px;
+  gap: 8px;
+  padding: 6px 0 0;
   margin-top: 8px;
   border-top: 1px solid light-dark(#eae2f0, var(--border));
   text-align: left;
@@ -165,7 +186,7 @@
     max-width: 100%;
   }
   .computer-record-card .computer-card-title {
-    font-size: 12px;
+    font-size: 13px;
   }
   .computer-record-message,
   .computer-record-result {
@@ -174,6 +195,9 @@
   .computer-record-target,
   .computer-record-open {
     font-size: 12px;
+  }
+  .computer-record-open {
+    min-height: 44px;
   }
   .agent-delete-confirm > div {
     justify-content: space-between;

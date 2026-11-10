@@ -210,7 +210,19 @@ test('computer status, desktop permission and approval errors translate only the
     canManage: false,
   });
   assert.match(status, /Cleanup of the previous computer action is unconfirmed/);
-  assert.match(status, /保留这台电脑的名称/);
+  assert.doesNotMatch(status, /保留这台电脑的名称/);
+  const saved = {
+    ...machine,
+    savedRemote: { name: machine.name, url: 'https://saved-computer.example.test' },
+  };
+  const settings = f.render('ComputerConnectionSettingsView', {
+    machine: saved,
+    computer: saved,
+    canManage: true,
+    onWatch: () => {},
+  });
+  assert.match(settings, /Remembered computer · 保留这台电脑的名称/);
+  assert.doesNotMatch(settings, /saved-computer\.example\.test/);
   const local = { ...machine, mode: 'local', connected: true, targetRevision: 'revision' };
   const sharedStatus = f.render('ComputerConnectionSettingsView', {
     machine: local,
@@ -222,6 +234,7 @@ test('computer status, desktop permission and approval errors translate only the
     canManage: false,
   });
   assert.match(sharedStatus, /Fresh shared browser status/);
+  assert.match(sharedStatus, /保留这台电脑的名称/);
   assert.doesNotMatch(sharedStatus, /Cleanup of the previous computer action is unconfirmed/);
   const surface = f.render('ComputerSurface', {
     computer: machine,
