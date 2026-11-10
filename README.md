@@ -2,7 +2,7 @@
 
 简体中文 · [English](README.en.md)
 
-**开源、自托管的 Grok Bot 平替。** 在 PandaMate 里组建一队 AI 同事，让他们在群聊里分工、查找资料并交付成果。做出来的网页和文件可以在对话里直接打开。
+**开源、自托管的 Grok Bot 平替。** 用 Pi 智能体执行框架组建一队 AI 同事，让他们在群聊里分工、联网查资料、操作工作电脑。做出来的网页和文件可以在对话里直接打开。
 
 [功能演示](#功能演示) · [创作者取材](#创作者取材) · [快速开始](#快速开始) · [开发与部署](#开发与部署) · [源码导航](#源码导航) · [鸣谢与开源组件](#鸣谢与开源组件)
 
@@ -111,16 +111,16 @@ npm run dev
 | 场景 | 功能 |
 | --- | --- |
 | AI 同事与多智能体协作 | 支持单聊、群聊、点名 Bot、同事委派和问题卡。根据描述生成 Bot 或团队草稿，核对分工后创建。 |
-| 网页检索与交付 | 搜索公开网页并回看来源。在对话里预览文档、表格、媒体和多文件网站。 [文件预览](docs/file-previews.md) |
-| 工作流自动化与技能 | 按时间和时区安排例行任务，或用 Webhook 触发任务并在原会话接收结果。可以把可复用的做法保存为待审核的技能。 [Webhook](docs/routine-webhooks.md) |
-| 本机与云端电脑 | 使用服务所在电脑的独立浏览器，或连接专用 Worker 在自有云服务器运行。独立 macOS Worker 在明确启用并授予系统权限后可控制本机桌面。 [电脑设置](docs/computer.md) |
-| MCP 与人工审批 | 通过 Model Context Protocol（MCP）连接应用。审批绑定到具体请求；接管电脑时，Bot 暂停观察和输入。 |
+| 联网搜索与交付 | 搜索公开网页并回看来源。在对话里预览文档、表格、媒体和多文件网站。 [文件预览](docs/file-previews.md) |
+| 工作流自动化与智能体技能 | 按时区安排例行任务，或用 Webhook 触发任务并在原会话接收结果。将可复用的做法保存为待审核的 Bot 技能。 [Webhook](docs/routine-webhooks.md) |
+| 电脑操作（Computer Use） | 在「设置 → 电脑」配对专用 Worker，或使用已配置的云电脑。服务所在电脑提供隔离的浏览器自动化。独立 macOS Worker 经系统授权后可操作本机桌面。 [电脑设置](docs/computer.md) |
+| MCP 与人在回路 | 通过 Model Context Protocol（MCP）连接应用。需要确认的操作可在原消息审批。私密接管期间，Bot 暂停观察和输入。 |
 
 网页支持 PWA 安装。桌面端和移动端连接同一个工作空间服务。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
 
 ## 开发与部署
 
-Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi 提供 Bot 的智能体执行框架（agent harness）。MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
+Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi Coding Agent 提供 Bot 的智能体执行框架（Agent Harness）。MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
 
 | 命令 | 用途 |
 | --- | --- |

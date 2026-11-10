@@ -2,7 +2,7 @@
 
 [简体中文](README.md) · English
 
-**An open-source, self-hosted Grok Bot alternative.** Build a team of AI coworkers, hand out tasks in group chat, and review sources as they work. Open the files and websites they deliver from the conversation.
+**An open-source, self-hosted Grok Bot alternative.** Build a team of AI coworkers powered by the Pi agent harness. Delegate work in group chat, search the web, and let Bots operate a work computer. Open the files and websites they deliver from the conversation.
 
 [Demos](#demos) · [Creator kit](#creator-kit) · [Quick start](#quick-start) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Acknowledgments and open-source credits](#acknowledgments-and-open-source-credits)
 
@@ -111,16 +111,16 @@ Run `configure:local` once to create the local configuration. Use `npm run dev` 
 | Use case | Features |
 | --- | --- |
 | AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
-| Web research and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
-| Workflow automation and reusable skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
-| Local and cloud computers | Use an isolated browser on the service host or run a dedicated Worker on your own cloud server. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
-| MCP tools and human approvals | Connect apps through the Model Context Protocol (MCP). Approvals apply to specific requests. Taking over the computer pauses Bot input and observation. |
+| Web search and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
+| Workflow automation and agent skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
+| Computer use and browser automation | Pair a dedicated Worker in **Settings → Computer** or use a configured cloud computer. The server host provides an isolated work browser. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
+| MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP). Approve specific requests in chat. A private takeover pauses Bot input and observation. |
 
 The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
 
 ## Build and deploy
 
-A Rust service handles identity, permissions, application data, and scheduling, and stores state in SQLite. Pi provides the Bot agent harness. Separate workers handle MCP, document parsing, and computer use. The React product and operations sites are built separately and use separate API entry points and sign-in sessions. [Architecture](docs/architecture.md)
+A Rust service handles identity, permissions, application data, and scheduling, and stores state in SQLite. Pi Coding Agent provides the Bot agent harness. Separate workers handle MCP, document parsing, and computer use. The React product and operations sites are built separately and use separate API entry points and sign-in sessions. [Architecture](docs/architecture.md)
 
 | Command | Purpose |
 | --- | --- |
