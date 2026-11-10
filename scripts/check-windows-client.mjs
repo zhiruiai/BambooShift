@@ -119,8 +119,9 @@ async function main() {
   assert.equal(manifest.version, process.env.RELEASE_VERSION || source.version);
   assert.equal(manifest.serviceIncluded, false);
   assert.deepEqual(manifest.bundles, [bundleName]);
-  for (const resource of ['chrome_elf.dll', 'icudtl.dat', 'resources.pak', 'resources/app.asar'])
-    await access(join(bundle, resource));
+  // Electron owns its native dependency layout. The startup check verifies that
+  // the executable can load those dependencies and open this packaged app.
+  await access(join(bundle, 'resources', 'app.asar'));
   await verifyWindowsExecutable(executable);
   await verifyPackagedStartup(executable, manifest.version);
   console.log(
