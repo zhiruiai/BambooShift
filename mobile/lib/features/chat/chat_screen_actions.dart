@@ -1,6 +1,30 @@
 part of 'chat_screen.dart';
 
 extension _ChatScreenActions on _ChatScreenState {
+  Widget computerAction(WorkspaceController scope, String agentId) =>
+      IconButton(
+        tooltip: context.tr('mobileComputerTitle'),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (_) => ComputerScreen(scope: scope, agentId: agentId),
+          ),
+        ),
+        icon: const Icon(Icons.computer_outlined),
+      );
+
+  Widget groupSettingsAction(WorkspaceController scope) => IconButton(
+    tooltip: context.tr('groupSettings'),
+    onPressed: () => Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            GroupSettings(scope: scope, conversationId: widget.conversationId),
+      ),
+    ),
+    icon: const Icon(Icons.tune),
+  );
+
   void applyDraftControls(ChatController controller, ChatDraftOptions next) {
     if (!canEditOptions(controller)) return;
     final scope = controller.scope, key = controller.draftKey;

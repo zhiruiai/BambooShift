@@ -18,6 +18,7 @@ import 'attachment_controller.dart';
 import 'attachment_panel.dart';
 import 'attachment_selection.dart';
 import '../bots/group_settings.dart';
+import '../computer/computer_screen.dart';
 import '../voice/voice_controller.dart';
 import '../voice/voice_controls.dart';
 import '../voice/voice_transport.dart';
@@ -369,20 +370,13 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           actions: [
             if (thread == null && !voice.active) ChatProjectLibrary(scope, id),
+            if (thread == null &&
+                !voice.active &&
+                lead != null &&
+                !isManagedBot(lead))
+              computerAction(scope, lead['id'] as String),
             if (thread == null && conversation?['isGroup'] == true)
-              IconButton(
-                tooltip: context.tr('groupSettings'),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => GroupSettings(
-                      scope: scope,
-                      conversationId: widget.conversationId,
-                    ),
-                  ),
-                ),
-                icon: const Icon(Icons.tune),
-              ),
+              groupSettingsAction(scope),
             IconButton(
               tooltip: context.tr('refresh'),
               onPressed: _refresh,

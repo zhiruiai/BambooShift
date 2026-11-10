@@ -13,11 +13,12 @@ import type { AppSettings, Bootstrap, BotAgent, Skill } from '../../../shared/ty
 initializeLanguage().setLanguage('en');
 const workspaceId = '11111111-1111-4111-8111-111111111111';
 const createdAt = '2026-11-07T00:00:00Z';
+const scenario = new URLSearchParams(window.location.search);
 const workspace = {
   id: workspaceId,
   name: 'Fixture workspace',
   kind: 'personal',
-  role: 'owner',
+  role: scenario.get('role') === 'member' ? 'member' : 'owner',
   status: 'active',
   createdAt,
 } as const;
@@ -70,9 +71,10 @@ const data: Bootstrap = {
   files: [],
   skills: [],
   computer: {
-    connected: true,
+    connected: !scenario.has('unconnected'),
     name: 'Synthetic computer',
     mode: 'local',
+    executionLocation: scenario.has('unconnected') ? 'none' : 'server',
     surface: 'browser',
     platform: 'test',
     status: 'Connected',
@@ -132,7 +134,7 @@ function Fixture() {
             conversationId="fixture-chat"
             conversationTitle="Synthetic chat"
             onSelectBot={noop}
-            busy={false}
+            busy={scenario.has('busy')}
             onClose={close}
             onAction={async (work) => {
               await work();

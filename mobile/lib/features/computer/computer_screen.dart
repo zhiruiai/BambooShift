@@ -155,11 +155,23 @@ class _ComputerScreenState extends State<ComputerScreen>
             padding: const EdgeInsets.all(16),
             children: [
               Text(name, style: Theme.of(context).textTheme.titleLarge),
-              const Notice('mobileComputerPassive'),
+              const SizedBox(height: 12),
+              Text(
+                context.tr('mobileComputerExecutionTitle'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               Notice(
                 'mobileComputerLocation${c.status?.executionLocation ?? computerExecutionLocation(widget.scope.data?['computer'])}',
               ),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.computer_outlined),
+                  title: Text(context.tr('mobileComputerLocalTitle')),
+                  subtitle: Text(context.tr('mobileComputerLocalHelp')),
+                ),
+              ),
               CloudComputerCard(controller: cloud),
+              const Notice('mobileComputerPassive'),
               if (c.screens.isNotEmpty)
                 ExpansionTile(
                   title: Text(context.tr('mobileComputerScreens')),

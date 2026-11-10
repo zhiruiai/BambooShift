@@ -1,187 +1,261 @@
-import { uiText } from '../../i18n';
-import { Check, Loader2, Monitor } from 'lucide-react';
+import { useState } from 'react';
+import { Cloud, Laptop2, Loader2, Monitor, RefreshCw } from 'lucide-react';
 import type { ComputerState } from '../../../../shared/types';
-import { type ComputerDialogModel } from './types';
+import { uiText } from '../../i18n';
+import { serviceText } from '../../i18n/serviceText';
+import { CloudComputerCard } from '../CloudComputerCard';
+import type { ComputerDialogModel } from './types';
+import './ComputerConnectionSettingsView.css';
+
+const locations = [
+  { id: 'server', icon: Monitor },
+  { id: 'cloud', icon: Cloud },
+  { id: 'remote', icon: Laptop2 },
+] as const;
+type Location = (typeof locations)[number]['id'];
 
 export function ComputerConnectionSettingsView(model: ComputerDialogModel) {
   const {
+    account,
+    machine,
+    computer,
     canManage,
-    foldManualConnection,
-    manualConnectionOpen,
     busy,
     inputBusy,
-    setManualConnectionOpen,
-    mode,
-    setMode,
-    cloudConfigured,
-    machine,
+    controlled,
+    otherControlled,
+    connectionPending,
     connection,
+    connectionError,
+    cloudState,
+    setCloudState,
+    cloudPreparing,
+    prepareCloudStart,
+    mounted,
+    setInputBusy,
+    clearShot,
+    refresh,
     scope,
     remote,
     token,
     remoteEdited,
     setRemote,
     setToken,
-    connectionPending,
-    isDesktop,
-    desktopScreenLabel,
   } = model;
+  const current =
+    machine.executionLocation ??
+    (machine.mode === 'local' ? 'server' : machine.connected ? 'remote' : 'none');
+  const [choice, setChoice] = useState<Location | null>(null);
+  const selected = choice ?? (current === 'none' ? 'server' : current);
+  const disabled = busy || inputBusy || controlled || otherControlled || connectionPending !== null;
+  const connectionStatus =
+    computer.botScreen?.shared &&
+    computer.targetRevision &&
+    computer.targetRevision === machine.targetRevision
+      ? computer.status
+      : machine.status;
+  const reconnectAvailable =
+    machine.savedRemote &&
+    (current !== 'remote' || !machine.connected) &&
+    (!account || cloudState?.configured === false);
+  const connect = (mode: 'local' | 'remote') =>
+    connection(
+      () =>
+        scope.request<ComputerState>(
+          '/connect',
+          'POST',
+          mode === 'local' ? { mode } : { mode, url: remote, token },
+          true,
+        ),
+      uiText('computer:text_af84420bd72d'),
+    );
+  const buttonContent = (label: string, kind: 'connect' | 'disconnect' | 'reconnect') =>
+    connectionPending === kind ? (
+      <>
+        <Loader2 size={14} className="spin" aria-hidden="true" />
+        {uiText('computer:text_8be0ea36a9bb')}
+      </>
+    ) : (
+      label
+    );
   return (
-    <>
-      <aside className="computer-settings">
-        {canManage ? (
+    <section className="computer-location-chooser" aria-labelledby="computer-location-title">
+      <div className="computer-location-heading">
+        <div>
+          <h3 id="computer-location-title">{uiText('computer:choose_location')}</h3>
+          <p role="status">
+            {uiText(`computer:location_${current}`)}
+            {machine.name && <> · {machine.name}</>}
+            {machine.connected && <> · {uiText('computer:text_5be0323e8adc')}</>}
+          </p>
+        </div>
+        {canManage && machine.connected && (
+          <button
+            type="button"
+            className="text-button"
+            disabled={disabled}
+            onClick={() =>
+              void connection(
+                () => scope.request<ComputerState>('/disconnect', 'POST', undefined, true),
+                uiText('computer:text_405a76488796'),
+                'disconnect',
+              )
+            }
+          >
+            {buttonContent(uiText('computer:text_a766e7aa0cca'), 'disconnect')}
+          </button>
+        )}
+      </div>
+      <div
+        className="computer-location-options"
+        role="group"
+        aria-labelledby="computer-location-title"
+      >
+        {locations.map(({ id, icon: Icon }) => (
+          <button
+            key={id}
+            type="button"
+            className="computer-location-option"
+            aria-pressed={selected === id}
+            aria-label={uiText(`computer:location_choice_${id}`)}
+            onClick={() => setChoice(id)}
+          >
+            <Icon size={17} aria-hidden="true" />
+            <span>{uiText(`computer:location_choice_${id}`)}</span>
+            {current === id && machine.connected && (
+              <small>{uiText('computer:location_current')}</small>
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="computer-location-detail">
+        {selected === 'server' && (
           <>
-            {foldManualConnection && (
+            <p>{uiText('computer:location_help_server')}</p>
+            {canManage && (current !== 'server' || !machine.connected) && (
               <button
                 type="button"
-                className="secondary-button cloud-computer-change"
-                aria-expanded={manualConnectionOpen}
-                aria-controls="computer-manual-connection"
-                disabled={busy || inputBusy}
-                onClick={() => setManualConnectionOpen((value) => !value)}
+                className="secondary-button"
+                disabled={disabled}
+                onClick={() => void connect('local')}
               >
-                {manualConnectionOpen
-                  ? uiText('computer:text_04b78522ab80')
-                  : uiText('computer:text_5bbcd9e0ef22')}
+                {buttonContent(uiText('computer:location_connect_server'), 'connect')}
               </button>
             )}
-            {(!foldManualConnection || manualConnectionOpen) && (
-              <div id="computer-manual-connection">
-                <h3>{uiText('computer:text_485a26050ce5')}</h3>
-                <div className="segmented">
+          </>
+        )}
+        {selected === 'cloud' && (!account || cloudState?.configured === false) && (
+          <>
+            <p>{uiText('computer:location_cloud_unconfigured')}</p>
+            {canManage && (
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => setChoice('remote')}
+              >
+                {uiText('computer:location_connect_own_cloud')}
+              </button>
+            )}
+          </>
+        )}
+        <CloudComputerCard
+          visible={selected === 'cloud'}
+          disabled={disabled}
+          onPendingChange={(pending) => {
+            if (!pending) cloudPreparing.current = false;
+            if (mounted.current) setInputBusy(pending);
+          }}
+          onPrepareStart={prepareCloudStart}
+          onStateChange={setCloudState}
+          onStarted={async () => {
+            clearShot();
+            await refresh();
+          }}
+        />
+        {selected === 'remote' && (
+          <>
+            <p>
+              {uiText('computer:location_help_remote')}{' '}
+              {canManage && (
+                <a
+                  href="https://github.com/zhiruiai/PandaMate/blob/main/docs/computer.md#%E7%8B%AC%E7%AB%8B-worker"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {uiText('computer:location_setup_guide')}
+                </a>
+              )}
+            </p>
+            {canManage && (
+              <div className="computer-location-remote">
+                {reconnectAvailable && (
                   <button
                     type="button"
-                    className={mode === 'local' ? 'active' : ''}
-                    aria-pressed={mode === 'local'}
-                    disabled={busy || inputBusy}
-                    onClick={() => setMode('local')}
+                    className="secondary-button"
+                    disabled={disabled}
+                    onClick={() =>
+                      void connection(
+                        () => scope.request<ComputerState>('/reconnect', 'POST', undefined, true),
+                        uiText('computer:text_bcb3994eca59'),
+                        'reconnect',
+                      )
+                    }
                   >
-                    {uiText('computer:text_8a94c4a1cdbd')}
+                    <RefreshCw size={14} aria-hidden="true" />
+                    {buttonContent(uiText('computer:text_992353d9b382'), 'reconnect')}
                   </button>
-                  <button
-                    type="button"
-                    className={mode === 'remote' ? 'active' : ''}
-                    aria-pressed={mode === 'remote'}
-                    disabled={busy || inputBusy}
-                    onClick={() => setMode('remote')}
-                  >
-                    {uiText('computer:text_7ba00927dde9')}
-                  </button>
-                </div>
-                <p>
-                  {mode === 'local'
-                    ? uiText('computer:text_ca97e71ac677')
-                    : cloudConfigured
-                      ? uiText('computer:text_62d31a6db746')
-                      : machine.savedRemote
-                        ? uiText('computer:text_b0a3825ec9fa')
-                        : uiText('computer:text_ce612bf75dde')}
-                </p>
+                )}
                 <form
-                  className="dialog-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void connection(
-                      () =>
-                        scope.request<ComputerState>(
-                          '/connect',
-                          'POST',
-                          mode === 'local' ? { mode } : { mode, url: remote, token },
-                          true,
-                        ),
-                      uiText('computer:text_af84420bd72d'),
-                    );
+                  className="computer-location-form"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void connect('remote');
                   }}
                 >
-                  {mode === 'remote' && (
-                    <>
-                      <label>
-                        {uiText('computer:text_06488c0767c9')}
-                        <input
-                          type="url"
-                          required
-                          disabled={busy || inputBusy}
-                          value={remote}
-                          onChange={(e) => {
-                            remoteEdited.current = true;
-                            setRemote(e.target.value);
-                          }}
-                          placeholder="https://your-worker"
-                        />
-                      </label>
-                      <label>
-                        {uiText('computer:text_de228ffca363')}
-                        <input
-                          type="password"
-                          required
-                          disabled={busy || inputBusy}
-                          autoComplete="off"
-                          value={token}
-                          onChange={(e) => setToken(e.target.value)}
-                        />
-                      </label>
-                    </>
-                  )}
-                  <button className="secondary-button" disabled={busy || inputBusy}>
-                    {connectionPending === 'connect' ? (
-                      <Loader2 size={15} className="spin" />
-                    ) : (
-                      <Monitor size={15} />
-                    )}
-                    {connectionPending === 'connect'
-                      ? uiText('computer:text_8be0ea36a9bb')
-                      : uiText('computer:text_bdd8a3ed7629', {
-                          value0:
-                            mode === 'local'
-                              ? uiText('computer:text_8a94c4a1cdbd')
-                              : uiText('computer:text_3535087994d0'),
-                        })}
+                  <label>
+                    {uiText('computer:text_06488c0767c9')}
+                    <input
+                      type="url"
+                      required
+                      disabled={disabled}
+                      value={remote}
+                      onChange={(event) => {
+                        remoteEdited.current = true;
+                        setRemote(event.target.value);
+                      }}
+                      placeholder="https://"
+                    />
+                  </label>
+                  <label>
+                    {uiText('computer:location_credential')}
+                    <input
+                      type="password"
+                      required
+                      disabled={disabled}
+                      autoComplete="off"
+                      value={token}
+                      onChange={(event) => setToken(event.target.value)}
+                    />
+                  </label>
+                  <button type="submit" className="secondary-button" disabled={disabled}>
+                    {buttonContent(uiText('computer:location_connect_remote'), 'connect')}
                   </button>
-                  {machine.connected && (
-                    <button
-                      type="button"
-                      className="text-button"
-                      disabled={busy || inputBusy}
-                      onClick={() =>
-                        void connection(
-                          () =>
-                            scope.request<ComputerState>('/disconnect', 'POST', undefined, true),
-                          uiText('computer:text_405a76488796'),
-                          'disconnect',
-                        )
-                      }
-                    >
-                      {uiText('computer:text_a766e7aa0cca')}
-                    </button>
-                  )}
                 </form>
               </div>
             )}
           </>
-        ) : (
-          <>
-            <h3>{uiText('computer:text_2dac75d8b516')}</h3>
-            <p>{uiText('computer:text_cd2cd3a1ea72')}</p>
-          </>
         )}
-        <div className="computer-capabilities">
-          <h4>{uiText('computer:text_7958d84e9a3f')}</h4>
-          <p>
-            <Check size={13} />
-            {uiText('computer:text_bea9cb24b63f')}
+        {!canManage && <p>{uiText('computer:text_cd2cd3a1ea72')}</p>}
+        {connectionError ? (
+          <p className="computer-connection-error" role="alert">
+            {connectionError}
           </p>
-          <p>
-            <Check size={13} />
-            {isDesktop
-              ? uiText('computer:text_4e3be82acb60', { value0: desktopScreenLabel })
-              : uiText('computer:text_a1699f87f385')}
-          </p>
-          <p>
-            <Check size={13} />
-            {uiText('computer:text_4f751c26f63b')}
-          </p>
-        </div>
-      </aside>
-    </>
+        ) : (
+          connectionStatus && (
+            <p className="computer-location-status">{serviceText(connectionStatus)}</p>
+          )
+        )}
+      </div>
+    </section>
   );
 }

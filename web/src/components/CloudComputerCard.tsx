@@ -22,12 +22,14 @@ function dateLabel(value: string | null) {
 
 export function CloudComputerCard({
   disabled = false,
+  visible = true,
   onPendingChange,
   onStateChange,
   onPrepareStart,
   onStarted,
 }: {
   disabled?: boolean;
+  visible?: boolean;
   onPendingChange: (pending: boolean) => void;
   onStateChange: (state: CloudComputerState) => void;
   onPrepareStart?: () => Promise<void>;
@@ -78,20 +80,25 @@ export function CloudComputerCard({
   readLatest.current = readState;
   useEffect(() => {
     mounted.current = enabled;
+    return () => {
+      mounted.current = false;
+    };
+  }, [enabled]);
+  useEffect(() => {
     const readVisible = () => {
       if (enabled && !document.hidden) void readLatest.current();
     };
     readVisible();
+    if (!visible) return;
     const timer = setInterval(readVisible, 30000);
     window.addEventListener('focus', readVisible);
     document.addEventListener('visibilitychange', readVisible);
     return () => {
-      mounted.current = false;
       clearInterval(timer);
       window.removeEventListener('focus', readVisible);
       document.removeEventListener('visibilitychange', readVisible);
     };
-  }, [enabled]);
+  }, [enabled, visible]);
 
   async function start() {
     if (
@@ -140,7 +147,8 @@ export function CloudComputerCard({
     }
   }
 
-  if (!enabled || state?.configured === false || (!state && loading)) return null;
+  if (!visible || !enabled || state?.configured === false) return null;
+  if (!state && loading) return <p role="status">{uiText('computer:location_cloud_loading')}</p>;
   const error = actionError || readError || state?.error?.message;
   const label = state ? statusLabels[state.state] : uiText('computer:text_12532dbccf5f');
   const operating = starting || !!state?.operation;

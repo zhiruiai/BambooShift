@@ -68,7 +68,7 @@ async function verifyScroll(dialog: Locator, page: Page) {
   }
   const last = dialog
     .locator(
-      'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href]',
+      ':is(button:enabled,input:enabled,select:enabled,textarea:enabled,a[href],summary):visible',
     )
     .last();
   await last.focus();

@@ -2,6 +2,30 @@
 
 本页核对用户提供的 19 张截图、[教程视频](https://www.youtube.com/watch?v=q1IwR88mhaA)的章节、字幕与关键画面，记录当前源码的真实范围。视频与截图用于分析交互；PandaMate 使用自己的品牌、头像与实现，不分发参考媒体。当前仍处于整合验收阶段，不能将某个模块通过等同于整个版本已完成。
 
+## YouTube 实操复核（2026 年 11 月 10 日）
+
+核对对象是独立产品 Grok Bot。下面的时间点来自讲座字幕和创作者发布的章节，部分流程用作者的实操截图和官方文档交叉核验。录屏中的账户配置和权限只代表该演示。当前产品行为以官方说明为准。
+
+| 视频 | 核对重点 |
+| --- | --- |
+| Grok 官方发布与 101 讲座 | 官方发布说明了给 Bot 分配工作、等待审批、交付结果的产品路径。101 演示接管、教学成技能、跨 Bot 交接和组内负责人，并说明同一用户的 Bot 共享云电脑、各自使用画面。[发布视频](https://www.youtube.com/watch?v=F1_0Lkp16Rc) · [26:47 接管](https://www.youtube.com/watch?v=8xXhE25vJZY&t=1607s) · [44:03 电脑边界](https://www.youtube.com/watch?v=8xXhE25vJZY&t=2643s) · [53:15 团队分工](https://www.youtube.com/watch?v=8xXhE25vJZY&t=3195s) |
+| Nate Herk 的操作教程 | 展示云端浏览器、不同 Bot 的画面、共享文件、读取和移动本机文件，以及设置里单独控制桌面执行。[5:20 云电脑](https://www.youtube.com/watch?v=NyfYxpXiw_0&t=320s) · [7:25 本机文件](https://www.youtube.com/watch?v=NyfYxpXiw_0&t=445s) · [16:24 设备审批与接管](https://www.youtube.com/watch?v=NyfYxpXiw_0&t=984s) |
+| Debbie O’Brien 的自媒体流程 | 从电脑侧栏打开观看画面，明确接管后才能输入。另一段流程把本机视频交给云端的剪辑、封面和发布 Bot，最后由作者核对交付。[3:29 观看和接管](https://www.youtube.com/watch?v=nn56fcN7-PU&t=209s) · [视频交付演示](https://www.youtube.com/watch?v=1g6boZousFI) · [作者图文记录](https://debbie.codes/blog/grok-bot-uploads-my-youtube-videos) |
+| Matt Palmer 与产品团队的案例 | 连接应用、设触发器、审查提议，再交给专职 Bot。产品团队用设计、工程验证和日常工作解释何时需要专职 Bot，以及如何用人工核对逐步放开权限。[8:49 触发器](https://www.youtube.com/watch?v=jwogmXNt7o4&t=529s) · [10:26 审批](https://www.youtube.com/watch?v=jwogmXNt7o4&t=626s) · [12:43 产品团队案例](https://www.youtube.com/watch?v=xZ5TEaleUdg&t=763s) |
+
+Grok Bot 的设置把用户桌面和 Bot 云电脑分开。云电脑持久保存文件、浏览器登录和命令环境。同一用户的 Bot 可用独立画面并行工作，共享文件和登录。用户桌面按设备启用命令并单独审批。关闭客户端后能否继续工作，取决于执行机器和所需能力是否仍在线。[电脑与应用](https://docs.x.ai/grok-bot/computer-and-apps) · [电脑设置](https://docs.x.ai/grok-bot/settings-and-notifications#computer) · [本机权限](https://docs.x.ai/grok-bot/approvals-security-and-privacy#control-access-to-your-local-computer)
+
+| 优先级与领域 | PandaMate 现状及下一步 |
+| --- | --- |
+| P0 · 找到执行位置 | 浏览器、云端 Worker 和目标切换已有服务端实现。旧版用「远程」统称 Worker，还会隐藏未配置的云入口。把当前目标和可选位置提前显示，明确本地浏览器运行在服务所在电脑，移动端给出直接查看入口。 |
+| P1 · 当前电脑与云电脑的首次接入 | 当前桌面客户端需要预先启动独立 Worker，macOS 原生应用还需系统权限。托管云需部署者绑定，拥有者可唤醒已绑定的电脑。每个空间同时使用一个活动目标。先补设备配对、权限预检、断开与撤权，以及云端首次配置、在线状态、恢复入口。再让任务显式选择已经授权的目标，使本机与云端可以并存。 |
+| P1 · 工作回执与接管 | PandaMate 已有审批卡、独立画面池、截图更新和私密接管。下一步在聊天交付里标出执行目标、当前步骤、待确认原因、产物链接，接管结束后显示是否已归还。需要观察连续动作的场景再支持持续画面。 |
+| P1 · 日常工作连接 | 已有自定义 MCP、定时任务、Webhook、团队模板和审核后的技能。优先做好一个有完整结果和权限边界的邮件、日历与文档闭环，再扩展连接器。用群聊交接和运行回执串起技能与例行任务。[工作流与事件](https://docs.x.ai/grok-bot/skills-routines-and-automations) |
+| P2 · 凭据与常用授权 | PandaMate 已对具体操作检查发起者、工具、目标及接管权限。需要补独立秘密输入、凭据引用、有限范围的长期规则与撤销记录，并验证模型、其他成员、日志和回放无法读到秘密。[审批与隐私](https://docs.x.ai/grok-bot/approvals-security-and-privacy) |
+| P2 · 交付与移动端 | 保留可交互网站、源码 ZIP、版本及分享。参考 Pages 的同一交付物侧边继续修改、版本提示和分享管理。移动端优先做审批和交付通知；联系人、日历等系统能力单独设计权限。[Pages](https://docs.x.ai/grok-bot/files-and-results) · [移动端](https://docs.x.ai/grok-bot/mobile) |
+
+发布提交的真实电脑测试覆盖 Pi 发起、用户审批、独立 Chromium 打开页面并返回内容，使用合成页面。本机及 GitHub 托管 Linux 上的测试都有通过记录。当前 Mac 整机截图仍依赖系统权限，公开仓的测试也没有证明每个部署都配置了云实例。[远端验收](https://github.com/zhiruiai/PandaMate/actions/runs/42671066699)
+
 ## 界面和交互
 
 | 参考体验 | PandaMate 实现与核对 |

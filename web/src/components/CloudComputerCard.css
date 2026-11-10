@@ -102,18 +102,6 @@
   white-space: normal;
   text-align: center;
 }
-.computer-settings .cloud-computer-change {
-  width: 100%;
-  min-height: 44px;
-  margin-bottom: 12px;
-  white-space: normal;
-}
-.computer-settings #computer-manual-connection > p {
-  margin-bottom: 16px;
-  font-size: 12px;
-  line-height: 1.7;
-  color: light-dark(#74747b, var(--text-secondary));
-}
 @media (max-width: 760px) {
   .cloud-computer-card {
     padding: 13px;

@@ -178,9 +178,6 @@
   .chat-header-actions .icon-button {
     width: 27px;
   }
-  .chat-header-actions > .icon-button:first-of-type {
-    display: none;
-  }
   .messages-scroll {
     padding: 0 13px;
   }
@@ -350,22 +347,6 @@
   }
   .modal-wide {
     max-height: 94dvh;
-  }
-  .computer-dialog-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  .computer-settings {
-    padding: 15px;
-    border: 1px solid light-dark(#eee8f4, var(--border));
-    border-radius: 10px;
-  }
-  .computer-capabilities {
-    display: none;
-  }
-  .computer-settings .segmented {
-    max-width: 260px;
   }
   .field-pair {
     gap: 9px;

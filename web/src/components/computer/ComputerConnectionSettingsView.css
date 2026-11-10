@@ -1,0 +1,135 @@
+.computer-location-chooser {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 16px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+.computer-location-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 12px;
+  flex-wrap: wrap;
+}
+.computer-location-heading h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.computer-location-heading p,
+.computer-location-detail p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.computer-location-heading p {
+  margin-top: 4px;
+}
+.computer-location-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.computer-location-option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  min-width: 0;
+  min-height: 45px;
+  padding: 8px 10px;
+  text-align: start;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+.computer-location-option[aria-pressed='true'] {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+  font-weight: 600;
+}
+.computer-location-option small {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.computer-location-option svg {
+  flex-shrink: 0;
+}
+.computer-location-detail {
+  display: grid;
+  gap: 8px;
+}
+.computer-location-detail p a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+.computer-location-detail > button,
+.computer-location-remote > button {
+  justify-self: start;
+}
+.computer-location-detail .cloud-computer-card {
+  margin: 0;
+}
+.computer-location-detail .computer-connection-error {
+  color: var(--danger);
+}
+.computer-location-status {
+  overflow-wrap: anywhere;
+}
+.computer-location-remote {
+  display: grid;
+  gap: 8px;
+}
+.computer-location-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+.computer-location-form label {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  font-size: 12px;
+}
+.computer-location-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+@media (max-width: 760px) {
+  .computer-location-option {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    min-height: 50px;
+    padding: 7px 3px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .computer-location-option small {
+    display: none;
+  }
+  .computer-location-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .computer-location-form input {
+    font-size: 16px;
+  }
+  .computer-location-form button {
+    justify-self: start;
+  }
+}

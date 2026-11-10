@@ -15,7 +15,7 @@ export { serviceText } from './i18n/serviceText';
 export { AppActionCard } from './components/AppActionCard';
 export { AppOAuthPanel } from './components/AppOAuthPanel';
 export { CloudComputerCard } from './components/CloudComputerCard';
-export { ComputerStatusView } from './components/computer/ComputerStatusView';
+export { ComputerConnectionSettingsView } from './components/computer/ComputerConnectionSettingsView';
 export { ComputerActionEntry } from './components/computer/ComputerActionEntry';
 export { ComputerSurface } from './components/ComputerSurface';
 export { BotScreenPicker } from './components/BotScreenPicker';
@@ -204,20 +204,15 @@ test('computer status, desktop permission and approval errors translate only the
       reason: '平台执行空间不能控制宿主整机桌面。',
     },
   };
-  // Inspect the real status view's own nodes without mounting its network-driven children.
-  const view = f.api.ComputerStatusView({
+  const status = f.render('ComputerConnectionSettingsView', {
     machine,
     computer: machine,
     canManage: false,
-    data: { agents: [] },
-    panel: 'machine',
   });
-  const section = view.props.children[0];
-  const status = renderToStaticMarkup(section);
   assert.match(status, /Cleanup of the previous computer action is unconfirmed/);
   assert.match(status, /保留这台电脑的名称/);
   const local = { ...machine, mode: 'local', connected: true, targetRevision: 'revision' };
-  const shared = f.api.ComputerStatusView({
+  const sharedStatus = f.render('ComputerConnectionSettingsView', {
     machine: local,
     computer: {
       ...local,
@@ -225,10 +220,7 @@ test('computer status, desktop permission and approval errors translate only the
       botScreen: { agentId: 'bot', shared: true, status: 'ready' },
     },
     canManage: false,
-    data: { agents: [] },
-    panel: 'machine',
   });
-  const sharedStatus = renderToStaticMarkup(shared.props.children[0]);
   assert.match(sharedStatus, /Fresh shared browser status/);
   assert.doesNotMatch(sharedStatus, /Cleanup of the previous computer action is unconfirmed/);
   const surface = f.render('ComputerSurface', {

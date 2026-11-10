@@ -166,9 +166,11 @@ export function ChatHeader({
             </span>
             <IconButton
               label={uiText('workspace:text_555a2f61cb96')}
+              className="chat-computer-trigger"
               onClick={() => openComputer()}
             >
               <Monitor size={17} />
+              <span>{uiText('computer:location_entry')}</span>
             </IconButton>
             <IconButton
               label={

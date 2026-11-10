@@ -127,6 +127,24 @@
   align-items: center;
   gap: 3px;
 }
+.chat-header-actions .chat-computer-trigger {
+  width: auto;
+  padding: 0 9px;
+  gap: 5px;
+}
+.chat-computer-trigger span {
+  font-size: 12px;
+  white-space: nowrap;
+}
+@media (max-width: 1080px) {
+  .chat-header-actions .chat-computer-trigger {
+    width: 34px;
+    padding: 0;
+  }
+  .chat-computer-trigger span {
+    display: none;
+  }
+}
 .header-status {
   font-size: 12px;
   color: light-dark(#96969a, var(--text-muted));

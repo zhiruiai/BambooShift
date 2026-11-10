@@ -195,25 +195,6 @@
   color: light-dark(#66586f, var(--text-secondary));
   font-size: 12px;
 }
-.computer-settings h3 {
-  font-size: 13px;
-  color: light-dark(#6d5d78, var(--text-secondary));
-}
-.computer-settings > p {
-  font-size: 12px;
-  color: light-dark(#83758e, var(--text-secondary));
-}
-.computer-settings .dialog-form input {
-  font-size: 12px;
-}
-.computer-capabilities h4 {
-  font-size: 12px;
-  color: light-dark(#796787, var(--text-secondary));
-}
-.computer-capabilities p {
-  font-size: 12px;
-  color: light-dark(#8b7b96, var(--text-secondary));
-}
 .computer-action strong {
   font-size: 12px;
   color: light-dark(#776282, var(--text-secondary));

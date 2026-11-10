@@ -11,8 +11,15 @@ class CloudComputerCard extends StatelessWidget {
     listenable: controller,
     builder: (context, _) {
       final c = controller, state = c.status;
-      if (!c.active || state?.configured == false) {
-        return const SizedBox.shrink();
+      if (!c.active) return const SizedBox.shrink();
+      if (state?.configured == false) {
+        return Card(
+          child: ListTile(
+            leading: const Icon(Icons.cloud_outlined),
+            title: Text(context.tr('mobileCloudTitle')),
+            subtitle: Text(context.tr('mobileCloudSetupHelp')),
+          ),
+        );
       }
       return Card(
         child: Padding(
@@ -39,7 +46,8 @@ class CloudComputerCard extends StatelessWidget {
                     '${context.tr('mobileCloudExpires')} ${state.expiresAt!.toLocal()}',
                   ),
               ],
-              Text(context.tr('mobileCloudDuration')),
+              if (state?.configured == true)
+                Text(context.tr('mobileCloudDuration')),
               if (c.error != null) Notice(c.error!),
               if (c.actionError != null) Notice(c.actionError!),
               if (c.unknown) const Notice('mobileCloudUnknown'),

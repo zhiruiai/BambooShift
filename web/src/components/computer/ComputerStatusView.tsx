@@ -1,40 +1,16 @@
 import { serviceText } from '../../i18n/serviceText';
 import { uiText } from '../../i18n';
-import { Loader2, Monitor, RefreshCw } from 'lucide-react';
-import type { ComputerState } from '../../../../shared/types';
+import { Loader2, Monitor } from 'lucide-react';
 import { BotScreenPicker, botTaskLabel } from '../BotScreenPicker';
-import { CloudComputerCard } from '../CloudComputerCard';
 import { ComputerLifecycle } from '../ComputerLifecycle';
 import { type ComputerDialogModel } from './types';
 
-function locationLabel(machine: ComputerState) {
-  const location = machine.executionLocation ?? (machine.mode === 'local' ? 'server' : 'remote');
-  return uiText(`computer:location_${location}`);
-}
-
 export function ComputerStatusView(model: ComputerDialogModel) {
   const {
-    machine,
     canManage,
-    account,
-    cloudState,
     busy,
     inputBusy,
     connectionPending,
-    connection,
-    scope,
-    connectionError,
-    controlled,
-    otherControlled,
-    cloudPreparing,
-    mounted,
-    setInputBusy,
-    prepareCloudStart,
-    setCloudState,
-    clearShot,
-    setManualConnectionOpen,
-    setMode,
-    refresh,
     data,
     agentId,
     inventory,
@@ -57,87 +33,8 @@ export function ComputerStatusView(model: ComputerDialogModel) {
     submitLifecycle,
     checkComputer,
   } = model;
-  const connectionStatus =
-    computer.botScreen?.shared &&
-    computer.targetRevision &&
-    computer.targetRevision === machine.targetRevision
-      ? computer.status
-      : machine.status;
   return (
     <>
-      <section
-        className={`computer-connection-state ${machine.connected ? 'is-connected' : ''}`}
-        aria-label={uiText('computer:text_fdc56c3320de')}
-      >
-        <div>
-          <strong>
-            <span className="computer-connection-dot" aria-hidden="true" />
-            {machine.connected
-              ? uiText('computer:text_5be0323e8adc')
-              : machine.mode === 'remote'
-                ? uiText('computer:text_c102faa2f659')
-                : uiText('computer:text_59a47a0b9d18')}
-            {' · '}
-            {machine.name}
-          </strong>
-          <p>{locationLabel(machine)}</p>
-          <p role="status">{serviceText(connectionStatus)}</p>
-          {machine.savedRemote && (
-            <small>
-              {uiText('computer:text_fc055f42e202')}
-              {machine.savedRemote.name}
-            </small>
-          )}
-        </div>
-        {canManage &&
-          (!account || cloudState?.configured === false) &&
-          (!machine.connected || machine.mode === 'local') &&
-          machine.savedRemote && (
-            <button
-              type="button"
-              className="secondary-button"
-              disabled={busy || inputBusy || connectionPending !== null}
-              onClick={() =>
-                void connection(
-                  () => scope.request<ComputerState>('/reconnect', 'POST', undefined, true),
-                  uiText('computer:text_bcb3994eca59'),
-                  'reconnect',
-                )
-              }
-            >
-              {connectionPending === 'reconnect' ? (
-                <Loader2 size={14} className="spin" />
-              ) : (
-                <RefreshCw size={14} />
-              )}
-              {connectionPending === 'reconnect'
-                ? uiText('computer:text_90e28b54e030')
-                : machine.mode === 'local'
-                  ? uiText('computer:switch_saved_remote')
-                  : uiText('computer:text_992353d9b382')}
-            </button>
-          )}
-        {connectionError && (
-          <p className="computer-connection-error" role="alert">
-            {connectionError}
-          </p>
-        )}
-      </section>
-      <CloudComputerCard
-        disabled={busy || inputBusy || connectionPending !== null || controlled || otherControlled}
-        onPendingChange={(pending) => {
-          if (!pending) cloudPreparing.current = false;
-          if (mounted.current) setInputBusy(pending);
-        }}
-        onPrepareStart={prepareCloudStart}
-        onStateChange={setCloudState}
-        onStarted={async (state) => {
-          clearShot();
-          setManualConnectionOpen(false);
-          if (state.worker.connected) setMode('remote');
-          await refresh();
-        }}
-      />
       <BotScreenPicker
         agents={data.agents || []}
         selected={agentId}

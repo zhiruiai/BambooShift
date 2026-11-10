@@ -102,11 +102,7 @@ export function useComputerDialog({
   lifecycleUnknownRef.current = lifecycleUnknown;
   const busy = externalBusy || lifecyclePending;
 
-  const [cloudState, setCloudState] = useState<CloudComputerState | null>(null),
-    [manualConnectionOpen, setManualConnectionOpen] = useState(false);
-  const cloudConfigured = cloudState?.configured === true;
-  // Keep addresses folded while account-scoped cloud configuration is loading.
-  const foldManualConnection = !!account && cloudState?.configured !== false;
+  const [cloudState, setCloudState] = useState<CloudComputerState | null>(null);
   const [panel, setPanelState] = useState<'screen' | 'files'>(initialPanel);
   const panelRef = useRef(panel);
   panelRef.current = panel;
@@ -139,7 +135,6 @@ export function useComputerDialog({
     : uiText('computer:text_1245e0dc8cd5');
   const [actions, setActions] = useState<ComputerAction[]>([]),
     [url, setUrl] = useState('https://example.com'),
-    [mode, setMode] = useState<'local' | 'remote'>(data.computer.mode),
     [remote, setRemote] = useState(data.computer.savedRemote?.url || ''),
     [token, setToken] = useState('');
   const [connectionPending, setConnectionPending] = useState<
@@ -446,8 +441,6 @@ export function useComputerDialog({
     otherControlled,
     prepareCloudStart,
     setCloudState,
-    setManualConnectionOpen,
-    setMode,
     data,
     inventory,
     panel,
@@ -486,10 +479,6 @@ export function useComputerDialog({
     visibleActions,
     identity,
     decideAction,
-    foldManualConnection,
-    manualConnectionOpen,
-    mode,
-    cloudConfigured,
     remote,
     token,
     remoteEdited,

@@ -188,6 +188,13 @@ test(
       t.diagnostic('Applied avatar theme persisted after reload.');
 
       await page.goto(`${origin}${pagePath}?surface=chat`, { waitUntil: 'domcontentloaded' });
+      const computerEntry = page.getByRole('button', { name: 'View computer', exact: true });
+      await computerEntry.waitFor();
+      assert.equal(await computerEntry.getByText('Computer', { exact: true }).isVisible(), true);
+      await page.setViewportSize({ width: 360, height: 680 });
+      assert.equal(await computerEntry.isVisible(), true);
+      assert.equal(await computerEntry.getByText('Computer', { exact: true }).isVisible(), false);
+      await page.setViewportSize({ width: 1100, height: 850 });
       const botCard = page.locator('#message-bot-draft');
       const themeCard = page.locator('#message-theme-draft');
       await botCard.getByText('Bot profile draft').waitFor();

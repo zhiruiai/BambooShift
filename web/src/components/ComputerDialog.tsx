@@ -27,11 +27,9 @@ export function ComputerDialog(props: ComputerDialogProps) {
       wide
       className="computer-dialog"
     >
+      <ComputerConnectionSettingsView {...model} />
       <ComputerStatusView {...model} />
-      <div className="computer-dialog-grid">
-        <ComputerScreenView {...model} />
-        <ComputerConnectionSettingsView {...model} />
-      </div>
+      <ComputerScreenView {...model} />
       <TeachingPanel
         agent={agent}
         conversationId={props.conversationId}
