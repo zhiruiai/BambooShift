@@ -129,7 +129,7 @@ test('native shared-file bridge consumes real input, verifies the account and at
     const result = await f.invoke();
     assert.deepEqual(result, { status: 'saved' });
     assert.deepEqual(readFileSync(f.destination), f.file);
-    assert.equal(statSync(f.destination).mode & 0o777, 0o600);
+    if (process.platform !== 'win32') assert.equal(statSync(f.destination).mode & 0o777, 0o600);
     assert.equal(f.fake.calls.saves.length, 1);
     assert.equal(f.fake.calls.saves[0][1].defaultPath, 'safe.txt');
     assert.ok(f.fake.calls.saves[0][1].properties.includes('showOverwriteConfirmation'));

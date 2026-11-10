@@ -23,7 +23,8 @@ test('device language follows system on first use, persists separately, validate
     assert.equal(language.t('heading'), 'Connect to your workspace');
     language.set('zh-CN');
     assert.equal(createClientLanguage(directory, 'en').snapshot().language, 'zh-CN');
-    assert.equal(statSync(join(directory, 'client-language.json')).mode & 0o777, 0o600);
+    if (process.platform !== 'win32')
+      assert.equal(statSync(join(directory, 'client-language.json')).mode & 0o777, 0o600);
     assert.deepEqual(JSON.parse(readFileSync(join(directory, 'client-language.json'), 'utf8')), {
       version: 1,
       language: 'zh-CN',
@@ -41,10 +42,23 @@ test('device language follows system on first use, persists separately, validate
       'zh-CN',
       'failed writes preserve this session choice',
     );
-    rmSync(join(directory, 'client-language.json'));
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('language preferences do not read or modify a linked file', (t) => {
+  const directory = tempDir();
+  try {
     const outside = join(directory, 'unrelated.json');
     writeFileSync(outside, '{"version":1,"language":"zh-CN"}');
-    symlinkSync(outside, join(directory, 'client-language.json'));
+    try {
+      symlinkSync(outside, join(directory, 'client-language.json'), 'file');
+    } catch (error) {
+      if (process.platform !== 'win32' || !['EPERM', 'EACCES'].includes(error.code)) throw error;
+      t.skip('The Windows account cannot create file symlinks');
+      return;
+    }
     const safe = createClientLanguage(directory, 'en');
     assert.equal(safe.snapshot().language, 'en', 'linked preference is not read');
     safe.set('en');

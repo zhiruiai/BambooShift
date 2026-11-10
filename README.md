@@ -18,9 +18,10 @@
 | --- | --- |
 | 先看能做什么 | 上面是录制好的演示。还可以看[会议行动组](docs/demo/meeting-actions.gif)和[课后探险队](docs/demo/pizza-fractions.gif)。 |
 | 用网页开始自托管 | 在 Linux x64 下载服务包并按归档内的 README 安装。也可以按下文从源码启动。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest) |
+| 使用 Windows x64 客户端 | 在发布页选择带 `client-windows-x64.zip` 的版本，完整解压后运行 `PandaMate.exe`，连接已运行的 PandaMate 服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
 | 使用 Apple Silicon Mac 客户端 | 下载桌面包，打开后连接已运行的 PandaMate 服务。桌面包需要单独运行的服务，采用临时签名，未经过 Apple 公证。 [桌面连接说明](docs/desktop-client.md) |
 
-当前发布提供 Linux x64 服务包、Apple Silicon Mac 客户端和各端源码。Flutter 移动端以源码提供。
+服务预编译包面向 Linux x64。Flutter 移动端以源码提供。各版本实际提供的平台以发布页附件为准。
 
 ### 从源码启动
 

@@ -30,6 +30,7 @@ jobs:
       tag: ${{ steps.plan.outputs.tag }}
       source: ${{ steps.plan.outputs.source }}
       day: ${{ steps.plan.outputs.day }}
+      builds: ${{ steps.plan.outputs.builds }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -50,11 +51,20 @@ jobs:
           git for-each-ref --format='%(refname:short)%09%(objecttype)%09%(subject)' refs/tags > "$RUNNER_TEMP/tags"
           node scripts/publishing/plan-release.mjs "$started" "$GITHUB_SHA" "$RUNNER_TEMP/releases.json" "$RUNNER_TEMP/tags"
           source_sha="$(sed -n 's/^source=//p' "$GITHUB_OUTPUT")"
+          builds='[{"asset":"linux-x64","runner":"ubuntu-24.04"},{"asset":"macos-arm64","runner":"macos-15"}]'
           if [[ -n "$source_sha" ]]; then
             git merge-base --is-ancestor "$source_sha" "$GITHUB_SHA"
+            # Older interrupted drafts resume with the formats their pinned source supports.
+            if git cat-file -e "$source_sha:scripts/publishing/build-windows-client.mjs"; then
+              builds="$(jq -c '. + [{asset:"windows-x64",runner:"windows-2025"}]' <<< "$builds")"
+            elif [[ "$source_sha" == "$GITHUB_SHA" ]]; then
+              echo "The Windows build gate is missing from the release source." >&2
+              exit 1
+            fi
           else
             echo "A release was already published for this Shanghai calendar day." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
+          printf 'builds=%s\n' "$builds" >> "$GITHUB_OUTPUT"
 
   build:
     needs: plan
@@ -65,14 +75,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - asset: linux-x64
-            runner: ubuntu-24.04
-          - asset: macos-arm64
-            runner: macos-15
+        include: ${{ fromJSON(needs.plan.outputs.builds) }}
     env:
       RELEASE_VERSION: ${{ needs.plan.outputs.version }}
       RELEASE_TAG: ${{ needs.plan.outputs.tag }}
+      GIT_CONFIG_COUNT: '1'
+      GIT_CONFIG_KEY_0: core.autocrlf
+      GIT_CONFIG_VALUE_0: 'false'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -86,10 +95,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir "$RUNNER_TEMP/pandamate-assets"
           node scripts/publishing/stamp-version.mjs "$RELEASE_VERSION"
           git add -u
-          git write-tree > "$RUNNER_TEMP/pandamate-assets/source-tree.txt"
+          node -e '
+            const { execFileSync } = require("node:child_process");
+            const { mkdirSync, writeFileSync } = require("node:fs");
+            const { join } = require("node:path");
+            const output = join(process.env.RUNNER_TEMP, "pandamate-assets");
+            mkdirSync(output);
+            const tree = execFileSync("git", ["write-tree"], { encoding: "utf8" }).trim();
+            writeFileSync(join(output, "source-tree.txt"), tree + "\n");
+          '
           npm ci
       - name: Build and check the source and Linux server packages
         if: matrix.asset == 'linux-x64'
@@ -130,6 +146,9 @@ jobs:
           plist="$RUNNER_TEMP/$client_name/PandaMate.app/Contents/Info.plist"
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$RELEASE_VERSION"
           ditto -c -k --norsrc --noextattr --noqtn --keepParent "$RUNNER_TEMP/$client_name" "$RUNNER_TEMP/pandamate-assets/$client_name.zip"
+      - name: Build, launch and archive the Windows x64 client
+        if: matrix.asset == 'windows-x64'
+        run: node scripts/publishing/build-windows-client.mjs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: pandamate-${{ matrix.asset }}

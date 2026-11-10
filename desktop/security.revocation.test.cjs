@@ -136,7 +136,7 @@ test('a moved temporary-file parent cannot retain cancelled plaintext or trick c
         canceled: false,
         filePath: join(parent, 'saved.txt'),
       });
-      let temporaryName, originalInode;
+      let temporaryName, originalInode, moveBlocked;
       f.setHeadResponse(() => {
         const temporaries = readdirSync(parent).filter((name) =>
           name.startsWith('.openbot-download-'),
@@ -149,7 +149,16 @@ test('a moved temporary-file parent cannot retain cancelled plaintext or trick c
         temporaryName = temporaries[0];
         assert.deepEqual(readFileSync(join(parent, temporaryName)), f.file);
         originalInode = statSync(join(parent, temporaryName), { bigint: true }).ino;
-        renameSync(parent, moved);
+        try {
+          renameSync(parent, moved);
+        } catch (error) {
+          if (process.platform !== 'win32' || !['EACCES', 'EBUSY', 'EPERM'].includes(error.code))
+            throw error;
+          moveBlocked = true;
+          if (scenario === 'cancel')
+            f.contents.emit('did-navigate-in-page', {}, 'https://files.example.com/account', true);
+          return new Response(null, { status: 403 });
+        }
         mkdirSync(parent);
         writeFileSync(join(parent, temporaryName), 'REPLACEMENT_CANARY_MUST_SURVIVE');
         if (scenario === 'head403') return new Response(null, { status: 403 });
@@ -161,10 +170,19 @@ test('a moved temporary-file parent cannot retain cancelled plaintext or trick c
         f.arm();
         if (scenario === 'cancel') assert.deepEqual(await f.invoke(), { status: 'cancelled' });
         else
-          await assert.rejects(
-            f.invoke(),
-            scenario === 'head403' ? /共享资料或账户权限/ : /保存位置发生变化/,
+          await assert.rejects(f.invoke(), (error) =>
+            (scenario === 'head403' || moveBlocked
+              ? /共享资料或账户权限/
+              : /保存位置发生变化/
+            ).test(error.message),
           );
+        if (moveBlocked) {
+          // NTFS may block the rename while the original file handle is open.
+          assert.equal(existsSync(join(parent, temporaryName)), false);
+          assert.equal(existsSync(join(parent, 'saved.txt')), false);
+          assert.equal(existsSync(moved), false);
+          return;
+        }
         assert.equal(statSync(join(moved, temporaryName), { bigint: true }).ino, originalInode);
         assert.equal(
           readFileSync(join(moved, temporaryName)).length,

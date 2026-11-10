@@ -18,9 +18,10 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 | --- | --- |
 | See what PandaMate does | Watch the recorded demo above. You can also preview a [meeting action list](docs/demo/meeting-actions.en.gif) or a [pizza fraction lab](docs/demo/pizza-fractions.en.gif). |
 | Self-host and use the web app | On Linux x64, download the server archive and follow its bundled README. You can also run from source below. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest) |
+| Use the Windows x64 client | Choose a release with a `client-windows-x64.zip` asset. Extract the entire archive, run `PandaMate.exe`, and connect it to a running PandaMate server. [Windows setup](docs/desktop-client.md#windows-x64) |
 | Use the Apple Silicon Mac client | Download the desktop archive and connect it to a running PandaMate server. The client requires a separate server and uses ad-hoc signing without Apple notarization. [Desktop connection guide](docs/desktop-client.md) |
 
-Current releases include a Linux x64 server archive, an Apple Silicon Mac client, and source for all platforms. The Flutter mobile app is available as source.
+Prebuilt server packages target Linux x64. The Flutter mobile app is available as source. See the assets on each release for its platform coverage.
 
 ### Run from source
 

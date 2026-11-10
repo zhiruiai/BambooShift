@@ -41,9 +41,11 @@ npm run client:package
 # 只显示计划，不创建文件、下载或启动应用
 npm run client:package -- --platform darwin --arch arm64 --dry-run
 
-# 其它目标示例；尚未在这些目标系统上运行验证
-npm run client:package -- --platform darwin --arch x64
+# 在 Windows x64 运行器上构建与验证
 npm run client:package -- --platform win32 --arch x64
+
+# 其它目标示例
+npm run client:package -- --platform darwin --arch x64
 npm run client:package -- --platform linux --arch arm64
 ```
 
@@ -74,9 +76,13 @@ macOS 构建完成后，脚本使用官方 `@electron/osx-sign` 从内部组件�
 
 ## 平台和发布限制
 
-macOS 图标生成依赖 `iconutil`，因此 macOS 目标需要在 macOS 主机上构建。Windows/Linux 参数表示可准备对应 Electron 产物；跨平台构建仍受 Electron/Packager 的平台工具要求限制，建议在对应系统 CI 上分别构建和验证。当前不能把支持参数当作跨平台运行已验证。
+macOS 图标生成依赖 `iconutil`，因此 macOS 目标需要在 macOS 主机上构建。发布工作流在各平台对应的运行器上构建桌面包。Linux 桌面和 Intel Mac 目前仍由用户自行构建。
 
-例如从 macOS 构建 Windows 时，特定版本或元数据处理可能需要 rcedit/Wine 等额外工具。本轮不会安装 Wine，也不以这些参数声称已经交付 Windows/Linux 客户端；建议直接在 Windows/Linux 主机或对应 CI 完成打包、运行及安装验收。本轮实际产物验收目标仅为本机 macOS arm64。
+### Windows x64
+
+从 [GitHub Releases](https://github.com/zhiruiai/PandaMate/releases) 选择含 `client-windows-x64.zip` 附件的版本，完整解压到一个目录，再运行 `PandaMate.exe`。首次打开时输入已有服务的产品地址。Windows 便携包未做发行者签名，可按发布页的 SHA-256 校验归档。它需要单独运行的服务。服务部署或 WSL2 本地试用方式见 [Windows 连接说明](../server/api/deployment/README.md#connect-from-windows)。
+
+Windows 发布门禁覆盖 x64 可执行文件、打包资源、实际启动、语言切换和显式连接测试工作空间。真实模型、语音和远程接管依赖所连接的服务及权限。Windows 原生桌面控制仍待实现。
 
 产物是应用目录，并非 DMG、MSI、AppImage 或应用商店安装包。本地 ad-hoc 签名只供自建测试，不能证明发行者身份，也不等同于 Developer ID 签名或公证。脚本没有配置发行代码签名、公证、自动更新或安装系统服务；不同机器上的 Gatekeeper/系统发行检查尚需正式发布流程处理。脚本不会移除系统隔离属性、绕过安全检查或修改屏幕录制/辅助功能权限。
 
@@ -92,7 +98,7 @@ macOS 图标生成依赖 `iconutil`，因此 macOS 目标需要在 macOS 主机�
 
 macOS arm64 已实际打包、严格校验签名，并通过原生窗口验证连接页、错误提示、重试、冷启动重连、消息复制/粘贴、系统下载保存框和附件选择上传。系统保存框通过原生编辑菜单完成全选和粘贴；自动化工具直接发送组合键的结果不稳定，未将其作为该面板快捷键通过的依据。独立的本机模拟模型完成一分钟真实 Pi 任务，客户端退出后后台仍完成任务，重新打开可见完整结果。测试空间随后关闭并清理，客户端回到正式本机空间。详细证据见 [验收记录](verification.md)。
 
-新版平台的空间文件下载路径已纳入桌面策略检查。账户、团队与平台运营页面在原生窗口中的实际操作仍待验收，上述早期窗口验证不覆盖这些新增页面。Windows、Linux、macOS x64、桌面客户端中的公网账户登录与实际远程部署尚未实机验证；此前服务端的 HTTPS 配对测试不代替这些验收。
+新版平台的空间文件下载路径已纳入桌面策略检查。账户、团队与平台运营页面在原生窗口中的实际操作仍待验收，上述早期窗口验证不覆盖这些新增页面。Linux、macOS x64、Windows 物理机上的系统集成、桌面客户端中的公网账户登录与实际远程部署尚未实机验证。
 
 2026-11-05 重新生成 macOS arm64 客户端，严格签名校验通过。包内 8 个客户端文件均与白名单对应，7 个代码/UI 文件与当前源文件逐字节相同，`package.json` 仅移除了发布标记。已直接验证包内空间下载规则，未启动窗口。暂存发布与失败恢复的 4 个临时目录场景通过。首次图标转换因受限执行环境失败，同一输入在正常构建权限下成功；没有修改系统权限或图标内容。证据见 [platform-client-package.json](evidence/platform-client-package.json)。
 

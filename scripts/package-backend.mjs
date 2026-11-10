@@ -81,6 +81,10 @@ export async function packageBackend({
       npmPackages: await readWebLicenseInputs(sourceRoot),
     }),
 } = {}) {
+  if (process.platform === 'win32')
+    throw Error(
+      'Build the service package in Linux or macOS. On Windows, use a Linux environment such as WSL2.',
+    );
   output = resolve(output);
   if (
     await lstat(output).then(
@@ -106,7 +110,7 @@ export async function packageBackend({
       const source = binaryPath(name, release);
       if (!(await lstat(source)).isFile())
         throw Error('A Rust executable is missing or is not a regular file.');
-      const target = join(stage, `${name}${process.platform === 'win32' ? '.exe' : ''}`);
+      const target = join(stage, name);
       await copyFile(source, target);
       await chmod(target, 0o755);
     }

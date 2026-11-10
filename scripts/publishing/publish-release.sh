@@ -8,19 +8,32 @@ test "$(git rev-parse HEAD)" = "$RELEASE_SOURCE"
 builds="$RUNNER_TEMP/pandamate-builds"
 source_name="PandaMate-$RELEASE_TAG-source.tar.gz"
 server_name="PandaMate-$RELEASE_TAG-server-linux-x64.tar.gz"
-client_name="PandaMate-$RELEASE_TAG-client-macos-arm64.zip"
+mac_name="PandaMate-$RELEASE_TAG-client-macos-arm64.zip"
+windows_name="PandaMate-$RELEASE_TAG-client-windows-x64.zip"
 publish_dir="$(mktemp -d "$RUNNER_TEMP/pandamate-publish.XXXXXX")"
+files=("$source_name" "$server_name" "$mac_name")
+platforms=(linux-x64 macos-arm64)
+windows_notes_en=""
+windows_notes_zh=""
 for file in "$source_name" "$server_name"; do
   test -s "$builds/pandamate-linux-x64/$file"
   cp "$builds/pandamate-linux-x64/$file" "$publish_dir/"
 done
-test -s "$builds/pandamate-macos-arm64/$client_name"
-cp "$builds/pandamate-macos-arm64/$client_name" "$publish_dir/"
+test -s "$builds/pandamate-macos-arm64/$mac_name"
+cp "$builds/pandamate-macos-arm64/$mac_name" "$publish_dir/"
+if [[ -f scripts/publishing/build-windows-client.mjs ]]; then
+  test -s "$builds/pandamate-windows-x64/$windows_name"
+  cp "$builds/pandamate-windows-x64/$windows_name" "$publish_dir/"
+  files+=("$windows_name")
+  platforms+=(windows-x64)
+  windows_notes_en='- **Windows x64 client** is an unsigned portable ZIP. Extract the entire folder, run PandaMate.exe, and enter the address of a running PandaMate server.'
+  windows_notes_zh=' Windows x64 客户端为未签名的便携 ZIP，完整解压后运行 PandaMate.exe，再连接已运行的 PandaMate 服务。'
+fi
 
 node scripts/publishing/stamp-version.mjs "$RELEASE_VERSION"
 git add -u
 tree="$(git write-tree)"
-for platform in linux-x64 macos-arm64; do
+for platform in "${platforms[@]}"; do
   test "$(cat "$builds/pandamate-$platform/source-tree.txt")" = "$tree"
 done
 
@@ -43,7 +56,8 @@ else
   git push origin "$tag_ref:$tag_ref"
 fi
 
-(cd "$publish_dir" && sha256sum "$source_name" "$server_name" "$client_name" > SHA256SUMS.txt)
+(cd "$publish_dir" && sha256sum "${files[@]}" > SHA256SUMS.txt)
+files+=(SHA256SUMS.txt)
 
 releases="$publish_dir/releases.json"
 title="PandaMate $RELEASE_TAG"
@@ -62,9 +76,10 @@ PandaMate $RELEASE_TAG · $RELEASE_DAY
 - **Source** includes the web, server, desktop, and Flutter source with the release version.
 - **Linux x64 server** includes the product web app, operations console, and worker bundles. Read the README in the archive for setup.
 - **macOS Apple Silicon client** connects to a separate PandaMate server. The app uses a local ad-hoc signature and has no Apple notarization.
-- **SHA256SUMS.txt** lists the checksums for the three archives.
+$windows_notes_en
+- **SHA256SUMS.txt** lists the checksums for the archives.
 
-源码包包含各端源码。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。
+源码包包含各端源码。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
 NOTES
   release="$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
     -f "tag_name=$RELEASE_TAG" -f "name=$title" -F "body=@$notes" -F draft=true -F prerelease=false)"
@@ -78,7 +93,6 @@ jq -e --arg tag "$RELEASE_TAG" --arg title "$title" --arg marker "$marker" \
   <<< "$release" > /dev/null
 id="$(jq -er '.id | numbers' <<< "$release")"
 draft="$(jq -r '.draft' <<< "$release")"
-files=("$source_name" "$server_name" "$client_name" SHA256SUMS.txt)
 asset_list="$publish_dir/remote-assets.json"
 
 refresh_assets() {

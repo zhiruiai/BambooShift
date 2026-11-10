@@ -1,6 +1,7 @@
 'use strict';
 const {
   openSync,
+  lstatSync,
   fstatSync,
   readFileSync,
   closeSync,
@@ -18,10 +19,13 @@ function createClientLanguage(dataDir, systemLanguage = 'zh-CN') {
   let language = catalog.resolveLocale(systemLanguage);
   let persisted = true;
   try {
-    const fd = openSync(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+    const entry = lstatSync(file, { bigint: true });
+    if (!entry.isFile() || entry.size > 1024n) throw new Error('Invalid language preference');
+    const fd = openSync(file, constants.O_RDONLY | (constants.O_NOFOLLOW || 0));
     try {
-      const info = fstatSync(fd);
-      if (!info.isFile() || info.size > 1024) throw new Error('Invalid language preference');
+      const info = fstatSync(fd, { bigint: true });
+      if (!info.isFile() || info.size > 1024n || info.dev !== entry.dev || info.ino !== entry.ino)
+        throw new Error('Invalid language preference');
       const value = JSON.parse(readFileSync(fd, 'utf8'));
       if (value.version === 1 && catalog.locales.includes(value.language))
         language = value.language;

@@ -1,4 +1,4 @@
-# OpenBot service package
+# PandaMate service package
 
 This package contains the Rust business server, its isolated image worker, two separately built web applications, and four JavaScript execution bundles. It contains no previous Node business server, source configuration, database, account, setup code, or model credential. The package manifest records the platform, build profile and SHA-256 digest of each shipped file. A debug package is suitable for local acceptance; build with `--release` for an optimized deployment on the same OS and architecture.
 
@@ -24,6 +24,12 @@ chmod 600 /ABSOLUTE/PATH/TO/server.private.json
 The product listener hosts product APIs and `runtime/dist`. The optional `operations` configuration supplies a separate loopback `bind`, exact `publicOrigin` and development `webOrigin`; that listener hosts only platform APIs and `runtime/operations-dist`. Configure separate HTTPS virtual hosts and proxy each to its own listener. Do not expose the operations listener through the public product proxy. Both listeners share one Rust process, identity store, authorization implementation and scheduler. Start one server for a data directory.
 
 The server prints a structured `openbot:ready` event after binding both configured listeners. `address` identifies the product listener; `operationsAddress` identifies the operations listener when enabled. Each `/api/health` reports the Rust service; it does not claim that external models or computer connections are ready.
+
+## Connect from Windows
+
+The Windows x64 desktop client and Windows browsers connect to the product URL of a PandaMate service running on Linux. For a remote service, enter its configured product HTTPS URL in the desktop client.
+
+For local evaluation on an x64 Windows PC, use the Linux x64 service archive in an Ubuntu 24.04 WSL2 distribution. Keep the package, private configuration and data inside the Linux filesystem, and run the installation commands above from the Linux shell with Node installed in that distribution. When WSL localhost forwarding is enabled, use the forwarded product URL from Windows. [WSL file storage](https://learn.microsoft.com/en-us/windows/wsl/filesystems) · [WSL networking](https://learn.microsoft.com/en-us/windows/wsl/networking)
 
 ## Operator access and lifecycle
 

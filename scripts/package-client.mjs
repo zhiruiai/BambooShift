@@ -19,6 +19,7 @@ import { writeMacLocalizations } from './client-localizations.mjs';
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 const platforms = new Set(['darwin', 'win32', 'linux']);
 const architectures = new Set(['arm64', 'x64']);
+const clientName = (platform) => (platform === 'win32' ? 'PandaMate' : 'OpenBot');
 const licenseFiles = ['LICENSE', 'NOTICE', 'THIRD_PARTY.md'];
 const entryFiles = [
   'package.json',
@@ -132,7 +133,7 @@ export async function collectClientFiles(source) {
     if (manifest[field] && Object.keys(manifest[field]).length)
       throw new Error('薄客户端不能包含服务端 npm 依赖，请先明确客户端依赖的打包方案。');
   }
-  return { files: selected.sort(), manifest };
+  return { files: selected.map((file) => file.replaceAll('\\', '/')).sort(), manifest };
 }
 
 export async function ensureClientOutputDirectory() {
@@ -305,7 +306,9 @@ export async function packageClient(options) {
   if (typeof packager !== 'function')
     throw new Error('需要官方 @electron/packager 20+。请先安装项目锁定的依赖。');
   const output = await ensureClientOutputDirectory();
-  const destination = join(output, `OpenBot-${target.platform}-${target.arch}`);
+  const name = clientName(target.platform);
+  const bundle = `${name}-${target.platform}-${target.arch}`;
+  const destination = join(output, bundle);
   try {
     if ((await lstat(destination)).isSymbolicLink())
       throw new Error('目标产物目录不能是符号链接。');
@@ -338,7 +341,7 @@ export async function packageClient(options) {
     const stagedOutput = join(working, 'artifacts');
     const paths = await packager({
       dir: stage,
-      name: 'OpenBot',
+      name,
       appBundleId: 'com.openbot.client',
       appVersion: manifest.version,
       electronVersion: electron.version,
@@ -365,6 +368,7 @@ export async function packageClient(options) {
       derefSymlinks: false,
       overwrite: true,
       ...(icon ? { icon } : {}),
+      ...(target.platform === 'win32' ? { win32metadata: { CompanyName: 'PandaMate' } } : {}),
       appCategoryType: 'public.app-category.productivity',
       darwinDarkModeSupport: true,
       extendInfo: {
@@ -379,10 +383,7 @@ export async function packageClient(options) {
       if (!rel || rel.startsWith('..') || isAbsolute(rel))
         throw new Error('打包器返回了输出目录以外的路径。');
     }
-    if (
-      paths.length !== 1 ||
-      resolve(paths[0]) !== join(stagedOutput, `OpenBot-${target.platform}-${target.arch}`)
-    )
+    if (paths.length !== 1 || resolve(paths[0]) !== join(stagedOutput, bundle))
       throw new Error('打包器未返回预期的单一客户端产物。');
     if (target.platform === 'darwin') {
       for (const path of paths) {
@@ -408,7 +409,7 @@ export async function packageClient(options) {
           platform: target.platform,
           arch: target.arch,
           packagedAt: new Date().toISOString(),
-          sourceFiles: [...files, ...licenseFiles].map((file) => file.replaceAll('\\', '/')),
+          sourceFiles: [...files, ...licenseFiles],
           bundles: [relative(output, destination)],
           localSignature: target.platform === 'darwin' ? 'ad-hoc' : null,
           signedForDistribution: false,
@@ -443,7 +444,7 @@ async function main() {
   const options = parseClientArguments(process.argv.slice(2));
   if (options.help) {
     console.log(
-      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--dry-run]\n默认当前系统/架构，固定输出 release/client/OpenBot-<platform>-<arch>。仅打包desktop客户端，会替换同目标的旧产物。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
+      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--dry-run]\n默认当前系统/架构，输出到 release/client。仅打包桌面客户端，会替换同目标的旧产物。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
     );
     return;
   }
@@ -454,7 +455,7 @@ async function main() {
           platform: options.platform,
           arch: options.arch,
           source: 'desktop/',
-          output: `release/client/OpenBot-${options.platform}-${options.arch}`,
+          output: `release/client/${clientName(options.platform)}-${options.platform}-${options.arch}`,
           includesService: false,
           startsClient: false,
         },

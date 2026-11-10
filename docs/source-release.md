@@ -27,10 +27,11 @@ CI 在推送或拉取请求时构建 Rust 与两个网站，并运行后端、�
 
 版本从 `v0.0.1` 开始，随后递增补丁号。一次构建成功会生成一个版本，同一北京时间日期的重复运行会跳过已发布版本。源码、桌面客户端、Rust 服务和移动源码使用同一个版本号。每日版本写入带标签的源码快照。
 
-每个 Release 提供三份归档和 `SHA256SUMS.txt`。
+[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)。发布页会列出该版本的归档及 `SHA256SUMS.txt`。
 
 - 源码归档包含版本对应的各端源码和导出清单。
 - Linux x64 服务归档包含网页、独立运营控制台和执行进程，并经过实际服务启动和调用检查。
 - macOS Apple Silicon 客户端归档使用临时签名，未经过 Apple 公证。客户端连接单独部署的服务。
+- 支持 Windows 的版本附带 Windows x64 客户端便携 ZIP。归档在 Windows 运行器上构建，启动并验证连接后纳入发布。客户端未签名，连接单独部署的服务。 [Windows 使用说明](desktop-client.md#windows-x64)
 
 构建、隐私检查、产物检查和附件校验通过后，工作流才会发布草稿。Flutter 客户端以源码交付。
