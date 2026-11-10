@@ -2,17 +2,54 @@
 
 简体中文 · [English](README.en.md)
 
-**开源、自托管的 Grok Bot 平替。** 用 Pi 智能体执行框架组建一队 AI 同事，让他们在群聊里分工、联网查资料、操作工作电脑。做出来的网页和文件可以在对话里直接打开。
+**在群聊里组建 AI 同事，直接打开他们交付的网页和文件。** PandaMate 是开源、自托管的 Grok Bot 平替。Bot 可以用 Pi 分工、联网查资料、操作工作电脑，并在对话里交付结果。
 
-[功能演示](#功能演示) · [创作者取材](#创作者取材) · [快速开始](#快速开始) · [开发与部署](#开发与部署) · [源码导航](#源码导航) · [鸣谢与开源组件](#鸣谢与开源组件)
-
-## 功能演示
+**[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[启动工作空间](#快速开始)** · **[看更多演示](#功能演示)** · [创作者取材](#创作者取材)
 
 **星港降落｜聊天里交付的小游戏，点开就能玩。** 打开包含五个文件的网页交付物，校准航向、启动反推，在预览里完成软着陆。
 
 ![从 PandaMate 聊天打开网页交付物并操纵飞船着陆](docs/demo/orbital-landing.gif)
 
 以下演示在独立工作区录制，使用示例对话、文件和预设的模型回复。
+
+## 快速开始
+
+| 我想做什么 | 从这里开始 |
+| --- | --- |
+| 先看能做什么 | 上面是录制好的演示。还可以看[会议行动组](docs/demo/meeting-actions.gif)和[课后探险队](docs/demo/pizza-fractions.gif)。 |
+| 用网页开始自托管 | 在 Linux x64 下载服务包并按归档内的 README 安装。也可以按下文从源码启动。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest) |
+| 使用 Apple Silicon Mac 客户端 | 下载桌面包，打开后连接已运行的 PandaMate 服务。桌面包需要单独运行的服务，采用临时签名，未经过 Apple 公证。 [桌面连接说明](docs/desktop-client.md) |
+
+当前发布提供 Linux x64 服务包、Apple Silicon Mac 客户端和各端源码。Flutter 移动端以源码提供。
+
+### 从源码启动
+
+下载或克隆本仓库。安装 Rust 稳定工具链、Node.js 22.19 或更高版本（推荐 24）及 npm，然后在仓库根目录运行。
+
+```sh
+npm ci
+npm run configure:local
+npm run dev
+```
+
+1. 打开终端显示的产品地址，注册个人或团队账号。
+2. 在工作空间打开 **设置 → 模型配置**，填写模型服务地址、模型名称和 API Key。保存后点 **设为默认**。
+3. 打开一个 Bot 单聊，复制下面的示例，完成第一次文件交付。
+4. 如果服务能通过 HTTPS 访问 Exa，在该空间的 Bot 单聊试试「查找 Pi Coding Agent 的官方文档，总结三点并附来源」。展开回复上方的检索记录可以核对来源。 [联网检索配置](server/api/deployment/README.md#execution-boundary)
+
+`configure:local` 用于首次创建本地配置。已有配置时直接运行 `npm run dev`。首次初始化独立运营账户时，运行 `npm run dev -- --init-operator`。 [运营入口与初始化](docs/operations-console.md)
+
+**试试这条消息**
+
+> 把这三条模拟会议笔记整理成 Markdown 行动清单，列出负责人、截止时间和待确认事项。林晓周三提交脚本，李宁周五完成封面，发布时间待全组确认。请在聊天里交付文件。
+
+### 在本机干活
+
+如果客户端和 PandaMate 服务在同一台电脑，选择「设置 → 电脑 → 本机」即可用这台电脑的隔离浏览器。如果服务部署在别处，隔离浏览器也在那边运行。要操作当前 Mac 的原生应用，在「你的电脑」配对独立 Worker，授权屏幕录制和辅助功能，再在会话的电脑面板启用桌面操作。 [配对与权限](docs/computer.md#配对设备)
+
+用上了哪种场景？欢迎点 Star 关注版本更新，或在 [Issues](https://github.com/zhiruiai/PandaMate/issues) 分享第一个任务和遇到的问题。
+
+## 功能演示
 
 ### 学习、创作与办公
 
@@ -24,7 +61,8 @@
 
 在 **Bot 模板库 → 团队模板** 可以找到这三组角色，改分工后再创建。头像也会随状态变化：[待机、工作、等你回答和完成](docs/demo/avatar-states.gif)。
 
-### 三个适合拍短视频的案例
+<details>
+<summary>三个短视频案例 · 星际象群、足球战术、创始人擂台</summary>
 
 **给工作区换一支星际象群。** 描述你想要的太空大象头像，预览生成的配色，保存后回到工作区看角色换装。
 
@@ -39,6 +77,8 @@
 **创始人擂台。** 用 `@everyone` 问四位演绎角色「一台旧电脑，怎么做 AI 助教？」对照各自从产品、效率、安全和工程出发的点子。
 
 ![在虚构创始人群聊用全体点名发题并查看各位角色的答复](docs/demo/founder-debate.gif)
+
+</details>
 
 <details>
 <summary>更多演示 · 用一句话招同事、组队、定时简报、技能、检索与交付</summary>
@@ -60,6 +100,18 @@
 **一间可以点进去的书店。** 打开多文件网站，进入书单，再切到源码看样式文件。 [网站预览 GIF](docs/demo/website-preview.gif)
 
 </details>
+
+## 能做什么
+
+| 场景 | 功能 |
+| --- | --- |
+| AI 同事与多智能体协作 | 支持单聊、群聊、点名 Bot、同事委派和问题卡。根据描述生成 Bot 或团队草稿，核对分工后创建。 |
+| 联网搜索与交付 | 搜索公开网页并回看来源。在对话里预览文档、表格、媒体和多文件网站。 [文件预览](docs/file-previews.md) |
+| 工作流自动化与智能体技能 | 按时区安排例行任务，或用 Webhook 触发任务并在原会话接收结果。将可复用的做法保存为待审核的 Bot 技能。 [Webhook](docs/routine-webhooks.md) |
+| 电脑操作（Computer Use） | 在「设置 → 电脑」配对专用 Worker，或使用已配置的云电脑。服务所在电脑提供隔离的浏览器自动化。独立 macOS Worker 经系统授权后可操作本机桌面。 [电脑设置](docs/computer.md) |
+| MCP 与人在回路 | 通过 Model Context Protocol（MCP）连接应用。需要确认的操作可在原消息审批。私密接管期间，Bot 暂停观察和输入。 |
+
+网页支持 PWA 安装。桌面端和移动端连接同一个工作空间服务。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
 
 ## 创作者取材
 
@@ -88,35 +140,6 @@
 另一个选题是「四位创始人角色，一台旧电脑」。让每位角色各出一招，结尾请观众选择一份方案。 [创始人擂台 GIF](docs/demo/founder-debate.gif)
 
 剪成竖屏时，将画面裁到正在操作的区域。保留交付卡上的按钮、群聊角色名和着陆结果，便于观众在静音时看懂。
-
-## 快速开始
-
-下载或克隆本仓库。安装 Rust 稳定工具链、Node.js 22.19 或更高版本（推荐 24）及 npm，然后在仓库根目录运行。
-
-```sh
-npm ci
-npm run configure:local
-npm run dev
-```
-
-1. 打开终端显示的产品地址，注册个人或团队账号。
-2. 在工作空间打开 **设置 → 模型配置**，填写模型服务地址、模型名称和 API Key。保存后点 **设为默认**。
-3. 打开一个 Bot 单聊，试试「你能负责哪类任务？给我三个例子。」
-4. 如果服务能通过 HTTPS 访问 Exa，在该空间的 Bot 单聊试试「查找 Pi Coding Agent 的官方文档，总结三点并附来源」。展开回复上方的检索记录可以核对来源。 [联网检索配置](server/api/deployment/README.md#execution-boundary)
-
-`configure:local` 用于首次创建本地配置。已有配置时直接运行 `npm run dev`。首次初始化独立运营账户时，运行 `npm run dev -- --init-operator`。 [运营入口与初始化](docs/operations-console.md)
-
-## 能做什么
-
-| 场景 | 功能 |
-| --- | --- |
-| AI 同事与多智能体协作 | 支持单聊、群聊、点名 Bot、同事委派和问题卡。根据描述生成 Bot 或团队草稿，核对分工后创建。 |
-| 联网搜索与交付 | 搜索公开网页并回看来源。在对话里预览文档、表格、媒体和多文件网站。 [文件预览](docs/file-previews.md) |
-| 工作流自动化与智能体技能 | 按时区安排例行任务，或用 Webhook 触发任务并在原会话接收结果。将可复用的做法保存为待审核的 Bot 技能。 [Webhook](docs/routine-webhooks.md) |
-| 电脑操作（Computer Use） | 在「设置 → 电脑」配对专用 Worker，或使用已配置的云电脑。服务所在电脑提供隔离的浏览器自动化。独立 macOS Worker 经系统授权后可操作本机桌面。 [电脑设置](docs/computer.md) |
-| MCP 与人在回路 | 通过 Model Context Protocol（MCP）连接应用。需要确认的操作可在原消息审批。私密接管期间，Bot 暂停观察和输入。 |
-
-网页支持 PWA 安装。桌面端和移动端连接同一个工作空间服务。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
 
 ## 开发与部署
 

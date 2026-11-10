@@ -2,17 +2,54 @@
 
 [简体中文](README.md) · English
 
-**An open-source, self-hosted Grok Bot alternative.** Build a team of AI coworkers powered by the Pi agent harness. Delegate work in group chat, search the web, and let Bots operate a work computer. Open the files and websites they deliver from the conversation.
+**Build a team of AI coworkers in chat and open the websites and files they deliver.** PandaMate is an open-source, self-hosted Grok Bot alternative. Bots use Pi to delegate, search the web, and operate a work computer.
 
-[Demos](#demos) · [Creator kit](#creator-kit) · [Quick start](#quick-start) · [Build and deploy](#build-and-deploy) · [Source map](#source-map) · [Acknowledgments and open-source credits](#acknowledgments-and-open-source-credits)
-
-## Demos
+**[Download the latest release](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[Start a workspace](#quick-start)** · **[Watch more demos](#demos)** · [Creator kit](#creator-kit)
 
 **Starport Landing.** Open a five-file web game from chat, align the ship, brake, and make a soft landing in the preview.
 
 ![Opening a web game from PandaMate chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
 
 These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
+
+## Quick start
+
+| I want to | Start here |
+| --- | --- |
+| See what PandaMate does | Watch the recorded demo above. You can also preview a [meeting action list](docs/demo/meeting-actions.en.gif) or a [pizza fraction lab](docs/demo/pizza-fractions.en.gif). |
+| Self-host and use the web app | On Linux x64, download the server archive and follow its bundled README. You can also run from source below. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest) |
+| Use the Apple Silicon Mac client | Download the desktop archive and connect it to a running PandaMate server. The client requires a separate server and uses ad-hoc signing without Apple notarization. [Desktop connection guide](docs/desktop-client.md) |
+
+Current releases include a Linux x64 server archive, an Apple Silicon Mac client, and source for all platforms. The Flutter mobile app is available as source.
+
+### Run from source
+
+Download or clone this repository. Install the stable Rust toolchain, Node.js 22.19 or later (24 recommended), and npm. Run these commands from the repository root.
+
+```sh
+npm ci
+npm run configure:local
+npm run dev
+```
+
+1. Open the product URL printed in the terminal and register a personal or team account.
+2. Open **Settings → Models** in your workspace. Enter the model provider URL, model name, and API key. Save the profile, then choose **Set as default**.
+3. Open a direct Bot chat and copy the sample below to get your first file deliverable.
+4. If your server can reach Exa over HTTPS, ask a workspace Bot to find the official Pi Coding Agent documentation, summarize three points, and cite its sources. Expand the search record above the reply to review them. [Web research setup](server/api/deployment/README.md#execution-boundary)
+
+Run `configure:local` once to create the local configuration. Use `npm run dev` for later launches. To initialize a separate operations account on the first launch, run `npm run dev -- --init-operator`. [Operations setup](docs/operations-console.md)
+
+**Try this message**
+
+> Turn these fictional meeting notes into a Markdown action list with owners, due dates, and open questions. Riley submits the script on Wednesday. Morgan finishes the cover on Friday. The team still needs to agree on a launch date. Deliver the file in this chat.
+
+### Work on this computer
+
+When the client and PandaMate server run on the same machine, choose **Settings → Computer → Local** to use an isolated browser on that machine. If your server runs elsewhere, the isolated browser runs there. To operate native apps on your current Mac, pair a dedicated Worker under **Your computer**, grant Screen Recording and Accessibility, then enable desktop control in the conversation’s computer panel. [Pairing and permissions](docs/computer.md#配对设备)
+
+Found a use for PandaMate? Star the repo to follow releases, or share your first task and any setup trouble in [Issues](https://github.com/zhiruiai/PandaMate/issues).
+
+## Demos
 
 ### Learn, create, and get work done
 
@@ -24,7 +61,8 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 
 Find all three in **Bot template library → Team templates**. Review the roles and edit them before creating a team. Watch the avatar react when a Bot is [idle, working, waiting for you, or finished](docs/demo/avatar-states.en.gif).
 
-### Three stories for short videos
+<details>
+<summary>Three short video ideas · Space elephants, football tactics, founder roundtable</summary>
 
 **Dress the workspace as a space elephant crew.** Describe an avatar theme, review the proposed colorways, and save it to see the characters change.
 
@@ -39,6 +77,8 @@ Find all three in **Bot template library → Team templates**. Review the roles 
 **Founder Roundtable.** Use `@everyone` to ask four role-play characters how they would build an AI tutor on one old computer. See how the pitches differ on adoption, efficiency, safety, and engineering.
 
 ![Asking four fictional role-play characters the same question and reading their replies](docs/demo/founder-debate.en.gif)
+
+</details>
 
 <details>
 <summary>More demos · Create a Bot, run a team, check sources, and open deliverables</summary>
@@ -60,6 +100,18 @@ Find all three in **Bot template library → Team templates**. Review the roles 
 **Browse a weekend bookshop.** Open the multi-file website, navigate to its reading list, and switch to the stylesheet in Source. [Website preview GIF](docs/demo/website-preview.en.gif)
 
 </details>
+
+## What you can do
+
+| Use case | Features |
+| --- | --- |
+| AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
+| Web search and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
+| Workflow automation and agent skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
+| Computer use and browser automation | Pair a dedicated Worker in **Settings → Computer** or use a configured cloud computer. The server host provides an isolated work browser. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
+| MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP). Approve specific requests in chat. A private takeover pauses Bot input and observation. |
+
+The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
 
 ## Creator kit
 
@@ -88,35 +140,6 @@ Open with “I asked an AI coworker for a mini-game. I can play it right here in
 Another angle is “Four founders in a role-play, one old computer.” Cut between their pitches and ask viewers which idea they would try. [Founder Roundtable GIF](docs/demo/founder-debate.en.gif)
 
 For vertical video, crop to the action. Keep the artifact button, role names, and landing result visible so viewers can follow along with the sound off.
-
-## Quick start
-
-Download or clone this repository. Install the stable Rust toolchain, Node.js 22.19 or later (24 recommended), and npm. Run these commands from the repository root.
-
-```sh
-npm ci
-npm run configure:local
-npm run dev
-```
-
-1. Open the product URL printed in the terminal and register a personal or team account.
-2. Open **Settings → Models** in your workspace. Enter the model provider URL, model name, and API key. Save the profile, then choose **Set as default**.
-3. Open a direct Bot chat and try “What can you help me with? Give me three examples.”
-4. If your server can reach Exa over HTTPS, ask a workspace Bot to find the official Pi Coding Agent documentation, summarize three points, and cite its sources. Expand the search record above the reply to review them. [Web research setup](server/api/deployment/README.md#execution-boundary)
-
-Run `configure:local` once to create the local configuration. Use `npm run dev` for later launches. To initialize a separate operations account on the first launch, run `npm run dev -- --init-operator`. [Operations setup](docs/operations-console.md)
-
-## What you can do
-
-| Use case | Features |
-| --- | --- |
-| AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
-| Web search and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
-| Workflow automation and agent skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
-| Computer use and browser automation | Pair a dedicated Worker in **Settings → Computer** or use a configured cloud computer. The server host provides an isolated work browser. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
-| MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP). Approve specific requests in chat. A private takeover pauses Bot input and observation. |
-
-The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
 
 ## Build and deploy
 
