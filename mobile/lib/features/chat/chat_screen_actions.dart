@@ -1,6 +1,56 @@
 part of 'chat_screen.dart';
 
 extension _ChatScreenActions on _ChatScreenState {
+  Future<void> _recover({required bool retry}) async {
+    final currentChat = chat;
+    if (retry) {
+      await currentChat.retry();
+    } else {
+      await currentChat.check();
+    }
+    reflectAcknowledgedDraft(currentChat);
+  }
+
+  Json? scopedMessage(String conversation, String? id) {
+    if (id == null) return null;
+    final message = widget.scope.find('messages', id);
+    final thread = widget.threadRootId;
+    return message?['conversationId'] == conversation &&
+            (id == thread
+                ? chatThreadRoot(message) == null
+                : chatThreadRoot(message) == thread)
+        ? message
+        : null;
+  }
+
+  Future<void> selectSkill(
+    ChatController controller,
+    List<ChatSkill> skills,
+  ) async {
+    if (!canEditOptions(controller) || memoRequested) return;
+    final selected = await chooseChatSkill(context, skills);
+    if (!mounted ||
+        selected == null ||
+        !canEditOptions(controller) ||
+        memoRequested) {
+      return;
+    }
+    final scope = controller.scope;
+    final options = scope.chatOptions(controller.draftKey);
+    final conversation = scope.find('conversations', controller.conversationId);
+    if (!chatSkills(scope, conversation, options).contains(selected)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.tr('chatSkillChanged'))));
+      return;
+    }
+    updateOptions(
+      controller,
+      options.withSkill(selected.id, bot: selected.agentId),
+    );
+    inputFocus.requestFocus();
+  }
+
   Widget computerAction(WorkspaceController scope, String agentId) =>
       IconButton(
         tooltip: context.tr('mobileComputerTitle'),

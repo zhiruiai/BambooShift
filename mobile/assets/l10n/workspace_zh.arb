@@ -1,5 +1,11 @@
 {
   "@@locale": "zh",
+  "chatUseSkill": "使用技能",
+  "chatSkillHelp": "为本条消息选择已审核的技能。工具仍按现有权限使用。",
+  "chatSkillTask": "输入要用这个技能处理的任务",
+  "chatClearSkill": "移除所选技能",
+  "chatSkillUnavailable": "技能不可用",
+  "chatSkillChanged": "该技能已更新或停用。请移除后重新选择已审核的版本。",
   "chatEveryone": "所有人",
   "chatMentionGroup": "群聊",
   "chatMentionsInvalid": "群聊收件人发送失败，请检查选择后重试。",

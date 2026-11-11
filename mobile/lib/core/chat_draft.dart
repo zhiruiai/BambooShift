@@ -6,6 +6,7 @@ typedef ChatAppPin = ({String connectionId, String revision});
 typedef ChatDraftOptions = ({
   String? agentId,
   String? replyId,
+  String? skillId,
   ChatAppPin? app,
   ChatGroupMentions? mentions,
 });
@@ -13,13 +14,27 @@ typedef ChatDraftOptions = ({
 const emptyChatOptions = (
   agentId: null,
   replyId: null,
+  skillId: null,
   app: null,
   mentions: null,
 );
 
-extension ChatDraftReply on ChatDraftOptions {
-  ChatDraftOptions withReply(String? id) =>
-      (agentId: agentId, replyId: id, app: app, mentions: mentions);
+extension ChatDraftChanges on ChatDraftOptions {
+  ChatDraftOptions withReply(String? id) => (
+    agentId: agentId,
+    replyId: id,
+    skillId: skillId,
+    app: app,
+    mentions: mentions,
+  );
+
+  ChatDraftOptions withSkill(String? id, {String? bot}) => (
+    agentId: bot ?? agentId,
+    replyId: replyId,
+    skillId: id,
+    app: app,
+    mentions: mentions,
+  );
 }
 
 String chatScopeKey(String conversationId, String? threadRootId) =>

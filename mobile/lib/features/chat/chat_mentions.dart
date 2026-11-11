@@ -121,7 +121,8 @@ List<ChatMention> availableChatMentions(
     if (choice.app != null) {
       return options.mentions == null && choice.app != options.app;
     }
-    return selected.length < maxChatMentionRecipients &&
+    return options.skillId == null &&
+        selected.length < maxChatMentionRecipients &&
         !selected.contains(choice.id);
   }).toList();
 }
@@ -130,10 +131,15 @@ bool validChatDraftOptions(
   ChatDraftOptions options,
   Json? reply,
   List<ChatMention> choices,
+  WorkspaceController scope,
+  Json? conversation,
 ) =>
     (options.replyId == null || reply != null) &&
     selectedChatBotIds(options).every(
-      (id) => choices.any((choice) => choice.bot != null && choice.id == id),
+      (id) =>
+          conversation?['agentIds'] is List &&
+          (conversation!['agentIds'] as List).contains(id) &&
+          botAvailable(scope.find('agents', id)),
     ) &&
     (options.mentions?.everyone != true ||
         choices.any((choice) => choice.everyone)) &&
@@ -143,6 +149,7 @@ ChatDraftOptions addChatMention(ChatDraftOptions options, ChatMention choice) {
   if (choice.everyone) {
     return (
       agentId: null,
+      skillId: null,
       mentions: const ChatGroupMentions.everyone(),
       app: null,
       replyId: options.replyId,
@@ -151,6 +158,7 @@ ChatDraftOptions addChatMention(ChatDraftOptions options, ChatMention choice) {
   if (choice.app case final app?) {
     return (
       agentId: options.agentId,
+      skillId: options.skillId,
       mentions: null,
       app: app,
       replyId: options.replyId,
@@ -171,6 +179,9 @@ ChatDraftOptions removeChatMention(ChatDraftOptions options, String? id) =>
 ChatDraftOptions _botOptions(ChatDraftOptions options, List<String> selected) =>
     (
       agentId: selected.length == 1 ? selected.single : null,
+      skillId: selected.length == 1 && selected.single == options.agentId
+          ? options.skillId
+          : null,
       mentions: selected.length > 1 ? ChatGroupMentions.bots(selected) : null,
       app: options.app,
       replyId: options.replyId,

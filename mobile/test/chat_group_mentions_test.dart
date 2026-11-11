@@ -159,6 +159,7 @@ void main() {
         agentId: null,
         replyId: null,
         app: null,
+        skillId: null,
         mentions: mentions,
       ));
       final chat = ChatController(f.scope, 'chat-a');

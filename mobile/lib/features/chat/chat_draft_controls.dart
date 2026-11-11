@@ -5,6 +5,7 @@ import '../../core/chat_draft.dart';
 import '../../l10n/strings.dart';
 import 'chat_message_controls.dart';
 import 'chat_mentions.dart';
+import 'chat_skills.dart';
 
 class ChatDraftControls extends StatelessWidget {
   const ChatDraftControls({
@@ -12,6 +13,8 @@ class ChatDraftControls extends StatelessWidget {
     required this.options,
     required this.reply,
     required this.choices,
+    required this.skill,
+    required this.botName,
     required this.onChange,
     required this.onJump,
     required this.editable,
@@ -20,6 +23,8 @@ class ChatDraftControls extends StatelessWidget {
   final ChatDraftOptions options;
   final Json? reply;
   final List<ChatMention> choices;
+  final ChatSkill? skill;
+  final String? Function(String) botName;
   final ValueChanged<ChatDraftOptions> onChange;
   final ValueChanged<String> onJump;
   final bool editable;
@@ -27,10 +32,7 @@ class ChatDraftControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final id = options.replyId;
-    final bots = {
-      for (final choice in choices)
-        if (choice.bot != null) choice.id: choice,
-    };
+    final selected = skill;
     final selectedBots = selectedChatBotIds(options);
     final app = choices
         .where((choice) => choice.app != null && choice.app == options.app)
@@ -64,7 +66,8 @@ class ChatDraftControls extends StatelessWidget {
             ),
           if (selectedBots.isNotEmpty ||
               options.mentions?.everyone == true ||
-              options.app != null)
+              options.app != null ||
+              options.skillId != null)
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -77,11 +80,21 @@ class ChatDraftControls extends StatelessWidget {
                       'chatClearRecipient',
                       () => onChange(removeChatMention(options, null)),
                     ),
+                  if (options.skillId != null)
+                    _chip(
+                      context,
+                      Icons.auto_awesome_outlined,
+                      selected != null
+                          ? '${selected.name} · v${selected.version}'
+                          : context.tr('chatSkillUnavailable'),
+                      'chatClearSkill',
+                      () => onChange(options.withSkill(null)),
+                    ),
                   for (final botId in selectedBots)
                     _chip(
                       context,
                       Icons.alternate_email,
-                      bots[botId]?.name ?? context.tr('chatBotUnavailable'),
+                      botName(botId) ?? context.tr('chatBotUnavailable'),
                       'chatClearRecipient',
                       () => onChange(removeChatMention(options, botId)),
                     ),
@@ -96,10 +109,16 @@ class ChatDraftControls extends StatelessWidget {
                         replyId: id,
                         app: null,
                         mentions: null,
+                        skillId: options.skillId,
                       )),
                     ),
                 ],
               ),
+            ),
+          if (options.skillId != null && selected == null)
+            Text(
+              context.tr('chatSkillChanged'),
+              style: const TextStyle(fontSize: 12),
             ),
         ],
       ),

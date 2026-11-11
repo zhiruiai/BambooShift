@@ -78,6 +78,7 @@ class ChatController extends ChangeNotifier {
                       'replyToMessageId',
                       'appContext',
                       'mentions',
+                      'skillId',
                     ].any(value.containsKey))) ||
             (value.containsKey('requestVoiceMemo') &&
                 (value['requestVoiceMemo'] != true ||
@@ -87,12 +88,17 @@ class ChatController extends ChangeNotifier {
                       'replyToMessageId',
                       'appContext',
                       'mentions',
+                      'skillId',
                       'voiceCallId',
                     ].any(value.containsKey))) ||
             (value.containsKey('agentId') &&
                 !isChatReference(value['agentId'])) ||
             (value.containsKey('replyToMessageId') &&
                 !isChatReference(value['replyToMessageId'])) ||
+            (value.containsKey('skillId') &&
+                (!isChatReference(value['skillId']) ||
+                    !isChatReference(value['agentId']) ||
+                    value.containsKey('mentions'))) ||
             (value.containsKey('appContext') &&
                 chatAppPin(value['appContext']) == null) ||
             (value.containsKey('mentions') &&
@@ -118,6 +124,7 @@ class ChatController extends ChangeNotifier {
     ChatAppPin? app,
     ChatGroupMentions? mentions,
     String? voiceCallId,
+    String? skillId,
     bool requestVoiceMemo = false,
   }) async {
     if (!active || busy || !ready || pending != null || text.trim().isEmpty) {
@@ -129,6 +136,12 @@ class ChatController extends ChangeNotifier {
             scope.find('conversations', conversationId)?['isGroup'] != true)) {
       return false;
     }
+    if (skillId != null &&
+        (!isChatReference(skillId) ||
+            !isChatReference(agentId) ||
+            mentions != null)) {
+      return false;
+    }
     if (voiceCallId != null &&
         (!isRequestId(voiceCallId) ||
             threadRootId != null ||
@@ -136,6 +149,7 @@ class ChatController extends ChangeNotifier {
             replyToMessageId != null ||
             app != null ||
             mentions != null ||
+            skillId != null ||
             scope.find('conversations', conversationId)?['isGroup'] == true)) {
       return false;
     }
@@ -146,6 +160,7 @@ class ChatController extends ChangeNotifier {
             replyToMessageId != null ||
             app != null ||
             mentions != null ||
+            skillId != null ||
             !canRequestVoiceMemo(
               scope,
               conversationId,
@@ -162,6 +177,7 @@ class ChatController extends ChangeNotifier {
       'voiceCallId': ?voiceCallId,
       if (requestVoiceMemo) 'requestVoiceMemo': true,
       'agentId': ?agentId,
+      'skillId': ?skillId,
       'replyToMessageId': ?(replyToMessageId ?? threadRootId),
       'threadRootId': ?threadRootId,
       if (app != null) 'appContext': appPinBody(app),
@@ -221,6 +237,7 @@ class ChatController extends ChangeNotifier {
     final memo = metadata is Map && metadata['requestVoiceMemo'] == true;
     return message['conversationId'] == conversationId &&
         message['role'] == 'user' &&
+        message['skillId'] == attempt['skillId'] &&
         voiceId == attempt['voiceCallId'] &&
         memo == (attempt['requestVoiceMemo'] == true) &&
         (attempt['voiceCallId'] == null || isChatReference(message['id'])) &&
@@ -243,6 +260,7 @@ class ChatController extends ChangeNotifier {
                 'APP_CONTEXT_UNAVAILABLE' ||
                 'APP_CONTEXT_LOCAL_BOT_ONLY' => 'chatAppChanged',
                 'THREAD_CONTEXT_UNAVAILABLE' => 'chatThreadUnavailable',
+                'SKILL_CONTEXT_UNAVAILABLE' => 'chatSkillChanged',
                 'VOICE_CALL_ENDED' || 'VOICE_CALL_NOT_FOUND' => 'voiceEnded',
                 'VOICE_CALL_BUSY' || 'VOICE_CALL_ACTIVE' => 'voiceBusy',
                 'VOICE_MEMO_INVALID' ||

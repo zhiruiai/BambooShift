@@ -11,9 +11,11 @@ class AttachmentPanel extends StatelessWidget {
     super.key,
     required this.controller,
     this.compact = false,
+    this.skillAction,
   });
   final AttachmentController controller;
   final bool compact;
+  final Widget? skillAction;
   String size(int bytes) =>
       bytes < 1024 ? '$bytes B' : '${(bytes / 1024).toStringAsFixed(1)} KB';
   @override
@@ -25,19 +27,26 @@ class AttachmentPanel extends StatelessWidget {
       if (compact) {
         return Align(
           alignment: AlignmentDirectional.centerStart,
-          child: TextButton.icon(
-            icon: const Icon(Icons.attach_file, size: 18),
-            label: Text(
-              context.tr('mobileFilesReview'),
-              style: const TextStyle(fontSize: 12),
-            ),
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              showModalBottomSheet<void>(
-                context: context,
-                builder: (_) => SafeArea(child: AttachmentPanel(controller: c)),
-              );
-            },
+          child: Wrap(
+            spacing: 8,
+            children: [
+              TextButton.icon(
+                icon: const Icon(Icons.attach_file, size: 18),
+                label: Text(
+                  context.tr('mobileFilesReview'),
+                  style: const TextStyle(fontSize: 12),
+                ),
+                onPressed: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (_) =>
+                        SafeArea(child: AttachmentPanel(controller: c)),
+                  );
+                },
+              ),
+              ?skillAction,
+            ],
           ),
         );
       }
@@ -58,6 +67,7 @@ class AttachmentPanel extends StatelessWidget {
                       icon: const Icon(Icons.attach_file),
                       label: Text(context.tr('mobileFilesChoose')),
                     ),
+                    ?skillAction,
                     if (c.busy)
                       const SizedBox(
                         width: 18,

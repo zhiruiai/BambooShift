@@ -10,6 +10,7 @@ import 'chat_controller.dart';
 import 'chat_composer_input.dart';
 import 'chat_header_title.dart';
 import 'chat_mentions.dart';
+import 'chat_skills.dart';
 import 'chat_pending_controls.dart';
 import 'chat_project_library.dart';
 import 'chat_read_observer.dart';
@@ -108,6 +109,7 @@ class _ChatScreenState extends State<ChatScreen> {
         await currentAttachments.acknowledgeSent(content);
         if (matchesDraft &&
             options.agentId == pending?['agentId'] &&
+            options.skillId == pending?['skillId'] &&
             options.mentions == chatGroupMentionRequest(pending?['mentions']) &&
             (options.replyId ?? thread) == pending?['replyToMessageId'] &&
             options.app == chatAppPin(pending?['appContext']) &&
@@ -202,7 +204,13 @@ class _ChatScreenState extends State<ChatScreen> {
     final reply = scopedMessage(id, options.replyId);
     final choices = chatMentions(scope, conversation);
     if ((memoRequested && !memoAllowed) ||
-        !validChatDraftOptions(options, reply, choices) ||
+        !validChatDraftOptions(options, reply, choices, scope, conversation) ||
+        (options.skillId != null &&
+            !chatSkills(
+              scope,
+              conversation,
+              options,
+            ).any((skill) => skill.id == options.skillId)) ||
         (currentChat.threadRootId != null &&
             scopedMessage(id, currentChat.threadRootId) == null)) {
       return;
@@ -211,6 +219,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (await currentChat.send(
         currentAttachments.compose(input.text),
         agentId: options.agentId,
+        skillId: options.skillId,
         mentions: options.mentions,
         replyToMessageId: options.replyId,
         app: options.app,
@@ -224,18 +233,6 @@ class _ChatScreenState extends State<ChatScreen> {
         attachments.notify();
       }
     }
-  }
-
-  Json? scopedMessage(String conversation, String? id) {
-    if (id == null) return null;
-    final message = widget.scope.find('messages', id);
-    final thread = widget.threadRootId;
-    return message?['conversationId'] == conversation &&
-            (id == thread
-                ? chatThreadRoot(message) == null
-                : chatThreadRoot(message) == thread)
-        ? message
-        : null;
   }
 
   bool current(ChatController controller) =>
@@ -271,16 +268,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _recover({required bool retry}) async {
-    final currentChat = chat;
-    if (retry) {
-      await currentChat.retry();
-    } else {
-      await currentChat.check();
-    }
-    reflectAcknowledgedDraft(currentChat);
-  }
-
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([
@@ -308,6 +295,10 @@ class _ChatScreenState extends State<ChatScreen> {
       final modelReady = scope.data?['settings']?['configured'] == true;
       final options = scope.chatOptions(controller.draftKey);
       final choices = chatMentions(scope, conversation);
+      final skills = chatSkills(scope, conversation, options);
+      final selectedSkill = skills
+          .where((item) => item.id == options.skillId)
+          .firstOrNull;
       final reply = scopedMessage(id, options.replyId);
       final members = conversation?['agentIds'] as List? ?? [];
       final replyAgent =
@@ -333,7 +324,8 @@ class _ChatScreenState extends State<ChatScreen> {
       final canSend =
           editable &&
           !sourceUnavailable &&
-          validChatDraftOptions(options, reply, choices);
+          (options.skillId == null || selectedSkill != null) &&
+          validChatDraftOptions(options, reply, choices, scope, conversation);
       final active = (scope.data?['runningRequests'] as List? ?? [])
           .whereType<Json>()
           .where((r) => r['conversationId'] == widget.conversationId)
@@ -451,7 +443,20 @@ class _ChatScreenState extends State<ChatScreen> {
               if (voice.active)
                 VoiceControls(voice)
               else ...[
-                AttachmentPanel(controller: attachments, compact: compact),
+                AttachmentPanel(
+                  controller: attachments,
+                  compact: compact,
+                  skillAction: editable && !memoRequested && skills.isNotEmpty
+                      ? TextButton.icon(
+                          onPressed: () => selectSkill(controller, skills),
+                          icon: const Icon(
+                            Icons.auto_awesome_outlined,
+                            size: 18,
+                          ),
+                          label: Text(context.tr('chatUseSkill')),
+                        )
+                      : null,
+                ),
                 ChatComposerInput(
                   compactHeight: compact ? visibleHeight : null,
                   scope: scope,
@@ -460,6 +465,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   options: options,
                   reply: reply,
                   choices: choices,
+                  skill: selectedSkill,
                   editable: editable,
                   busy: chat.busy,
                   onOptions: (next) => applyDraftControls(controller, next),

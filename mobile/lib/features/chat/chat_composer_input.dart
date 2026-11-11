@@ -6,6 +6,7 @@ import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import 'chat_draft_controls.dart';
 import 'chat_mentions.dart';
+import 'chat_skills.dart';
 
 int syncInboundChatText(
   TextEditingController input,
@@ -36,6 +37,7 @@ class ChatComposerInput extends StatelessWidget {
     required this.options,
     required this.reply,
     required this.choices,
+    required this.skill,
     required this.editable,
     required this.busy,
     required this.onOptions,
@@ -56,6 +58,7 @@ class ChatComposerInput extends StatelessWidget {
   final ChatDraftOptions options;
   final Json? reply;
   final List<ChatMention> choices;
+  final ChatSkill? skill;
   final bool editable, busy;
   final ValueChanged<ChatDraftOptions> onOptions;
   final ValueChanged<String> onJump, onChanged;
@@ -75,6 +78,11 @@ class ChatComposerInput extends StatelessWidget {
           options: options,
           reply: reply,
           choices: choices,
+          skill: skill,
+          botName: (id) {
+            final name = scope.find('agents', id)?['name'];
+            return name is String ? name : null;
+          },
           editable: editable,
           onChange: onOptions,
           onJump: onJump,
@@ -130,7 +138,9 @@ class ChatComposerInput extends StatelessWidget {
                   style: const TextStyle(fontSize: 16),
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
-                    hintText: context.tr('messageHint'),
+                    hintText: context.tr(
+                      options.skillId == null ? 'messageHint' : 'chatSkillTask',
+                    ),
                     counterText: '',
                   ),
                 ),

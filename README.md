@@ -57,7 +57,7 @@ The team still needs to agree on a launch date. Deliver the file in this chat.
 
 ### Add a skill to a Bot
 
-On the web or desktop, open **Connect apps → Packaged skills**. Preview the instructions, choose a local Bot, and save a draft. After approval, type `/` in that Bot’s direct chat and select the skill before sending. The Bot loads the selected, reviewed instructions for that run.
+On the web or desktop, open **Connect apps → Packaged skills**. Preview the instructions, choose a local Bot, and save a draft. After approval, select the skill with `/` in that Bot’s direct chat. On Flutter, open **+ → Use skill** in the composer. The Bot loads the selected, reviewed instructions for that run.
 
 ### Choose a local or cloud computer
 

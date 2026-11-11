@@ -1,5 +1,11 @@
 {
   "@@locale": "en",
+  "chatUseSkill": "Use skill",
+  "chatSkillHelp": "Choose an approved skill for this message. Existing tool permissions apply.",
+  "chatSkillTask": "Describe what to do with this skill",
+  "chatClearSkill": "Remove selected skill",
+  "chatSkillUnavailable": "Skill unavailable",
+  "chatSkillChanged": "This skill was updated or disabled. Remove it and choose an approved version.",
   "chatEveryone": "Everyone",
   "chatMentionGroup": "Group",
   "chatMentionsInvalid": "Group recipients could not be sent. Review the recipient choices and try again.",
