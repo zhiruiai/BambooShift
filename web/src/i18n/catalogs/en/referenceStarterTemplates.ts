@@ -3,10 +3,10 @@ export default {
   teamStarterHelp:
     'Preview the roles, then edit the team name, members, and lead. Loading a plan needs no model.',
   teamStarterUse: 'Load plan and edit',
-  starterTitle: 'PandaMate starter templates',
+  starterTitle: 'MosoCrew starter templates',
   starterIntro:
     'Choose a way of working, review its standing instructions, then edit and create your Bot.',
-  starterOriginal: 'PandaMate originals',
+  starterOriginal: 'MosoCrew originals',
   starterPublished: 'User-published',
   starterBrowse: 'Start from a template',
   starterSearch: 'Search starter templates',
@@ -20,5 +20,5 @@ export default {
   starterChoose: 'Choose a template',
   starterOwner: 'You can browse templates. Only the workspace owner can create a Bot.',
   starterNotice:
-    'These are built-in PandaMate starting points, not community submissions. Each contains only a name, role, description, standing instructions, avatar and color. No skills, memories, conversations, credentials or routines are included. Creating a Bot does not start work or connect external services.',
+    'These are built-in MosoCrew starting points, not community submissions. Each contains only a name, role, description, standing instructions, avatar and color. No skills, memories, conversations, credentials or routines are included. Creating a Bot does not start work or connect external services.',
 };

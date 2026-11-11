@@ -368,7 +368,13 @@ export async function packageClient(options) {
       derefSymlinks: false,
       overwrite: true,
       ...(icon ? { icon } : {}),
-      ...(target.platform === 'win32' ? { win32metadata: { CompanyName: 'PandaMate' } } : {}),
+      ...(target.platform === 'win32' ? {
+        win32metadata: {
+          CompanyName: manifest.productName,
+          FileDescription: manifest.productName,
+          ProductName: manifest.productName,
+        },
+      } : {}),
       appCategoryType: 'public.app-category.productivity',
       darwinDarkModeSupport: true,
       extendInfo: {

@@ -20,7 +20,7 @@
 
 ### 从团队模板开始
 
-空间拥有者可在桌面、Web 和 Flutter 的「模板库 → 团队模板」或「智能组队」打开同一目录。Flutter 从模板库进入时，在当前空间核对未完成的请求，再展示模板；可以先预览分工，退出预览时不会保存方案。产品发布、财务月结和客户支持各有三位分工明确的 Bot，参考 Grok Bot 的团队案例，由 PandaMate 独立编写中英文方案。[团队案例](https://docs.x.ai/grok-bot/use-cases#build-a-team-of-bots-for-a-bigger-goal)
+空间拥有者可在桌面、Web 和 Flutter 的「模板库 → 团队模板」或「智能组队」打开同一目录。Flutter 从模板库进入时，在当前空间核对未完成的请求，再展示模板；可以先预览分工，退出预览时不会保存方案。产品发布、财务月结和客户支持各有三位分工明确的 Bot，参考 Grok Bot 的团队案例，由 MosoCrew 独立编写中英文方案。[团队案例](https://docs.x.ai/grok-bot/use-cases#build-a-team-of-bots-for-a-bigger-goal)
 
 载入模板只保存一份待编辑方案，无需配置模型。空间拥有者可以先填写自己的目标，载入后调整群名、负责人和分工，也可以复用已有 Bot。确认创建与开始协作仍是两个独立操作。
 

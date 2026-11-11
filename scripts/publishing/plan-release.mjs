@@ -30,7 +30,8 @@ export function planRelease({ startedAt, source, releases, tagLines }) {
   const tag = `v${version}`;
   if (!versionTag.test(tag)) throw Error('The automatic release series is exhausted.');
   const sameTag = releases.filter(
-    (release) => release.tag_name === tag || (release.draft && release.name === `PandaMate ${tag}`),
+    (release) => release.tag_name === tag ||
+      (release.draft && [`MosoCrew ${tag}`, `PandaMate ${tag}`].includes(release.name)),
   );
   if (sameTag.length > 1 || sameTag.some((release) => !release.draft))
     throw Error('The next version is reserved by another release.');
@@ -41,7 +42,7 @@ export function planRelease({ startedAt, source, releases, tagLines }) {
     .find(([name]) => name === tag);
   if (previousTag) {
     const [, type, subject] = previousTag;
-    const original = /^PandaMate release from ([a-f0-9]{40})$/.exec(subject)?.[1];
+    const original = /^(?:MosoCrew|PandaMate) release from ([a-f0-9]{40})$/.exec(subject)?.[1];
     if (type !== 'tag' || !original) throw Error('The next tag was not created by this workflow.');
     source = original;
   }

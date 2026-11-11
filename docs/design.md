@@ -1,8 +1,8 @@
-# PandaMate 产品与设计
+# MosoCrew 产品与设计
 
 ## 参考与边界
 
-视觉依据：用户提供的 Grok Bot 桌面、移动端及后续设置与交互截图。行为依据为已记录的官方文档，完整参考范围见[参考核对](reference-audit.md)。保留 PandaMate 现有风格，不把未展示的私有页面推断为已复刻。
+视觉依据：用户提供的 Grok Bot 桌面、移动端及后续设置与交互截图。行为依据为已记录的官方文档，完整参考范围见[参考核对](reference-audit.md)。保留 MosoCrew 现有风格，不把未展示的私有页面推断为已复刻。
 
 - https://docs.x.ai/grok-bot/overview
 - https://docs.x.ai/grok-bot/bots
@@ -11,7 +11,7 @@
 - https://docs.x.ai/grok-bot/skills-routines-and-automations
 - https://github.com/earendil-works/pi
 
-PandaMate 是独立实现，不使用 Grok 商标或冒充其服务。参考截图提供布局、密度、色彩和交互方向；没有访问原应用的全部私有页面，因此不宣称所有未展示页面与原产品逐像素一致。
+MosoCrew 是独立实现，不使用 Grok 商标或冒充其服务。参考截图提供布局、密度、色彩和交互方向；没有访问原应用的全部私有页面，因此不宣称所有未展示页面与原产品逐像素一致。
 
 ## 视觉系统
 

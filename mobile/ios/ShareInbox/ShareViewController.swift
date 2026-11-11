@@ -20,19 +20,19 @@ final class ShareViewController: UIViewController {
     preferredContentSize = CGSize(width: 440, height: 260)
 
     let heading = UILabel()
-    heading.text = label("分享到 PandaMate", "Share to PandaMate")
+    heading.text = label("分享到 MosoCrew", "Share to MosoCrew")
     heading.font = .preferredFont(forTextStyle: .title2)
     heading.adjustsFontForContentSizeCategory = true
     heading.numberOfLines = 0
     heading.accessibilityTraits = .header
-    info.text = label("先保存到此设备。回到 PandaMate 后选择会话和要加入草稿的内容。",
-                      "Save the items on this device, then open PandaMate to choose a chat and review the draft.")
+    info.text = label("先保存到此设备。回到 MosoCrew 后选择会话和要加入草稿的内容。",
+                      "Save the items on this device, then open MosoCrew to choose a chat and review the draft.")
     info.font = .preferredFont(forTextStyle: .body)
     info.textColor = .secondaryLabel
     info.adjustsFontForContentSizeCategory = true
     info.numberOfLines = 0
     save.configuration = .filled()
-    save.setTitle(label("保存到 PandaMate", "Save to PandaMate"), for: .normal)
+    save.setTitle(label("保存到 MosoCrew", "Save to MosoCrew"), for: .normal)
     save.addTarget(self, action: #selector(saveShare), for: .touchUpInside)
     cancel.setTitle(label("取消", "Cancel"), for: .normal)
     cancel.addTarget(self, action: #selector(cancelShare), for: .touchUpInside)
@@ -79,10 +79,10 @@ final class ShareViewController: UIViewController {
         saved = true
         cancel.isHidden = true
         save.setTitle(label("完成", "Done"), for: .normal)
-        info.text = label("已保存。打开 PandaMate 后即可选择会话。", "Saved. Open PandaMate to choose a chat.")
+        info.text = label("已保存。打开 MosoCrew 后即可选择会话。", "Saved. Open MosoCrew to choose a chat.")
       } catch ShareInboxError.full {
-        info.text = label("已有待处理的分享。请先打开 PandaMate 处理这些项目。",
-                          "Open PandaMate and review your pending shares before adding another.")
+        info.text = label("已有待处理的分享。请先打开 MosoCrew 处理这些项目。",
+                          "Open MosoCrew and review your pending shares before adding another.")
       } catch ShareInboxError.limit {
         info.text = label("内容超过分享限制。每个文件最多 10 MB。", "This share is too large. Each file can be up to 10 MB.")
       } catch {

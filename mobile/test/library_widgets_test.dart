@@ -144,9 +144,9 @@ void main() {
       await tester.tap(find.text('Open fixture'));
       await waitForLibrary(
         tester,
-        () => find.text('PandaMate originals').evaluate().isNotEmpty,
+        () => find.text('MosoCrew originals').evaluate().isNotEmpty,
       );
-      await tester.tap(find.text('PandaMate originals'));
+      await tester.tap(find.text('MosoCrew originals'));
       final search = find.widgetWithText(
         TextField,
         'Search original templates',
@@ -231,7 +231,7 @@ void main() {
     await tester.pumpWidget(
       testApp(BotLibraryScreen(scope: f.scope), locale: const Locale('zh')),
     );
-    final entry = find.text('PandaMate 原创模板');
+    final entry = find.text('MosoCrew 原创模板');
     await waitForLibrary(tester, () => entry.evaluate().isNotEmpty);
     await tester.tap(entry);
     final search = find.widgetWithText(TextField, '搜索原创模板');

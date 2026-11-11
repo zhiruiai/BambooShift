@@ -61,7 +61,7 @@ export function TeamPageView(model: TeamPageModel) {
           aria-disabled={generating}
         >
           <Avatar size={32} />
-          <span>PandaMate</span>
+          <span>MosoCrew</span>
         </a>
         {session && (
           <AccountMenu

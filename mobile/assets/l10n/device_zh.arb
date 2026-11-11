@@ -1,6 +1,6 @@
 {
   "mobileUpdatesTitle": "更新",
-  "mobileUpdatesScope": "此处检查所连接的 PandaMate 服务，移动端安装包单独更新。打开页面不会查询 GitHub 或安装更新。",
+  "mobileUpdatesScope": "此处检查所连接的 MosoCrew 服务，移动端安装包单独更新。打开页面不会查询 GitHub 或安装更新。",
   "mobileUpdatesServiceVersion": "当前服务版本",
   "mobileUpdatesInvalid": "更新信息与当前空间不匹配。",
   "mobileUpdatesOpenFailed": "无法打开发行页面。",

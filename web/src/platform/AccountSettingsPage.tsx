@@ -108,7 +108,7 @@ export function AccountSettingsPage() {
           }}
         >
           <Avatar size={33} />
-          <span>PandaMate</span>
+          <span>MosoCrew</span>
         </a>
         <span className="account-settings-identity">{session.user.email}</span>
       </header>

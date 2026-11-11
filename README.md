@@ -1,20 +1,20 @@
-# PandaMate: Self-hosted AI coworker teams
+# MosoCrew — Self-hosted AI coworker teams
 
 English · [简体中文](README.zh-CN.md)
 
-**PandaMate is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
+**MosoCrew (formerly PandaMate) is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
 
 **[Try the live demo](https://zhiruiai.github.io/PandaMate/)** · **[Download the latest release](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
 
 **One request. A whole AI team. A game you can open and play.** Open Starport Landing from the chat, check its five files in Source, then fly the spacecraft to a soft landing. The browser demo requires no account or API key.
 
-![Opening a web game from PandaMate chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
+![Opening a web game from MosoCrew chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
 
 These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
 
 ## Supported platforms
 
-| Platform | How to use PandaMate |
+| Platform | How to use MosoCrew |
 | --- | --- |
 | **Web / PWA** | Open the workspace in a Windows, macOS, Linux, or mobile browser. Install as a PWA when your browser supports it. |
 | **Windows x64** | Choose a release with a `client-windows-x64.zip` asset. Extract the entire archive and run `PandaMate.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
@@ -22,7 +22,7 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 | **Linux x64** | Download the prebuilt server, follow the bundled README, and open the workspace in your browser. [Server deployment](server/api/deployment/README.md) |
 | **Android / iOS** | Use a mobile browser. The native Flutter app is available as source. [Mobile source](mobile/README.md) |
 
-Clients share one PandaMate server. The connected work computer executes Bot computer actions. Check the assets listed on the release you are downloading. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest)
+Clients share one MosoCrew server. The connected work computer executes Bot computer actions. Check the assets listed on the release you are downloading. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest)
 
 ## Quick start
 
@@ -123,7 +123,7 @@ Find all three in **Bot template library → Team templates**. Review the roles 
 
 If you have used Grok Bot, start with these familiar workflows. Assign work, review actions, take control, and receive deliverables in the same workspace.
 
-| What you want to do | Where to do it in PandaMate |
+| What you want to do | Where to do it in MosoCrew |
 | --- | --- |
 | Build a team and assign work | Start with a Bot or team template, or describe the team to draft. Assign tasks in direct or group chat, mention a Bot, and let coworkers delegate. [Team setup](docs/bot-settings-and-teams.md) |
 | Use web search, apps, and a work computer | Bots can search public pages with sources or use connected Model Context Protocol (MCP) tools. **Settings → Computer** offers a server-hosted isolated browser, a configured cloud computer, and dedicated Worker pairing. [Computer setup](docs/computer.md) |
@@ -133,7 +133,7 @@ If you have used Grok Bot, start with these familiar workflows. Assign work, rev
 
 ## Tech stack and architecture
 
-PandaMate separates model inference, workspace authorization, and computer execution. A chat request starts a Pi run with the workspace’s configuration. Pi streams messages and tool requests. Actions that require approval appear in the chat. Results and files return to the conversation, where you can preview, play, or inspect the source of a delivered website.
+MosoCrew separates model inference, workspace authorization, and computer execution. A chat request starts a Pi run with the workspace’s configuration. Pi streams messages and tool requests. Actions that require approval appear in the chat. Results and files return to the conversation, where you can preview, play, or inspect the source of a delivered website.
 
 ```mermaid
 flowchart TB
@@ -170,7 +170,7 @@ Open with “I asked an AI coworker for a mini-game. I can play it right here in
 | 00–03s | Flash the spacecraft just above the landing pad. Caption “Can you fly a spaceship inside a chat?” |
 | 03–08s | Return to the request and the web artifact card, then open the preview. Caption “The deliverable is a playable website.” |
 | 08–16s | Cut to the descent and show the flight controls. Leave a beat for touchdown. Caption “Adjust thrust. Prepare to land.” |
-| 16–20s | Hold on the landing result. End card “PandaMate · Open source, self-hosted.” |
+| 16–20s | Hold on the landing result. End card “MosoCrew · Open source, self-hosted.” |
 
 [Starport Landing GIF](docs/demo/orbital-landing.en.gif)
 
@@ -181,7 +181,7 @@ Open with “I asked an AI coworker for a mini-game. I can play it right here in
 | 00–04s | Flash the coach's reply. Opening voiceover “How would an AI team play French-style counterattacks?” [Question card GIF](docs/demo/chat-choices.en.gif) |
 | 04–10s | Cut from picking roles to the new chat. Caption “Coach, striker, and analyst reporting in.” [Team setup GIF](docs/demo/group-chat.en.gif) |
 | 10–18s | Pick high pressing and quick attacks down the wings. Cut to the coach's reply. Caption “New tactics received.” [Question card GIF](docs/demo/chat-choices.en.gif) |
-| 18–28s | Cut between panda, chick, and elephant avatars and end on the group chat with its new look. Caption “PandaMate · Open source, self-hosted.” [Avatar themes GIF](docs/demo/avatar-themes.en.gif) |
+| 18–28s | Cut between panda, chick, and elephant avatars and end on the group chat with its new look. Caption “MosoCrew · Open source, self-hosted.” [Avatar themes GIF](docs/demo/avatar-themes.en.gif) |
 
 Another angle is “Four founders in a role-play, one old computer.” Cut between their pitches and ask viewers which idea they would try. [Founder Roundtable GIF](docs/demo/founder-debate.en.gif)
 
@@ -224,7 +224,7 @@ Workspace data lives on the service managed by the deployer. Model requests go t
 
 ## Acknowledgments and open-source credits
 
-Thanks to everyone who tries PandaMate, reports issues, shares reproductions, or improves the docs and translations. Thanks also to the maintainers of these upstream projects.
+Thanks to everyone who tries MosoCrew, reports issues, shares reproductions, or improves the docs and translations. Thanks also to the maintainers of these upstream projects.
 
 | Area | Upstream projects and components |
 | --- | --- |
@@ -235,7 +235,7 @@ Thanks to everyone who tries PandaMate, reports issues, shares reproductions, or
 | Markdown and images | [react-markdown](https://github.com/remarkjs/react-markdown) and [remark-gfm](https://github.com/remarkjs/remark-gfm) render messages and skill documents. [sharp](https://sharp.pixelplumbing.com/) processes image attachments. |
 | Optional execution environments | [Playwright](https://playwright.dev/) and [Chromium](https://www.chromium.org/) support browser use. [whisper.cpp](https://github.com/ggml-org/whisper.cpp) handles local speech transcription. |
 
-PandaMate is an independent project. For the original product reference, see the [official Grok Bot introduction](https://x.ai/news/introducing-grok-bot).
+MosoCrew is an independent project. For the original product reference, see the [official Grok Bot introduction](https://x.ai/news/introducing-grok-bot).
 
 Lockfiles record dependency versions. Dependencies retain their original licenses. The packaged service includes a license inventory for its compiled Rust and bundled web dependencies. [NOTICE](NOTICE) · [Third-party licenses](THIRD_PARTY.md)
 
@@ -243,4 +243,4 @@ Lockfiles record dependency versions. Dependencies retain their original license
 
 Bug reproductions, documentation improvements, and code changes are welcome. Use sample data in reproductions and include the checks you ran. [Contribution guide](CONTRIBUTING.md)
 
-PandaMate’s original code is available under the [MIT License](LICENSE). See the [third-party notices](THIRD_PARTY.md) for dependency licenses.
+MosoCrew’s original code is available under the [MIT License](LICENSE). See the [third-party notices](THIRD_PARTY.md) for dependency licenses.

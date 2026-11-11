@@ -2,10 +2,10 @@ try {
   const saved = JSON.parse(localStorage.getItem('openbot-language') || 'null');
   if (saved?.version === 1 && saved.locale === 'en') {
     document.documentElement.lang = 'en';
-    document.title = 'PandaMate · Waiting for connection';
+    document.title = 'MosoCrew · Waiting for connection';
     document.getElementById('offline-heading').textContent = 'Workspace is temporarily unavailable';
     document.getElementById('offline-message').textContent =
-      'Check your connection and the PandaMate service, then try again. Tasks run on the server; reconnect to see their latest progress.';
+      'Check your connection and the MosoCrew service, then try again. Tasks run on the server; reconnect to see their latest progress.';
     document.getElementById('offline-reconnect').textContent = 'Reconnect';
   }
 } catch {

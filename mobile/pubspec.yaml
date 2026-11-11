@@ -1,5 +1,5 @@
 name: openbot_mobile
-description: Native PandaMate client for personal and team workspaces.
+description: Native MosoCrew client for personal and team workspaces.
 publish_to: none
 version: 0.0.1+1
 environment:

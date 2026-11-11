@@ -7,13 +7,13 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Choose a photo for your Bot's avatar.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>PandaMate uses the microphone when you start voice chat or dictate a message.</string>
+	<string>MosoCrew uses the microphone when you start voice chat or dictate a message.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>PandaMate</string>
+	<string>MosoCrew</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>PandaMate</string>
+	<string>MosoCrew</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

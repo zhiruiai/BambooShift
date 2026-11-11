@@ -133,7 +133,7 @@
   "mobileLibraryLiveSaveConfirm": "Save this exact team, member and grant selection? Removed files and tools lose access; unchanged grant categories keep their existing access.",
   "mobileLibraryLiveRevoke": "Revoke live sharing",
   "mobileLibraryLiveRevokeConfirm": "Revoke live access to this Bot for all recipients? Their personal history stays, but new use of this shared Bot stops.",
-  "mobileStarterTitle": "PandaMate originals",
+  "mobileStarterTitle": "MosoCrew originals",
   "mobileStarterHelp": "Preview the role and instructions, then edit and create the Bot in your current workspace.",
   "mobileStarterUse": "Use template and edit",
   "mobileStarterBrowse": "Start from a template",

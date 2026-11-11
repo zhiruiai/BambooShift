@@ -74,7 +74,7 @@ export function ComputerCard({
             <i />
             <i />
             <i />
-            <span>PandaMate Workspace</span>
+            <span>MosoCrew Workspace</span>
           </div>
           <div className="work-preview-content">
             <span className="work-preview-rail">

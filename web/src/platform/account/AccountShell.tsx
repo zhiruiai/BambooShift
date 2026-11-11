@@ -17,7 +17,7 @@ export function AccountShell({
     <main className={`platform-auth ${operator ? 'is-operator' : ''}`}>
       <a className="platform-brand" href={operator ? '/admin/login' : '/login'}>
         <Avatar size={33} />
-        <span>PandaMate{operator && <small>{uiText('account:text_e0f17eefe421')}</small>}</span>
+        <span>MosoCrew{operator && <small>{uiText('account:text_e0f17eefe421')}</small>}</span>
       </a>
       <section className="platform-auth-card">
         <Avatar size={57} />

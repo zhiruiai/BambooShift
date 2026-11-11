@@ -83,7 +83,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     eprintln!(
-        "PandaMate Rust backend listening on {}",
+        "MosoCrew Rust backend listening on {}",
         listener.local_addr()?
     );
     let mut ready = serde_json::json!({"type":"openbot:ready","backend":"rust","address":listener.local_addr()?.to_string()});

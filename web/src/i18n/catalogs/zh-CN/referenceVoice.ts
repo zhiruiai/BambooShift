@@ -3,7 +3,7 @@ export default {
   voiceCallTitle: '语音通话',
   voiceCallStart: '开始语音通话',
   voiceCallConsent:
-    '通话期间 PandaMate 会使用麦克风。工作空间服务会将每轮发言转为文字，并作为聊天消息发给当前 Bot。回复由设备上的本地语音朗读。你可以随时静音或挂断。',
+    '通话期间 MosoCrew 会使用麦克风。工作空间服务会将每轮发言转为文字，并作为聊天消息发给当前 Bot。回复由设备上的本地语音朗读。你可以随时静音或挂断。',
   voiceCallConnecting: '正在连接…',
   voiceCallListening: '正在听…',
   voiceCallMuted: '麦克风已静音',

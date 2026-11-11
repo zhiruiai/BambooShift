@@ -133,7 +133,7 @@
   "mobileLibraryLiveSaveConfirm": "保存当前团队、成员和授权选择？已移除的文件和工具将失去访问权限；未修改的授权类别保留已有访问权限。",
   "mobileLibraryLiveRevoke": "撤销实时共享",
   "mobileLibraryLiveRevokeConfirm": "撤销所有接收者对此 Bot 的实时访问？个人历史会保留，但无法继续使用此共享 Bot。",
-  "mobileStarterTitle": "PandaMate 原创模板",
+  "mobileStarterTitle": "MosoCrew 原创模板",
   "mobileStarterHelp": "先预览角色和长期指令，再编辑并在当前空间创建 Bot。",
   "mobileStarterUse": "使用模板并编辑",
   "mobileStarterBrowse": "从原创模板开始",

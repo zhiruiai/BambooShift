@@ -1,6 +1,6 @@
 # Architecture
 
-PandaMate uses a modular Rust backend, separate product and operations sites, SQLite and supervised integration workers. The retired Node business server is no longer part of the runtime.
+MosoCrew uses a modular Rust backend, separate product and operations sites, SQLite and supervised integration workers. The retired Node business server is no longer part of the runtime.
 
 ```text
 React product / Electron / Flutter → Product listener → Workspace services

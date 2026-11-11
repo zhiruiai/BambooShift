@@ -2,9 +2,9 @@ export default {
   teamStarterTitle: '团队模板',
   teamStarterHelp: '预览团队分工，再编辑名称、成员和负责人。载入方案无需模型。',
   teamStarterUse: '载入方案并编辑',
-  starterTitle: 'PandaMate 原创模板',
+  starterTitle: 'MosoCrew 原创模板',
   starterIntro: '选一种工作方式，先核对长期指令，再编辑并创建自己的 Bot。',
-  starterOriginal: 'PandaMate 原创',
+  starterOriginal: 'MosoCrew 原创',
   starterPublished: '用户发布',
   starterBrowse: '从原创模板开始',
   starterSearch: '搜索原创模板',
@@ -18,5 +18,5 @@ export default {
   starterChoose: '选择模板',
   starterOwner: '可以浏览模板；只有空间拥有者可以创建 Bot。',
   starterNotice:
-    '这些是 PandaMate 内置的起点，不是社区投稿。模板只包含名称、职责、说明、长期指令、头像和颜色，不带技能、记忆、对话、密钥或例行任务。创建后不会自动工作或连接第三方。',
+    '这些是 MosoCrew 内置的起点，不是社区投稿。模板只包含名称、职责、说明、长期指令、头像和颜色，不带技能、记忆、对话、密钥或例行任务。创建后不会自动工作或连接第三方。',
 };

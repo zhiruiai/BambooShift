@@ -74,7 +74,7 @@ function SharedBotLink({ shareId }: { shareId: string }) {
       <header className="platform-team-header">
         <a className="platform-brand" href="/">
           <Avatar size={32} />
-          <span>PandaMate</span>
+          <span>MosoCrew</span>
         </a>
         {state.session?.authenticated ? (
           <AccountMenu session={state.session} />

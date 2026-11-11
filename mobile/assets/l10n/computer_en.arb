@@ -42,7 +42,7 @@
   "mobileComputerExecutionTitle": "Execution location",
   "mobileComputerLocalTitle": "Local execution",
   "mobileComputerLocalHelp": "On web or desktop, open Settings → Computer → Your computer to pair a device or use the server’s work browser.",
-  "mobileComputerLocationserver": "Currently runs on the computer hosting PandaMate Server.",
+  "mobileComputerLocationserver": "Currently runs on the computer hosting MosoCrew Server.",
   "mobileComputerLocationcloud": "Currently runs on the connected cloud computer.",
   "mobileComputerLocationremote": "Currently runs on the connected independent work computer.",
   "mobileComputerLocationnone": "No work computer has been selected.",

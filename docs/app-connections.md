@@ -6,7 +6,7 @@
 
 空间拥有者提供服务名称、HTTPS 地址，选择无需认证、Bearer 访问凭据或网页登录授权，并确认与当前空间的 Bot 共享。连接成功后显示实际发现的工具和最后检查时间。凭据无效会进入“需要重新授权”；最初选择无需认证的连接也可补充凭据。断开清除本地保存的凭据与可用工具，重新使用需要再次连接；移除还会删除连接记录，历史操作消息保留。
 
-网页登录授权需要服务支持 MCP OAuth 发现和授权码流程，不是输入任意网站即可接入。打开授权页面后，先用发起连接的同一个 PandaMate 账号登录，确认空间和权限范围，再进入服务商页面。回到最初的窗口点击“完成连接”，服务端才兑换授权码并读取实际工具。只有授权信息保存成功并不保证服务当前可用；工具连接状态另行显示。桌面客户端仅通过专用入口打开同源授权页面，不接受任意外部地址。
+网页登录授权需要服务支持 MCP OAuth 发现和授权码流程，不是输入任意网站即可接入。打开授权页面后，先用发起连接的同一个 MosoCrew 账号登录，确认空间和权限范围，再进入服务商页面。回到最初的窗口点击“完成连接”，服务端才兑换授权码并读取实际工具。只有授权信息保存成功并不保证服务当前可用；工具连接状态另行显示。桌面客户端仅通过专用入口打开同源授权页面，不接受任意外部地址。
 
 授权支持预注册客户端、公开客户端元数据或动态客户端注册，使用 S256 PKCE；服务有要求时可填写 Client ID 和 Secret。远程部署须配置固定 HTTPS 公共来源，本机默认回调为 `http://127.0.0.1:3001/api/app-oauth/callback`。服务商是否允许本机回调取决于其配置。授权码、校验值和访问凭据不进入公开状态；账号退出、空间权限变化、连接修改、取消、过期或重启都会终止未完成流程。
 
@@ -22,21 +22,21 @@
 
 ### Slack 公开频道
 
-在 Slack 创建组织内部应用，或使用已获准的 Marketplace 应用。注册当前 PandaMate 公共 HTTPS 地址加 `/api/app-oauth/callback` 作为 OAuth 回调，配置用户权限 `search:read.public`、`channels:read` 和 `channels:history`。有审批策略的 Slack 工作区由管理员批准应用。在 PandaMate 选 Slack 后，在网页登录授权的高级选项填写该应用的 Client ID 和 Client Secret。工具目录限定公开检索、查找频道和读取线程。已积累额外权限的 Slack 授权需要在 Slack 撤销后重新授权。当前流程仍待使用已获授权的 Slack 测试工作区验收。[Slack MCP 说明](https://docs.slack.dev/ai/slack-mcp-server/) · [OAuth 配置](https://docs.slack.dev/authentication/installing-with-oauth/)
+在 Slack 创建组织内部应用，或使用已获准的 Marketplace 应用。注册当前 MosoCrew 公共 HTTPS 地址加 `/api/app-oauth/callback` 作为 OAuth 回调，配置用户权限 `search:read.public`、`channels:read` 和 `channels:history`。有审批策略的 Slack 工作区由管理员批准应用。在 MosoCrew 选 Slack 后，在网页登录授权的高级选项填写该应用的 Client ID 和 Client Secret。工具目录限定公开检索、查找频道和读取线程。已积累额外权限的 Slack 授权需要在 Slack 撤销后重新授权。当前流程仍待使用已获授权的 Slack 测试工作区验收。[Slack MCP 说明](https://docs.slack.dev/ai/slack-mcp-server/) · [OAuth 配置](https://docs.slack.dev/authentication/installing-with-oauth/)
 
 ### Gmail 开发者预览
 
 Google 将 Gmail MCP 列为开发者预览，并将该阶段限制在获准的测试范围内。预览项目需开启 Gmail API 和 Gmail MCP API，再登记启用 AI 代理选项的 Web OAuth 客户端。邮件搜索和读取支持单独使用 `gmail.readonly`，需要离线刷新时应请求 `access_type=offline`。公开应用目录将在 Gmail MCP 正式发布后评估接入。[Google 预览条款](https://developers.google.com/workspace/preview) · [Gmail MCP 配置](https://developers.google.com/workspace/gmail/api/guides/configure-mcp-server) · [邮件搜索权限](https://developers.google.com/workspace/gmail/api/reference/mcp/tools_list/search_threads)
 
-已正式发布的 Gmail REST API 仍将 `gmail.readonly` 列为受限权限。为个人邮箱提供应用连接时，需要逐人保存授权、明确邮件使用及保留规则，并按 Google 要求完成 OAuth 验证和适用的安全评估。当前 PandaMate 空间连接面向空间内的 Bot 和成员。[Gmail 权限说明](https://developers.google.com/workspace/gmail/api/auth/scopes) · [Google Workspace 用户数据政策](https://developers.google.com/workspace/workspace-api-user-data-developer-policy)
+已正式发布的 Gmail REST API 仍将 `gmail.readonly` 列为受限权限。为个人邮箱提供应用连接时，需要逐人保存授权、明确邮件使用及保留规则，并按 Google 要求完成 OAuth 验证和适用的安全评估。当前 MosoCrew 空间连接面向空间内的 Bot 和成员。[Gmail 权限说明](https://developers.google.com/workspace/gmail/api/auth/scopes) · [Google Workspace 用户数据政策](https://developers.google.com/workspace/workspace-api-user-data-developer-policy)
 
 ### GitLab.com
 
-先在 GitLab.com 顶级群组开启 MCP，再从 PandaMate 应用目录选择 GitLab 并完成网页登录授权。GitLab 通过 `mcp` 权限提供由账号和群组配置决定的工具。核对 PandaMate 聊天中的具体工具和参数后逐次批准。公开 OAuth 发现已使用现有执行器验证，账户授权与群组工具仍需使用获准的测试账号验收。[GitLab MCP 文档](https://docs.gitlab.com/user/model_context_protocol/mcp_server/)
+先在 GitLab.com 顶级群组开启 MCP，再从 MosoCrew 应用目录选择 GitLab 并完成网页登录授权。GitLab 通过 `mcp` 权限提供由账号和群组配置决定的工具。核对 MosoCrew 聊天中的具体工具和参数后逐次批准。公开 OAuth 发现已使用现有执行器验证，账户授权与群组工具仍需使用获准的测试账号验收。[GitLab MCP 文档](https://docs.gitlab.com/user/model_context_protocol/mcp_server/)
 
 ### Microsoft Learn
 
-Microsoft Learn 提供公开的微软与 Azure 文档检索、文档读取和代码示例搜索。选择“无需认证”即可连接，具体工具调用遵循 PandaMate 审批流程。已通过 PandaMate MCP 执行器验证工具发现和官方文档检索。[Microsoft Learn MCP 文档](https://learn.microsoft.com/en-us/training/support/mcp)
+Microsoft Learn 提供公开的微软与 Azure 文档检索、文档读取和代码示例搜索。选择“无需认证”即可连接，具体工具调用遵循 MosoCrew 审批流程。已通过 MosoCrew MCP 执行器验证工具发现和官方文档检索。[Microsoft Learn MCP 文档](https://learn.microsoft.com/en-us/training/support/mcp)
 
 ## 通过共享 Bot 提供应用
 

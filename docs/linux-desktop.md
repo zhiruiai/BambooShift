@@ -77,7 +77,7 @@ Worker 的 `operation-cleanup-v1` 通过 `X-OpenBot-Operation-Id` 跟踪截图�
 
 当前画面池执行合同见 [Worker 测试](../server/workers/computer-runtime/tests/computer-screen-pool.test.ts)，Rust 绑定与维护合同见[生命周期测试](../server/api/tests/computer_lifecycle.rs)及[恢复测试](../server/api/tests/computer_recovery.rs)。共享浏览器检查见[浏览器引擎测试](../server/workers/computer-runtime/tests/browser-engine.test.ts)。通过 `npm run test:runtime`、`npm run backend:test` 运行当前合同，实际 Chrome 检查使用 `npm run test:browser`；这里不把历史 VM 数字当作本次全量结果。两套真实 Xvfb 的并行操作另由上述 VM 证据验证；本地及 VM 检查均不代表产品网页视觉验收。
 
-截图和输入结果仅用于现有画面与操作历史。执行引擎的真实 Xvfb 截图不能证明 PandaMate 产品页面已通过浏览器或手机客户端视觉验收。
+截图和输入结果仅用于现有画面与操作历史。执行引擎的真实 Xvfb 截图不能证明 MosoCrew 产品页面已通过浏览器或手机客户端视觉验收。
 
 ## 持续应用下的文件访问
 

@@ -30,7 +30,7 @@ async function verifyWindowsExecutable(path) {
   }
 }
 
-export async function verifyPackagedStartup(executablePath, expectedVersion) {
+export async function verifyPackagedStartup(executablePath, expectedVersion, expectedName) {
   const profile = await mkdtemp(join(tmpdir(), 'pandamate-client-smoke-'));
   let visits = 0;
   const server = createServer((request, response) => {
@@ -84,7 +84,7 @@ export async function verifyPackagedStartup(executablePath, expectedVersion) {
       };
     }, origin);
     assert.deepEqual(connected, {
-      name: 'PandaMate',
+      name: expectedName,
       packaged: true,
       platform: process.platform,
       arch: process.arch,
@@ -113,7 +113,7 @@ async function main() {
   const executable = join(bundle, 'PandaMate.exe');
   const manifest = JSON.parse(await readFile(join(output, 'manifest-win32-x64.json'), 'utf8'));
   const source = JSON.parse(await readFile(join(root, 'desktop', 'package.json'), 'utf8'));
-  assert.equal(manifest.name, 'PandaMate');
+  assert.equal(manifest.name, source.productName);
   assert.equal(manifest.platform, 'win32');
   assert.equal(manifest.arch, 'x64');
   assert.equal(manifest.version, process.env.RELEASE_VERSION || source.version);
@@ -123,7 +123,7 @@ async function main() {
   // the executable can load those dependencies and open this packaged app.
   await access(join(bundle, 'resources', 'app.asar'));
   await verifyWindowsExecutable(executable);
-  await verifyPackagedStartup(executable, manifest.version);
+  await verifyPackagedStartup(executable, manifest.version, source.productName);
   console.log(
     'Windows x64 package opened, changed language, and connected to a fixture workspace.',
   );

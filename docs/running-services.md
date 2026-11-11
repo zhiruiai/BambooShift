@@ -61,7 +61,7 @@ node scripts/run.mjs scripts/computer-services.ts run --config data/computer/ser
 
 ## SSH 认证与恢复边界
 
-本版不创建隧道。缺少现有连接时，会非零退出并根据私有配置显示一条原生 `ssh` 命令，由用户在自己的终端运行。密码或密钥口令只进入系统 SSH 的原生提示，不进入 PandaMate 参数、环境变量或文件；也不会自动接受新的主机密钥、改写 `authorized_keys` 或修改已有 SSH 配置。
+本版不创建隧道。缺少现有连接时，会非零退出并根据私有配置显示一条原生 `ssh` 命令，由用户在自己的终端运行。密码或密钥口令只进入系统 SSH 的原生提示，不进入 MosoCrew 参数、环境变量或文件；也不会自动接受新的主机密钥、改写 `authorized_keys` 或修改已有 SSH 配置。
 
 已有 SSH master 存活只说明当前隧道可用。中断后使用部署者自己的 SSH 账户、认证方式和主机密钥记录重新连接。
 

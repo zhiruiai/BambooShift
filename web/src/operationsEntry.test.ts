@@ -87,6 +87,7 @@ test('actual independent Vite builds contain only their own page modules and emi
     const html = outputs.find((output) => output.fileName === 'index.html');
     assert.ok(html && html.type === 'asset');
     assert.match(String(html.source), new RegExp(`name="openbot-application" content="${mode}"`));
+    assert.match(String(html.source), /<title>MosoCrew · [^<]+<\/title>/);
     assert.match(String(html.source), /src="\/assets\//);
     assert.ok(!outputs.some((output) => output.fileName === 'operations/index.html'));
     graphs.set(

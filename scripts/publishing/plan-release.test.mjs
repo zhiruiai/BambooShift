@@ -49,6 +49,8 @@ test('resumes the version and source of an interrupted release', () => {
   assert.equal(plan({ tagLines, releases }).source, olderSource);
   const untagged = [{ ...releases[0], tag_name: 'untagged-123', name: 'PandaMate v0.0.1' }];
   assert.equal(plan({ tagLines, releases: untagged }).source, olderSource);
+  const renamed = [{ ...untagged[0], name: 'MosoCrew v0.0.1' }];
+  assert.equal(plan({ tagLines: tagLines.replace('PandaMate', 'MosoCrew'), releases: renamed }).source, olderSource);
   assert.throws(() => plan({ releases }), /draft does not match/);
 });
 

@@ -22,7 +22,7 @@ export async function startComputerWorker() {
   const hostDesktop = process.env.OPENBOT_WORKER_ALLOW_HOST_DESKTOP === 'true';
   const desktopHelperPath = process.env.OPENBOT_MACOS_DESKTOP_HELPER;
   if (workspaceScopeId !== undefined && !isComputerOperationId(workspaceScopeId))
-    throw new Error('OPENBOT_WORKER_WORKSPACE_ID must be the PandaMate workspace UUID.');
+    throw new Error('OPENBOT_WORKER_WORKSPACE_ID must be the MosoCrew workspace UUID.');
   if (workspaceScopeId && screenConfigurationPath)
     throw new Error('Set the workspace ID in the screen pool configuration.');
   if (

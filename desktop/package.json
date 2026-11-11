@@ -1,10 +1,10 @@
 {
   "name": "openbot-client",
-  "productName": "PandaMate",
+  "productName": "MosoCrew",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
-  "description": "PandaMate desktop client for connecting to your workspace.",
+  "description": "MosoCrew desktop client for connecting to your workspace.",
   "main": "main.cjs",
   "type": "commonjs"
 }
