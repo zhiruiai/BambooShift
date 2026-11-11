@@ -9,11 +9,14 @@ import {
   releaseFindings,
 } from './source-release-policy.mjs';
 
+import { readDesktopProductName } from '../publishing/package-names.mjs';
+
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 export async function exportSource({ sourceRoot = root, output, privateValues } = {}) {
   sourceRoot = resolve(sourceRoot);
-  output = resolve(output || join(sourceRoot, 'release/source/openbot'));
+  const product = await readDesktopProductName(sourceRoot);
+  output = resolve(output || join(sourceRoot, 'release', 'source', product));
   const relativeOutput = relative(sourceRoot, output);
   if (
     !relativeOutput.startsWith(
@@ -76,7 +79,7 @@ export async function exportSource({ sourceRoot = root, output, privateValues } 
     }
     const manifest = {
       version: 1,
-      name: 'openbot',
+      name: product,
       license: 'MIT',
       generatedAt: new Date().toISOString(),
       includesRuntimeData: false,

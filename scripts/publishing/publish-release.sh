@@ -4,12 +4,15 @@ set -euo pipefail
 [[ "$RELEASE_TAG" == "v$RELEASE_VERSION" && "$RELEASE_TAG" =~ ^v0\.0\.[1-9][0-9]{0,6}$ ]]
 [[ "$RELEASE_SOURCE" =~ ^[a-f0-9]{40}$ && "$RELEASE_DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
 test "$(git rev-parse HEAD)" = "$RELEASE_SOURCE"
+[[ "$RELEASE_BRAND" =~ ^(BambooShift|MosoCrew|PandaMate)$ ]]
+[[ "$RELEASE_PACKAGE_NAME" =~ ^(BambooShift|MosoCrew|PandaMate)$ ]]
+release_brand="$RELEASE_BRAND"
 
 builds="$RUNNER_TEMP/pandamate-builds"
-source_name="PandaMate-$RELEASE_TAG-source.tar.gz"
-server_name="PandaMate-$RELEASE_TAG-server-linux-x64.tar.gz"
-mac_name="PandaMate-$RELEASE_TAG-client-macos-arm64.zip"
-windows_name="PandaMate-$RELEASE_TAG-client-windows-x64.zip"
+source_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-source.tar.gz"
+server_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-server-linux-x64.tar.gz"
+mac_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-client-macos-arm64.zip"
+windows_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-client-windows-x64.zip"
 publish_dir="$(mktemp -d "$RUNNER_TEMP/pandamate-publish.XXXXXX")"
 files=("$source_name" "$server_name" "$mac_name")
 platforms=(linux-x64 macos-arm64)
@@ -26,8 +29,8 @@ if [[ -f scripts/publishing/build-windows-client.mjs ]]; then
   cp "$builds/pandamate-windows-x64/$windows_name" "$publish_dir/"
   files+=("$windows_name")
   platforms+=(windows-x64)
-  windows_notes_en='- **Windows x64 client** is an unsigned portable ZIP. Extract the entire folder, run PandaMate.exe, and enter the address of a running BambooShift server.'
-  windows_notes_zh=' Windows x64 客户端为未签名的便携 ZIP，完整解压后运行 PandaMate.exe，再连接已运行的 BambooShift 服务。'
+  windows_notes_en="- **Windows x64 client** is an unsigned portable ZIP. Extract the entire folder, run $RELEASE_PACKAGE_NAME.exe, and enter the address of a running $RELEASE_BRAND server."
+  windows_notes_zh=" Windows x64 客户端为未签名的便携 ZIP，完整解压后运行 $RELEASE_PACKAGE_NAME.exe，再连接已运行的 $RELEASE_BRAND 服务。"
 fi
 
 node scripts/publishing/stamp-version.mjs "$RELEASE_VERSION"
@@ -40,8 +43,10 @@ done
 tag_ref="refs/tags/$RELEASE_TAG"
 if git show-ref --verify --quiet "$tag_ref"; then
   test "$(git cat-file -t "$tag_ref")" = tag
-  case "$(git for-each-ref --format='%(subject)' "$tag_ref")" in
-    "BambooShift release from $RELEASE_SOURCE"|"MosoCrew release from $RELEASE_SOURCE"|"PandaMate release from $RELEASE_SOURCE") ;;
+  subject="$(git for-each-ref --format='%(subject)' "$tag_ref")"
+  case "$subject" in
+    "BambooShift release from $RELEASE_SOURCE"|"MosoCrew release from $RELEASE_SOURCE"|"PandaMate release from $RELEASE_SOURCE")
+      release_brand="${subject%% release from *}" ;;
     *) exit 1 ;;
   esac
   tagged="$(git rev-parse "$tag_ref^{commit}")"
@@ -51,10 +56,10 @@ if git show-ref --verify --quiet "$tag_ref"; then
     test "$(git rev-parse "$tagged^{tree}")" = "$tree"
   fi
 else
-  git config user.name 'BambooShift Release'
+  git config user.name "$release_brand Release"
   git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
   # Push a tag to the published source commit. The stamped tree is only used for archives.
-  git tag -a "$RELEASE_TAG" "$RELEASE_SOURCE" -m "BambooShift release from $RELEASE_SOURCE"
+  git tag -a "$RELEASE_TAG" "$RELEASE_SOURCE" -m "$release_brand release from $RELEASE_SOURCE"
   git push origin "$tag_ref:$tag_ref"
 fi
 
@@ -62,7 +67,7 @@ fi
 files+=(SHA256SUMS.txt)
 
 releases="$publish_dir/releases.json"
-title="BambooShift $RELEASE_TAG"
+title="$release_brand $RELEASE_TAG"
 draft_titles="$(jq -nc --arg tag "$RELEASE_TAG" \
   '["BambooShift", "MosoCrew", "PandaMate"] | map(. + " " + $tag)')"
 marker="<!-- pandamate-source: $RELEASE_SOURCE -->"
@@ -75,15 +80,15 @@ if [[ "$release_count" == 0 ]]; then
   cat > "$notes" <<NOTES
 <!-- pandamate-source: $RELEASE_SOURCE -->
 
-BambooShift $RELEASE_TAG · $RELEASE_DAY
+$release_brand $RELEASE_TAG · $RELEASE_DAY
 
-- **BambooShift source archive** includes the web, server, desktop, and Flutter source with the release version. GitHub’s automatic Source code links contain the original tagged commit.
+- **$RELEASE_PACKAGE_NAME source archive** includes the web, server, desktop, and Flutter source with the release version. GitHub’s automatic Source code links contain the original tagged commit.
 - **Linux x64 server** includes the product web app, operations console, and worker bundles. Read the README in the archive for setup.
-- **macOS Apple Silicon client** connects to a separate BambooShift server. The app uses a local ad-hoc signature and has no Apple notarization.
+- **macOS Apple Silicon client** connects to a separate $RELEASE_BRAND server. The app uses a local ad-hoc signature and has no Apple notarization.
 $windows_notes_en
 - **SHA256SUMS.txt** lists the checksums for the archives.
 
-BambooShift 源码包包含带发布版本号的各端源码。GitHub 自动生成的 Source code 下载项对应原始提交。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
+$RELEASE_PACKAGE_NAME 源码包包含带发布版本号的各端源码。GitHub 自动生成的 Source code 下载项对应原始提交。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
 NOTES
   release="$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
     -f "tag_name=$RELEASE_TAG" -f "name=$title" -F "body=@$notes" -F draft=true -F prerelease=false)"
@@ -139,7 +144,7 @@ if [[ "$draft" == true ]]; then
   done
   verify_assets
   gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/$id" \
-    -f "tag_name=$RELEASE_TAG" -f "name=$title" -F draft=false -f make_latest=true > /dev/null
+    -f "tag_name=$RELEASE_TAG" -F draft=false -f make_latest=true > /dev/null
 else
   verify_assets
 fi

@@ -31,6 +31,9 @@ jobs:
       source: ${{ steps.plan.outputs.source }}
       day: ${{ steps.plan.outputs.day }}
       builds: ${{ steps.plan.outputs.builds }}
+      brand: ${{ steps.plan.outputs.brand }}
+      package_name: ${{ steps.plan.outputs.package_name }}
+      mac_bundle: ${{ steps.plan.outputs.mac_bundle }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -54,6 +57,16 @@ jobs:
           builds='[{"asset":"linux-x64","runner":"ubuntu-24.04"},{"asset":"macos-arm64","runner":"macos-15"}]'
           if [[ -n "$source_sha" ]]; then
             git merge-base --is-ancestor "$source_sha" "$GITHUB_SHA"
+            brand="$(git show "$source_sha:desktop/package.json" | jq -er '.productName | select(. == "BambooShift" or . == "MosoCrew" or . == "PandaMate")')"
+            if git cat-file -e "$source_sha:scripts/publishing/package-names.mjs"; then
+              package_name="$brand"
+              mac_bundle="$brand"
+            else
+              # Pre-rename PandaMate and MosoCrew sources used the same archive format.
+              package_name="PandaMate"
+              mac_bundle="OpenBot"
+            fi
+            printf 'brand=%s\npackage_name=%s\nmac_bundle=%s\n' "$brand" "$package_name" "$mac_bundle" >> "$GITHUB_OUTPUT"
             # Older interrupted drafts resume with the formats their pinned source supports.
             if git cat-file -e "$source_sha:scripts/publishing/build-windows-client.mjs"; then
               builds="$(jq -c '. + [{asset:"windows-x64",runner:"windows-2025"}]' <<< "$builds")"
@@ -79,6 +92,8 @@ jobs:
     env:
       RELEASE_VERSION: ${{ needs.plan.outputs.version }}
       RELEASE_TAG: ${{ needs.plan.outputs.tag }}
+      RELEASE_PACKAGE_NAME: ${{ needs.plan.outputs.package_name }}
+      RELEASE_MAC_BUNDLE: ${{ needs.plan.outputs.mac_bundle }}
       GIT_CONFIG_COUNT: '1'
       GIT_CONFIG_KEY_0: core.autocrlf
       GIT_CONFIG_VALUE_0: 'false'
@@ -114,8 +129,8 @@ jobs:
           set -euo pipefail
           test "$(uname -m)" = x86_64
           assets="$RUNNER_TEMP/pandamate-assets"
-          source_name="PandaMate-$RELEASE_TAG-source"
-          service_name="PandaMate-$RELEASE_TAG-server-linux-x64"
+          source_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-source"
+          service_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-server-linux-x64"
           npm run check:source
           npm run check:privacy
           npm run test:source-policy
@@ -138,13 +153,17 @@ jobs:
           test "$(uname -m)" = arm64
           npm run client:test
           npm run client:package -- --platform darwin --arch arm64
-          client_name="PandaMate-$RELEASE_TAG-client-macos-arm64"
+          client_name="$RELEASE_PACKAGE_NAME-$RELEASE_TAG-client-macos-arm64"
+          app="$RUNNER_TEMP/$client_name/$RELEASE_PACKAGE_NAME.app"
           mkdir "$RUNNER_TEMP/$client_name"
-          ditto --norsrc --noextattr --noqtn release/client/OpenBot-darwin-arm64/OpenBot.app "$RUNNER_TEMP/$client_name/PandaMate.app"
+          ditto --norsrc --noextattr --noqtn "release/client/$RELEASE_MAC_BUNDLE-darwin-arm64/$RELEASE_MAC_BUNDLE.app" "$app"
           cp LICENSE NOTICE THIRD_PARTY.md "$RUNNER_TEMP/$client_name/"
-          codesign --verify --deep --strict "$RUNNER_TEMP/$client_name/PandaMate.app"
-          plist="$RUNNER_TEMP/$client_name/PandaMate.app/Contents/Info.plist"
+          codesign --verify --deep --strict "$app"
+          plist="$app/Contents/Info.plist"
           test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$plist")" = "$RELEASE_VERSION"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$plist")" = 'com.openbot.client'
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleExecutable' "$plist")" = "$RELEASE_MAC_BUNDLE"
+          test -x "$app/Contents/MacOS/$RELEASE_MAC_BUNDLE"
           ditto -c -k --norsrc --noextattr --noqtn --keepParent "$RUNNER_TEMP/$client_name" "$RUNNER_TEMP/pandamate-assets/$client_name.zip"
       - name: Build, launch and archive the Windows x64 client
         if: matrix.asset == 'windows-x64'
@@ -171,6 +190,8 @@ jobs:
       RELEASE_TAG: ${{ needs.plan.outputs.tag }}
       RELEASE_SOURCE: ${{ needs.plan.outputs.source }}
       RELEASE_DAY: ${{ needs.plan.outputs.day }}
+      RELEASE_BRAND: ${{ needs.plan.outputs.brand }}
+      RELEASE_PACKAGE_NAME: ${{ needs.plan.outputs.package_name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:

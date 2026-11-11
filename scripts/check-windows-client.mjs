@@ -6,10 +6,10 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { _electron } from 'playwright-core';
 import { clientEnvironment } from './run-client.mjs';
+import { desktopProductName } from './publishing/package-names.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const output = join(root, 'release', 'client');
-const bundleName = 'PandaMate-win32-x64';
 
 async function verifyWindowsExecutable(path) {
   const file = await open(path);
@@ -109,11 +109,14 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
 async function main() {
   assert.equal(process.platform, 'win32', 'Run this smoke test on native Windows');
   assert.equal(process.arch, 'x64', 'Run this smoke test using x64 Node');
-  const bundle = join(output, bundleName);
-  const executable = join(bundle, 'PandaMate.exe');
-  const manifest = JSON.parse(await readFile(join(output, 'manifest-win32-x64.json'), 'utf8'));
   const source = JSON.parse(await readFile(join(root, 'desktop', 'package.json'), 'utf8'));
-  assert.equal(manifest.name, source.productName);
+  const product = desktopProductName(source);
+  const bundleName = product + '-win32-x64';
+  const bundle = join(output, bundleName);
+  const executable = join(bundle, product + '.exe');
+  const manifest = JSON.parse(await readFile(join(output, 'manifest-win32-x64.json'), 'utf8'));
+  assert.equal(manifest.name, product);
+  assert.equal(manifest.bundleId, 'com.openbot.client');
   assert.equal(manifest.platform, 'win32');
   assert.equal(manifest.arch, 'x64');
   assert.equal(manifest.version, process.env.RELEASE_VERSION || source.version);
@@ -123,7 +126,7 @@ async function main() {
   // the executable can load those dependencies and open this packaged app.
   await access(join(bundle, 'resources', 'app.asar'));
   await verifyWindowsExecutable(executable);
-  await verifyPackagedStartup(executable, manifest.version, source.productName);
+  await verifyPackagedStartup(executable, manifest.version, product);
   console.log(
     'Windows x64 package opened, changed language, and connected to a fixture workspace.',
   );

@@ -16,6 +16,7 @@ import { cargo, root, rustBinary } from './rust-toolchain.mjs';
 import { buildWorkers } from './build-workers.mjs';
 import { collectDependencyNotices } from './dependency-notices.mjs';
 import { readWebLicenseInputs } from './web-license-inputs.ts';
+import { readDesktopProductName } from './publishing/package-names.mjs';
 
 const webTypes = new Set([
   '.html',
@@ -134,6 +135,7 @@ export async function packageBackend({
     const manifest = {
       version: 1,
       application: 'openbot',
+      productName: await readDesktopProductName(sourceRoot),
       profile: release ? 'release' : 'debug',
       platform: process.platform,
       architecture: process.arch,

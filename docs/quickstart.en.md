@@ -23,7 +23,7 @@ npm test
 npm run check:source
 npm run check:privacy
 npm run client:dev
-npm run source:export -- --out release/source/openbot-v0.1.0
+npm run source:export -- --out release/source/BambooShift-source
 ```
 
 Built product and operations listeners default to 3001 and 3002. Use separate HTTPS origins for remote deployment. See [deployment](../server/api/deployment/README.md), [architecture](architecture.md), [operations](operations-console.md) and the [capability audit](reference-audit.md).

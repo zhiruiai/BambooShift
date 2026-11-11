@@ -34,7 +34,7 @@ impl Updates {
             .config
             .releases
             .as_ref()
-            .map(|value| value.repository.as_str());
+            .map(ReleasesConfig::canonical_repository);
         let (status, reason, release) = match (repository, checked.as_ref()) {
             (None, _) => ("unconfigured", None, None),
             (Some(_), None) => ("unavailable", Some("not_checked"), None),
@@ -75,14 +75,15 @@ impl Updates {
         {
             return Ok(self.project(state, previous));
         }
-        let production = ReleaseClient::new(&config.repository);
+        let repository = config.canonical_repository();
+        let production = ReleaseClient::new(repository);
         #[cfg(test)]
         let client = self.client.as_ref().or(production.as_ref().ok());
         #[cfg(not(test))]
         let client = production.as_ref().ok();
         let mut changes = state.subscribe_security();
         let result = if let Some(client) = client {
-            let request = client.fetch(&config.repository);
+            let request = client.fetch(repository);
             tokio::pin!(request);
             loop {
                 tokio::select! {

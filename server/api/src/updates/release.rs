@@ -8,6 +8,15 @@ use std::time::Duration;
 pub struct ReleasesConfig {
     pub repository: String,
 }
+impl ReleasesConfig {
+    pub(super) fn canonical_repository(&self) -> &str {
+        if self.repository.eq_ignore_ascii_case("zhiruiai/PandaMate") {
+            "zhiruiai/BambooShift"
+        } else {
+            &self.repository
+        }
+    }
+}
 pub fn valid_repository(value: &str) -> bool {
     let Some((owner, repo)) = value.split_once('/') else {
         return false;
@@ -103,7 +112,7 @@ impl ReleaseClient {
             .no_proxy()
             .connect_timeout(Duration::from_secs(3))
             .timeout(timeout)
-            .user_agent("OpenBot-update-check")
+            .user_agent("BambooShift-update-check")
             .build()
             .map_err(|_| "network")?;
         Ok(Self { client, endpoint })

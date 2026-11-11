@@ -2,9 +2,9 @@
 
 English · [简体中文](README.zh-CN.md)
 
-**BambooShift (formerly PandaMate) is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
+**BambooShift is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
 
-**[Try the live demo](https://zhiruiai.github.io/PandaMate/)** · **[Download the latest release](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
+**[Try the live demo](https://zhiruiai.github.io/BambooShift/)** · **[Download the latest release](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
 
 **One request. A whole AI team. A game you can open and play.** Open Starport Landing from the chat, check its five files in Source, then fly the spacecraft to a soft landing. The browser demo requires no account or API key.
 
@@ -17,12 +17,12 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 | Platform | How to use BambooShift |
 | --- | --- |
 | **Web / PWA** | Open the workspace in a Windows, macOS, Linux, or mobile browser. Install as a PWA when your browser supports it. |
-| **Windows x64** | Choose a release with a `client-windows-x64.zip` asset. Extract the entire archive and run `PandaMate.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
+| **Windows x64** | Choose a release with a Windows x64 client ZIP. Extract the entire archive and run `BambooShift.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
 | **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. The client uses ad-hoc signing without Apple notarization. Intel Macs can use the web app. [Desktop setup](docs/desktop-client.md) |
 | **Linux x64** | Download the prebuilt server, follow the bundled README, and open the workspace in your browser. [Server deployment](server/api/deployment/README.md) |
 | **Android / iOS** | Use a mobile browser. The native Flutter app is available as source. [Mobile source](mobile/README.md) |
 
-Clients share one BambooShift server. The connected work computer executes Bot computer actions. Check the assets listed on the release you are downloading. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest)
+Clients share one BambooShift server. The connected work computer executes Bot computer actions. For older releases, select the equivalent platform asset and use the executable named in its release notes. [Latest release](https://github.com/zhiruiai/BambooShift/releases/latest)
 
 ## Quick start
 
@@ -65,7 +65,7 @@ On the web or desktop, open **Connect apps → Packaged skills**. Preview the in
 - **Native Mac apps.** Pair a dedicated Worker on your current Mac under **Your computer**, grant Screen Recording and Accessibility, then enable desktop control in the chat’s computer panel.
 - **Cloud execution.** Use a cloud computer your administrator has linked, or connect a Worker you run on a separate computer or cloud server. [Execution locations](docs/computer.md#选择执行位置)
 
-Star the repo to bookmark it. For release notifications, choose **Watch → Custom → Releases**. Share your first task in [Issues](https://github.com/zhiruiai/PandaMate/issues), or use the [installation and compatibility form](https://github.com/zhiruiai/PandaMate/issues/new?template=installation.yml).
+Star the repo to bookmark it. For release notifications, choose **Watch → Custom → Releases**. Share your first task in [Issues](https://github.com/zhiruiai/BambooShift/issues), or use the [installation and compatibility form](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml).
 
 ## Demos
 

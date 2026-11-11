@@ -27,6 +27,7 @@ async function fixture() {
     await mkdir(join(target, '..'), { recursive: true });
     await writeFile(target, value);
   };
+  await put('desktop/package.json', '{"productName":"BambooShift"}');
   return {
     sourceRoot,
     put,
@@ -79,6 +80,7 @@ test('source export selects original source without local data, generated files 
         ),
       ),
     );
+    assert.equal(manifest.name, 'BambooShift');
     assert.equal(manifest.license, 'MIT');
     assert.equal(result.manifestSha256, createHash('sha256').update(bytes).digest('hex'));
     assert.equal(result.files, paths.length);

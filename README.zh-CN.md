@@ -2,9 +2,9 @@
 
 简体中文 · [English](README.md)
 
-**BambooShift（原 PandaMate）是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
+**BambooShift是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
 
-**[直接试玩](https://zhiruiai.github.io/PandaMate/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
+**[直接试玩](https://zhiruiai.github.io/BambooShift/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
 
 **给一队 AI 同事一句话，拿到点开就能玩的小游戏。** 在星港任务小队打开交付卡，切到源码查看五个文件，再回到预览操纵飞船完成软着陆。
 
@@ -17,12 +17,12 @@
 | 平台 | 怎么用 |
 | --- | --- |
 | **Web / PWA** | Windows、macOS、Linux 和移动浏览器可打开工作空间。浏览器支持时可安装 PWA。 |
-| **Windows x64** | 选择提供 `client-windows-x64.zip` 的版本，完整解压后运行 `PandaMate.exe`。便携包未签名，需要连接已有服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
+| **Windows x64** | 选择提供 Windows x64 客户端 ZIP 的版本，完整解压后运行 `BambooShift.exe`。便携包未签名，需要连接已有服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
 | **macOS Apple Silicon** | 下载桌面 ZIP 后连接已有服务。客户端采用临时签名，未经过 Apple 公证。Intel Mac 可使用网页。 [桌面连接说明](docs/desktop-client.md) |
 | **Linux x64** | 发布页提供预编译服务端。按包内 README 安装，再通过浏览器进入工作空间。 [服务部署](server/api/deployment/README.md) |
 | **Android / iOS** | 通过移动浏览器使用。原生 Flutter 客户端以源码提供。 [移动端源码](mobile/README.md) |
 
-客户端连接同一个 BambooShift 服务，Bot 的电脑操作由已连接的工作电脑执行。下载前请核对对应版本的附件。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest)
+客户端连接同一个 BambooShift 服务，Bot 的电脑操作由已连接的工作电脑执行。下载较早的版本时，选择对应平台的附件，并运行该版本说明列出的程序。 [最新发布](https://github.com/zhiruiai/BambooShift/releases/latest)
 
 ## 快速开始
 
@@ -64,7 +64,7 @@ npm run dev
 - **Mac 原生应用。** 在「你的电脑」配对当前 Mac 上的独立 Worker，授予屏幕录制和辅助功能权限，再在会话电脑面板启用桌面操作。
 - **云端执行。** 使用部署者已绑定的云电脑，或连接自己在另一台电脑、云服务器上运行的 Worker。 [选择执行位置](docs/computer.md#选择执行位置)
 
-想收藏项目，可以点 Star。想收到发版提醒，可选 **Watch → Custom → Releases**。欢迎在 [Issues](https://github.com/zhiruiai/PandaMate/issues) 分享第一个任务，或用[安装与兼容性表单](https://github.com/zhiruiai/PandaMate/issues/new?template=installation.yml)反馈问题。
+想收藏项目，可以点 Star。想收到发版提醒，可选 **Watch → Custom → Releases**。欢迎在 [Issues](https://github.com/zhiruiai/BambooShift/issues) 分享第一个任务，或用[安装与兼容性表单](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml)反馈问题。
 
 ## 功能演示
 

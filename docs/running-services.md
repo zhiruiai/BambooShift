@@ -20,10 +20,10 @@ node scripts/run.mjs scripts/computer-services.ts run --config data/computer/ser
 ```json
 {
   "version": 1,
-  "dataDir": "/path/to/pandamate/data",
-  "serverConfigPath": "/path/to/pandamate/config/private/server.private.json",
-  "cubeConfigPath": "/path/to/pandamate/data/computer/cube-sandbox.json",
-  "connectionPath": "/path/to/pandamate/data/computer/connection.json",
+  "dataDir": "/path/to/bambooshift/data",
+  "serverConfigPath": "/path/to/bambooshift/config/private/server.private.json",
+  "cubeConfigPath": "/path/to/bambooshift/data/computer/cube-sandbox.json",
+  "connectionPath": "/path/to/bambooshift/data/computer/connection.json",
   "ssh": {
     "host": "cube-host.example.com",
     "user": "deploy",

@@ -29,7 +29,7 @@ The server prints a structured `openbot:ready` event after binding both configur
 
 The Windows x64 desktop client and Windows browsers connect to the product URL of a BambooShift service running on Linux. For a remote service, enter its configured product HTTPS URL in the desktop client.
 
-For local evaluation on an x64 Windows PC, use the Linux x64 service archive in an Ubuntu 24.04 WSL2 distribution. Keep the package, private configuration and data inside the Linux filesystem, and run the installation commands above from the Linux shell with Node installed in that distribution. When WSL localhost forwarding is enabled, use the forwarded product URL from Windows. [WSL file storage](https://learn.microsoft.com/en-us/windows/wsl/filesystems) · [WSL networking](https://learn.microsoft.com/en-us/windows/wsl/networking)
+For local evaluation on an x64 Windows PC, use the Linux x64 service archive `BambooShift-vX.Y.Z-server-linux-x64.tar.gz` in an Ubuntu 24.04 WSL2 distribution. Keep the package, private configuration and data inside the Linux filesystem, and run the installation commands above from the Linux shell with Node installed in that distribution. When WSL localhost forwarding is enabled, use the forwarded product URL from Windows. [WSL file storage](https://learn.microsoft.com/en-us/windows/wsl/filesystems) · [WSL networking](https://learn.microsoft.com/en-us/windows/wsl/networking)
 
 ## Operator access and lifecycle
 
@@ -52,10 +52,10 @@ Public web research for human requests to workspace-owned Bots uses the [hosted 
 Update checks are disabled by default (`"releases": null`). To enable them, set the intended public GitHub repository in the private server configuration and restart the service:
 
 ```json
-{ "releases": { "repository": "OWNER/REPOSITORY" } }
+{ "releases": { "repository": "zhiruiai/BambooShift" } }
 ```
 
-The repository value is a GitHub owner/repository slug, never a URL, token or private API endpoint. The settings Updates page reads the running Rust version, built web client version and, when available, the native desktop package version separately. Reading this page does not contact GitHub. An authenticated workspace member must explicitly select Check for updates to fetch the configured repository's latest stable release. Results are cached for five minutes; concurrent checks share the result.
+For a fork, use its current GitHub owner/repository slug. The settings Updates page reads the running Rust version, built web client version and, when available, the native desktop package version separately. Reading this page does not contact GitHub. An authenticated workspace member must explicitly select Check for updates to fetch the configured repository's latest stable release. Results are cached for five minutes; concurrent checks share the result.
 
 The server uses only the fixed GitHub latest-release endpoint, without credentials, redirects or environment proxies. Each request has an eight-second deadline and a 256 KiB response limit. Draft and prerelease releases are rejected. Version comparison follows SemVer; non-version tags are shown as uncomparable rather than as a fabricated latest version. Repository configuration is deployment-wide; checking it does not confer workspace administration rights.
 

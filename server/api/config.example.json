@@ -3,7 +3,7 @@
   "bind": "127.0.0.1:3001",
   "publicOrigin": null,
   "webOrigin": "http://127.0.0.1:5173",
-  "runtimeDir": "/ABSOLUTE/PATH/TO/pandamate/runtime",
+  "runtimeDir": "/ABSOLUTE/PATH/TO/bambooshift/runtime",
   "nodeBinary": "/ABSOLUTE/PATH/TO/node",
   "operations": {
     "bind": "127.0.0.1:3002",

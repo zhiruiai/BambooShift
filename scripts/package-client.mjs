@@ -15,11 +15,11 @@ import { dirname, extname, isAbsolute, join, relative, resolve } from 'node:path
 import { fileURLToPath } from 'node:url';
 
 import { writeMacLocalizations } from './client-localizations.mjs';
+import { desktopProductName, readDesktopProductName } from './publishing/package-names.mjs';
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
 const platforms = new Set(['darwin', 'win32', 'linux']);
 const architectures = new Set(['arm64', 'x64']);
-const clientName = (platform) => (platform === 'win32' ? 'PandaMate' : 'OpenBot');
 const licenseFiles = ['LICENSE', 'NOTICE', 'THIRD_PARTY.md'];
 const entryFiles = [
   'package.json',
@@ -306,7 +306,7 @@ export async function packageClient(options) {
   if (typeof packager !== 'function')
     throw new Error('需要官方 @electron/packager 20+。请先安装项目锁定的依赖。');
   const output = await ensureClientOutputDirectory();
-  const name = clientName(target.platform);
+  const name = desktopProductName(manifest);
   const bundle = `${name}-${target.platform}-${target.arch}`;
   const destination = join(output, bundle);
   try {
@@ -393,7 +393,7 @@ export async function packageClient(options) {
       throw new Error('打包器未返回预期的单一客户端产物。');
     if (target.platform === 'darwin') {
       for (const path of paths) {
-        const app = join(path, 'OpenBot.app');
+        const app = join(path, name + '.app');
         await command('/usr/libexec/PlistBuddy', [
           '-c',
           `Set :CFBundleDisplayName ${manifest.productName}`,
@@ -455,13 +455,14 @@ async function main() {
     return;
   }
   if (options.dryRun) {
+    const name = await readDesktopProductName(projectRoot);
     console.log(
       JSON.stringify(
         {
           platform: options.platform,
           arch: options.arch,
           source: 'desktop/',
-          output: `release/client/${clientName(options.platform)}-${options.platform}-${options.arch}`,
+          output: `release/client/${name}-${options.platform}-${options.arch}`,
           includesService: false,
           startsClient: false,
         },

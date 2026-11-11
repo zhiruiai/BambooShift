@@ -24,7 +24,7 @@ Grok Bot 的设置把用户桌面和 Bot 云电脑分开。云电脑持久保存
 | P2 · 凭据与常用授权 | BambooShift 已对具体操作检查发起者、工具、目标及接管权限。需要补独立秘密输入、凭据引用、有限范围的长期规则与撤销记录，并验证模型、其他成员、日志和回放无法读到秘密。[审批与隐私](https://docs.x.ai/grok-bot/approvals-security-and-privacy) |
 | P2 · 交付与移动端 | 保留可交互网站、源码 ZIP、版本及分享。参考 Pages 的同一交付物侧边继续修改、版本提示和分享管理。移动端优先做审批和交付通知；联系人、日历等系统能力单独设计权限。[Pages](https://docs.x.ai/grok-bot/files-and-results) · [移动端](https://docs.x.ai/grok-bot/mobile) |
 
-发布提交的真实电脑测试覆盖 Pi 发起、用户审批、独立 Chromium 打开页面并返回内容，使用合成页面。本机及 GitHub 托管 Linux 上的测试都有通过记录。当前 Mac 整机截图仍依赖系统权限，公开仓的测试也没有证明每个部署都配置了云实例。[远端验收](https://github.com/zhiruiai/PandaMate/actions/runs/42671066699)
+发布提交的真实电脑测试覆盖 Pi 发起、用户审批、独立 Chromium 打开页面并返回内容，使用合成页面。本机及 GitHub 托管 Linux 上的测试都有通过记录。当前 Mac 整机截图仍依赖系统权限，公开仓的测试也没有证明每个部署都配置了云实例。[远端验收](https://github.com/zhiruiai/BambooShift/actions/runs/42671066699)
 
 ## 界面和交互
 

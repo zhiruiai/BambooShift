@@ -13,7 +13,7 @@ const tagRef = 'refs/tags/' + releaseTag;
 const apiBoundary = 'TEST_RELEASE_API_BOUNDARY';
 const apiBoundaryStatus = 27;
 
-async function fixture(t) {
+async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
   const base = await mkdtemp(join(tmpdir(), 'pandamate-release-tag-'));
   t.after(() => rm(base, { recursive: true, force: true }));
   const work = join(base, 'work');
@@ -67,7 +67,7 @@ async function fixture(t) {
     const path = join(builds, 'pandamate-' + platform);
     await mkdir(path, { recursive: true });
     await writeFile(join(path, 'source-tree.txt'), stamped + '\n');
-    for (const kind of kinds) await writeFile(join(path, 'PandaMate-' + releaseTag + '-' + kind), kind);
+    for (const kind of kinds) await writeFile(join(path, packageName + '-' + releaseTag + '-' + kind), kind);
   }
 
   return {
@@ -78,8 +78,46 @@ async function fixture(t) {
     remoteTag: () => git(remote, 'rev-parse', tagRef + '^{commit}'),
     manifest: join(builds, 'pandamate-macos-arm64', 'source-tree.txt'),
     tag(target) {
-      git(work, 'tag', '-a', releaseTag, target, '-m', 'PandaMate release from ' + source);
+      git(work, 'tag', '-a', releaseTag, target, '-m', brand + ' release from ' + source);
       git(work, 'push', '-q', 'origin', tagRef);
+    },
+    async restoreDraft() {
+      // All existing assets have their expected digests, so a resume should
+      // keep both the archived bytes and the existing release title.
+      await writeFile(join(bin, 'curl'), '#!/bin/sh\nexit 99\n', { mode: 0o755 });
+      await writeFile(join(bin, 'gh'), `#!/usr/bin/env node
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+const api = args.find(arg => arg.startsWith('repos/'));
+const release = { id: 1, tag_name: 'untagged-fixture', draft: true,
+  name: 'MosoCrew ' + process.env.RELEASE_TAG,
+  body: '<!-- pandamate-source: ' + process.env.RELEASE_SOURCE + ' -->' };
+if (api.endsWith('/releases?per_page=100')) {
+  console.log(JSON.stringify([[release]]));
+} else if (api.endsWith('/assets?per_page=100')) {
+  const stage = fs.readdirSync(process.env.RUNNER_TEMP).find(name => name.startsWith('pandamate-publish.'));
+  const directory = path.join(process.env.RUNNER_TEMP, stage);
+  const sums = fs.readFileSync(path.join(directory, 'SHA256SUMS.txt'), 'utf8').trim().split('\\n');
+  const assets = sums.map(line => {
+    const [digest, name] = line.split('  ');
+    return { name, digest: 'sha256:' + digest, state: 'uploaded' };
+  });
+  const digest = require('node:crypto').createHash('sha256')
+    .update(fs.readFileSync(path.join(directory, 'SHA256SUMS.txt'))).digest('hex');
+  assets.push({ name: 'SHA256SUMS.txt', digest: 'sha256:' + digest, state: 'uploaded' });
+  console.log(JSON.stringify([assets]));
+} else if (args.includes('PATCH')) {
+  assert.ok(!args.some(arg => arg.startsWith('name=')));
+  assert.ok(args.includes('draft=false'));
+} else if (api.endsWith('/releases/1') && !args.includes('--method')) {
+  console.log(JSON.stringify({ ...release, draft: false, tag_name: process.env.RELEASE_TAG,
+    html_url: 'https://example.test/release' }));
+} else {
+  throw new Error('Unexpected release API call');
+}
+`, { mode: 0o755 });
     },
     publish() {
       return spawnSync('bash', [publisher], {
@@ -91,6 +129,8 @@ async function fixture(t) {
           RELEASE_TAG: releaseTag,
           RELEASE_SOURCE: source,
           RELEASE_DAY: '2026-11-11',
+          RELEASE_BRAND: brand,
+          RELEASE_PACKAGE_NAME: packageName,
           GITHUB_REPOSITORY: 'example/pandamate',
         },
         encoding: 'utf8',
@@ -111,14 +151,15 @@ test('a stamped build pushes a tag to the existing source commit and can resume 
   assert.notEqual(f.git('rev-parse', 'HEAD^{tree}'), f.stamped);
   assertReachedReleaseApi(f.publish());
   assert.equal(f.remoteTag(), f.source);
+  assert.equal(f.git('for-each-ref', '--format=%(subject)', tagRef), 'BambooShift release from ' + f.source);
   assert.equal(f.git('rev-parse', 'HEAD'), f.source);
   assert.equal(f.git('write-tree'), f.stamped);
   assertReachedReleaseApi(f.publish());
   assert.equal(f.remoteTag(), f.source);
 });
 
-test('a legacy release resumes only with the original parent and stamped tree', async (t) => {
-  const f = await fixture(t);
+test('a legacy PandaMate release resumes only with the original parent and stamped tree', async (t) => {
+  const f = await fixture(t, { brand: 'PandaMate' });
   await writeFile(f.versionFile, version);
   f.git('commit', '-qam', 'Legacy stamped release');
   const legacy = f.git('rev-parse', 'HEAD');
@@ -138,6 +179,18 @@ test('a legacy release resumes only with the original parent and stamped tree', 
   assert.ifError(result.error);
   assert.equal(result.status, 1, result.stderr);
   assert.doesNotMatch(result.stderr, new RegExp(apiBoundary));
+});
+
+test('a legacy MosoCrew source resumes with its original PandaMate archive names', async (t) => {
+  const f = await fixture(t, { brand: 'MosoCrew', packageName: 'PandaMate' });
+  f.tag(f.source);
+  await f.restoreDraft();
+  const result = f.publish();
+  assert.ifError(result.error);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout.trim(), 'https://example.test/release');
+  assert.equal(f.remoteTag(), f.source);
+  assert.equal(f.git('for-each-ref', '--format=%(subject)', tagRef), 'MosoCrew release from ' + f.source);
 });
 
 test('a mismatched build manifest stops release before pushing a tag', async (t) => {

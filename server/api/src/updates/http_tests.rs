@@ -26,11 +26,14 @@ struct Fixture {
 }
 impl Fixture {
     async fn new(url: Option<String>) -> Self {
+        Self::with_repository(url, "synthetic-org/openbot-example").await
+    }
+    async fn with_repository(url: Option<String>, repository: &str) -> Self {
         let directory = tempfile::tempdir().unwrap();
         let mut config = Config::local(directory.path());
         if url.is_some() {
             config.releases = Some(ReleasesConfig {
-                repository: "synthetic-org/openbot-example".into(),
+                repository: repository.into(),
             });
         }
         let mut state = State::open(config).await.unwrap();
@@ -191,6 +194,28 @@ async fn owner_and_member_explicit_checks_share_one_bounded_cache_and_get_never_
     );
     assert_eq!(f.request("POST", false, Some(&f.owner)).await.0, 200);
     assert_eq!(calls.load(Ordering::SeqCst), 2);
+    f.state.close().await;
+    task.abort();
+    let _ = task.await;
+}
+#[tokio::test]
+async fn a_previous_installation_uses_the_new_repository_for_updates() {
+    let mut body = release("v2.0.0");
+    let canonical_url = "https://github.com/zhiruiai/BambooShift/releases/tag/v2.0.0";
+    body["html_url"] = canonical_url.into();
+    let (url, calls, task) = mock(200, body.to_string(), Duration::ZERO).await;
+    let f = Fixture::with_repository(Some(url), "ZhiruiAI/pandamate").await;
+
+    let status = f.request("GET", false, Some(&f.owner)).await;
+    assert_eq!(status.1["repository"], "zhiruiai/BambooShift");
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    let checked = f.request("POST", false, Some(&f.owner)).await;
+    assert_eq!(checked.0, 200);
+    assert_eq!(checked.1["status"], "update_available");
+    assert_eq!(checked.1["repository"], "zhiruiai/BambooShift");
+    assert_eq!(checked.1["release"]["url"], canonical_url);
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
     f.state.close().await;
     task.abort();
     let _ = task.await;

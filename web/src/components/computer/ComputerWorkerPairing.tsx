@@ -12,7 +12,7 @@ type PairingCheck = {
 };
 
 const setupGuide =
-  'https://github.com/zhiruiai/PandaMate/blob/main/docs/computer.md#%E7%8B%AC%E7%AB%8B-worker';
+  'https://github.com/zhiruiai/BambooShift/blob/main/docs/computer.md#%E7%8B%AC%E7%AB%8B-worker';
 const browserState = {
   supported: 'computer:pair_browser_supported',
   unavailable: 'computer:pair_browser_unavailable',
