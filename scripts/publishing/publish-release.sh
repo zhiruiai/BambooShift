@@ -41,18 +41,17 @@ tag_ref="refs/tags/$RELEASE_TAG"
 if git show-ref --verify --quiet "$tag_ref"; then
   test "$(git cat-file -t "$tag_ref")" = tag
   test "$(git for-each-ref --format='%(subject)' "$tag_ref")" = "PandaMate release from $RELEASE_SOURCE"
-  test "$(git rev-parse "$tag_ref^{tree}")" = "$tree"
   tagged="$(git rev-parse "$tag_ref^{commit}")"
   if [[ "$tagged" != "$RELEASE_SOURCE" ]]; then
-    test "$(git rev-parse "$tagged^")" = "$RELEASE_SOURCE"
+    # Older drafts may have tagged a child commit containing the stamped files.
+    test "$(git show --no-patch --format=%P "$tagged")" = "$RELEASE_SOURCE"
+    test "$(git rev-parse "$tagged^{tree}")" = "$tree"
   fi
 else
   git config user.name 'PandaMate Release'
   git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-  if [[ "$tree" != "$(git rev-parse HEAD^{tree})" ]]; then
-    git commit -m "Prepare PandaMate $RELEASE_TAG"
-  fi
-  git tag -a "$RELEASE_TAG" -m "PandaMate release from $RELEASE_SOURCE"
+  # Push a tag to the published source commit. The stamped tree is only used for archives.
+  git tag -a "$RELEASE_TAG" "$RELEASE_SOURCE" -m "PandaMate release from $RELEASE_SOURCE"
   git push origin "$tag_ref:$tag_ref"
 fi
 
@@ -73,13 +72,13 @@ if [[ "$release_count" == 0 ]]; then
 
 PandaMate $RELEASE_TAG · $RELEASE_DAY
 
-- **Source** includes the web, server, desktop, and Flutter source with the release version.
+- **PandaMate source archive** includes the web, server, desktop, and Flutter source with the release version. GitHub’s automatic Source code links contain the original tagged commit.
 - **Linux x64 server** includes the product web app, operations console, and worker bundles. Read the README in the archive for setup.
 - **macOS Apple Silicon client** connects to a separate PandaMate server. The app uses a local ad-hoc signature and has no Apple notarization.
 $windows_notes_en
 - **SHA256SUMS.txt** lists the checksums for the archives.
 
-源码包包含各端源码。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
+PandaMate 源码包包含带发布版本号的各端源码。GitHub 自动生成的 Source code 下载项对应原始提交。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
 NOTES
   release="$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
     -f "tag_name=$RELEASE_TAG" -f "name=$title" -F "body=@$notes" -F draft=true -F prerelease=false)"

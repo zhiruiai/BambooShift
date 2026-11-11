@@ -38,7 +38,7 @@ Electron 按服务来源隔离 Cookie；同一来源内的空间仍由成员权�
 
 ## 配置 HTTPS 入口
 
-服务配置使用 owner-only 的私有 JSON，而不是把部署信息写进源码。先按[本机启动说明](../README.md)或[服务部署说明](../server/api/deployment/README.md)建立配置。下面仅为来源配置片段：
+服务配置使用 owner-only 的私有 JSON，而不是把部署信息写进源码。先按[本机启动说明](../README.zh-CN.md#快速开始)或[服务部署说明](../server/api/deployment/README.md)建立配置。下面仅为来源配置片段：
 
 ```json
 {

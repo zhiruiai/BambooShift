@@ -3,6 +3,7 @@ mod workspace_support;
 use computer_support::*;
 use openbot_backend::{computer, workspace::access};
 use serde_json::{Value, json};
+use std::time::Duration;
 use workspace_support::Fixture;
 fn headers(cookie: &str, user: &str) -> axum::http::HeaderMap {
     let mut h = axum::http::HeaderMap::new();
@@ -299,9 +300,14 @@ async fn root_task_queue_keeps_same_bot_exclusive_until_cleanup_and_does_not_blo
     let a = computer::tasks::acquire(&controller, first, "chat-a", "run-a", authority.clone())
         .await
         .unwrap();
-    let b = computer::tasks::acquire(&controller, second, "chat-b", "run-b", authority.clone())
-        .await
-        .unwrap();
+    let b = tokio::time::timeout(
+        Duration::from_secs(10),
+        computer::tasks::acquire(&controller, second, "chat-b", "run-b", authority.clone()),
+    )
+    .await
+    .expect("the second Bot should acquire its own screen while the first Bot is active")
+    .unwrap();
+    let mut updates = controller.store.subscribe();
     let waiting = {
         let c = controller.clone();
         let agent = first.to_owned();
@@ -309,16 +315,24 @@ async fn root_task_queue_keeps_same_bot_exclusive_until_cleanup_and_does_not_blo
             computer::tasks::acquire(&c, &agent, "chat-c", "run-c", authority).await
         })
     };
-    for _ in 0..100 {
-        if controller.tasks.state(first)["queued"] == 1 {
-            break;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        while controller.tasks.state(first)["queued"] != 1 {
+            updates
+                .recv()
+                .await
+                .expect("the workspace should emit task updates");
         }
-        tokio::task::yield_now().await;
-    }
-    assert_eq!(controller.tasks.state(first)["queued"], 1);
+    })
+    .await
+    .expect("the same Bot's second task should enter the queue");
+    assert_eq!(controller.tasks.state(first)["conversationId"], "chat-a");
     assert!(!waiting.is_finished());
     a.finish().await.unwrap();
-    let c = waiting.await.unwrap().unwrap();
+    let c = tokio::time::timeout(Duration::from_secs(10), waiting)
+        .await
+        .expect("the queued task should acquire the screen after the first task finishes")
+        .unwrap()
+        .unwrap();
     assert_eq!(controller.tasks.state(first)["conversationId"], "chat-c");
     c.finish().await.unwrap();
     b.finish().await.unwrap();
