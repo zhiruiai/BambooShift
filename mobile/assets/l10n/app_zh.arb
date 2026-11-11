@@ -136,6 +136,8 @@
   "signOutConfirm": "确定在这台设备上退出当前账户吗？",
   "model": "模型连接",
   "modelMissing": "请先在空间设置连接模型，再开始任务。",
+  "chatModelRequired": "连接模型后即可发送消息。",
+  "chatModelRequiresOwner": "请联系工作空间所有者连接模型，然后就能发送消息。",
   "modelConfigured": "模型已连接",
   "routines": "例行任务",
   "memories": "记忆",

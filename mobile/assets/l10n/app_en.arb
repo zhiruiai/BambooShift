@@ -136,6 +136,8 @@
   "signOutConfirm": "Sign out of this account on this device?",
   "model": "Model connection",
   "modelMissing": "Connect a model in workspace settings before starting a task.",
+  "chatModelRequired": "Connect a model to start sending messages.",
+  "chatModelRequiresOwner": "Ask your workspace owner to connect a model so you can send messages.",
   "modelConfigured": "Model connected",
   "routines": "Routines",
   "memories": "Memory",

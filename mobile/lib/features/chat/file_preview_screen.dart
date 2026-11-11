@@ -10,6 +10,7 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import '../files/file_export_button.dart';
 import '../files/file_export_controller.dart';
+import 'chat_markdown.dart';
 import 'file_preview_data.dart';
 
 class FilePreviewScreen extends StatefulWidget {
@@ -178,10 +179,13 @@ class _FilePreviewScreenState extends State<FilePreviewScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.file.html) const Notice('mobileChatHtmlSourceOnly'),
-                SelectableText(
-                  content ?? '',
-                  style: const TextStyle(fontSize: 14, height: 1.5),
-                ),
+                if (widget.file.markdown)
+                  ChatMarkdown(text: content ?? '', canOpenLink: () => valid)
+                else
+                  SelectableText(
+                    content ?? '',
+                    style: const TextStyle(fontSize: 14, height: 1.5),
+                  ),
               ],
             ),
           ),

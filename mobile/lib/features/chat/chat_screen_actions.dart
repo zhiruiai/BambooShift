@@ -1,6 +1,30 @@
 part of 'chat_screen.dart';
 
 extension _ChatScreenActions on _ChatScreenState {
+  Widget chatModelNotice(ChatController controller) => controller.scope.owner
+      ? Notice(
+          'chatModelRequired',
+          action: 'mobileModelsLibrary',
+          onAction: () => openChatModels(controller),
+        )
+      : const Notice('chatModelRequiresOwner');
+
+  Future<void> openChatModels(ChatController controller) async {
+    final scope = controller.scope;
+    if (!current(controller) ||
+        !scope.owner ||
+        scope.find('conversations', controller.conversationId) == null) {
+      return;
+    }
+    await Navigator.push<void>(
+      context,
+      MaterialPageRoute(builder: (_) => ModelSettings(scope: scope)),
+    );
+    if (current(controller) && scope.data?['settings']?['configured'] != true) {
+      await _refresh();
+    }
+  }
+
   Future<void> _recover({required bool retry}) async {
     final currentChat = chat;
     if (retry) {

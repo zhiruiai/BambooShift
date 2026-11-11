@@ -96,6 +96,14 @@ export const WEBSITE_WORKER_RUNTIME = String.raw`
         dataset: { value: Object.freeze(row.data) },
         appendChild: { value: mount(row.key) },
       });
+      for (const type of ['click', 'input', 'change']) {
+        let handler = null;
+        item.addEventListener(type, (event) => handler?.call(item, event));
+        Object.defineProperty(item, 'on' + type, {
+          get: () => handler,
+          set: (value) => { handler = typeof value === 'function' ? value : null; },
+        });
+      }
       handles.set(row.key, item);
       return item;
     }

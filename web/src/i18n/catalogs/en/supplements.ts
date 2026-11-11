@@ -120,6 +120,7 @@ export default {
     questionChooseOne: 'Choose one answer.',
     questionChooseSeveral: 'Choose one or more answers.',
     questionAnswered: 'Answer submitted',
+    questionAnswerSelection: 'Selected {{options}}',
     questionReadOnly: 'The person who started the task can answer.',
     questionUnavailable: 'This question is no longer available to answer.',
     questionUnknown: 'The answer could not be confirmed. Check its status before trying again.',

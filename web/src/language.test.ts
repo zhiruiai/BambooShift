@@ -1,6 +1,43 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createLanguageController, LANGUAGE_STORAGE_KEY } from './i18n/language';
+import { initializeLanguage } from './i18n';
+import { chatMessageText } from './i18n/serviceText';
+
+test('localizes only a terminal run’s service cancellation notice', () => {
+  const language = initializeLanguage();
+  const previous = language.getSnapshot().locale;
+  const notice = '任务已停止，已完成的工作保留。';
+  const translated = 'The task stopped. Completed work is retained.';
+  const partial = `**保留原文**\n\n${notice}\n\nMore text`;
+  const cancelled = {
+    role: 'assistant',
+    kind: 'text',
+    status: 'error',
+    content: `${partial}\n\n${notice}`,
+    metadata: { runId: 'run-cancelled', executionStatus: 'cancelled' },
+  } as const;
+  try {
+    language.setLanguage('en');
+    assert.equal(chatMessageText(cancelled), `${partial}\n\n${translated}`);
+    assert.equal(chatMessageText({ ...cancelled, content: notice }), translated);
+    assert.equal(
+      chatMessageText({
+        ...cancelled,
+        metadata: { ...cancelled.metadata, executionStatus: 'error' },
+      }),
+      `${partial}\n\n${translated}`,
+    );
+    assert.equal(chatMessageText({ ...cancelled, role: 'user' }), cancelled.content);
+    assert.equal(chatMessageText({ ...cancelled, status: 'done' }), cancelled.content);
+    assert.equal(chatMessageText({ ...cancelled, metadata: {} }), cancelled.content);
+    assert.equal(chatMessageText({ ...cancelled, content: partial }), partial);
+    language.setLanguage('zh-CN');
+    assert.equal(chatMessageText(cancelled), cancelled.content);
+  } finally {
+    language.setLanguage(previous);
+  }
+});
 
 class EventHub extends EventTarget {
   count = 0;

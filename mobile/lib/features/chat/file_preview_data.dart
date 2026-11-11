@@ -12,19 +12,12 @@ class ChatFile {
   String get extension => name.split('.').last.toLowerCase();
   bool get image => ['png', 'jpg', 'jpeg', 'webp'].contains(extension);
   bool get html => ['html', 'htm'].contains(extension);
+  bool get markdown => ['md', 'markdown'].contains(extension);
   bool get supported =>
       image ||
-      [
-        'txt',
-        'md',
-        'markdown',
-        'html',
-        'htm',
-        'csv',
-        'json',
-        'log',
-        'xml',
-      ].contains(extension);
+      html ||
+      markdown ||
+      ['txt', 'csv', 'json', 'log', 'xml'].contains(extension);
   static ChatFile? fromMessage(WorkspaceController scope, Json message) {
     if (message['kind'] != 'file' || message['metadata'] is! Map) return null;
     final id = message['metadata']['fileId'];

@@ -124,7 +124,7 @@
   min-height: 0;
   background: var(--surface);
 }
-.file-preview-body:has(.file-preview-html) {
+.file-preview-body:has(.file-preview-html:not([hidden])) {
   overflow: hidden;
 }
 .file-preview-body > p,
@@ -166,6 +166,9 @@
   border: 0;
   background: #fff;
   color-scheme: light;
+}
+.file-preview-html[hidden] {
+  display: none;
 }
 .file-preview-note {
   display: flex;

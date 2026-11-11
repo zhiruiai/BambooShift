@@ -14,6 +14,7 @@
   "mobileSearchLatest": "Back to latest messages",
   "mobileChatLibraryTitle": "Conversation library",
   "mobileChatLibraryOpenLink": "Open link in browser",
+  "mobileChatLibraryMoreFiles": "Show more files",
   "mobileChatLibraryMoreLinks": "Show more links",
   "mobileChatLibrarySourceHint": "Open the source message"
 }

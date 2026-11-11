@@ -59,25 +59,43 @@ const fixture = [
     const external = 'https://example.test/blocked-module';
     try { await import(external); } catch {}
     document.body.requestPointerLock();
-    document.getElementById('enter').addEventListener('click', () => canvas.requestPointerLock());
+    document.getElementById('enter').onclick = () => canvas.requestPointerLock();
     text.textContent = 'Local 3D triangle rendered';`,
   ],
 ] as const;
 
 test(
-  'website preview opens a nested local module, renders WebGL and routes only a real local link',
+  'website panel runs local WebGL, keeps progress across tabs and opens only local links',
   { timeout: 40_000 },
   async () => {
     const bundled = await build({
       stdin: {
-        contents: `export {websitePreviewDocument} from './web/src/websitePreviewDocument'; export {websiteFiles} from './web/src/websitePreviewFiles';`,
+        contents: `
+          import { createRoot } from 'react-dom/client';
+          import { WebsiteProjectPanel } from './web/src/components/WebsiteProjectPanel';
+          const files = ${JSON.stringify(fixture)}.map(([path, mime, content]) =>
+            ({ path, mime, bytes: new TextEncoder().encode(content) }));
+          const project = {
+            id: 'synthetic-version', projectKey: 'synthetic-project', title: 'Local website',
+            entry: 'index.html', fileCount: files.length,
+            totalBytes: files.reduce((total, file) => total + file.bytes.length, 0),
+          };
+          const noop = () => {};
+          createRoot(document.getElementById('root')).render(
+            <WebsiteProjectPanel project={project} state={{ kind: 'ready', files }}
+              onClose={noop} onDiscuss={noop} onRetry={noop} onDownload={noop}
+              downloading={false} downloadFailed={false} />
+          );`,
         resolveDir: process.cwd(),
+        loader: 'tsx',
       },
       write: false,
       bundle: true,
+      outdir: 'output',
       format: 'iife',
-      globalName: 'fixturePreview',
       platform: 'browser',
+      jsx: 'automatic',
+      define: { 'import.meta.hot': 'undefined', 'process.env.NODE_ENV': '"production"' },
     });
     const browser = await chromium.launch({
       headless: true,
@@ -101,23 +119,14 @@ test(
         requests.push(route.request().url());
         return route.abort();
       });
-      await page.setContent(
-        '<iframe sandbox="allow-scripts allow-pointer-lock" referrerpolicy="no-referrer"></iframe>',
-      );
-      await page.addScriptTag({ content: bundled.outputFiles[0].text });
+      await page.setContent('<div id="root"></div>');
+      await page.addStyleTag({
+        content:
+          bundled.outputFiles.find(({ path }) => path.endsWith('.css'))!.text +
+          '\n.website-project-panel { height: 560px }',
+      });
       await page.addScriptTag({
-        content: `(() => {
-        const iframe = document.querySelector('iframe');
-        const index = fixturePreview.websiteFiles(${JSON.stringify(fixture)}.map(([path,mime,value]) =>
-          ({path,mime,bytes:new TextEncoder().encode(value)})));
-        const open = entryPath => { iframe.srcdoc = fixturePreview.websitePreviewDocument(index, entryPath,
-          {channel:'synthetic-channel',scriptError:'Script failed',partial:'Partial preview'}); };
-        addEventListener('message', event => {
-          if (event.source === iframe.contentWindow && event.origin === 'null' &&
-            event.data.channel === 'synthetic-channel' && event.data.kind === 'navigate') open(event.data.value);
-        });
-        open('index.html');
-      })()`,
+        content: bundled.outputFiles.find(({ path }) => path.endsWith('.js'))!.text,
       });
       const frame = page.frameLocator('iframe');
       await frame.getByText('Local 3D triangle rendered').waitFor({ timeout: 10_000 });
@@ -141,6 +150,13 @@ test(
       assert.equal(await frame.locator('html').getAttribute('data-pointer-calls'), null);
       await frame.getByRole('button', { name: 'Enter scene' }).click();
       await frame.locator('html[data-pointer-calls="1"]').waitFor();
+      const source = page.getByRole('tab', { name: /源码|^Source$/ });
+      await source.click();
+      await page.locator('iframe').waitFor({ state: 'hidden' });
+      await page.getByRole('button', { name: 'src/scene.mjs' }).click();
+      await page.locator('pre[aria-label="src/scene.mjs"]').waitFor();
+      await source.press('ArrowLeft');
+      assert.equal(await frame.locator('html').getAttribute('data-pointer-calls'), '1');
       await frame.getByRole('link', { name: 'Local details' }).click();
       await frame.getByRole('heading', { name: 'Local details page' }).waitFor();
       assert.deepEqual(requests, []);

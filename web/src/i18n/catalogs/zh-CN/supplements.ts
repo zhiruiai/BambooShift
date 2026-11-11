@@ -113,6 +113,7 @@ export default {
     questionChooseOne: '请选择一项。',
     questionChooseSeveral: '请选择一项或多项。',
     questionAnswered: '已提交答案',
+    questionAnswerSelection: '已选 {{options}}',
     questionReadOnly: '只有任务发起者可以回答。',
     questionUnavailable: '这个问题已无法回答。',
     questionUnknown: '暂时无法确认提交结果。请先查看答案状态。',

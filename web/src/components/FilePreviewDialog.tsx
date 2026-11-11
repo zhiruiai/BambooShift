@@ -165,9 +165,10 @@ export function FilePreviewDialog({
           content.kind !== 'html' &&
           content.kind !== 'image' &&
           !showSource && <FormattedFilePreview content={content} />}
-        {content?.kind === 'html' && !showSource && document && (
+        {content?.kind === 'html' && document && (
           <iframe
             className="file-preview-html"
+            hidden={showSource}
             title={uiText('workspace:filePreviewDocument')}
             sandbox={document.interactive ? 'allow-scripts' : ''}
             referrerPolicy="no-referrer"

@@ -215,7 +215,7 @@ test(
       assert.deepEqual(actors, ['owner-a']);
       stage('source and mobile');
       await page.getByRole('tab', { name: '源码' }).click();
-      assert.equal(await iframe.count(), 0);
+      await iframe.waitFor({ state: 'hidden' });
       assert.equal(await page.locator('pre').textContent(), html);
       assert.equal(await page.locator('.file-preview-body script').count(), 0);
       await page.getByRole('tab', { name: '预览', exact: true }).click();
@@ -348,10 +348,19 @@ test(
       await dialog.locator('.file-preview-body').evaluate((node) => {
         node.scrollTop = node.scrollHeight;
       });
+      assert.ok(await dialog.locator('.file-preview-body').evaluate((node) => node.scrollTop > 0));
       for (const control of [source, dialog.getByRole('link', { name: '下载' })]) {
         const bounds = await control.boundingBox();
         assert.ok(bounds && bounds.y >= 0 && bounds.y + bounds.height <= 480);
       }
+      await dialog.getByRole('tab', { name: '预览', exact: true }).click();
+      const reopened = await (await iframe.elementHandle())?.contentFrame();
+      assert.ok(
+        reopened === lesson,
+        'Switching to source should keep the same interactive preview',
+      );
+      assert.equal(await right.getAttribute('aria-pressed'), 'true');
+      assert.equal(await lesson.locator('[data-ob-status]').textContent(), '回答正确');
       await page.keyboard.press('Escape');
       await dialog.waitFor({ state: 'detached' });
       assert.deepEqual(unexpected, []);

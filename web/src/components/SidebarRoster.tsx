@@ -1,4 +1,5 @@
 import { uiText } from '../i18n';
+import { chatMessageText } from '../i18n/serviceText';
 import {
   ChevronDown,
   ChevronRight,
@@ -129,7 +130,10 @@ export function SidebarRosterList(props: ListProps) {
                 ? primaryBotSummary(data.primaryBot, conversation, working, data.primaryCheckIn)
                 : working
                   ? uiText('common:text_1967f541db92')
-                  : last?.content.replace(/[#*`\[\]]/g, '').slice(0, 75) ||
+                  : (last &&
+                      chatMessageText(last)
+                        .replace(/[#*`\[\]]/g, '')
+                        .slice(0, 75)) ||
                     agents[0]?.description ||
                     uiText('common:text_cc628b087505')}
             </span>

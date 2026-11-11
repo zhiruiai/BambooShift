@@ -110,12 +110,21 @@
   min-height: 0;
   overflow: hidden;
 }
-.website-project-content > .website-project-preview {
+.website-project-preview-pane {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+.website-project-preview-pane[hidden] {
+  display: none;
+}
+.website-project-preview-pane > .website-project-preview {
   flex: 1;
   height: 0;
   min-height: 0;
 }
-.website-project-content > [role='alert']:not(.website-project-status),
+.website-project-preview-pane > [role='alert'],
 .website-project-status {
   display: grid;
   justify-items: start;

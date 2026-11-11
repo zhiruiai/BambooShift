@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { resolve } from 'node:path';
-import { build as viteBuild, type Plugin } from 'vite';
+import { build as viteBuild, createFilter, normalizePath, type Plugin } from 'vite';
 import { frontendConfig } from '../../scripts/vite.shared';
 import { all, compile, deferred, harness, json, render } from './testSupport/botProfilesFixture';
 
@@ -31,9 +31,17 @@ test('the two Vite sites use separate ports and operator proxy routes never reac
   assert.equal(operations.build?.outDir, resolve('operations-dist'));
   assert.equal(operations.publicDir, false);
   for (const config of [product, operations]) {
-    for (const privatePath of ['**/.local/**', '**/data/**', '**/config/private/**'])
-      assert.ok(config.server?.fs?.deny?.includes(privatePath), privatePath);
-    assert.ok((config.server?.watch?.ignored as string[]).includes('**/.local/**'));
+    const denied = createFilter(config.server?.fs?.deny, undefined, { resolve: false });
+    const ignored = createFilter(config.server?.watch?.ignored as string[], undefined, {
+      resolve: false,
+    });
+    for (const privatePath of ['.local/value', 'data/value', 'config/private/value']) {
+      assert.ok(denied(normalizePath(resolve(privatePath))), privatePath);
+      assert.ok(denied(normalizePath(resolve('web/nested', privatePath))), privatePath);
+    }
+    assert.ok(ignored(normalizePath(resolve('.local/value'))));
+    assert.equal(denied(normalizePath(resolve('web/index.html'))), false);
+    assert.equal(ignored(normalizePath(resolve('web/src/App.tsx'))), false);
   }
   for (const path of ['/api/platform/session', '/api/platform/users?q=one', '/api/health'])
     assert.equal(proxy(operations, path), 'http://127.0.0.1:3002');

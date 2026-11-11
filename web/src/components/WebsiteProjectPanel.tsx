@@ -244,11 +244,9 @@ export function WebsiteProjectPanel({
             </button>
           </div>
         )}
-        {state.kind === 'ready' &&
-          (mode === 'source' ? (
-            <WebsiteSource files={state.files} selected={selected} onSelect={setSelected} />
-          ) : (
-            <>
+        {state.kind === 'ready' && (
+          <>
+            <div className="website-project-preview-pane" hidden={mode === 'source'}>
               {entry !== project.entry && (
                 <div className="website-project-current-page">
                   <IconButton
@@ -261,8 +259,12 @@ export function WebsiteProjectPanel({
                 </div>
               )}
               <WebsiteProjectPreview files={state.files} entryPath={entry} onNavigate={goTo} />
-            </>
-          ))}
+            </div>
+            {mode === 'source' && (
+              <WebsiteSource files={state.files} selected={selected} onSelect={setSelected} />
+            )}
+          </>
+        )}
       </div>
     </>
   );

@@ -20,6 +20,7 @@ import 'attachment_panel.dart';
 import 'attachment_selection.dart';
 import '../bots/group_settings.dart';
 import '../computer/computer_screen.dart';
+import '../settings/model_settings.dart';
 import '../voice/voice_controller.dart';
 import '../voice/voice_controls.dart';
 import '../voice/voice_transport.dart';
@@ -397,7 +398,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 const Notice('chatThreadUnavailable'),
               if (active != null && chatThreadRoot(active) != thread)
                 const Notice('chatThreadWaiting'),
-              if (!modelReady) const Notice('modelMissing'),
+              if (!modelReady && conversation != null && scope.active)
+                chatModelNotice(controller),
               if (sourceUnavailable) const Notice('unavailable'),
               Expanded(
                 child: messages.isEmpty

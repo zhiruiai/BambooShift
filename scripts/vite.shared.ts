@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
-import type { UserConfig } from 'vite';
+import { normalizePath, type UserConfig } from 'vite';
 import { webLicenseInputs } from './web-license-inputs';
 
 type Environment = Record<string, string | undefined>;
@@ -23,15 +23,23 @@ function apiTarget(mode: 'product' | 'operations', env: Environment) {
 export function frontendConfig(
   mode: 'product' | 'operations',
   env: Environment = process.env,
+  projectRoot = root,
 ): UserConfig {
+  // Anchor deployment directories to this checkout, not an identically named
+  // ancestor (for example a source archive unpacked below release/ or data/).
+  const scoped = (directory: string) =>
+    normalizePath(resolve(projectRoot)).replace(/([*?\[\]{}()!+@])/g, '\\$1') +
+    '/**/' +
+    directory +
+    '/**';
   const operations = mode === 'operations';
   const target = apiTarget(mode, env);
   return {
-    root: resolve(root, operations ? 'operations' : 'web'),
-    envDir: root,
-    plugins: [react(), webLicenseInputs(root, mode)],
+    root: resolve(projectRoot, operations ? 'operations' : 'web'),
+    envDir: projectRoot,
+    plugins: [react(), webLicenseInputs(projectRoot, mode)],
     ...(operations
-      ? { publicDir: false, cacheDir: resolve(root, 'node_modules/.vite-operations') }
+      ? { publicDir: false, cacheDir: resolve(projectRoot, 'node_modules/.vite-operations') }
       : {}),
     server: {
       host: '127.0.0.1',
@@ -39,35 +47,38 @@ export function frontendConfig(
       strictPort: true,
       watch: {
         ignored: [
-          '**/.local/**',
-          '**/dist/**',
-          '**/data/**',
-          '**/release/**',
-          '**/.tools/**',
-          '**/.build/**',
-          '**/config/private/**',
-          '**/operations-dist/**',
+          scoped('.local'),
+          scoped('dist'),
+          scoped('data'),
+          scoped('release'),
+          scoped('.tools'),
+          scoped('.build'),
+          scoped('config/private'),
+          scoped('operations-dist'),
         ],
       },
       fs: {
-        allow: [root],
+        allow: [projectRoot],
         deny: [
-          '**/.local/**',
+          scoped('.local'),
           '.env',
           '.env.*',
           '*.{crt,pem}',
           '**/.git/**',
-          '**/data/**',
-          '**/release/**',
-          '**/config/private/**',
-          '**/.tools/**',
-          '**/.build/**',
+          scoped('data'),
+          scoped('release'),
+          scoped('config/private'),
+          scoped('.tools'),
+          scoped('.build'),
         ],
       },
       proxy: operations
         ? { '^/api/platform(?:/|\\?|$)': target, '^/api/health(?:\\?|$)': target }
         : { '/api': target, '^/admin(?:/|\\?|$)': target },
     },
-    build: { outDir: resolve(root, operations ? 'operations-dist' : 'dist'), emptyOutDir: true },
+    build: {
+      outDir: resolve(projectRoot, operations ? 'operations-dist' : 'dist'),
+      emptyOutDir: true,
+    },
   };
 }

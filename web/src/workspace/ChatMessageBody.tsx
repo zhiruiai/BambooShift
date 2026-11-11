@@ -1,5 +1,5 @@
 import { ChatQuestionCard } from '../components/chatQuestions/ChatQuestionCard';
-import { parseChatQuestion } from '../../../shared/chat-questions';
+import { normalizeChatQuestionSelection, parseChatQuestion } from '../../../shared/chat-questions';
 import { fixedWorkspaceApi } from '../fixedWorkspaceApi';
 import { AppConnectionProposalCard } from '../components/AppConnectionProposalCard';
 import { canReviewCustomApp } from '../appProposalEntry';
@@ -17,7 +17,8 @@ import { WebsiteProjectCard } from '../components/WebsiteProjectCard';
 import { VoiceMemoCard } from '../components/VoiceMemoCard';
 import { currentWorkspaceId, workspaceApiUrl } from '../workspace-scope';
 import type { BotAgent, Message } from '../../../shared/types';
-import { uiText } from '../i18n';
+import { currentLanguage, uiText } from '../i18n';
+import { chatMessageText } from '../i18n/serviceText';
 import type { OpenWebsiteProject } from '../websiteProjects';
 import { messageVoiceMemo } from '../voiceMemo';
 import type { WorkspaceModel } from './types';
@@ -44,6 +45,44 @@ type MessageBodyActions = Pick<
   | 'sync'
   | 'refresh'
 >;
+
+function submittedQuestionOptions(message: Message, messages: readonly Message[]) {
+  const marker = message.metadata?.questionAnswer;
+  if (
+    message.role !== 'user' ||
+    !message.replyTo ||
+    !marker ||
+    typeof marker !== 'object' ||
+    !('questionId' in marker) ||
+    marker.questionId !== message.replyTo.id ||
+    !('optionIds' in marker)
+  )
+    return;
+  const card = messages.find(
+    (item) =>
+      item.id === marker.questionId &&
+      item.conversationId === message.conversationId &&
+      item.threadRootId === message.threadRootId &&
+      item.role === 'assistant' &&
+      item.kind === 'question' &&
+      item.status === 'done',
+  );
+  const question = parseChatQuestion(card?.metadata?.question);
+  if (!question || question.requester.userId !== message.userId) return;
+  const selected = normalizeChatQuestionSelection(question, marker.optionIds);
+  if (
+    !selected ||
+    (question.status === 'answered' &&
+      (question.answer.messageId !== message.id ||
+        question.answer.optionIds.length !== selected.length ||
+        selected.some((id, index) => id !== question.answer.optionIds[index])))
+  )
+    return;
+  const labels = question.options
+    .filter(({ id }) => selected.includes(id))
+    .map(({ label }) => label);
+  return new Intl.ListFormat(currentLanguage()).format(labels);
+}
 
 export function ChatMessageBody({
   message: m,
@@ -82,6 +121,7 @@ export function ChatMessageBody({
     refresh,
   } = actions;
   const memo = messageVoiceMemo(m, data.files);
+  const submittedOptions = submittedQuestionOptions(m, data.messages);
   const question =
     m.kind === 'question' && m.role === 'assistant' && m.status === 'done' && m.agentId
       ? parseChatQuestion(m.metadata?.question)
@@ -217,7 +257,11 @@ export function ChatMessageBody({
           className={`message-bubble ${m.status === 'error' ? 'message-error' : ''}`}
           aria-busy={streaming || undefined}
         >
-          <Markdown text={m.content || ' '} />
+          {submittedOptions ? (
+            <p>{uiText('workspace:questionAnswerSelection', { options: submittedOptions })}</p>
+          ) : (
+            <Markdown text={chatMessageText(m) || ' '} />
+          )}
           <MessageAppContext message={m} />
           {streaming && <span className="typing-cursor" aria-hidden="true" />}
         </div>

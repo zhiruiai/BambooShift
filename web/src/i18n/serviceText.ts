@@ -1,5 +1,6 @@
 import { currentLanguage, resources } from './index';
 import { serviceMessages } from './serviceMessages';
+import type { Message } from '../../../shared/types';
 
 // The service stores these fallback bodies alongside the typed computer action state.
 const computerReceiptStatusMessages = new Set([
@@ -29,4 +30,25 @@ for (const namespace of Object.keys(resources['zh-CN'])) {
 export function serviceText(value: string | undefined): string {
   if (!value) return '';
   return currentLanguage() === 'en' ? (translations.get(value) ?? value) : value;
+}
+
+const stoppedTaskNotice = '任务已停止，已完成的工作保留。';
+
+/** Translate the service notice appended to a terminal agent run. */
+export function chatMessageText(
+  message: Pick<Message, 'role' | 'kind' | 'status' | 'content' | 'metadata'>,
+): string {
+  const { role, kind, status, content, metadata } = message;
+  if (
+    role !== 'assistant' ||
+    kind !== 'text' ||
+    status !== 'error' ||
+    typeof metadata?.runId !== 'string' ||
+    (metadata.executionStatus !== 'cancelled' && metadata.executionStatus !== 'error')
+  )
+    return content;
+  if (content === stoppedTaskNotice) return serviceText(stoppedTaskNotice);
+  if (content.endsWith(`\n\n${stoppedTaskNotice}`))
+    return content.slice(0, -stoppedTaskNotice.length) + serviceText(stoppedTaskNotice);
+  return content;
 }

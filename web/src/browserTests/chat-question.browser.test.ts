@@ -42,7 +42,10 @@ const answered = (optionIds: string[], pending: Message) => {
     role: 'user',
     kind: 'text',
     createdAt: now,
-    content: 'Formats confirmed.',
+    content: `Question answer: ${q.question}\nSelected: ${q.options
+      .filter((option) => optionIds.includes(option.id))
+      .map((option) => option.label)
+      .join('; ')}`,
     userId: requester,
     conversationId: pending.conversationId,
     threadRootId: pending.threadRootId,
@@ -84,19 +87,26 @@ const fixture = `
   const params = new URLSearchParams(location.search);
   initializeLanguage().setLanguage(params.has('zh') ? 'zh-CN' : 'en');
   const message = window.fixtureCard;
+  const reply = window.fixtureAnswer;
   const workspaceId = '${workspace}';
   const userId = params.has('viewer') ? 'another-owner' : '${requester}';
   const sendScope = createChatSendScope({ workspaceId, userId, identity: () => ({ workspaceId, userId }) });
   const agent = { id: message.agentId, name: 'Asking Bot', ...(params.has('shared') ? { sharedBot: {} } : {}) };
   const conversation = { id: message.conversationId, isGroup: true, agentIds: ['asking-bot', 'other-bot'] };
-  const body = <ChatMessageBody message={message} liveAgent={agent} streaming={false} current={() => true}
-    actions={{ account: { workspace: { id: workspaceId } }, conversation, data: { files: [] },
-      canManage: params.has('viewer'), currentUserId: userId, navigationScope: workspaceId, sendScope,
-      sync: { written: () => { document.body.dataset.written = 'yes'; } },
-      refresh: async () => { document.body.dataset.refreshed = 'yes'; },
-    }} />;
+  const actions = { account: { workspace: { id: workspaceId } }, conversation,
+    data: { files: [], messages: [message] }, canManage: params.has('viewer'),
+    currentUserId: userId, navigationScope: workspaceId, sendScope,
+    sync: { written: () => { document.body.dataset.written = 'yes'; } },
+    refresh: async () => { document.body.dataset.refreshed = 'yes'; },
+  };
+  const body = <ChatMessageBody message={message} liveAgent={agent}
+    streaming={false} current={() => true} actions={actions} />;
   createRoot(document.getElementById('root')).render(<>
     <main className="message-row"><div className="message-content">{body}</div></main>
+    {reply && <article aria-label="Answer message">
+      <ChatMessageBody message={params.has('plain') ? { ...reply, metadata: undefined } : reply}
+        streaming={false} current={() => true} actions={actions} />
+    </article>}
     <textarea aria-label="Existing draft" defaultValue="Keep my draft in this thread" />
   </>);
 `;
@@ -146,11 +156,15 @@ test(
       const req = route.request(),
         url = new URL(req.url());
       assert.equal(url.origin, origin);
-      if (url.pathname === path)
+      if (url.pathname === path) {
+        const q = current.metadata?.question as ChatQuestion;
+        const answer =
+          q.status === 'answered' ? answered(q.answer.optionIds, current).message : null;
         return route.fulfill({
           contentType: 'text/html',
-          body: `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><div id="root"></div><script>window.fixtureCard=${JSON.stringify(current)}</script><script src="/fixture.js"></script>`,
+          body: `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><div id="root"></div><script>window.fixtureCard=${JSON.stringify(current)};window.fixtureAnswer=${JSON.stringify(answer)}</script><script src="/fixture.js"></script>`,
         });
+      }
       if (url.pathname === '/fixture.js')
         return route.fulfill({ contentType: 'text/javascript', body: js });
       if (url.pathname === `${api}/bootstrap`) {
@@ -225,6 +239,10 @@ test(
     await form.getByText('已提交答案').waitFor();
     assert.equal(await select('Slides').isChecked(), true);
     assert.ok(await form.evaluate((node) => node.scrollWidth <= node.clientWidth));
+    const answerMessage = page.getByRole('article', { name: 'Answer message' });
+    await answerMessage.getByText('已选 Slides和PDF', { exact: true }).waitFor();
+    await goto('?zh&plain');
+    await answerMessage.getByText(/Question answer:.*Selected: Slides; PDF/s).waitFor();
 
     current = card;
     outcome = 'badReceipt';
