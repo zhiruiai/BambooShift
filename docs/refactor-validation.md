@@ -51,7 +51,7 @@ npm run test:runtime
 npm run test:browser
 npm run build:web
 node scripts/run.mjs scripts/package-client.mjs --platform darwin --arch arm64
-codesign --verify --deep --strict release/client/OpenBot-darwin-arm64/OpenBot.app
+codesign --verify --deep --strict release/client/BambooShift-darwin-arm64/BambooShift.app
 ```
 
 ## 首次失败与修正
@@ -74,15 +74,12 @@ Electron 45.2.1 的 macOS arm64 包为 `release/client/OpenBot-darwin-arm64/Open
 
 ## 真实产品页面与外部集成
 
-独立虚构资料完成真实浏览器路径：注册三名用户、选择主 Bot、保存 Bot 设置、切换熊猫头像与英文界面、真实 Pi 文本对话、提出团队方案卡、打开编辑并确认创建群、创建团队邀请并加入。平台运营页实际列出这三名用户，完成停用与恢复；产品退出后运营会话仍独立有效。中英文设置与运营页面的最小计算字号为 12px。五张最终截图只含合成资料，邀请链接截图未进入公开仓库：
+独立虚构资料完成真实浏览器路径：注册三名用户、选择主 Bot、保存 Bot 设置、切换熊猫头像与英文界面、真实 Pi 文本对话、提出团队方案卡、打开编辑并确认创建群、创建团队邀请并加入。平台运营页实际列出这三名用户，完成停用与恢复；产品退出后运营会话仍独立有效。中英文设置与运营页面的最小计算字号为 12px。本次验收使用合成资料，以下两张设置截图随验收记录保留。
 
 - [中文恐龙主题与深色设置](evidence/gui/settings-zh-dinosaurs-dark.jpg)
 - [英文熊猫主题设置](evidence/gui/settings-en-pandas.jpg)
-- [真实 Pi 团队提案卡](evidence/gui/pi-team-proposal.jpg)
-- [确认后的 Bot 协作空间](evidence/gui/bot-team-workspace.jpg)
-- [平台用户管理](evidence/gui/platform-user-management.jpg)
 
-验收使用的临时页面与 3198、3200 服务均已关闭，虚构数据已删除；公开截图保留为当时行为与视觉检查的记录。
+验收后已关闭临时服务并删除虚构数据。团队创建和平台用户管理的历史检查结果见上文与[运营验收记录](evidence/operations-separation.json)。
 
 用户指定的 GLM 使用自定义兼容网关别名，不能仅凭模型 ID 是否含 `glm` 判断配置。读取私有来源并比对后，一次仅含合成指令的请求返回 HTTP 200 和有效文本，但未严格匹配所要求的 `OK`；据此记录连通成功，不夸大回复一致性。当前默认配置保留，Deepseek 为独立备用配置，未做自动故障转移或备用模型调用。见 外部集成预检。
 

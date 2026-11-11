@@ -181,7 +181,7 @@ SDK/执行层与发布工具整合为 **184 项：176 通过、0 失败、8 项�
 
 ![中文深色设置](evidence/gui/reference-settings-zh-dark.png)
 
-![独立运营管理虚构用户](evidence/gui/independent-operations-users.jpg)
+[独立运营浏览器验收记录](evidence/operations-separation.json)保留了用户注册、停用与恢复的历史检查结果。
 
 这些图片只包含虚构账户、示例资料或原创界面，不含用户模型密钥或远程主机信息。浏览器截图和组件事件测试分别记录，不互相代替。
 

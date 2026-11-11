@@ -99,10 +99,11 @@ function Fixture() {
   const chatMessages = [
     ...messages,
     message('tail', {
-      status: stage < 2 ? 'running' : 'done',
+      status: stage < 3 ? 'running' : 'done',
+      metadata: stage === 2 ? { streamEnded: true } : undefined,
       content: stage === 0 ? '' : 'The two drafts are ready to review.',
     }),
-    ...(stage < 3
+    ...(stage < 4
       ? []
       : [
           message('follow-up-question', {
@@ -146,7 +147,7 @@ function Fixture() {
             toggleDetails={noOp}
             members={groupHeader ? [agent, { ...agent, id: 'synthetic-teammate' }] : [agent]}
             lead={agent}
-            working={stage < 2}
+            working={stage < 3}
             messages={chatMessages}
             canManage={owner}
             currentUserId={userId}
@@ -218,7 +219,7 @@ function Fixture() {
             reactToMessage={async () => {}}
             sendScope={scope as ChatProps['sendScope']}
             modal={dialog ? 'create' : null}
-            working={stage < 2}
+            working={stage < 3}
             currentWorker={agent}
             voice={{ state: { supported: false, voices: [] } } as unknown as ChatProps['voice']}
           />

@@ -11,7 +11,7 @@ npm run desktop:build
 npm run desktop:check
 ```
 
-构建产物位于 `data/native/OpenBot Desktop Helper.app`，应用标识为 `com.openbot.desktop-helper`。编译缓存、纯测试可执行文件及签名均留在 `data/native`。本地使用 ad-hoc 签名；分发时需要正式 Developer ID 签名及公证。路径稳定不保证 macOS 在重新编译后保留授权。macOS 可能把进程权限归属到启动它的宿主应用；以 `desktop:check` 的有效权限及系统设置展示为准。
+构建产物位于 `data/native/`，完整路径由构建命令输出。BambooShift Desktop Helper 的应用标识为 `com.openbot.desktop-helper`。编译缓存、纯测试可执行文件及签名均留在 `data/native`。本地使用 ad-hoc 签名；分发时需要正式 Developer ID 签名及公证。路径稳定不保证 macOS 在重新编译后保留授权。macOS 可能把进程权限归属到启动它的宿主应用；以 `desktop:check` 的有效权限及系统设置展示为准。
 
 用户自行打开「系统设置 → 隐私与安全性」，将助手或系统显示的启动宿主加入「屏幕与系统音频录制」和「辅助功能」。完成后按 macOS 要求重启助手/宿主，再刷新状态。程序只调用 `CGPreflightScreenCaptureAccess` 和 `AXIsProcessTrusted` 检查，不调用权限请求接口，不打开设置，不自动授权。
 

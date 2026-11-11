@@ -18,12 +18,14 @@ export function Avatar({
   size = 38,
   className = '',
   motion,
+  awaitingCompletion = false,
   userId,
 }: {
   agent?: Partial<BotAgent>;
   size?: number;
   className?: string;
   motion?: AvatarMotion;
+  awaitingCompletion?: boolean;
   userId?: string;
 }) {
   const account = useAccount();
@@ -81,7 +83,8 @@ export function Avatar({
   const [justFinished, setJustFinished] = useState(false);
   useEffect(() => {
     const previous = previousMotion.current;
-    if (previous === motion) return;
+    // Text can stop streaming before the same message becomes terminal.
+    if (previous === motion || (awaitingCompletion && motion === undefined)) return;
     previousMotion.current = motion;
     if (
       motion === 'done' &&
@@ -92,7 +95,7 @@ export function Avatar({
     } else if (previous === 'done') {
       setJustFinished(false);
     }
-  }, [motion]);
+  }, [motion, awaitingCompletion]);
   const effect =
     image || sharedPath || agent?.avatarImageId
       ? undefined

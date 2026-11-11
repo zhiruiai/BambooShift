@@ -141,7 +141,7 @@
     "productNavigationLinks": 0,
     "formalSetupCodeRead": false,
     "screenshot": {
-      "path": "docs/evidence/gui/independent-operations-users.jpg",
+      "public": false,
       "sha256": "fafc4432b8bc4856426ba4b3637285582d4476ad94af3cea9a1454e54a1031bf"
     },
     "temporaryCleanup": "confirmed; owned fixture exited and synthetic data removed"

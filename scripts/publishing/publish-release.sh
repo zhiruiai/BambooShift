@@ -19,14 +19,14 @@ platforms=(linux-x64 macos-arm64)
 windows_notes_en=""
 windows_notes_zh=""
 for file in "$source_name" "$server_name"; do
-  test -s "$builds/pandamate-linux-x64/$file"
-  cp "$builds/pandamate-linux-x64/$file" "$publish_dir/"
+  test -s "$builds/bambooshift-linux-x64/$file"
+  cp "$builds/bambooshift-linux-x64/$file" "$publish_dir/"
 done
-test -s "$builds/pandamate-macos-arm64/$mac_name"
-cp "$builds/pandamate-macos-arm64/$mac_name" "$publish_dir/"
+test -s "$builds/bambooshift-macos-arm64/$mac_name"
+cp "$builds/bambooshift-macos-arm64/$mac_name" "$publish_dir/"
 if [[ -f scripts/publishing/build-windows-client.mjs ]]; then
-  test -s "$builds/pandamate-windows-x64/$windows_name"
-  cp "$builds/pandamate-windows-x64/$windows_name" "$publish_dir/"
+  test -s "$builds/bambooshift-windows-x64/$windows_name"
+  cp "$builds/bambooshift-windows-x64/$windows_name" "$publish_dir/"
   files+=("$windows_name")
   platforms+=(windows-x64)
   windows_notes_en="- **Windows x64 client** is an unsigned portable ZIP. Extract the entire folder, run $RELEASE_PACKAGE_NAME.exe, and enter the address of a running $RELEASE_BRAND server."
@@ -37,7 +37,7 @@ node scripts/publishing/stamp-version.mjs "$RELEASE_VERSION"
 git add -u
 tree="$(git write-tree)"
 for platform in "${platforms[@]}"; do
-  test "$(cat "$builds/pandamate-$platform/source-tree.txt")" = "$tree"
+  test "$(cat "$builds/bambooshift-$platform/source-tree.txt")" = "$tree"
 done
 
 tag_ref="refs/tags/$RELEASE_TAG"

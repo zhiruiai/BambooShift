@@ -64,7 +64,7 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
     ['linux-x64', ['source.tar.gz', 'server-linux-x64.tar.gz']],
     ['macos-arm64', ['client-macos-arm64.zip']],
   ]) {
-    const path = join(builds, 'pandamate-' + platform);
+    const path = join(builds, 'bambooshift-' + platform);
     await mkdir(path, { recursive: true });
     await writeFile(join(path, 'source-tree.txt'), stamped + '\n');
     for (const kind of kinds) await writeFile(join(path, packageName + '-' + releaseTag + '-' + kind), kind);
@@ -76,7 +76,7 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
     versionFile,
     git: (...args) => git(work, ...args),
     remoteTag: () => git(remote, 'rev-parse', tagRef + '^{commit}'),
-    manifest: join(builds, 'pandamate-macos-arm64', 'source-tree.txt'),
+    manifest: join(builds, 'bambooshift-macos-arm64', 'source-tree.txt'),
     tag(target) {
       git(work, 'tag', '-a', releaseTag, target, '-m', brand + ' release from ' + source);
       git(work, 'push', '-q', 'origin', tagRef);

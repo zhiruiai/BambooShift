@@ -219,6 +219,14 @@ test(
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-breathe');
       await advance.press('Enter');
       await page.locator('#message-tail .typing-cursor').waitFor({ state: 'detached' });
+      await worker.waitFor();
+      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'none');
+      assert.equal(
+        await headerAvatar.count(),
+        0,
+        'the task is still running after the stream ends',
+      );
+      await advance.press('Enter');
       const completion = page.locator('#message-tail [data-avatar-motion="done"]');
       await completion.waitFor();
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-settle');

@@ -2,7 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>CFBundleIdentifier</key><string>com.openbot.desktop-helper</string>
-  <key>CFBundleName</key><string>OpenBot Desktop Helper</string>
+  <key>CFBundleName</key><string>BambooShift Desktop Helper</string>
+  <key>CFBundleDisplayName</key><string>BambooShift Desktop Helper</string>
   <key>CFBundleExecutable</key><string>OpenBotDesktopHelper</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleVersion</key><string>1</string>

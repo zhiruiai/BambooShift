@@ -60,7 +60,16 @@ export function ChatMessageAvatar({
   return (
     <div className="message-avatar">
       {!grouped && message.role === 'assistant' && (
-        <Avatar agent={agent} size={23} motion={messageAvatarMotion(message, streaming, actor)} />
+        <Avatar
+          agent={agent}
+          size={23}
+          motion={messageAvatarMotion(message, streaming, actor)}
+          awaitingCompletion={
+            (!message.kind || message.kind === 'text') &&
+            message.status === 'running' &&
+            message.metadata?.streamEnded === true
+          }
+        />
       )}
       {!grouped && teammate !== undefined && (
         <span className="user-avatar teammate-avatar">{Array.from(teammate)[0]}</span>
