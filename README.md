@@ -26,7 +26,7 @@ Clients share one PandaMate server. The connected work computer executes Bot com
 
 ## Quick start
 
-If you already have a server, open its workspace. For self-hosting, use the Linux x64 server archive or start from source below.
+If you already have a server, open its workspace in your browser or connect the desktop client to its address. To host your own server, [install the Linux x64 server archive](server/api/deployment/README.md#install-and-configure) or start from source below.
 
 ### Run from source
 
@@ -45,9 +45,15 @@ npm run dev
 
 Run `configure:local` once to create the local configuration. Use `npm run dev` for later launches. To initialize a separate operations account on the first launch, run `npm run dev -- --init-operator`. [Operations setup](docs/operations-console.md)
 
-**Try this message**
+### Try your first task
 
-> Turn these fictional meeting notes into a Markdown action list with owners, due dates, and open questions. Riley submits the script on Wednesday. Morgan finishes the cover on Friday. The team still needs to agree on a launch date. Deliver the file in this chat.
+Paste this message into a Bot chat. Open the file from the Bot's reply to check the action list.
+
+```text
+Turn these fictional meeting notes into a Markdown action list with owners, due dates, and open questions.
+Riley submits the script on Wednesday. Morgan finishes the cover on Friday.
+The team still needs to agree on a launch date. Deliver the file in this chat.
+```
 
 ### Add a skill to a Bot
 
