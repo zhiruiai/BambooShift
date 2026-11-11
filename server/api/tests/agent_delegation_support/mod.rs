@@ -9,7 +9,7 @@ use axum::{
 use futures_util::future::BoxFuture;
 use openbot_backend::workspace::{Table, WorkspaceStore};
 use serde_json::{Value, json};
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 use tokio::sync::{Mutex, Semaphore};
 pub type Handler = Arc<dyn Fn(Value) -> BoxFuture<'static, Response<Body>> + Send + Sync>;
 pub struct Model {
@@ -176,6 +176,39 @@ impl Group {
     }
     pub async fn done(&self) -> Vec<Value> {
         self.done_within(std::time::Duration::from_secs(35)).await
+    }
+    pub async fn done_for_mentions(&self, input_id: &str) -> Vec<Value> {
+        // The active registry can be empty while the queue starts the next Bot.
+        let mut updates = self.store.subscribe();
+        tokio::time::timeout(Duration::from_secs(35), async {
+            loop {
+                let input = self
+                    .store
+                    .get(Table::Messages, input_id)
+                    .await
+                    .unwrap()
+                    .unwrap();
+                let recipients = input["delivery"]["mentionTargets"]
+                    .as_array()
+                    .filter(|recipients| !recipients.is_empty())
+                    .expect("the accepted input should have mention receipts");
+                if recipients.iter().all(|recipient| {
+                    matches!(
+                        recipient["state"].as_str(),
+                        Some("done" | "error" | "cancelled" | "interrupted")
+                    )
+                }) {
+                    break;
+                }
+                updates
+                    .recv()
+                    .await
+                    .expect("the workspace should emit delivery updates");
+            }
+        })
+        .await
+        .expect("all mentioned Bots should reach a terminal delivery state");
+        self.done().await
     }
     pub async fn done_within(&self, timeout: std::time::Duration) -> Vec<Value> {
         tokio::time::timeout(timeout, async {

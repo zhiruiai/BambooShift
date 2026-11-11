@@ -91,7 +91,9 @@ async fn pi_question_is_durable_nonblocking_and_answer_is_exact_once_for_origina
     g.store.put(Table::Messages,&json!({"id":root,"conversationId":g.cid,"role":"user","userId":g.f.member,"kind":"text","content":"Thread context","createdAt":"2026-11-08T00:00:00Z"})).await.unwrap();
     let sent=g.f.request("POST",&g.f.path(&format!("/conversations/{}/messages",g.cid)),Some(json!({"content":"Ask me about the output","clientId":"ask-in-thread","threadRootId":root,"mentions":{"agentIds":[g.ids[0],g.ids[1]]},"mode":"followUp"})),true,Some(&g.f.member)).await;
     assert_eq!(sent.0, 202, "{}", sent.1);
-    let messages = g.done().await;
+    let messages = g
+        .done_for_mentions(sent.1["message"]["id"].as_str().unwrap())
+        .await;
     let cards = messages
         .iter()
         .filter(|m| m["kind"] == "question")

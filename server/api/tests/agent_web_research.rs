@@ -122,7 +122,9 @@ async fn explicit_group_recipients_and_delegates_get_their_own_thread_receipts()
         Some(json!({"content":"Research together.","clientId":"research-recipients","threadRootId":"research-thread-root",
             "mentions":{"agentIds":[group.ids[0],group.ids[1]]}})), false, Some(&group.f.owner)).await;
     assert_eq!(status, 202, "{result}");
-    let messages = group.done().await;
+    let messages = group
+        .done_for_mentions(result["message"]["id"].as_str().unwrap())
+        .await;
     let receipts = cards(&messages);
     assert_eq!(receipts.len(), 3, "{messages:?}");
     let mut ids = std::collections::HashSet::new();
