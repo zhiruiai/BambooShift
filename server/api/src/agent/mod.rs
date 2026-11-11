@@ -27,6 +27,7 @@ mod interactive_apps;
 mod private_delegation;
 mod run_context;
 mod run_knowledge;
+mod selected_skill;
 
 mod admission_gate;
 mod computer_tools;

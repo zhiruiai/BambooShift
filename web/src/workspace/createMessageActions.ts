@@ -157,6 +157,7 @@ export function createMessageActions(read: () => MessageActionsContext) {
             agentId: attempt.agentId,
             ...(attempt.mentions ? { mentions: attempt.mentions } : {}),
             ...(attempt.appContext ? { appContext: attempt.appContext } : {}),
+            ...(attempt.skillId ? { skillId: attempt.skillId } : {}),
             ...(attempt.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
             mode: attempt.mode,
             clientId: attempt.clientId,
@@ -165,6 +166,8 @@ export function createMessageActions(read: () => MessageActionsContext) {
         if (!current()) return;
         if (!matchesChatMentionReceipt(attempt.mentions, message.mentions))
           throw new Error(uiText('workspace:composerMentionUnknown'));
+        if (attempt.skillId !== message.skillId)
+          throw new Error(uiText('workspace:composerSkillUnknown'));
         if (Boolean(attempt.requestVoiceMemo) !== (message.metadata?.requestVoiceMemo === true))
           throw new Error(uiText('workspace:voiceMemoReceiptUnknown'));
         sync.written();
@@ -196,7 +199,9 @@ export function createMessageActions(read: () => MessageActionsContext) {
                   ? uiText('workspace:composerMentionUnavailable')
                   : error instanceof ApiError && error.code?.startsWith('VOICE_MEMO')
                     ? uiText('workspace:voiceMemoRequestUnavailable')
-                    : (error as Error).message,
+                    : error instanceof ApiError && error.code === 'SKILL_CONTEXT_UNAVAILABLE'
+                      ? uiText('workspace:composerSkillUnavailable')
+                      : (error as Error).message,
             attempt,
             uncertain: posted && !rejected,
           },

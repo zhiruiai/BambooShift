@@ -13,6 +13,7 @@ type PendingRecord = {
   clientId: string;
   threadRootId?: string;
   requestVoiceMemo?: true;
+  selectedSkill?: true;
   fingerprint: string;
   createdAt: number;
 };
@@ -92,6 +93,7 @@ export function createPendingSubmissions(options: {
             !identifier(record.clientId) ||
             (record.threadRootId !== undefined && !identifier(record.threadRootId)) ||
             (record.requestVoiceMemo !== undefined && record.requestVoiceMemo !== true) ||
+            (record.selectedSkill !== undefined && record.selectedSkill !== true) ||
             typeof record.fingerprint !== 'string' ||
             !/^[a-f0-9]{64}$/.test(record.fingerprint) ||
             !Number.isSafeInteger(record.createdAt) ||
@@ -108,6 +110,7 @@ export function createPendingSubmissions(options: {
               clientId: record.clientId,
               ...(record.threadRootId ? { threadRootId: record.threadRootId } : {}),
               ...(record.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
+              ...(record.selectedSkill ? { selectedSkill: true } : {}),
               fingerprint: record.fingerprint,
               createdAt: record.createdAt,
             });
@@ -129,12 +132,19 @@ export function createPendingSubmissions(options: {
         throw new Error(uiText('common:text_0ca760a4d966'));
       if (
         attempt.agentId !== attempt.snapshot.agentId ||
+        attempt.skillId !== attempt.snapshot.skillId ||
+        (attempt.skillId !== undefined &&
+          (!identifier(attempt.skillId) ||
+            !attempt.agentId ||
+            !!attempt.mentions ||
+            attempt.mode !== 'followUp')) ||
         attempt.requestVoiceMemo !== attempt.snapshot.requestVoiceMemo ||
         (attempt.requestVoiceMemo &&
           (attempt.mode !== 'followUp' ||
             !!attempt.replyToMessageId ||
             !!attempt.threadRootId ||
             !!attempt.appContext ||
+            !!attempt.skillId ||
             !!attempt.mentions ||
             attempt.agentId !== undefined)) ||
         (attempt.threadRootId !== undefined && !identifier(attempt.threadRootId)) ||
@@ -191,6 +201,7 @@ export function createPendingSubmissions(options: {
           clientId: prepared.clientId,
           ...(prepared.threadRootId ? { threadRootId: prepared.threadRootId } : {}),
           ...(prepared.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
+          ...(prepared.skillId ? { selectedSkill: true } : {}),
           fingerprint,
           createdAt: now(),
         },
@@ -228,9 +239,11 @@ export function createPendingSubmissions(options: {
       const id = recordKey(message.conversationId, message.delivery.clientId);
       const record = records.get(id);
       if (!record || record.threadRootId !== message.threadRootId) return undefined;
+      if (Boolean(record.selectedSkill) !== Boolean(message.skillId)) return undefined;
       if (Boolean(record.requestVoiceMemo) !== (message.metadata?.requestVoiceMemo === true))
         return undefined;
       const attempt = attempts.get(id);
+      if (attempt && attempt.skillId !== message.skillId) return undefined;
       if (attempt?.agentId !== undefined && message.delivery.agentId !== attempt.agentId)
         return undefined;
       if (attempt && !sameAppSelection(attempt.appContext, message.appContext)) return undefined;

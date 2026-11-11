@@ -6,6 +6,8 @@ export const serviceMessages: Readonly<Record<string, string>> = {
     'Workspace app selection is available for local Bots only.',
   '本次任务仅可使用用户选中的应用。': 'Only the selected app can be used for this task.',
   '应用选择参数无效。': 'The app selection is invalid.',
+  '所选技能已停用、更新，或不属于此 Bot。请移除后重新选择。':
+    'This skill was disabled, changed, or belongs to another Bot. Remove it and choose again.',
   '应用连接失败，请检查服务地址、凭据或服务状态后重试。':
     'The application could not connect. Check its address, credentials, and service status.',
   '应用连接已失效或工具已变更，请刷新连接后重新确认。':

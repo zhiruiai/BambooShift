@@ -72,7 +72,8 @@ export function useComposerCommands(props: CommandProps) {
           members: props.members,
           canManage: props.canManage,
           agentId: props.currentComposer.agentId,
-          skillsEnabled: !props.sharedUnavailable && !audience,
+          skillsEnabled:
+            !props.sharedUnavailable && !audience && !props.currentComposer.requestVoiceMemo,
         }),
         command.query,
       )
@@ -83,6 +84,7 @@ export function useComposerCommands(props: CommandProps) {
           .filter(
             (agent) =>
               mentionBotAvailable(agent) &&
+              (!props.currentComposer.skillId || props.currentComposer.agentId === agent.id) &&
               (selectedIds.length < MAX_GROUP_MENTIONS || selectedIds.includes(agent.id)) &&
               agent.name.toLocaleLowerCase().includes(mention.query.toLocaleLowerCase()),
           )
@@ -93,6 +95,7 @@ export function useComposerCommands(props: CommandProps) {
     group &&
     !everyone &&
     !props.currentComposer.appContext &&
+    !props.currentComposer.skillId &&
     !props.sharedUnavailable &&
     !groupMentionsUnavailable({ everyone: true }, group, props.members) &&
     ['everyone', uiText('workspace:composerEveryone')].some((name) =>
@@ -194,7 +197,9 @@ export function useComposerCommands(props: CommandProps) {
     const following = props.draft[token.end];
     const insertion =
       selected.kind === 'skill'
-        ? uiText('workspace:composerSkillDraft', { name: selected.skillName })
+        ? selected.skillId
+          ? ''
+          : uiText('workspace:composerSkillDraft', { name: selected.skillName })
         : selected.kind === 'mention'
           ? `@${selected.agent.name}${following ? '' : ' '}`
           : selected.kind === 'everyoneMention'
@@ -215,7 +220,7 @@ export function useComposerCommands(props: CommandProps) {
               : previous),
             text: next.text,
             ...(selected.kind === 'skill'
-              ? { agentId: selected.agentId }
+              ? { agentId: selected.agentId, skillId: selected.skillId }
               : selected.kind === 'everyoneMention'
                 ? { agentId: undefined, mentions: { everyone: true } as const }
                 : selected.kind === 'appMention'

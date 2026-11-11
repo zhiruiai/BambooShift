@@ -70,6 +70,17 @@ const generated = new Set([
   'mobile/ios/Runner/GeneratedPluginRegistrant.h',
   'mobile/ios/Runner/GeneratedPluginRegistrant.m',
 ]);
+export const reviewedShowcaseFiles = new Set([
+  'docs/showcase/index.html',
+  'docs/showcase/zh.html',
+  'docs/showcase/showcase.css',
+  'docs/showcase/panda.svg',
+  ...['en', 'zh'].flatMap((language) =>
+    ['index.html', 'assets/flight.css', 'assets/ship.svg', 'src/flight.mjs', 'src/physics.mjs'].map(
+      (path) => 'docs/showcase/' + language + '/' + path,
+    ),
+  ),
+]);
 const documentationText = new Set(['.md', '.json']);
 const reviewedDocumentationMedia = new Set([
   'docs/demo/avatar-states.en.gif',
@@ -155,7 +166,9 @@ export async function collectReleaseFiles(root) {
           (entry.name.startsWith('.env') && entry.name !== '.env.example')
         )
           continue;
-        if (
+        if (child.startsWith('docs/showcase/') && !entry.isDirectory()) {
+          if (!reviewedShowcaseFiles.has(child)) continue;
+        } else if (
           child.startsWith('docs/') &&
           !entry.isDirectory() &&
           !documentationText.has(extname(child).toLowerCase()) &&

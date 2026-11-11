@@ -82,7 +82,7 @@ macOS 图标生成依赖 `iconutil`，因此 macOS 目标需要在 macOS 主机�
 
 从 [GitHub Releases](https://github.com/zhiruiai/PandaMate/releases) 选择含 `client-windows-x64.zip` 附件的版本，完整解压到一个目录，再运行 `PandaMate.exe`。首次打开时输入已有服务的产品地址。Windows 便携包未做发行者签名，可按发布页的 SHA-256 校验归档。它需要单独运行的服务。服务部署或 WSL2 本地试用方式见 [Windows 连接说明](../server/api/deployment/README.md#connect-from-windows)。
 
-Windows 发布门禁覆盖 x64 可执行文件、打包资源、实际启动、语言切换和显式连接测试工作空间。真实模型、语音和远程接管依赖所连接的服务及权限。Windows 原生桌面控制仍待实现。
+Windows 发布门禁覆盖 x64 可执行文件、打包资源、实际启动、语言切换和显式连接测试工作空间。浏览器任务在已连接的工作电脑上执行。Windows 运行器上的本机 Chrome 工作进程曾在启动时超时，仍待验收。Windows 原生桌面控制也仍待实现。真实模型、语音和远程接管依赖所连接的服务及权限。
 
 产物是应用目录，并非 DMG、MSI、AppImage 或应用商店安装包。本地 ad-hoc 签名只供自建测试，不能证明发行者身份，也不等同于 Developer ID 签名或公证。脚本没有配置发行代码签名、公证、自动更新或安装系统服务；不同机器上的 Gatekeeper/系统发行检查尚需正式发布流程处理。脚本不会移除系统隔离属性、绕过安全检查或修改屏幕录制/辅助功能权限。
 

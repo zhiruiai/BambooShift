@@ -57,6 +57,7 @@ impl InputQueues {
         self.inputs.lock().await.get(key).is_some_and(|items| {
             items.iter().any(|input| {
                 input.recipient.is_some()
+                    || input.message["skillId"].is_string()
                     || input.message["metadata"]["requestVoiceMemo"] == true
                     || input.message["metadata"].get("questionAnswer").is_some()
             })
@@ -137,10 +138,7 @@ impl InputQueues {
         }
     }
     pub async fn injection(&self, key: &str, run: &ActiveRun) -> Vec<PendingInput> {
-        if run.family.app_context.get().is_some()
-            || run.family.mentioned_agents.get().is_some()
-            || run.family.isolated_voice()
-        {
+        if run.family.isolated_dispatch() {
             return vec![];
         }
         let mut inputs = self.inputs.lock().await;
@@ -149,9 +147,10 @@ impl InputQueues {
         };
         items
             .iter_mut()
-            // Explicit group dispatches and voice memo requests start their own runs.
+            // Explicit group dispatches, skills, and voice memo requests start their own runs.
             .take_while(|input| {
                 input.recipient.is_none()
+                    && input.message["skillId"].is_null()
                     && input.message["metadata"]["requestVoiceMemo"] != true
                     && input.message["metadata"].get("questionAnswer").is_none()
             })
@@ -182,7 +181,7 @@ impl InputQueues {
         key: &str,
         user: &str,
         scope: Option<Option<&str>>,
-        include_mentions: bool,
+        include_explicit_dispatches: bool,
         store: &WorkspaceStore,
         reason: &str,
     ) -> Result<()> {
@@ -194,7 +193,8 @@ impl InputQueues {
             let matches = |input: &PendingInput| {
                 input.access.user_id() == user
                     && input.kind == "user"
-                    && (include_mentions || input.recipient.is_none())
+                    && (include_explicit_dispatches
+                        || (input.recipient.is_none() && input.message["skillId"].is_null()))
                     && scope.is_none_or(|scope| super::threads::belongs(&input.message, scope))
             };
             let removed = items

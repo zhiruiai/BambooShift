@@ -4,7 +4,7 @@ use super::{
     authority::ExecutionAccess,
     mentions, messages,
     registry::AgentRegistry,
-    threads, voice_memo,
+    selected_skill, threads, voice_memo,
 };
 use crate::{
     db::{State, iso, now},
@@ -56,6 +56,7 @@ async fn submit(
             "replyToMessageId",
             "threadRootId",
             "appContext",
+            "skillId",
             "mentions",
             "voiceCallId",
             "requestVoiceMemo",
@@ -73,6 +74,7 @@ async fn submit(
                 "threadRootId",
                 "replyToMessageId",
                 "appContext",
+                "skillId",
                 "mentions",
                 "agentId",
             ]
@@ -82,6 +84,12 @@ async fn submit(
         return Err(voice_calls::invalid());
     }
     let requested_mentions = mentions::request(body.get("mentions"))?;
+    let requested_skill = selected_skill::request(body.get("skillId"))?;
+    let mode = if requested_skill.is_some() {
+        "followUp"
+    } else {
+        mode
+    };
     if requested_mentions.is_some()
         && (body.get("agentId").is_some() || body.get("appContext").is_some())
     {
@@ -122,6 +130,7 @@ async fn submit(
                 || !threads::belongs(&message, thread)
                 || message["appContext"]["connectionId"] != body["appContext"]["connectionId"]
                 || message["appContext"]["revision"] != body["appContext"]["revision"]
+                || message["skillId"] != body["skillId"]
                 || message["metadata"]["voiceCallId"] != body["voiceCallId"]
                 || (message["metadata"]["requestVoiceMemo"] == true) != voice_memo
                 || !mentions::same_intent(requested_mentions.as_ref(), &message)
@@ -189,7 +198,9 @@ async fn submit(
             .is_some_and(|ids| ids.iter().any(|member| member.as_str() == Some(*id)))
     };
     let scoped_active = active.as_ref().filter(|run| {
-        run.thread_root_id.as_deref() == thread && run.family.mentioned_agents.get().is_none()
+        run.thread_root_id.as_deref() == thread
+            && run.family.mentioned_agents.get().is_none()
+            && run.family.selected_skill.get().is_none()
     });
     let agent_id = voice_agent
         .as_deref()
@@ -224,6 +235,12 @@ async fn submit(
     let agent = WorkspaceStore::get_in(&mut tx, Table::Agents, &agent_id)
         .await?
         .ok_or_else(|| ApiError::new(404, "Bot 不存在。"))?;
+    if let Some(id) = requested_skill {
+        if explicit.is_none() || agent.get("sharedBot").is_some() {
+            return Err(selected_skill::unavailable());
+        }
+        selected_skill::check(&mut tx, id, &agent_id).await?;
+    }
     if voice_memo {
         voice_memo::authorize_submission(&state, &grant, &conversation, &agent).await?;
         if crate::workspace::model::settings(&store, &mut tx).await?["configured"] != true {
@@ -243,11 +260,9 @@ async fn submit(
     let isolated = voice_memo
         || group_mentions.is_some()
         || app.is_some()
+        || requested_skill.is_some()
         || active.as_ref().is_some_and(|run| {
-            run.family.app_context.get().is_some()
-                || run.family.mentioned_agents.get().is_some()
-                || run.family.isolated_voice()
-                || run.thread_root_id.as_deref() != thread
+            run.family.isolated_dispatch() || run.thread_root_id.as_deref() != thread
         })
         || state.agent_runs.queues.has_isolated_dispatch(&key).await;
     let message_id = Uuid::new_v4().to_string();
@@ -302,6 +317,9 @@ async fn submit(
     }
     if let Some(app) = app {
         message["appContext"] = json!(app);
+    }
+    if let Some(id) = requested_skill {
+        message["skillId"] = json!(id);
     }
     let steering_generation = if mode == "steer" && !isolated {
         active

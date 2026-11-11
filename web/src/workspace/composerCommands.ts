@@ -10,6 +10,7 @@ export type ComposerCommand = {
   keywords: string;
   agentId?: string;
   skillName?: string;
+  skillId?: string;
 };
 export type CommandToken = { start: number; end: number; value: string; query: string };
 
@@ -86,6 +87,7 @@ export function composerCommands({
         keywords: `${skill.name} ${skill.description} ${agent.name}`,
         agentId: agent.id,
         skillName: skill.name,
+        ...(!isSharedBot(agent) ? { skillId: skill.id } : {}),
       });
     }
   }

@@ -146,15 +146,17 @@ test('same-name group skills retain their owning Bot and explicit recipients nar
   }
 });
 
-test('English command labels and inserted skill request are localized without translating stored skill names', async () => {
+test('English slash commands preserve a local skill name and the user’s draft', async () => {
   const f = await composerFixture({ language: 'en' });
   try {
     await f.focus();
     assert.ok(f.option('Settings'));
     assert.ok(f.option('Routines'));
+    await f.type('Review this /Summ');
     f.option('Summarize').props.onClick();
     await f.flush();
-    assert.equal(f.props.draft, 'Please use the “Summarize” skill for the following:\n');
+    assert.equal(f.props.draft, 'Review this ');
+    assert.equal(f.props.currentComposer.skillId, skill.id);
     assert.equal(f.calls.includes('send'), false);
   } finally {
     f.dispose();

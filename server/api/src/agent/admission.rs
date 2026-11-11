@@ -146,6 +146,9 @@ impl Reservation {
             let ids = super::mentions::ids(mentions).map(str::to_owned).collect();
             let _ = self.active.family.mentioned_agents.set(ids);
         }
+        if input["skillId"].is_string() {
+            let _ = self.active.family.selected_skill.set(());
+        }
         if input["metadata"]["voiceCallId"].is_string() {
             let _ = self.active.family.voice_call.set(());
         }

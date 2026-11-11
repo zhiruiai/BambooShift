@@ -38,6 +38,7 @@ pub(super) fn requested(body: &Value, mode: &str) -> Result<bool> {
             "replyToMessageId",
             "threadRootId",
             "appContext",
+            "skillId",
             "mentions",
             "voiceCallId",
         ]

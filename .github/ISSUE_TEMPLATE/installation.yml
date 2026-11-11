@@ -1,0 +1,37 @@
+name: Installation and compatibility / 安装与兼容性
+description: Report a setup or platform problem. 反馈安装、启动或平台兼容问题。
+title: '[Setup] '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use example data. Remove credentials, account details, and private server addresses.
+        请使用示例数据，移除密钥、账号信息和私有服务地址。
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform / 平台
+      options:
+        - Windows x64 desktop client
+        - macOS Apple Silicon desktop client
+        - Linux x64 server package
+        - Desktop browser or PWA
+        - Mobile browser or PWA
+        - Build from source
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version and operating system / 版本与操作系统
+      placeholder: Release tag or commit, OS version, and CPU architecture
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps and observed result / 操作步骤与实际结果
+      description: Include what you expected and the first step that failed. 请说明预期行为和首次失败的步骤。
+    validations:
+      required: true

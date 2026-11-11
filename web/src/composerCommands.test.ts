@@ -73,8 +73,9 @@ test('arrow keys and Enter select a skill into the existing draft without sendin
     assert.equal(f.option('Summarize').props['aria-selected'], true);
     const original = f.props.currentComposer;
     assert.equal((await f.key('Enter')).prevented, true);
-    assert.equal(f.props.draft, 'Before 请使用「Summarize」技能处理以下内容：\n after');
+    assert.equal(f.props.draft, 'Before  after');
     assert.equal(f.props.currentComposer.agentId, bot.id);
+    assert.equal(f.props.currentComposer.skillId, skill.id);
     assert.equal(f.props.currentComposer.attachments, original.attachments);
     assert.equal(f.props.currentComposer.replyTo, original.replyTo);
     assert.equal(f.field.selectionStart, f.props.draft.indexOf(' after'));
@@ -82,6 +83,29 @@ test('arrow keys and Enter select a skill into the existing draft without sendin
     assert.equal(f.input().props['aria-expanded'], false);
     assert.equal((await f.key('Enter', { repeat: true })).prevented, true);
     assert.equal(f.calls.includes('send'), false);
+  } finally {
+    f.dispose();
+  }
+});
+
+test('replacing a selected skill keeps the human text and a voice memo hides skill choices', async () => {
+  const replacement = { ...skill, id: 'skill-b', name: 'Outline' };
+  const f = await composerFixture({ draft: 'Keep this /Summarize', skills: [skill, replacement] });
+  try {
+    await f.focus();
+    await f.key('Enter');
+    assert.equal(f.props.draft, 'Keep this ');
+    assert.equal(f.props.currentComposer.skillId, skill.id);
+    await f.type('Keep this /Outline');
+    await f.key('Enter');
+    assert.equal(f.props.draft, 'Keep this ');
+    assert.equal(f.props.currentComposer.skillId, replacement.id);
+    await f.change({
+      currentComposer: { ...f.props.currentComposer, skillId: undefined, requestVoiceMemo: true },
+    });
+    await f.type('Keep this /Summarize');
+    assert.equal(f.options().length, 0);
+    assert.equal(f.props.currentComposer.requestVoiceMemo, true);
   } finally {
     f.dispose();
   }
@@ -157,7 +181,9 @@ test('IME commit Enter and keyCode 229 never choose a command or submit the mess
     assert.equal(f.props.draft, '/');
     assert.equal(f.calls.includes('send'), false);
     await f.key('Enter');
-    assert.match(f.props.draft, /Summarize/);
+    assert.equal(f.props.draft, '');
+    assert.equal(f.props.currentComposer.skillId, skill.id);
+    assert.equal(f.input().props.placeholder, '输入要用这个技能处理的任务');
     assert.equal(f.calls.includes('send'), false);
   } finally {
     f.dispose();

@@ -202,9 +202,13 @@ export function ComposerInput(props: ComposerInputProps) {
           }
         }}
         placeholder={
-          props.threadRootId
-            ? uiText('workspace:threadComposer')
-            : uiText('workspace:text_97c58dddcb9f', { value0: props.conversation?.title || 'Bot' })
+          props.currentComposer.skillId
+            ? uiText('workspace:composerSkillTaskPlaceholder')
+            : props.threadRootId
+              ? uiText('workspace:threadComposer')
+              : uiText('workspace:text_97c58dddcb9f', {
+                  value0: props.conversation?.title || 'Bot',
+                })
         }
         rows={1}
         aria-label={uiText(

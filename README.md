@@ -2,26 +2,31 @@
 
 简体中文 · [English](README.en.md)
 
-**在群聊里组建 AI 同事，直接打开他们交付的网页和文件。** PandaMate 是开源、自托管的 Grok Bot 平替。Bot 可以用 Pi 分工、联网查资料、操作工作电脑，并在对话里交付结果。
+**PandaMate 是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
 
-**[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[启动工作空间](#快速开始)** · **[看更多演示](#功能演示)** · [创作者取材](#创作者取材)
+**[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
 
-**星港降落｜聊天里交付的小游戏，点开就能玩。** 打开包含五个文件的网页交付物，校准航向、启动反推，在预览里完成软着陆。
+**给一队 AI 同事一句话，拿到点开就能玩的小游戏。** 在星港任务小队打开交付卡，切到源码查看五个文件，再回到预览操纵飞船完成软着陆。
 
 ![从 PandaMate 聊天打开网页交付物并操纵飞船着陆](docs/demo/orbital-landing.gif)
 
 以下演示在独立工作区录制，使用示例对话、文件和预设的模型回复。
 
+## 支持的平台
+
+| 平台 | 怎么用 |
+| --- | --- |
+| **Web / PWA** | Windows、macOS、Linux 和移动浏览器可打开工作空间。浏览器支持时可安装 PWA。 |
+| **Windows x64** | 选择提供 `client-windows-x64.zip` 的版本，完整解压后运行 `PandaMate.exe`。便携包未签名，需要连接已有服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
+| **macOS Apple Silicon** | 下载桌面 ZIP 后连接已有服务。客户端采用临时签名，未经过 Apple 公证。Intel Mac 可使用网页。 [桌面连接说明](docs/desktop-client.md) |
+| **Linux x64** | 发布页提供预编译服务端。按包内 README 安装，再通过浏览器进入工作空间。 [服务部署](server/api/deployment/README.md) |
+| **Android / iOS** | 通过移动浏览器使用。原生 Flutter 客户端以源码提供。 [移动端源码](mobile/README.md) |
+
+客户端连接同一个 PandaMate 服务，Bot 的电脑操作由已连接的工作电脑执行。下载前请核对对应版本的附件。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest)
+
 ## 快速开始
 
-| 我想做什么 | 从这里开始 |
-| --- | --- |
-| 先看能做什么 | 上面是录制好的演示。还可以看[会议行动组](docs/demo/meeting-actions.gif)和[课后探险队](docs/demo/pizza-fractions.gif)。 |
-| 用网页开始自托管 | 在 Linux x64 下载服务包并按归档内的 README 安装。也可以按下文从源码启动。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest) |
-| 使用 Windows x64 客户端 | 在发布页选择带 `client-windows-x64.zip` 的版本，完整解压后运行 `PandaMate.exe`，连接已运行的 PandaMate 服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
-| 使用 Apple Silicon Mac 客户端 | 下载桌面包，打开后连接已运行的 PandaMate 服务。桌面包需要单独运行的服务，采用临时签名，未经过 Apple 公证。 [桌面连接说明](docs/desktop-client.md) |
-
-服务预编译包面向 Linux x64。Flutter 移动端以源码提供。各版本实际提供的平台以发布页附件为准。
+已有服务的用户可以直接打开工作空间。首次自托管可使用 Linux x64 服务包，也可以从源码启动。
 
 ### 从源码启动
 
@@ -44,11 +49,17 @@ npm run dev
 
 > 把这三条模拟会议笔记整理成 Markdown 行动清单，列出负责人、截止时间和待确认事项。林晓周三提交脚本，李宁周五完成封面，发布时间待全组确认。请在聊天里交付文件。
 
-### 在本机干活
+### 给 Bot 装一项技能
 
-如果客户端和 PandaMate 服务在同一台电脑，选择「设置 → 电脑 → 本机」即可用这台电脑的隔离浏览器。如果服务部署在别处，隔离浏览器也在那边运行。要操作当前 Mac 的原生应用，在「你的电脑」配对独立 Worker，授权屏幕录制和辅助功能，再在会话的电脑面板启用桌面操作。 [配对与权限](docs/computer.md#配对设备)
+在网页或桌面端打开 **连接应用 → 内置技能**，预览工作指令，选择本地 Bot 并保存草稿。审核通过后，在该 Bot 的单聊输入 `/`，选择技能再发送任务。Bot 会在这轮任务中使用选中的已审核指令。
 
-用上了哪种场景？欢迎点 Star 关注版本更新，或在 [Issues](https://github.com/zhiruiai/PandaMate/issues) 分享第一个任务和遇到的问题。
+### 选择本机或云端工作电脑
+
+- **本机浏览器。** 「设置 → 电脑 → 本机」使用服务所在电脑的隔离浏览器。客户端与服务在同一台电脑时，浏览器就在当前设备运行。
+- **Mac 原生应用。** 在「你的电脑」配对当前 Mac 上的独立 Worker，授予屏幕录制和辅助功能权限，再在会话电脑面板启用桌面操作。
+- **云端执行。** 使用部署者已绑定的云电脑，或连接自己在另一台电脑、云服务器上运行的 Worker。 [选择执行位置](docs/computer.md#选择执行位置)
+
+想收藏项目，可以点 Star。想收到发版提醒，可选 **Watch → Custom → Releases**。欢迎在 [Issues](https://github.com/zhiruiai/PandaMate/issues) 分享第一个任务，或用[安装与兼容性表单](https://github.com/zhiruiai/PandaMate/issues/new?template=installation.yml)反馈问题。
 
 ## 功能演示
 
@@ -104,15 +115,43 @@ npm run dev
 
 ## 能做什么
 
-| 场景 | 功能 |
-| --- | --- |
-| AI 同事与多智能体协作 | 支持单聊、群聊、点名 Bot、同事委派和问题卡。根据描述生成 Bot 或团队草稿，核对分工后创建。 |
-| 联网搜索与交付 | 搜索公开网页并回看来源。在对话里预览文档、表格、媒体和多文件网站。 [文件预览](docs/file-previews.md) |
-| 工作流自动化与智能体技能 | 按时区安排例行任务，或用 Webhook 触发任务并在原会话接收结果。将可复用的做法保存为待审核的 Bot 技能。 [Webhook](docs/routine-webhooks.md) |
-| 电脑操作（Computer Use） | 在「设置 → 电脑」配对专用 Worker，或使用已配置的云电脑。服务所在电脑提供隔离的浏览器自动化。独立 macOS Worker 经系统授权后可操作本机桌面。 [电脑设置](docs/computer.md) |
-| MCP 与人在回路 | 通过 Model Context Protocol（MCP）连接应用。需要确认的操作可在原消息审批。私密接管期间，Bot 暂停观察和输入。 |
+如果你用过 Grok Bot，可以按下面的顺序开始。在同一个工作空间完成组队、审批、接管和交付。
 
-网页支持 PWA 安装。桌面端和移动端连接同一个工作空间服务。 [Electron 桌面端](docs/desktop-client.md) · [Flutter 移动端](mobile/README.md)
+| 要做什么 | 在 PandaMate 中怎么做 |
+| --- | --- |
+| 组队并派任务 | 从 Bot 或团队模板开始，也可以用一句话生成草稿。通过单聊、群聊和 `@` 点名安排工作，Bot 也能把任务交给同事。 [团队配置](docs/bot-settings-and-teams.md) |
+| 让 Bot 搜索、用应用和电脑 | Bot 可以搜索公开网页并附来源，或通过 Model Context Protocol（MCP）调用已连接应用。在「设置 → 电脑」可用服务所在电脑的隔离浏览器、已配置的云电脑或配对 Worker。 [电脑设置](docs/computer.md) |
+| 审批操作或接管 | 需要确认时，在原消息查看请求并审批。打开 Bot 画面可以查看进度。私密接管期间，Bot 暂停观察和输入。 |
+| 拿到能用的交付物 | 在聊天里直接打开文档、表格、媒体和多文件网站。网站可以试玩、切换到源码或下载整个项目。 [文件预览](docs/file-previews.md) |
+| 把做法变成技能和例行任务 | 审核后启用可复用的智能体技能。按时区定时运行，或用 Webhook 触发工作，把结果送回原会话。 [Webhook](docs/routine-webhooks.md) |
+
+## 技术栈与架构
+
+PandaMate 把模型推理、工作空间权限和电脑执行分开。你在群聊里发出任务后，Rust 按当前空间的配置启动 Pi。Pi 流式返回消息和工具请求，需要审批的操作会留在聊天里。执行结果和交付文件回到原会话，网站交付物可以当场预览、试玩或查看源码。
+
+```mermaid
+flowchart TB
+    Clients["Web / PWA · Electron · Flutter"] -->|"产品 API / SSE"| Workspace
+    Operations["React 运营台"] -->|"运营 API"| Platform
+    subgraph Backend["Rust / Axum · 两个独立入口"]
+        Workspace["工作空间 · 任务 · 审批 · 调度"]
+        Platform["平台账户 · 成员资格"]
+    end
+    Workspace --> WorkData["空间 SQLite · 文件"]
+    Platform --> Identity["平台 SQLite · 账户数据"]
+    Workspace <-->|"上下文 · 事件 · 工具请求"| Pi["Pi SDK · Node.js"]
+    Pi --> Model["用户配置的模型服务"]
+    Workspace --> Workers["MCP · 电脑 · 文档 Worker"]
+```
+
+| 层 | 技术与职责 |
+| --- | --- |
+| 用户界面 | React、TypeScript、Vite 构建网页和 PWA。Electron 提供桌面连接壳，Flutter 提供移动端源码。 [Web](web/src/) · [桌面](desktop/) · [移动端](mobile/) |
+| API 与持久化 | Rust、Axum、Tokio 和 SQLx/SQLite 管理身份、空间数据、会话事件、审批回执和例行任务。产品与运营入口使用独立会话。 [Rust 服务](server/api/) |
+| 智能体 | Pi Coding Agent SDK 在受监督的 Node.js Worker 中运行。模型服务由空间配置，任务委派与技能版本由工作空间约束。 [Pi Worker](server/workers/pi-worker/) |
+| 工具与执行 | 独立 Worker 负责 MCP、文档解析和电脑操作。Playwright 驱动隔离浏览器，macOS 原生桌面需专用助手和系统授权。 [执行层](server/workers/) · [电脑设置](docs/computer.md) |
+
+[完整架构与权限边界](docs/architecture.md) · [源码发布与验证](docs/source-release.md)
 
 ## 创作者取材
 
@@ -143,8 +182,6 @@ npm run dev
 剪成竖屏时，将画面裁到正在操作的区域。保留交付卡上的按钮、群聊角色名和着陆结果，便于观众在静音时看懂。
 
 ## 开发与部署
-
-Rust 服务负责身份、权限、业务数据和调度，使用 SQLite 保存状态。Pi Coding Agent 提供 Bot 的智能体执行框架（Agent Harness）。MCP、文档解析和电脑操作由独立进程处理。React 产品站点和运营站点分别构建，使用不同的 API 入口与登录会话。 [架构](docs/architecture.md)
 
 | 命令 | 用途 |
 | --- | --- |

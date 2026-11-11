@@ -94,6 +94,33 @@ test('source export selects original source without local data, generated files 
     await f.close();
   }
 });
+test('source export retains playable showcase files and excludes unrelated showcase content', async () => {
+  const f = await fixture();
+  try {
+    const playable = [
+      'docs/showcase/index.html',
+      'docs/showcase/panda.svg',
+      'docs/showcase/showcase.css',
+      'docs/showcase/zh.html',
+      ...['en', 'zh'].flatMap((lang) =>
+        ['index.html', 'assets/flight.css', 'assets/ship.svg', 'src/flight.mjs', 'src/physics.mjs'].map(
+          (file) => 'docs/showcase/' + lang + '/' + file,
+        ),
+      ),
+    ];
+    for (const path of playable) await f.put(path, 'PUBLIC SHOWCASE');
+    await f.put('docs/showcase/internal.md', 'UNREVIEWED DOCUMENT');
+    await f.put('docs/showcase/en/src/extra.mjs', 'UNREVIEWED CODE');
+    await exportSource({ ...f, privateValues: [] });
+    const manifest = JSON.parse(await readFile(join(f.output, 'source-manifest.json'), 'utf8'));
+    assert.deepEqual(
+      manifest.files.map(({ path }) => path).filter((path) => path.startsWith('docs/showcase/')),
+      playable.sort(),
+    );
+  } finally {
+    await f.close();
+  }
+});
 test('private UUID credentials stop publication without echoing their value or reading account codes', async () => {
   const f = await fixture();
   const credential = [

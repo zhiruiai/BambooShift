@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./assets/flight.css">
+<title>Starport Landing</title></head>
+<body>
+<main>
+  <header><span><b>✦</b> ORBITAL FLIGHT LAB</span><span class="mission">MISSION 07</span></header>
+  <section class="intro"><h1>Starport Landing</h1><p>Touch down on the moon’s night side.</p></section>
+  <div class="grid">
+    <section class="scene" aria-label="Spaceship descent">
+      <div class="moon"></div>
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="surface"></div><div class="pad"></div>
+      <img class="ship" alt="" src="./assets/ship.svg">
+      <span class="scene-label">◈ &nbsp; NIGHT-SIDE APPROACH</span>
+    </section>
+    <section class="telemetry" aria-label="Flight telemetry">
+      <div><span>Altitude</span><strong id="height">1,200 m</strong></div>
+      <div><span>Descent speed</span><strong id="speed">72 m/s</strong></div>
+      <div><span>Drift</span><strong id="drift">14°</strong></div>
+    </section>
+  </div>
+  <div class="controls" aria-label="Flight controls">
+    <button id="align">Align</button>
+    <button id="brake">Brake</button>
+    <button id="land">Land</button>
+    <p id="status" aria-live="polite">Loading…</p>
+  </div>
+</main>
+<script type="module" src="./src/flight.mjs"></script>
+</body></html>

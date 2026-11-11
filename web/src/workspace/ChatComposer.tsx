@@ -15,6 +15,7 @@ import { isSharedBot } from '../../../shared/shared-bots';
 import { type ComposerState } from '../chatDrafts';
 import { groupMentionsUnavailable, removeMention } from '../composerMentions';
 import { ComposerInput, type ComposerInputProps } from './ComposerInput';
+import { ComposerContexts, composerSkill } from './ComposerContexts';
 import { DictationButton, DictationStatus } from '../components/DictationControls';
 import { VoiceControls } from '../components/VoiceControls';
 import { VoiceCallStart } from '../components/VoiceCallControls';
@@ -116,6 +117,8 @@ export function ChatComposer(
     upload,
   } = props;
   const appContext = currentComposer.appContext;
+  const skillId = currentComposer.skillId;
+  const { skill, skillUnavailable } = composerSkill(currentComposer, data.skills, members);
   const mentions = currentComposer.mentions;
   const voiceMemoRequested = currentComposer.requestVoiceMemo === true;
   const voiceMemoEligible =
@@ -139,10 +142,13 @@ export function ChatComposer(
   )?.requester?.messageId;
   const separateTask =
     !!appContext ||
+    !!skillId ||
     !!mentions ||
     (!!requesterMessage &&
       data.messages?.some(
-        (message) => message.id === requesterMessage && (message.appContext || message.mentions),
+        (message) =>
+          message.id === requesterMessage &&
+          (message.appContext || message.skillId || message.mentions),
       ));
   const appUnavailable =
     !!appContext &&
@@ -160,7 +166,10 @@ export function ChatComposer(
     members,
   );
   const canSubmit =
-    !appUnavailable && !mentionsUnavailable && (!voiceMemoRequested || voiceMemoEligible);
+    !appUnavailable &&
+    !skillUnavailable &&
+    !mentionsUnavailable &&
+    (!voiceMemoRequested || voiceMemoEligible);
   const audience = mentions
     ? 'everyone' in mentions
       ? [undefined]
@@ -299,26 +308,19 @@ export function ChatComposer(
               </select>
             </div>
           )}
-          {appContext && (
-            <div className="attachment-tray" role="status">
-              <span title={uiText('workspace:composerAppHelp')}>
-                {uiText('workspace:composerAppSelected', { name: appContext.name })}
-                <button
-                  type="button"
-                  aria-label={uiText('workspace:composerAppRemove', { name: appContext.name })}
-                  onClick={() =>
-                    updateComposer(composerKey, (current) => ({
-                      ...current,
-                      appContext: undefined,
-                    }))
-                  }
-                >
-                  <X size={13} />
-                </button>
-              </span>
-              {appUnavailable && <small>{uiText('workspace:composerAppUnavailable')}</small>}
-            </div>
-          )}
+          <ComposerContexts
+            app={appContext}
+            appUnavailable={appUnavailable}
+            selectedSkillId={skillId}
+            skill={skill}
+            skillUnavailable={skillUnavailable}
+            onRemoveApp={() =>
+              updateComposer(composerKey, (current) => ({ ...current, appContext: undefined }))
+            }
+            onRemoveSkill={() =>
+              updateComposer(composerKey, (current) => ({ ...current, skillId: undefined }))
+            }
+          />
           {working && (!timelineWorking || separateTask) && canSubmit && !voiceMemoRequested && (
             <div className="composer-delivery-mode" role="status">
               {uiText(

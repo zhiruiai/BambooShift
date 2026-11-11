@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./assets/flight.css">
+<title>星港降落</title></head>
+<body>
+<main>
+  <header><span><b>✦</b> 轨道飞行实验室</span><span class="mission">任务 07</span></header>
+  <section class="intro"><h1>星港降落</h1><p>驾驶飞船，在夜面完成一次软着陆。</p></section>
+  <div class="grid">
+    <section class="scene" aria-label="飞船降落轨迹">
+      <div class="moon"></div>
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="surface"></div><div class="pad"></div>
+      <img class="ship" alt="" src="./assets/ship.svg">
+      <span class="scene-label">◈ &nbsp; 夜面进近</span>
+    </section>
+    <section class="telemetry" aria-label="飞船遥测">
+      <div><span>高度</span><strong id="height">1,200 m</strong></div>
+      <div><span>下降速度</span><strong id="speed">72 m/s</strong></div>
+      <div><span>航向偏差</span><strong id="drift">14°</strong></div>
+    </section>
+  </div>
+  <div class="controls" aria-label="飞船操纵">
+    <button id="align">校准航向</button>
+    <button id="brake">启动反推</button>
+    <button id="land">尝试着陆</button>
+    <p id="status" aria-live="polite">正在加载…</p>
+  </div>
+</main>
+<script type="module" src="./src/flight.mjs"></script>
+</body></html>

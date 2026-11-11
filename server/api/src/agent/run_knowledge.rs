@@ -15,21 +15,37 @@ pub(super) struct KnowledgePrompt {
     pub lazy_memories: bool,
 }
 
-pub(super) fn prompt(skills: &[Value], memories: &[Value]) -> KnowledgePrompt {
-    let inline_memories = bounded_array(memories.iter().map(|memory| {
-        let content = memory["content"].as_str();
-        content
-            .is_none_or(|text| text.len() <= INLINE_BYTES)
-            .then(|| json!(content))
-    }));
-    let inline_skills = bounded_array(skills.iter().map(|skill| {
-        let name = skill["name"].as_str();
-        let content = skill["content"].as_str();
-        let size = name.map_or(0, str::len) + content.map_or(0, str::len);
-        (size <= INLINE_BYTES).then(|| json!({"name":name,"content":content}))
-    }));
+pub(super) fn prompt(
+    skills: &[Value],
+    memories: &[Value],
+    selection: Option<&Value>,
+) -> KnowledgePrompt {
+    let inline_memories = bounded_array(
+        memories.iter().map(|memory| {
+            let content = memory["content"].as_str();
+            content
+                .is_none_or(|text| text.len() <= INLINE_BYTES)
+                .then(|| json!(content))
+        }),
+        INLINE_BYTES,
+    );
+    // Leave room for the bounded catalog and guidance when other skills are lazy.
+    let selected = selection.map(|skill| super::selected_skill::prompt(skill, INLINE_BYTES / 2));
+    let skill_budget = INLINE_BYTES - selected.as_ref().map_or(0, |(text, _)| text.len());
+    let inline_skills = bounded_array(
+        skills
+            .iter()
+            .filter(|skill| selection.is_none_or(|selection| skill["id"] != selection["id"]))
+            .map(|skill| {
+                let name = skill["name"].as_str();
+                let content = skill["content"].as_str();
+                let size = name.map_or(0, str::len) + content.map_or(0, str::len);
+                (size <= skill_budget).then(|| json!({"name":name,"content":content}))
+            }),
+        skill_budget,
+    );
     let lazy_memories = inline_memories.is_none();
-    let lazy_skills = inline_skills.is_none();
+    let lazy_skills = inline_skills.is_none() || selected.as_ref().is_some_and(|(_, lazy)| *lazy);
     let memories = inline_memories.unwrap_or_else(|| {
         format!(
             "{} records. Use recall with an optional query to retrieve relevant saved memory data. Continue with the returned nextCursor until you have the needed records.",
@@ -44,19 +60,23 @@ pub(super) fn prompt(skills: &[Value], memories: &[Value]) -> KnowledgePrompt {
             records.len(), catalog["skills"]
         )
     });
+    let mut text = format!("Saved memory data: {memories}\nApproved skills: {skills}");
+    if let Some((selection, _)) = selected {
+        text.push_str(&selection);
+    }
     KnowledgePrompt {
-        text: format!("Saved memory data: {memories}\nApproved skills: {skills}"),
+        text,
         lazy_skills,
         lazy_memories,
     }
 }
 
-fn bounded_array(entries: impl Iterator<Item = Option<Value>>) -> Option<String> {
+fn bounded_array(entries: impl Iterator<Item = Option<Value>>, maximum: usize) -> Option<String> {
     let mut array = String::from("[");
     for entry in entries {
         let entry = entry?.to_string();
         let separator = usize::from(array.len() > 1);
-        if array.len() + entry.len() + separator + 1 > INLINE_BYTES {
+        if array.len() + entry.len() + separator + 1 > maximum {
             return None;
         }
         if separator != 0 {
@@ -300,7 +320,7 @@ mod tests {
     fn small_prompt_retains_existing_format() {
         let skills = [skill("a", "Review changes.\nCJK 中文")];
         let memories = [memory("b", "Prefers short answers.")];
-        let output = prompt(&skills, &memories);
+        let output = prompt(&skills, &memories, None);
         assert!(!output.lazy_skills && !output.lazy_memories);
         let exact_skills = json!([{"name":skills[0]["name"],"content":skills[0]["content"]}]);
         assert_eq!(
@@ -319,13 +339,13 @@ mod tests {
         let memories: Vec<_> = (0..4)
             .map(|index| memory(&format!("memory-{index}"), &"\u{0001}".repeat(1000)))
             .collect();
-        let output = prompt(&skills, &memories);
+        let output = prompt(&skills, &memories, None);
         assert!(output.lazy_skills && output.lazy_memories);
         assert!(output.text.contains("8 approved skills") && output.text.contains("4 records"));
         assert!(output.text.contains("recall") && output.text.contains("read_skill"));
         assert!(output.text.contains("Review a release"));
         assert!(!output.text.contains("XXXX") && output.text.len() < 9_000);
-        assert!(!prompt(&skills, &[]).lazy_memories);
+        assert!(!prompt(&skills, &[], None).lazy_memories);
     }
 
     #[test]

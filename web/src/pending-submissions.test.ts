@@ -73,6 +73,26 @@ test('a pinned app receipt requires the same connection and revision', async () 
   assert.equal(reloaded.pending(), 0);
 });
 
+test('an explicit skill selection is bound to the exact message receipt and retry', async () => {
+  const saved = storage();
+  const first = await registry(saved).prepare(
+    makeSendAttempt('conversation-a', draft(undefined, { agentId: 'bot-a', skillId: 'skill-a' })),
+  );
+  assert.doesNotMatch([...saved.values.values()].join(''), /skill-a/);
+  const reloaded = registry(saved);
+  const retry = await reloaded.prepare(makeSendAttempt('conversation-a', first.snapshot));
+  const delivery = {
+    state: 'delivered' as const,
+    mode: retry.mode,
+    clientId: retry.clientId,
+    agentId: 'bot-a',
+  };
+  assert.equal(retry.clientId, first.clientId);
+  assert.equal(reloaded.confirm(receipt(retry, { delivery })), undefined);
+  assert.equal(reloaded.confirm(receipt(retry, { delivery, skillId: 'skill-b' })), undefined);
+  assert.equal(reloaded.confirm(receipt(retry, { delivery, skillId: 'skill-a' })), retry);
+});
+
 test('reload reuses an unresolved receipt ID without persisting text, attachment data or quote text', async () => {
   const saved = storage();
   const first = registry(saved);

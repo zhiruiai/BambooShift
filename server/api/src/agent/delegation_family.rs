@@ -31,6 +31,7 @@ pub(crate) struct DelegationFamily {
     pub model_profile: OnceLock<Value>,
     pub(super) app_context: OnceLock<super::app_context::AppContext>,
     pub(super) mentioned_agents: OnceLock<Vec<String>>,
+    pub(super) selected_skill: OnceLock<()>,
     pub(super) voice_call: OnceLock<()>,
     pub(super) voice_memo: OnceLock<()>,
     pub computer_tasks: tokio::sync::Mutex<
@@ -57,6 +58,7 @@ impl DelegationFamily {
             model_profile: OnceLock::new(),
             app_context: OnceLock::new(),
             mentioned_agents: OnceLock::new(),
+            selected_skill: OnceLock::new(),
             voice_call: OnceLock::new(),
             voice_memo: OnceLock::new(),
             computer_tasks: tokio::sync::Mutex::new(HashMap::new()),
@@ -73,6 +75,12 @@ impl DelegationFamily {
     }
     pub(super) fn isolated_voice(&self) -> bool {
         self.voice_call.get().is_some() || self.voice_memo.get().is_some()
+    }
+    pub(super) fn isolated_dispatch(&self) -> bool {
+        self.app_context.get().is_some()
+            || self.mentioned_agents.get().is_some()
+            || self.selected_skill.get().is_some()
+            || self.isolated_voice()
     }
     pub fn add_source(&self, grant: SharedBotRunGrant) {
         self.grants.lock().unwrap().push(grant);
@@ -104,8 +112,12 @@ impl DelegationFamily {
         active: &ActiveRun,
         skills: Vec<Value>,
         memories: &[Value],
-    ) -> super::run_knowledge::KnowledgePrompt {
-        let prompt = super::run_knowledge::prompt(&skills, memories);
+        requested_skill: Option<&str>,
+    ) -> Result<super::run_knowledge::KnowledgePrompt> {
+        let selection = requested_skill
+            .map(|id| super::selected_skill::find(&skills, id, &active.agent_id))
+            .transpose()?;
+        let prompt = super::run_knowledge::prompt(&skills, memories, selection);
         let knowledge = RunKnowledge {
             skills,
             checkin_memories: if active.kind == "primary_checkin" {
@@ -121,7 +133,7 @@ impl DelegationFamily {
             .unwrap()
             .entry(active.run_id.clone())
             .or_insert_with(|| Arc::new(knowledge));
-        prompt
+        Ok(prompt)
     }
     pub(super) fn knowledge(&self, run_id: &str) -> Option<Arc<RunKnowledge>> {
         self.knowledge.lock().unwrap().get(run_id).cloned()

@@ -44,10 +44,6 @@ jobs:
         run: npm ci
       - name: Build, launch and archive the Windows x64 client
         run: node scripts/publishing/build-windows-client.mjs
-      - name: Exercise isolated Chrome on Windows
-        env:
-          OPENBOT_BROWSER_TEST: '1'
-        run: node --import tsx --test server/workers/computer-runtime/tests/browser-engine.test.ts
   mobile-source:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

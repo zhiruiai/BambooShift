@@ -10,6 +10,7 @@ export type ComposerState = {
   mode: 'steer' | 'followUp';
   agentId?: string;
   appContext?: ChatAppContext;
+  skillId?: string;
   mentions?: ChatMentions;
   requestVoiceMemo?: true;
 };
@@ -22,6 +23,7 @@ export type SendAttempt = {
   mode: 'steer' | 'followUp';
   agentId?: string;
   appContext?: ChatAppSelection;
+  skillId?: string;
   mentions?: ChatMentions;
   requestVoiceMemo?: true;
   snapshot: ComposerState;
@@ -44,19 +46,30 @@ export function composerContent(draft: ComposerState): string {
     .filter(Boolean)
     .join('\n');
 }
+function submissionMode(draft: ComposerState): ComposerState['mode'] {
+  return draft.requestVoiceMemo || draft.skillId ? 'followUp' : draft.mode;
+}
+
 export function submissionKey(draft: ComposerState, threadRootId?: string): string {
   // Preserve the previous fingerprint for ordinary drafts so their saved
   // receipt IDs remain recoverable after upgrading the client.
-  const mode = draft.requestVoiceMemo ? 'followUp' : draft.mode;
+  const mode = submissionMode(draft);
   const fields = [composerContent(draft), draft.replyTo?.id || threadRootId || '', mode];
   if (draft.agentId !== undefined) fields.push(draft.agentId);
-  if (!threadRootId && !draft.appContext && !draft.mentions && !draft.requestVoiceMemo)
+  if (
+    !threadRootId &&
+    !draft.appContext &&
+    !draft.skillId &&
+    !draft.mentions &&
+    !draft.requestVoiceMemo
+  )
     return JSON.stringify(fields);
   return JSON.stringify({
     fields,
     ...(threadRootId ? { threadRootId } : {}),
     ...(draft.mentions ? { mentions: draft.mentions } : {}),
     ...(draft.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
+    ...(draft.skillId ? { skillId: draft.skillId } : {}),
     ...(draft.appContext
       ? { app: [draft.appContext.connectionId, draft.appContext.revision] }
       : {}),
@@ -82,8 +95,9 @@ export function makeSendAttempt(
     content: composerContent(draft),
     replyToMessageId: draft.replyTo?.id || threadRootId,
     ...(threadRootId ? { threadRootId } : {}),
-    mode: draft.requestVoiceMemo ? 'followUp' : draft.mode,
+    mode: submissionMode(draft),
     ...(draft.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
+    ...(draft.skillId ? { skillId: draft.skillId } : {}),
     ...(draft.agentId !== undefined ? { agentId: draft.agentId } : {}),
     ...(draft.mentions
       ? {
@@ -112,6 +126,7 @@ export function clearSubmittedDraft(
   const {
     agentId: _agentId,
     appContext: _appContext,
+    skillId: _skillId,
     mentions: _mentions,
     requestVoiceMemo: _requestVoiceMemo,
     ...remaining

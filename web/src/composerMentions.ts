@@ -56,7 +56,7 @@ export function removeMention(
 ): ComposerState {
   const text = removeInlineLabel(draft.text, name);
   if (!draft.mentions || 'everyone' in draft.mentions)
-    return { ...draft, text, agentId: undefined, mentions: undefined };
+    return { ...draft, text, agentId: undefined, mentions: undefined, skillId: undefined };
   const remaining = draft.mentions.agentIds.filter((agentId) => agentId !== id);
   return remaining.length > 1
     ? { ...draft, text, mentions: { agentIds: remaining } }

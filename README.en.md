@@ -2,26 +2,31 @@
 
 [简体中文](README.md) · English
 
-**Build a team of AI coworkers in chat and open the websites and files they deliver.** PandaMate is an open-source, self-hosted Grok Bot alternative. Bots use Pi to delegate, search the web, and operate a work computer.
+**PandaMate is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
 
-**[Download the latest release](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[Start a workspace](#quick-start)** · **[Watch more demos](#demos)** · [Creator kit](#creator-kit)
+**[Download the latest release](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
 
-**Starport Landing.** Open a five-file web game from chat, align the ship, brake, and make a soft landing in the preview.
+**One request. A whole AI team. A game you can open and play.** Open Starport Landing from the chat, check its five files in Source, then fly the spacecraft to a soft landing.
 
 ![Opening a web game from PandaMate chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
 
 These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
 
+## Supported platforms
+
+| Platform | How to use PandaMate |
+| --- | --- |
+| **Web / PWA** | Open the workspace in a Windows, macOS, Linux, or mobile browser. Install as a PWA when your browser supports it. |
+| **Windows x64** | Choose a release with a `client-windows-x64.zip` asset. Extract the entire archive and run `PandaMate.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
+| **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. The client uses ad-hoc signing without Apple notarization. Intel Macs can use the web app. [Desktop setup](docs/desktop-client.md) |
+| **Linux x64** | Download the prebuilt server, follow the bundled README, and open the workspace in your browser. [Server deployment](server/api/deployment/README.md) |
+| **Android / iOS** | Use a mobile browser. The native Flutter app is available as source. [Mobile source](mobile/README.md) |
+
+Clients share one PandaMate server. The connected work computer executes Bot computer actions. Check the assets listed on the release you are downloading. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest)
+
 ## Quick start
 
-| I want to | Start here |
-| --- | --- |
-| See what PandaMate does | Watch the recorded demo above. You can also preview a [meeting action list](docs/demo/meeting-actions.en.gif) or a [pizza fraction lab](docs/demo/pizza-fractions.en.gif). |
-| Self-host and use the web app | On Linux x64, download the server archive and follow its bundled README. You can also run from source below. [Latest release](https://github.com/zhiruiai/PandaMate/releases/latest) |
-| Use the Windows x64 client | Choose a release with a `client-windows-x64.zip` asset. Extract the entire archive, run `PandaMate.exe`, and connect it to a running PandaMate server. [Windows setup](docs/desktop-client.md#windows-x64) |
-| Use the Apple Silicon Mac client | Download the desktop archive and connect it to a running PandaMate server. The client requires a separate server and uses ad-hoc signing without Apple notarization. [Desktop connection guide](docs/desktop-client.md) |
-
-Prebuilt server packages target Linux x64. The Flutter mobile app is available as source. See the assets on each release for its platform coverage.
+If you already have a server, open its workspace. For self-hosting, use the Linux x64 server archive or start from source below.
 
 ### Run from source
 
@@ -44,11 +49,17 @@ Run `configure:local` once to create the local configuration. Use `npm run dev` 
 
 > Turn these fictional meeting notes into a Markdown action list with owners, due dates, and open questions. Riley submits the script on Wednesday. Morgan finishes the cover on Friday. The team still needs to agree on a launch date. Deliver the file in this chat.
 
-### Work on this computer
+### Add a skill to a Bot
 
-When the client and PandaMate server run on the same machine, choose **Settings → Computer → Local** to use an isolated browser on that machine. If your server runs elsewhere, the isolated browser runs there. To operate native apps on your current Mac, pair a dedicated Worker under **Your computer**, grant Screen Recording and Accessibility, then enable desktop control in the conversation’s computer panel. [Pairing and permissions](docs/computer.md#配对设备)
+On the web or desktop, open **Connect apps → Packaged skills**. Preview the instructions, choose a local Bot, and save a draft. After approval, type `/` in that Bot’s direct chat and select the skill before sending. The Bot loads the selected, reviewed instructions for that run.
 
-Found a use for PandaMate? Star the repo to follow releases, or share your first task and any setup trouble in [Issues](https://github.com/zhiruiai/PandaMate/issues).
+### Choose a local or cloud computer
+
+- **Local browser.** Choose **Settings → Computer → Local** to open an isolated browser on the server machine. It runs on your current device when the client and server are on that same device.
+- **Native Mac apps.** Pair a dedicated Worker on your current Mac under **Your computer**, grant Screen Recording and Accessibility, then enable desktop control in the chat’s computer panel.
+- **Cloud execution.** Use a cloud computer your administrator has linked, or connect a Worker you run on a separate computer or cloud server. [Execution locations](docs/computer.md#选择执行位置)
+
+Star the repo to bookmark it. For release notifications, choose **Watch → Custom → Releases**. Share your first task in [Issues](https://github.com/zhiruiai/PandaMate/issues), or use the [installation and compatibility form](https://github.com/zhiruiai/PandaMate/issues/new?template=installation.yml).
 
 ## Demos
 
@@ -104,15 +115,43 @@ Find all three in **Bot template library → Team templates**. Review the roles 
 
 ## What you can do
 
-| Use case | Features |
-| --- | --- |
-| AI coworkers and multi-agent collaboration | Direct and group chats, Bot mentions, delegation, and question cards. Describe a Bot or a team, review the draft, and create it. |
-| Web search and deliverables | Search public pages and review sources. Preview documents, spreadsheets, media, and multi-file websites in chat. [File previews](docs/file-previews.md) |
-| Workflow automation and agent skills | Schedule tasks with a time zone or trigger them with a webhook. Results return to the original conversation. Save repeatable instructions as Bot skills for review. [Webhooks](docs/routine-webhooks.md) |
-| Computer use and browser automation | Pair a dedicated Worker in **Settings → Computer** or use a configured cloud computer. The server host provides an isolated work browser. A standalone macOS Worker can operate the local desktop after explicit opt-in and system permission. [Computer setup](docs/computer.md) |
-| MCP tools and human-in-the-loop approvals | Connect apps through the Model Context Protocol (MCP). Approve specific requests in chat. A private takeover pauses Bot input and observation. |
+If you have used Grok Bot, start with these familiar workflows. Assign work, review actions, take control, and receive deliverables in the same workspace.
 
-The web app supports PWA installation. The desktop and mobile clients connect to the same workspace service. [Electron desktop](docs/desktop-client.md) · [Flutter mobile](mobile/README.md)
+| What you want to do | Where to do it in PandaMate |
+| --- | --- |
+| Build a team and assign work | Start with a Bot or team template, or describe the team to draft. Assign tasks in direct or group chat, mention a Bot, and let coworkers delegate. [Team setup](docs/bot-settings-and-teams.md) |
+| Use web search, apps, and a work computer | Bots can search public pages with sources or use connected Model Context Protocol (MCP) tools. **Settings → Computer** offers a server-hosted isolated browser, a configured cloud computer, and dedicated Worker pairing. [Computer setup](docs/computer.md) |
+| Approve an action or take over | Review and approve specific requests in chat. Open the Bot’s screen to follow its work. A private takeover pauses Bot input and observation. |
+| Open a finished deliverable | Preview documents, spreadsheets, media, and multi-file sites in chat. Play a delivered site, switch to Source, or download the project. [File previews](docs/file-previews.md) |
+| Reuse skills and automate routines | Review and enable reusable agent skills. Schedule a routine by time zone or trigger it with a webhook, then receive the result in the original chat. [Webhooks](docs/routine-webhooks.md) |
+
+## Tech stack and architecture
+
+PandaMate separates model inference, workspace authorization, and computer execution. A chat request starts a Pi run with the workspace’s configuration. Pi streams messages and tool requests. Actions that require approval appear in the chat. Results and files return to the conversation, where you can preview, play, or inspect the source of a delivered website.
+
+```mermaid
+flowchart TB
+    Clients["Web / PWA · Electron · Flutter"] -->|"Product API / SSE"| Workspace
+    Operations["React operations console"] -->|"Operations API"| Platform
+    subgraph Backend["Rust / Axum · separate listeners"]
+        Workspace["Workspaces · runs · approvals · schedules"]
+        Platform["Platform accounts · memberships"]
+    end
+    Workspace --> WorkData["Workspace SQLite · files"]
+    Platform --> Identity["Platform SQLite · account data"]
+    Workspace <-->|"Context · events · tool requests"| Pi["Pi SDK · Node.js"]
+    Pi --> Model["User-configured model service"]
+    Workspace --> Workers["MCP · computer · document workers"]
+```
+
+| Layer | Stack and responsibility |
+| --- | --- |
+| Client | React, TypeScript, and Vite build the web app and PWA. Electron provides the desktop connection shell. Flutter provides the native mobile source. [Web](web/src/) · [Desktop](desktop/) · [Mobile](mobile/) |
+| API and data | Rust, Axum, Tokio, and SQLx/SQLite manage identity, workspace data, chat events, approval receipts, and scheduled routines. Product and operations entry points use separate sessions. [Rust service](server/api/) |
+| Agent harness | The Pi Coding Agent SDK runs in a supervised Node.js worker. The workspace selects the model service and scopes delegation and skill versions. [Pi worker](server/workers/pi-worker/) |
+| Tools and execution | Separate workers handle MCP, document parsing, and computer use. Playwright drives isolated browsers. macOS desktop control requires a dedicated helper and system permission. [Workers](server/workers/) · [Computer setup](docs/computer.md) |
+
+[Architecture and authorization](docs/architecture.md) · [Source releases and verification](docs/source-release.md)
 
 ## Creator kit
 
@@ -143,8 +182,6 @@ Another angle is “Four founders in a role-play, one old computer.” Cut betwe
 For vertical video, crop to the action. Keep the artifact button, role names, and landing result visible so viewers can follow along with the sound off.
 
 ## Build and deploy
-
-A Rust service handles identity, permissions, application data, and scheduling, and stores state in SQLite. Pi Coding Agent provides the Bot agent harness. Separate workers handle MCP, document parsing, and computer use. The React product and operations sites are built separately and use separate API entry points and sign-in sessions. [Architecture](docs/architecture.md)
 
 | Command | Purpose |
 | --- | --- |

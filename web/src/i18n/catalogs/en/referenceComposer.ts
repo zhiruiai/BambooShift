@@ -4,6 +4,15 @@ export default {
   composerNoCommands: 'No matching skills or shortcuts',
   composerSkillOwner: 'Skill · {{name}}',
   composerSkillDraft: 'Please use the “{{name}}” skill for the following:\n',
+  composerSkillTaskPlaceholder: 'Describe what to do with this skill',
+  composerSkillSelection: 'Selected skill',
+  composerSkillSelected: 'Skill · {{name}} · v{{version}}',
+  composerSkillHelp:
+    'This exact approved version will be prepared for this task. Tool permissions still apply.',
+  composerSkillRemove: 'Remove selected skill',
+  composerSkillUnavailable:
+    'This skill changed or is disabled. Remove it and select an approved version.',
+  composerSkillUnknown: 'The server has not confirmed the selected skill.',
   composerSettings: 'Settings',
   composerSettingsHint: 'Open your existing settings',
   composerComputer: 'Computer',

@@ -66,6 +66,8 @@ export interface Message {
   status?: 'running' | 'done' | 'error';
   metadata?: Record<string, unknown>;
   appContext?: ChatAppContext;
+  /** The exact approved skill version selected for this human message. */
+  skillId?: string;
   mentions?: import('./chat-mentions').ResolvedChatMentions;
   threadRootId?: string;
   replyTo?: {

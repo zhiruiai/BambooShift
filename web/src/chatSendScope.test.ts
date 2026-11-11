@@ -409,6 +409,54 @@ test('actual send handles a definite actor rejection without retry and keeps the
   ui.cleanup();
 });
 
+test('actual send pins the selected skill and keeps the draft until that selection is confirmed', async () => {
+  let returnedSkill = 'other-skill';
+  const ui = await fixture({
+    transport: async (_url, init) => {
+      const body = JSON.parse(String(init.body));
+      return json({
+        message: {
+          id: 'skill-message',
+          conversationId: 'group-a',
+          userId,
+          role: 'user',
+          content: body.content,
+          skillId: returnedSkill,
+          delivery: {
+            clientId: body.clientId,
+            state: 'delivered',
+            mode: body.mode,
+            agentId: body.agentId,
+          },
+        },
+      });
+    },
+  });
+  try {
+    ui.sandbox.updateComposer('group-a', () => ({
+      ...ui.savedDraft,
+      agentId: 'bot-a',
+      skillId: 'reviewed-skill',
+      mode: 'steer',
+    }));
+    const draft = ui.composers['group-a'];
+    const attempt = ui.makeSendAttempt('group-a', draft);
+    await ui.submitAttempt(attempt);
+    const submitted = JSON.parse(String(ui.sent[0].init.body));
+    assert.equal(submitted.skillId, 'reviewed-skill');
+    assert.equal(submitted.mode, 'followUp');
+    assert.equal(draft.mode, 'steer');
+    assert.equal(ui.errors['group-a'].uncertain, true);
+    assert.equal(ui.composers['group-a'], draft);
+    returnedSkill = 'reviewed-skill';
+    await ui.submitAttempt(attempt);
+    assert.equal(ui.composers['group-a'].skillId, undefined);
+    assert.equal(ui.composers['group-a'].text, '');
+  } finally {
+    ui.cleanup();
+  }
+});
+
 test('send scope keeps the 30 second deadline, aborts on cleanup, and cannot revive an old epoch during StrictMode replay', async () => {
   const timeouts: Array<{ ms: number; controller: AbortController }> = [];
   const signals = {

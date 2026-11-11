@@ -6,7 +6,7 @@ export default {
   packagedSkillsChooseBot: 'Choose a Bot',
   packagedSkillsEdit: 'Edit skill draft',
   packagedSkillsApproval:
-    'This skill supplies workflow instructions. It requires approval after submission before it can run. Existing tool permissions and approvals still apply.',
+    'This skill supplies workflow instructions. After approval, type / in the target Bot’s chat to select the reviewed version. Existing tool permissions and approvals still apply.',
   packagedSkillsBack: 'Back to packaged skills',
   packagedSkillsEmpty: 'No matching skills.',
   packagedSkillsNoBots: 'Create a local Bot to use this skill.',
