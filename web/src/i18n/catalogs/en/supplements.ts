@@ -1,6 +1,6 @@
 export default {
   platform: {
-    operationsTitle: 'MosoCrew · Operations',
+    operationsTitle: 'BambooShift · Operations',
     operatorOnly: 'For platform operators only. Personal and team accounts cannot sign in here.',
     enableUser: 'Restore user',
     disableUser: 'Disable user',
@@ -113,7 +113,7 @@ export default {
   account: {
     text_16083ba8966c:
       'Share Bots, chats, and work files with team members. Your personal workspace is kept.',
-    text_c7d0301f453c: 'Sign in with the MosoCrew owner account that started this connection.',
+    text_c7d0301f453c: 'Sign in with the BambooShift owner account that started this connection.',
     text_e6d837a34721: 'Accept the invitation to share this workspace with the team.',
   },
   workspace: {

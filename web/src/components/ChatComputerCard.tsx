@@ -74,7 +74,7 @@ export function ComputerCard({
             <i />
             <i />
             <i />
-            <span>MosoCrew Workspace</span>
+            <span>BambooShift Workspace</span>
           </div>
           <div className="work-preview-content">
             <span className="work-preview-rail">

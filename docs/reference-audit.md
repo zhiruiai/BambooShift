@@ -1,6 +1,6 @@
 # 参考界面与功能核对
 
-本页核对用户提供的 19 张截图、[教程视频](https://www.youtube.com/watch?v=q1IwR88mhaA)的章节、字幕与关键画面，记录当前源码的真实范围。视频与截图用于分析交互；MosoCrew 使用自己的品牌、头像与实现，不分发参考媒体。当前仍处于整合验收阶段，不能将某个模块通过等同于整个版本已完成。
+本页核对用户提供的 19 张截图、[教程视频](https://www.youtube.com/watch?v=q1IwR88mhaA)的章节、字幕与关键画面，记录当前源码的真实范围。视频与截图用于分析交互；BambooShift 使用自己的品牌、头像与实现，不分发参考媒体。当前仍处于整合验收阶段，不能将某个模块通过等同于整个版本已完成。
 
 ## YouTube 实操复核（2026 年 11 月 10 日）
 
@@ -15,20 +15,20 @@
 
 Grok Bot 的设置把用户桌面和 Bot 云电脑分开。云电脑持久保存文件、浏览器登录和命令环境。同一用户的 Bot 可用独立画面并行工作，共享文件和登录。用户桌面按设备启用命令并单独审批。关闭客户端后能否继续工作，取决于执行机器和所需能力是否仍在线。[电脑与应用](https://docs.x.ai/grok-bot/computer-and-apps) · [电脑设置](https://docs.x.ai/grok-bot/settings-and-notifications#computer) · [本机权限](https://docs.x.ai/grok-bot/approvals-security-and-privacy#control-access-to-your-local-computer)
 
-| 优先级与领域 | MosoCrew 现状及下一步 |
+| 优先级与领域 | BambooShift 现状及下一步 |
 | --- | --- |
 | P0 · 找到执行位置 | 浏览器、云端 Worker 和目标切换已有服务端实现。旧版用「远程」统称 Worker，还会隐藏未配置的云入口。把当前目标和可选位置提前显示，明确本地浏览器运行在服务所在电脑，移动端给出直接查看入口。 |
 | P1 · 当前电脑与云电脑的首次接入 | 网页和桌面端的「设置 → 电脑」分开显示个人设备与 Bot 的电脑。可复制空间专用配对命令并预检 Worker，也可由拥有者启动或恢复已绑定的云电脑。当前仍需部署者准备云实例与跨设备连接，macOS 原生桌面需手动授予系统权限，每个空间使用一个活动目标。 |
 | P1 · 工作回执与接管 | 聊天里的电脑卡片显示当前状态、真实审批按钮和文件产物。若操作已记录独立画面，会标出该画面。手机区分观看与私密接管，服务端确认后显示归还状态。历史操作的执行位置和持续视频仍待补全。 |
 | P1 · 日常工作连接 | 已有自定义 MCP、定时任务、Webhook、团队模板和审核后的技能。优先做好一个有完整结果和权限边界的邮件、日历与文档闭环，再扩展连接器。用群聊交接和运行回执串起技能与例行任务。[工作流与事件](https://docs.x.ai/grok-bot/skills-routines-and-automations) |
-| P2 · 凭据与常用授权 | MosoCrew 已对具体操作检查发起者、工具、目标及接管权限。需要补独立秘密输入、凭据引用、有限范围的长期规则与撤销记录，并验证模型、其他成员、日志和回放无法读到秘密。[审批与隐私](https://docs.x.ai/grok-bot/approvals-security-and-privacy) |
+| P2 · 凭据与常用授权 | BambooShift 已对具体操作检查发起者、工具、目标及接管权限。需要补独立秘密输入、凭据引用、有限范围的长期规则与撤销记录，并验证模型、其他成员、日志和回放无法读到秘密。[审批与隐私](https://docs.x.ai/grok-bot/approvals-security-and-privacy) |
 | P2 · 交付与移动端 | 保留可交互网站、源码 ZIP、版本及分享。参考 Pages 的同一交付物侧边继续修改、版本提示和分享管理。移动端优先做审批和交付通知；联系人、日历等系统能力单独设计权限。[Pages](https://docs.x.ai/grok-bot/files-and-results) · [移动端](https://docs.x.ai/grok-bot/mobile) |
 
 发布提交的真实电脑测试覆盖 Pi 发起、用户审批、独立 Chromium 打开页面并返回内容，使用合成页面。本机及 GitHub 托管 Linux 上的测试都有通过记录。当前 Mac 整机截图仍依赖系统权限，公开仓的测试也没有证明每个部署都配置了云实例。[远端验收](https://github.com/zhiruiai/PandaMate/actions/runs/42671066699)
 
 ## 界面和交互
 
-| 参考体验 | MosoCrew 实现与核对 |
+| 参考体验 | BambooShift 实现与核对 |
 | --- | --- |
 | 三栏协作 | 同事与群聊侧栏、聊天工作区、详情/资料库/电脑/记忆或成员面板；统一紫灰主题。 |
 | 开始聊天 | 搜索实际存在的 Bot/群聊，键盘选择；名字完全匹配优先，创建 Bot/群聊/智能组队共用既有流程。 |
@@ -56,9 +56,9 @@ Grok Bot 的设置把用户桌面和 Bot 云电脑分开。云电脑持久保存
 
 ## 执行电脑与头像状态
 
-[Grok Bot 的电脑说明](https://docs.x.ai/grok-bot/computer-and-apps)区分持久云电脑和本机能力。MosoCrew 保留这个区分：内置工作浏览器由服务所在电脑运行；绑定到一个空间的独立 Worker 可以放在自有云服务器上，也可由拥有者部署到自己的电脑。默认模式不读取日常桌面。配置和授权要求见[电脑执行层](computer.md)。Grok Bot 的托管电脑、凭据 Vault、专用外部渠道和组织级策略仍是单独的产品能力，不能从电脑连接或聊天交互推断已经对齐。
+[Grok Bot 的电脑说明](https://docs.x.ai/grok-bot/computer-and-apps)区分持久云电脑和本机能力。BambooShift 保留这个区分：内置工作浏览器由服务所在电脑运行；绑定到一个空间的独立 Worker 可以放在自有云服务器上，也可由拥有者部署到自己的电脑。默认模式不读取日常桌面。配置和授权要求见[电脑执行层](computer.md)。Grok Bot 的托管电脑、凭据 Vault、专用外部渠道和组织级策略仍是单独的产品能力，不能从电脑连接或聊天交互推断已经对齐。
 
-头像使用 MosoCrew 原创图形。进入待机会话时，当前 Bot 轻眨眼睛；工作中轻微起伏，需要当前用户操作时短暂倾斜，刚完成时短暂回弹。历史消息中的头像保持静止。开启减少动态效果后仍可通过文字了解状态。Web 和桌面共用同一界面，Flutter 有独立实现。
+头像使用 BambooShift 原创图形。进入待机会话时，当前 Bot 轻眨眼睛；工作中轻微起伏，需要当前用户操作时短暂倾斜，刚完成时短暂回弹。历史消息中的头像保持静止。开启减少动态效果后仍可通过文字了解状态。Web 和桌面共用同一界面，Flutter 有独立实现。
 
 ## 工作流程
 
@@ -85,7 +85,7 @@ Grok Bot 把附件和 Pages 分成两类。单个 HTML 附件可以查看预览�
 
 对需要完整源码和运行环境的站点，公开资料给出另一条路径：Grok Bot 可以把编程工作交给 Cloud Agent；Cursor 的 Cloud Agent 在独立电脑中运行项目，可以通过端口转发在浏览器预览，可将源码保存到仓库，并在选择发布后得到公开地址。这些是 Cursor 公布的能力，不能据此认定 Grok Bot 的 Pages 附件具备同样的源码交付或发布流程。[Cloud Agent 项目预览与发布](https://cursor.com/docs/cloud-agent/setup)
 
-MosoCrew 的「网站项目」卡片保留入口页、相对路径和每次交付的版本。桌面可以一边预览一边在聊天里要求 Bot 修改项目，也可以浏览源码或下载保留目录结构的 ZIP。资料库展示每个项目的最新版本，聊天里的旧卡片保留历史版本。Flutter 从卡片全屏打开，可查看来源版本或切换到同一会话的最新版本，并校验文件清单和 SHA-256。预览支持包内静态资源、站内链接和部分 JavaScript 交互，包括 WebGL 画布。需要完整浏览器 API、外部依赖或后端服务的项目可下载源码并在相应环境运行。
+BambooShift 的「网站项目」卡片保留入口页、相对路径和每次交付的版本。桌面可以一边预览一边在聊天里要求 Bot 修改项目，也可以浏览源码或下载保留目录结构的 ZIP。资料库展示每个项目的最新版本，聊天里的旧卡片保留历史版本。Flutter 从卡片全屏打开，可查看来源版本或切换到同一会话的最新版本，并校验文件清单和 SHA-256。预览支持包内静态资源、站内链接和部分 JavaScript 交互，包括 WebGL 画布。需要完整浏览器 API、外部依赖或后端服务的项目可下载源码并在相应环境运行。
 
 项目默认保留在工作空间。创建人或空间拥有者可以把明确选定的交付版本分享给指定成员、团队或持有公开链接的人。公开前需要确认预览版本。切换到新版本需明确更新，同一链接地址可继续使用；撤回或更换链接后，旧链接与其资源请求失效。分享者在现有 Web 服务上提供预览，跨设备访问依赖该服务的网络可达性。
 
@@ -97,7 +97,7 @@ MosoCrew 的「网站项目」卡片保留入口页、相对路径和每次交�
 
 [视频 7:16 的例行任务](https://www.youtube.com/watch?v=q1IwR88mhaA&t=436s)支持每天、工作日、每周选定日期和固定间隔，使用 IANA 时区，保存真实 nextRunAt 和运行终态。未知响应只核对原请求；不会用自动重发来掩盖不确定结果。转交支持个人空间本地 Bot 的唯一单聊之间，运行或排队时拒绝转交。
 
-Grok Bot 的例行任务要求确认输入来源与审批边界。MosoCrew 的拥有者可给本地 Bot 的单聊例行任务授权最多四条固定公开查询。Pi 直接通过 Exa 搜索，并可读取本轮返回的公开网页，无需分配电脑。转交会清除授权。 [Grok Bot 例行任务](https://docs.x.ai/grok-bot/skills-routines-and-automations#create-a-routine)
+Grok Bot 的例行任务要求确认输入来源与审批边界。BambooShift 的拥有者可给本地 Bot 的单聊例行任务授权最多四条固定公开查询。Pi 直接通过 Exa 搜索，并可读取本轮返回的公开网页，无需分配电脑。转交会清除授权。 [Grok Bot 例行任务](https://docs.x.ai/grok-bot/skills-routines-and-automations#create-a-routine)
 
 [视频 3:03 的应用连接](https://www.youtube.com/watch?v=q1IwR88mhaA&t=183s)对应真实 MCP/OAuth/Bearer 连接。目录预设使用 [Notion](https://developers.notion.com/guides/mcp/get-started-with-mcp)、[Linear](https://linear.app/docs/mcp) 和 [GitHub](https://github.com/github/github-mcp-server/blob/main/docs/remote-server.md) 的官方端点；选择预设只填表，不连接账户。工具调用默认由真实发起者审批；拥有者可明确授予一个例行任务、一个工具和固定参数的只读权限，见[精确只读授权](app-routine-policies.md)。真实第三方账户授权仍需部署者亲自完成。
 

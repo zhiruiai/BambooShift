@@ -9,7 +9,7 @@
   "smartDraftBusy": "Generating draft…",
   "smartDraftGenerate": "Generate draft",
   "smartThemeDesigner": "Try a theme designer Bot",
-  "smartThemeDesignerBrief": "Create a Bot that designs MosoCrew avatar themes from visual briefs. It should propose a motif, three distinct colors, a badge and backdrop, and offer variants for review.",
+  "smartThemeDesignerBrief": "Create a Bot that designs BambooShift avatar themes from visual briefs. It should propose a motif, three distinct colors, a badge and backdrop, and offer variants for review.",
   "smartDraftError": "Could not generate a valid draft. Try again or edit the brief.",
   "smartDraftEdit": "Review and edit Bot",
   "smartThemeApply": "Apply on this device",

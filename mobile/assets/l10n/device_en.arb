@@ -1,6 +1,6 @@
 {
   "mobileUpdatesTitle": "Updates",
-  "mobileUpdatesScope": "This page checks the connected MosoCrew service. Mobile app installations are updated separately. Opening this page does not check GitHub or install updates.",
+  "mobileUpdatesScope": "This page checks the connected BambooShift service. Mobile app installations are updated separately. Opening this page does not check GitHub or install updates.",
   "mobileUpdatesServiceVersion": "Connected service version",
   "mobileUpdatesInvalid": "The update response does not match this workspace.",
   "mobileUpdatesOpenFailed": "Unable to open the release page.",

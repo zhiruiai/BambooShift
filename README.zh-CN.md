@@ -1,14 +1,14 @@
-# MosoCrew
+# BambooShift
 
 简体中文 · [English](README.md)
 
-**MosoCrew（原 PandaMate）是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
+**BambooShift（原 PandaMate）是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
 
 **[直接试玩](https://zhiruiai.github.io/PandaMate/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/PandaMate/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
 
 **给一队 AI 同事一句话，拿到点开就能玩的小游戏。** 在星港任务小队打开交付卡，切到源码查看五个文件，再回到预览操纵飞船完成软着陆。
 
-![从 MosoCrew 聊天打开网页交付物并操纵飞船着陆](docs/demo/orbital-landing.gif)
+![从 BambooShift 聊天打开网页交付物并操纵飞船着陆](docs/demo/orbital-landing.gif)
 
 以下演示在独立工作区录制，使用示例对话、文件和预设的模型回复。
 
@@ -22,7 +22,7 @@
 | **Linux x64** | 发布页提供预编译服务端。按包内 README 安装，再通过浏览器进入工作空间。 [服务部署](server/api/deployment/README.md) |
 | **Android / iOS** | 通过移动浏览器使用。原生 Flutter 客户端以源码提供。 [移动端源码](mobile/README.md) |
 
-客户端连接同一个 MosoCrew 服务，Bot 的电脑操作由已连接的工作电脑执行。下载前请核对对应版本的附件。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest)
+客户端连接同一个 BambooShift 服务，Bot 的电脑操作由已连接的工作电脑执行。下载前请核对对应版本的附件。 [最新发布](https://github.com/zhiruiai/PandaMate/releases/latest)
 
 ## 快速开始
 
@@ -122,7 +122,7 @@ npm run dev
 
 如果你用过 Grok Bot，可以按下面的顺序开始。在同一个工作空间完成组队、审批、接管和交付。
 
-| 要做什么 | 在 MosoCrew 中怎么做 |
+| 要做什么 | 在 BambooShift 中怎么做 |
 | --- | --- |
 | 组队并派任务 | 从 Bot 或团队模板开始，也可以用一句话生成草稿。通过单聊、群聊和 `@` 点名安排工作，Bot 也能把任务交给同事。 [团队配置](docs/bot-settings-and-teams.md) |
 | 让 Bot 搜索、用应用和电脑 | Bot 可以搜索公开网页并附来源，或通过 Model Context Protocol（MCP）调用已连接应用。在「设置 → 电脑」可用服务所在电脑的隔离浏览器、已配置的云电脑或配对 Worker。 [电脑设置](docs/computer.md) |
@@ -132,7 +132,7 @@ npm run dev
 
 ## 技术栈与架构
 
-MosoCrew 把模型推理、工作空间权限和电脑执行分开。你在群聊里发出任务后，Rust 按当前空间的配置启动 Pi。Pi 流式返回消息和工具请求，需要审批的操作会留在聊天里。执行结果和交付文件回到原会话，网站交付物可以当场预览、试玩或查看源码。
+BambooShift 把模型推理、工作空间权限和电脑执行分开。你在群聊里发出任务后，Rust 按当前空间的配置启动 Pi。Pi 流式返回消息和工具请求，需要审批的操作会留在聊天里。执行结果和交付文件回到原会话，网站交付物可以当场预览、试玩或查看源码。
 
 ```mermaid
 flowchart TB
@@ -169,7 +169,7 @@ flowchart TB
 | 00–03 秒 | 先闪过飞船即将着陆的画面。字幕「聊天里也能开飞船？」 |
 | 03–08 秒 | 回到对话，展示需求和网页交付卡，点开预览。字幕「交付的是可以打开的网页」。 |
 | 08–16 秒 | 剪进飞船下降和调整操作，留出一拍给触地。字幕「调整推力，准备着陆」。 |
-| 16–20 秒 | 停在着陆结果上。片尾字幕「MosoCrew · 开源、自托管」。 |
+| 16–20 秒 | 停在着陆结果上。片尾字幕「BambooShift · 开源、自托管」。 |
 
 [星港降落 GIF](docs/demo/orbital-landing.gif)
 
@@ -223,7 +223,7 @@ flowchart TB
 
 ## 鸣谢与开源组件
 
-感谢试用 MosoCrew、报告问题、提供复现步骤以及改进文档和翻译的每一位贡献者。也感谢以下上游项目的维护者。
+感谢试用 BambooShift、报告问题、提供复现步骤以及改进文档和翻译的每一位贡献者。也感谢以下上游项目的维护者。
 
 | 用途 | 上游项目与组件 |
 | --- | --- |
@@ -234,7 +234,7 @@ flowchart TB
 | Markdown 与图片 | [react-markdown](https://github.com/remarkjs/react-markdown) 和 [remark-gfm](https://github.com/remarkjs/remark-gfm) 渲染消息与技能文档，[sharp](https://sharp.pixelplumbing.com/) 用于处理图片附件。 |
 | 可选执行环境 | [Playwright](https://playwright.dev/) 和 [Chromium](https://www.chromium.org/) 用于浏览器操作，[whisper.cpp](https://github.com/ggml-org/whisper.cpp) 用于本地语音转写。 |
 
-MosoCrew 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 官方介绍](https://x.ai/news/introducing-grok-bot)。
+BambooShift 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 官方介绍](https://x.ai/news/introducing-grok-bot)。
 
 依赖版本由锁文件记录，各依赖保留原许可证。服务发布包包含所编译 Rust 与网页依赖的许可清单。 [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)
 
@@ -242,4 +242,4 @@ MosoCrew 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 官
 
 欢迎提交缺陷复现、文档补充与代码改进。请使用示例数据复现问题，并注明相关验证。 [贡献指南](CONTRIBUTING.md)
 
-MosoCrew 自有代码采用 [MIT 许可证](LICENSE)。第三方组件的许可见 [第三方声明](THIRD_PARTY.md)。
+BambooShift 自有代码采用 [MIT 许可证](LICENSE)。第三方组件的许可见 [第三方声明](THIRD_PARTY.md)。

@@ -60,7 +60,7 @@
   "mobileAppsRevocation_unavailable": "服务商无法确认撤销，请检查其账号设置。",
   "mobileAppsRevocation_failed": "本地已断开，但服务商撤销失败，请检查其账号设置。",
   "mobileAppsOAuthTitle": "网页登录授权",
-  "mobileAppsBrowserAccount": "系统浏览器使用独立登录会话。请在浏览器登录同一个 MosoCrew 拥有者账号，完成服务商授权后返回此处确认。",
+  "mobileAppsBrowserAccount": "系统浏览器使用独立登录会话。请在浏览器登录同一个 BambooShift 拥有者账号，完成服务商授权后返回此处确认。",
   "mobileAppsAdvancedOAuth": "可选 OAuth 客户端设置",
   "mobileAppsClientId": "客户端 ID（可选）",
   "mobileAppsClientSecret": "客户端密钥（可选）",
@@ -94,7 +94,7 @@
   "mobileAppsRulesTitle": "已保存的应用权限",
   "mobileAppsRulesIntro": "每条权限只适用于指定 Bot、会话、已连接应用和一项确切的读取操作。你可以在这里随时撤销。",
   "mobileAppsRulesEmpty": "还没有已保存的应用权限。",
-  "mobileAppsRuleUnsupported": "当前 MosoCrew 服务还不支持保存应用权限。",
+  "mobileAppsRuleUnsupported": "当前 BambooShift 服务还不支持保存应用权限。",
   "mobileAppsRuleAlwaysAllow": "始终允许",
   "mobileAppsRuleConfirm": "允许此会话再次执行这项读取？",
   "mobileAppsRuleScopeHelp": "权限有效期间，此项读取可再次执行，无需逐次审批。其他操作仍须批准。",
@@ -143,7 +143,7 @@
   "mobileAppsPrivateSkillNameConflict": "目标 Bot 已有同名技能。你可以在该 Bot 的技能中核对。",
   "mobileAppsPrivateSkillCurrentState": "当前列表显示了不同的状态。请重新核对版本和目标 Bot。",
   "mobileAppsPrivateSkillUnconfirmed": "暂未确认更改是否生效，请刷新技能核对。",
-  "mobileAppsPrivateSkillsUnsupported": "当前 MosoCrew 服务还不支持私有技能。",
+  "mobileAppsPrivateSkillsUnsupported": "当前 BambooShift 服务还不支持私有技能。",
   "mobileAppsPrivateSkillConfirmEnable": "目标 Bot 将使用你核对的版本。以后更新需重新选择。",
   "mobileAppsPrivateSkillConfirmDisable": "目标 Bot 将停止使用此已安装版本。"
 }

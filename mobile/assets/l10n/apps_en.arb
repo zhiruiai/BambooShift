@@ -60,7 +60,7 @@
   "mobileAppsRevocation_unavailable": "This provider cannot confirm revocation. Review its account settings.",
   "mobileAppsRevocation_failed": "Disconnected locally, but provider revocation failed. Review its account settings.",
   "mobileAppsOAuthTitle": "Web authorization",
-  "mobileAppsBrowserAccount": "Your system browser has a separate login session. Sign in to the same MosoCrew owner account there, authorize the provider, then return here to confirm.",
+  "mobileAppsBrowserAccount": "Your system browser has a separate login session. Sign in to the same BambooShift owner account there, authorize the provider, then return here to confirm.",
   "mobileAppsAdvancedOAuth": "Optional OAuth client settings",
   "mobileAppsClientId": "Client ID (optional)",
   "mobileAppsClientSecret": "Client secret (optional)",
@@ -94,7 +94,7 @@
   "mobileAppsRulesTitle": "Saved app permissions",
   "mobileAppsRulesIntro": "Each permission applies to one Bot, conversation, connected app, and exact read. You can revoke it here at any time.",
   "mobileAppsRulesEmpty": "There are no saved app permissions.",
-  "mobileAppsRuleUnsupported": "This MosoCrew server does not support saved app permissions yet.",
+  "mobileAppsRuleUnsupported": "This BambooShift server does not support saved app permissions yet.",
   "mobileAppsRuleAlwaysAllow": "Always allow",
   "mobileAppsRuleConfirm": "Allow this exact read again in this conversation?",
   "mobileAppsRuleScopeHelp": "This exact read can run again without asking while the permission is active. Other operations still need approval.",
@@ -143,7 +143,7 @@
   "mobileAppsPrivateSkillNameConflict": "The target Bot already has a skill with this name. Review it in that Bot’s skills.",
   "mobileAppsPrivateSkillCurrentState": "The latest list shows a different status. Review the version and Bot again.",
   "mobileAppsPrivateSkillUnconfirmed": "The change could not be confirmed. Refresh skills to check.",
-  "mobileAppsPrivateSkillsUnsupported": "This MosoCrew server does not support private skills yet.",
+  "mobileAppsPrivateSkillsUnsupported": "This BambooShift server does not support private skills yet.",
   "mobileAppsPrivateSkillConfirmEnable": "This Bot will use the reviewed version. Later updates require a separate choice.",
   "mobileAppsPrivateSkillConfirmDisable": "This Bot will stop using this installed version."
 }

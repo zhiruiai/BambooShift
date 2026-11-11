@@ -77,7 +77,7 @@ export function OperatorWorkspace({
         <a className="admin-brand" href="/admin">
           <Avatar size={35} />
           <span>
-            <strong>MosoCrew</strong>
+            <strong>BambooShift</strong>
             <small>{uiText('platform:text_e0f17eefe421')}</small>
           </span>
         </a>

@@ -9,7 +9,7 @@
   "smartDraftBusy": "正在生成草稿…",
   "smartDraftGenerate": "生成草稿",
   "smartThemeDesigner": "试试主题设计师 Bot",
-  "smartThemeDesignerBrief": "创建一个 MosoCrew 头像主题设计师。它根据设计需求提议头像造型、三种不同的配色、徽章和背景，并提供可审核的备选方案。",
+  "smartThemeDesignerBrief": "创建一个 BambooShift 头像主题设计师。它根据设计需求提议头像造型、三种不同的配色、徽章和背景，并提供可审核的备选方案。",
   "smartDraftError": "暂时无法生成可用的草稿。请重试或修改描述。",
   "smartDraftEdit": "检查并编辑 Bot",
   "smartThemeApply": "应用到本设备",

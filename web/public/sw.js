@@ -44,7 +44,7 @@ self.addEventListener('fetch', (event) => {
       async () =>
         (await caches.match('/offline.html')) ||
         new Response(
-          'MosoCrew 暂时无法连接，请联网后重试。 / MosoCrew is unavailable. Reconnect and try again.',
+          'BambooShift 暂时无法连接，请联网后重试。 / BambooShift is unavailable. Reconnect and try again.',
           {
             status: 503,
             headers: { 'Content-Type': 'text/plain; charset=utf-8' },

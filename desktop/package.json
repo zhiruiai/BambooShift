@@ -1,10 +1,10 @@
 {
   "name": "openbot-client",
-  "productName": "MosoCrew",
+  "productName": "BambooShift",
   "version": "0.0.1",
   "license": "MIT",
   "private": true,
-  "description": "MosoCrew desktop client for connecting to your workspace.",
+  "description": "BambooShift desktop client for connecting to your workspace.",
   "main": "main.cjs",
   "type": "commonjs"
 }

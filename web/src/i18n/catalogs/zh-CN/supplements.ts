@@ -2,7 +2,7 @@ import { MEMORY_IMPORT_COPY_PROMPT } from '../../../../../shared/memory-imports'
 
 export default {
   platform: {
-    operationsTitle: 'MosoCrew · 平台运营',
+    operationsTitle: 'BambooShift · 平台运营',
     operatorOnly: '仅供平台运营人员使用。个人或团队账户不能登录此后台。',
     enableUser: '恢复用户',
     disableUser: '停用用户',
@@ -106,7 +106,7 @@ export default {
   },
   account: {
     text_16083ba8966c: '与成员共享同事、会话和工作资料。你的个人空间会保留。',
-    text_c7d0301f453c: '请使用发起连接的 MosoCrew 拥有者账号。',
+    text_c7d0301f453c: '请使用发起连接的 BambooShift 拥有者账号。',
     text_e6d837a34721: '接受邀请后，与成员共享这个团队空间。',
   },
   workspace: {

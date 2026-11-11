@@ -7,7 +7,7 @@
 3. 向该地址发送 `POST`。可以发送空请求，或附带最多 8 KiB 的 JSON 对象。
 4. 收到 HTTP `202` 后，在原会话或任务的运行历史查看结果。回执中的 `runId` 对应此次运行，`duplicate` 表示复用了先前的回执。
 
-下面的环境变量由调用者自己配置。发送端和 MosoCrew 不在同一台机器时，使用部署者配置的可达 HTTPS 入口。
+下面的环境变量由调用者自己配置。发送端和 BambooShift 不在同一台机器时，使用部署者配置的可达 HTTPS 入口。
 
 ```sh
 curl --request POST "$OPENBOT_WEBHOOK_URL" \

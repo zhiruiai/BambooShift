@@ -42,7 +42,7 @@
   "mobileComputerExecutionTitle": "执行位置",
   "mobileComputerLocalTitle": "本地执行",
   "mobileComputerLocalHelp": "在网页或桌面端打开「设置 → 电脑 → 你的电脑」，可配对设备或使用服务所在电脑的工作浏览器。",
-  "mobileComputerLocationserver": "当前在运行 MosoCrew 服务的电脑上执行。",
+  "mobileComputerLocationserver": "当前在运行 BambooShift 服务的电脑上执行。",
   "mobileComputerLocationcloud": "当前在已连接的云电脑上执行。",
   "mobileComputerLocationremote": "当前在已连接的独立工作电脑上执行。",
   "mobileComputerLocationnone": "尚未选择工作电脑。",

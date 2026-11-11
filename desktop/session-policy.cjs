@@ -42,7 +42,7 @@ function createSetupProtocolHandler(uiDir = join(__dirname, 'ui')) {
         },
       });
     } catch {
-      return new Response('MosoCrew setup resources are unavailable.', {
+      return new Response('BambooShift setup resources are unavailable.', {
         status: 500,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       });

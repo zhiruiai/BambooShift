@@ -1,4 +1,4 @@
-# MosoCrew mobile
+# BambooShift mobile
 
 Native Flutter client for the Rust service. Android and iOS source projects are
 included. The client uses Flutter widgets and the account API directly.
@@ -26,14 +26,14 @@ in private configuration.
 
 ## Receive a system share
 
-Choose MosoCrew in the Android or iOS share sheet to import text, links, images
-or files. MosoCrew asks you to select a conversation and review the items before
+Choose BambooShift in the Android or iOS share sheet to import text, links, images
+or files. BambooShift asks you to select a conversation and review the items before
 adding them to its draft. Each file is limited to 10 MiB, with up to four files
 per share. The system share queues a local copy. Uploading a file and sending
 the draft each require a separate action in the conversation. After attaching
 to the draft, unuploaded selections remain in the current workspace session.
 
-On iOS, select **Save to MosoCrew** in the Share extension, then open MosoCrew to
+On iOS, select **Save to BambooShift** in the Share extension, then open BambooShift to
 choose the conversation. To sign for devices, configure the same Apple
 Developer team and the `group.dev.openbot.openbotMobile` App Group on Runner
 and OpenBotShare. For a fork, keep the App Group identifier in both entitlement
@@ -71,7 +71,7 @@ an installed native build.
   displays the pinned version with preview, source files and an explicit ZIP
   export. The viewer checks the size and digest of each file before opening the
   same isolated renderer as Web. Internal pages and bundled assets remain within
-  the preview. The renderer runs without the user's MosoCrew session credentials.
+  the preview. The renderer runs without the user's BambooShift session credentials.
 - A Bot computer can be viewed, explicitly taken over, and taught through
   reviewed action summaries. The generated skill remains a proposal until
   separately approved. Teaching does not save raw keystrokes or screenshots.

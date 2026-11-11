@@ -124,12 +124,12 @@ pub async fn callback(
 }
 pub async fn result() -> Html<&'static str> {
     Html(
-        "<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>MosoCrew 授权</title><main><h1>已返回 MosoCrew</h1><p>请回到发起授权的窗口，查看结果并点击完成连接。</p><p>Return to the original MosoCrew window to review and finish connecting.</p></main></html>",
+        "<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>BambooShift 授权</title><main><h1>已返回 BambooShift</h1><p>请回到发起授权的窗口，查看结果并点击完成连接。</p><p>Return to the original BambooShift window to review and finish connecting.</p></main></html>",
     )
 }
 pub async fn metadata(Extract(state): Extract<State>) -> axum::Json<serde_json::Value> {
     let origin = flow::origin(&state);
     axum::Json(
-        json!({"client_id":format!("{origin}/api/app-oauth/client-metadata"),"client_name":"MosoCrew","redirect_uris":[format!("{origin}{}",flow::CALLBACK)],"grant_types":["authorization_code","refresh_token"],"response_types":["code"],"token_endpoint_auth_method":"none"}),
+        json!({"client_id":format!("{origin}/api/app-oauth/client-metadata"),"client_name":"BambooShift","redirect_uris":[format!("{origin}{}",flow::CALLBACK)],"grant_types":["authorization_code","refresh_token"],"response_types":["code"],"token_endpoint_auth_method":"none"}),
     )
 }

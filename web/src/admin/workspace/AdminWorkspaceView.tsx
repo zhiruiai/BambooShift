@@ -65,7 +65,7 @@ export function AdminWorkspaceView(model: AdminWorkspaceModel) {
         >
           <Avatar size={35} />
           <span>
-            <strong>MosoCrew</strong>
+            <strong>BambooShift</strong>
             <small>{uiText('platform:text_c6bdf6d83d2c')}</small>
           </span>
         </a>

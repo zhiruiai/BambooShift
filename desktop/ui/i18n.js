@@ -8,7 +8,7 @@
   const locales = Object.freeze(['zh-CN', 'en']);
   // Keep product data and addresses outside this UI-only catalog.
   const entries = {
-    pageTitle: ['连接工作空间 · MosoCrew', 'Connect to a workspace · MosoCrew'],
+    pageTitle: ['连接工作空间 · BambooShift', 'Connect to a workspace · BambooShift'],
     colleague: ['你的 AI 同事', 'Your AI colleagues'],
     connectWorkspace: ['连接工作空间', 'Connect to workspace'],
     heading: ['连接你的工作空间', 'Connect to your workspace'],
@@ -16,7 +16,7 @@
       '输入工作空间地址，与你的 AI 同事继续协作。',
       'Enter your workspace address to continue working with your AI colleagues.',
     ],
-    mascot: ['MosoCrew 紫色小伙伴', 'MosoCrew purple companion'],
+    mascot: ['BambooShift 紫色小伙伴', 'BambooShift purple companion'],
     address: ['工作空间地址', 'Workspace address'],
     addressPlaceholder: ['https://你的工作空间地址', 'https://your-workspace.example'],
     secureAddress: [
@@ -43,8 +43,8 @@
       'Computer actions and tasks run on your workspace server. They can continue after you close this app; keep the server running.',
     ],
     accountLogin: [
-      '连接后使用 MosoCrew 账户登录；首次使用可在登录页注册个人或团队账户。',
-      'After connecting, sign in with your MosoCrew account. New users can register a personal or team account on the sign-in page.',
+      '连接后使用 BambooShift 账户登录；首次使用可在登录页注册个人或团队账户。',
+      'After connecting, sign in with your BambooShift account. New users can register a personal or team account on the sign-in page.',
     ],
     footer: ['同一个工作空间 · 从这里继续', 'Your workspace · Pick up where you left off'],
     language: ['客户端语言', 'Client language'],
@@ -85,14 +85,14 @@
     minimize: ['最小化', 'Minimize'],
     zoom: ['缩放窗口', 'Zoom Window'],
     front: ['全部置于前端', 'Bring All to Front'],
-    about: ['关于 MosoCrew', 'About MosoCrew'],
-    hide: ['隐藏 MosoCrew', 'Hide MosoCrew'],
+    about: ['关于 BambooShift', 'About BambooShift'],
+    hide: ['隐藏 BambooShift', 'Hide BambooShift'],
     hideOthers: ['隐藏其他应用', 'Hide Others'],
     unhide: ['显示全部', 'Show All'],
-    quit: ['退出 MosoCrew', 'Quit MosoCrew'],
+    quit: ['退出 BambooShift', 'Quit BambooShift'],
     close: ['关闭窗口', 'Close Window'],
     external: ['外部链接', 'External link'],
-    linkBlocked: ['此链接没有在 MosoCrew 中打开。', 'This link was not opened in MosoCrew.'],
+    linkBlocked: ['此链接没有在 BambooShift 中打开。', 'This link was not opened in BambooShift.'],
     linkHelp: [
       '客户端只显示当前空间。需要访问网页时，请右键点击链接，选择“在浏览器打开链接”，并确认地址。',
       'The client displays only your current workspace. To visit a website, right-click its link, choose “Open Link in Browser”, and confirm the address.',
@@ -103,10 +103,10 @@
     openOrigin: ['打开 {{origin}}？', 'Open {{origin}}?'],
     cancel: ['取消', 'Cancel'],
     openBrowser: ['打开浏览器', 'Open Browser'],
-    saveFile: ['保存 MosoCrew 文件', 'Save MosoCrew File'],
+    saveFile: ['保存 BambooShift 文件', 'Save BambooShift File'],
     saveShared: ['保存共享资料', 'Save Shared File'],
     save: ['保存', 'Save'],
-    notificationsAllow: ['允许 MosoCrew 显示工作通知？', 'Allow MosoCrew work notifications?'],
+    notificationsAllow: ['允许 BambooShift 显示工作通知？', 'Allow BambooShift work notifications?'],
     notificationsHelp: [
       '只显示任务完成或需要确认的提醒，不显示对话内容。退出账户或更换空间后需重新允许。',
       'Show task completion and approval reminders without conversation content. Allow again after signing out or changing workspace.',
@@ -138,8 +138,8 @@
       'Enter a new address to connect to another workspace.',
     ],
     desktopOnly: [
-      '请从 MosoCrew 桌面应用打开这个页面。',
-      'Open this page from the MosoCrew desktop app.',
+      '请从 BambooShift 桌面应用打开这个页面。',
+      'Open this page from the BambooShift desktop app.',
     ],
     stateFailed: [
       '暂时无法读取连接信息，请重试。',
@@ -179,12 +179,12 @@
     ],
     invalidParameters: ['连接参数无效。', 'Invalid connection parameters.'],
     setupOnly: [
-      '此操作只允许从 MosoCrew 连接页面发起。',
-      'This action is available only from the MosoCrew connection page.',
+      '此操作只允许从 BambooShift 连接页面发起。',
+      'This action is available only from the BambooShift connection page.',
     ],
     serviceAddress: [
-      '请输入完整的 MosoCrew 服务地址。',
-      'Enter the full MosoCrew service address.',
+      '请输入完整的 BambooShift 服务地址。',
+      'Enter the full BambooShift service address.',
     ],
     originOnly: [
       '只填写服务地址，不包含路径、查询参数或片段。',

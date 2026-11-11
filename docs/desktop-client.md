@@ -1,6 +1,6 @@
-# MosoCrew 桌面客户端
+# BambooShift 桌面客户端
 
-MosoCrew 客户端是连接现有 MosoCrew 服务的独立桌面窗口。它包括本地连接页与 Electron 窗口，不包含 Pi、API 服务、SQLite、用户工作区或原生电脑控制助手。先单独运行本机服务，或准备可访问的远程服务，再在客户端连接页填写地址；客户端不会自动启动服务或授予系统权限。
+BambooShift 客户端是连接现有 BambooShift 服务的独立桌面窗口。它包括本地连接页与 Electron 窗口，不包含 Pi、API 服务、SQLite、用户工作区或原生电脑控制助手。先单独运行本机服务，或准备可访问的远程服务，再在客户端连接页填写地址；客户端不会自动启动服务或授予系统权限。
 
 ## 开发运行
 
@@ -55,7 +55,7 @@ macOS Apple Silicon 的应用和清单位于 `release/client/`。从 `manifest-d
 
 同一目标重新打包会先在临时目录完成构建和签名，再替换同平台、同架构的旧产物。发布失败会恢复旧包；若恢复本身失败则保留恢复目录并报告位置。其它目标的产物保留。中间文件和下载缓存均放在 `release/client` 内；正常结束后删除临时目录。清单记录客户端源文件、Electron 版本、架构及输出路径，方便检查交付内容。
 
-系统和客户端窗口显示 MosoCrew。原安装标识及用户数据目录继续沿用，macOS bundle identifier 为 `com.openbot.client`。此客户端与 `com.openbot.desktop-helper` 原生控制助手是两个独立应用；原有 `npm run desktop:build` / `desktop:check` 仍专用于控制助手，不能用来打包客户端。
+系统和客户端窗口显示 BambooShift。原安装标识及用户数据目录继续沿用，macOS bundle identifier 为 `com.openbot.client`。此客户端与 `com.openbot.desktop-helper` 原生控制助手是两个独立应用；原有 `npm run desktop:build` / `desktop:check` 仍专用于控制助手，不能用来打包客户端。
 
 ## 打包边界
 

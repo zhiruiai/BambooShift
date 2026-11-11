@@ -111,7 +111,7 @@ export function WorkspaceSidebar({
             <i />
             <i />
           </div>
-          <span className="app-wordmark">MosoCrew</span>
+          <span className="app-wordmark">BambooShift</span>
           <div className="toolbar-actions">
             <IconButton
               label={uiText('workspace:text_feb95554de09')}

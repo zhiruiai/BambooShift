@@ -17,7 +17,7 @@ const SETUP_CSP =
 
 function normalizeServerOrigin(value) {
   if (typeof value !== 'string' || value.length > 2048)
-    throw new Error('请输入完整的 MosoCrew 服务地址。');
+    throw new Error('请输入完整的 BambooShift 服务地址。');
   const text = value.trim();
   if (!/^https?:\/\/[^/?#]+\/?$/i.test(text) || /[\\\u0000-\u0020\u007f]/.test(text))
     throw new Error('只填写服务地址，不包含路径、查询参数或片段。');

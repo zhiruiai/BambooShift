@@ -265,7 +265,7 @@ test('library separates originals from published templates and hands a fixed pro
   try {
     await ui.flush();
     assert.equal(requests, 0);
-    assert.ok(ui.button('MosoCrew 原创'));
+    assert.ok(ui.button('BambooShift 原创'));
     assert.ok(ui.button('用户发布'));
     const choose = component(ui.tree, 'StarterTemplateCatalog').props.onChoose;
     choose(starterTemplates()[2].profile);

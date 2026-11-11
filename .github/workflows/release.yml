@@ -1,4 +1,4 @@
-name: MosoCrew Release
+name: BambooShift Release
 
 on:
   workflow_dispatch:
@@ -189,5 +189,5 @@ jobs:
           set -euo pipefail
           git show "${GITHUB_SHA}:scripts/publishing/publish-release.sh" > "$RUNNER_TEMP/pandamate-publish-release.sh"
           bash "$RUNNER_TEMP/pandamate-publish-release.sh"
-          printf 'Published [MosoCrew %s](%s/%s/releases/tag/%s).\n' \
+          printf 'Published [BambooShift %s](%s/%s/releases/tag/%s).\n' \
             "$RELEASE_TAG" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"

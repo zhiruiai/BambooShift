@@ -91,7 +91,7 @@ test('fake main download integration always prompts and rejects a cross-origin r
     );
     assert.equal(prevented, false);
     assert.equal(allowed.dialog.defaultPath, 'my-report.pdf');
-    assert.equal(allowed.dialog.title, '保存 MosoCrew 文件');
+    assert.equal(allowed.dialog.title, '保存 BambooShift 文件');
     for (const rejected of [
       item({ getInitiatorOrigin: () => 'https://evil.example' }),
       item({
