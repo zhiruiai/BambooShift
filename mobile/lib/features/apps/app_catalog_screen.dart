@@ -59,13 +59,19 @@ class _AppCatalogScreenState extends State<AppCatalogScreen> {
             if (!controller.active) return const Notice('scopeChanged');
             String description(Json row) =>
                 context.tr('mobileAppsProvider_${row['id']}');
-            final matches = snapshot.data!.where(
-              (row) =>
-                  (category == 'all' || row['category'] == category) &&
-                  '${row['name']} ${row['keywords'] ?? ''} ${description(row)}'
-                      .toLowerCase()
-                      .contains(query),
-            );
+            final words = query
+                .split(RegExp(r'\s+'))
+                .where((word) => word.isNotEmpty);
+            final matches = snapshot.data!.where((row) {
+              final matchesCategory =
+                  category == 'all' ||
+                  row['category'] == category ||
+                  (category == 'noAuth' && row['authType'] == 'none');
+              final searchable =
+                  '${row['name']} ${row['url']} ${row['keywords'] ?? ''} ${description(row)}'
+                      .toLowerCase();
+              return matchesCategory && words.every(searchable.contains);
+            });
             return Column(
               children: [
                 Padding(
@@ -88,7 +94,12 @@ class _AppCatalogScreenState extends State<AppCatalogScreen> {
                     child: Wrap(
                       spacing: 8,
                       children: [
-                        for (final value in ['all', 'productivity', 'code'])
+                        for (final value in [
+                          'all',
+                          'productivity',
+                          'code',
+                          'noAuth',
+                        ])
                           ChoiceChip(
                             label: Text(
                               context.tr('mobileAppsCategory_$value'),
@@ -123,7 +134,7 @@ class _AppCatalogScreenState extends State<AppCatalogScreen> {
                                 ),
                                 title: Text(row['name'] as String),
                                 subtitle: Text(
-                                  '${description(row)}\n${context.tr(app == null ? 'mobileAppsNotConfigured' : 'mobileAppsStatus_${app['status']}')}',
+                                  '${description(row)}\n${context.tr(app == null ? 'mobileAppsAuth_${row['authType']}' : 'mobileAppsStatus_${app['status']}')}',
                                 ),
                                 trailing: const Icon(Icons.chevron_right),
                                 onTap: app != null || controller.canAdd

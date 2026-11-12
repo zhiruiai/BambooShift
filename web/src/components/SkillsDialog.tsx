@@ -14,6 +14,7 @@ import {
 } from '../skillVersions';
 import { Markdown } from './Markdown';
 import { SkillVersionReview } from './SkillVersionReview';
+import { SkillFileImport } from './SkillFileImport';
 import { TeamSkillsView, type TeamSkillsAccess } from './TeamSkillsView';
 import { Dialog } from './UI';
 
@@ -66,10 +67,10 @@ export function SkillsDialog({
   const draftBot = useRef<HTMLSelectElement>(null);
   const locked = busy || saving;
   useEffect(() => {
-    if (!initialDraft) return;
+    if (!adding) return;
     draftForm.current?.scrollIntoView({ block: 'start' });
     draftBot.current?.focus({ preventScroll: true });
-  }, [initialDraft]);
+  }, [adding, initialDraft]);
   useEffect(() => {
     if (saveError) {
       errorRef.current?.focus();
@@ -386,10 +387,26 @@ export function SkillsDialog({
                 </div>
               </form>
             ) : (
-              <button className="add-detail-row" disabled={locked} onClick={() => setAdding(true)}>
-                <Plus size={17} />
-                {uiText('common:text_71b3a207d7fe')}
-              </button>
+              <>
+                <button
+                  className="add-detail-row"
+                  disabled={locked}
+                  onClick={() => setAdding(true)}
+                >
+                  <Plus size={17} />
+                  {uiText('common:text_71b3a207d7fe')}
+                </button>
+                <SkillFileImport
+                  disabled={locked}
+                  onImport={(draft) => {
+                    setName(draft.name);
+                    setDescription(draft.description);
+                    setContent(draft.content);
+                    setSaveError('');
+                    setAdding(true);
+                  }}
+                />
+              </>
             ))}
         </>
       )}

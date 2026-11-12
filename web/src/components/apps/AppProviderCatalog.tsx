@@ -1,10 +1,11 @@
 import { ArrowUpRight, Check, Plus } from 'lucide-react';
 import type { ConnectedApp } from '../../../../shared/app-connections';
+import { appConnectionStatus } from '../../appConnections';
 import { appProviders, providerConnection } from '../../appProviders';
 import { uiText } from '../../i18n';
 import './AppProviderCatalog.css';
 
-const categories = ['all', 'productivity', 'code'] as const;
+const categories = ['all', 'productivity', 'code', 'noAuth'] as const;
 export type ProviderCategory = (typeof categories)[number];
 
 export function ProviderCategoriesView({
@@ -51,13 +52,16 @@ export function AppProviderCatalog({
   onSelect: (id: string) => void;
   onOpen: (id: string) => void;
 }) {
-  const providers = appProviders.filter(
-    (provider) =>
-      (category === 'all' || provider.category === category) &&
-      `${provider.name} ${provider.url} ${provider.keywords} ${uiText(`workspace:${provider.descriptionKey}`)}`
-        .toLocaleLowerCase()
-        .includes(search.trim().toLocaleLowerCase()),
-  );
+  const words = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const providers = appProviders.filter((provider) => {
+    const matchesCategory =
+      category === 'all' ||
+      provider.category === category ||
+      (category === 'noAuth' && provider.authType === 'none');
+    const searchable =
+      `${provider.name} ${provider.url} ${provider.keywords} ${uiText(`workspace:${provider.descriptionKey}`)}`.toLowerCase();
+    return matchesCategory && words.every((word) => searchable.includes(word));
+  });
   return (
     <section className="provider-catalog" aria-label={uiText('workspace:providerCatalog')}>
       <h3>{uiText('workspace:providerCatalog')}</h3>
@@ -76,7 +80,14 @@ export function AppProviderCatalog({
                 <span className="provider-mark" aria-hidden="true">
                   {provider.mark}
                 </span>
-                <strong className="provider-title">{provider.name}</strong>
+                <div className="provider-title">
+                  <strong>{provider.name}</strong>
+                  <span className="provider-status">
+                    {app
+                      ? appConnectionStatus(app.status)
+                      : uiText(`workspace:providerAuth_${provider.authType}`)}
+                  </span>
+                </div>
                 <p className="provider-description">
                   {uiText(`workspace:${provider.descriptionKey}`)}
                 </p>

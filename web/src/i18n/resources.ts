@@ -1,5 +1,7 @@
 import zhreferenceWebResearch from './catalogs/zh-CN/referenceWebResearch';
 import enreferenceWebResearch from './catalogs/en/referenceWebResearch';
+import zhreferenceMcpImport from './catalogs/zh-CN/referenceMcpImport';
+import enreferenceMcpImport from './catalogs/en/referenceMcpImport';
 import zhreferenceAppProposal from './catalogs/zh-CN/referenceAppProposal';
 import enreferenceAppProposal from './catalogs/en/referenceAppProposal';
 import zhreferencePackagedSkills from './catalogs/zh-CN/referencePackagedSkills';
@@ -115,6 +117,7 @@ export const uiResources = {
       ...zhreferenceAppProposal,
       ...zhreferencePackagedSkills,
       ...zhreferenceWebResearch,
+      ...zhreferenceMcpImport,
     },
   },
   en: {
@@ -147,6 +150,7 @@ export const uiResources = {
       ...enreferenceAppProposal,
       ...enreferencePackagedSkills,
       ...enreferenceWebResearch,
+      ...enreferenceMcpImport,
     },
   },
 };

@@ -7,6 +7,7 @@ import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'knowledge_editor_controller.dart';
+import 'skill_file_import.dart';
 import 'skill_recipe_picker.dart';
 
 class KnowledgeEditor extends StatefulWidget {
@@ -17,11 +18,13 @@ class KnowledgeEditor extends StatefulWidget {
     required this.kind,
     this.original,
     this.onSubmitted,
+    this.pickSkillFile = pickSkillMarkdown,
   });
   final WorkspaceController scope;
   final String agentId, kind;
   final Json? original;
   final VoidCallback? onSubmitted;
+  final SkillFilePicker pickSkillFile;
   @override
   State<KnowledgeEditor> createState() => _KnowledgeEditorState();
 }
@@ -43,21 +46,74 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
   );
   late String category = widget.original?['category'] as String? ?? 'context';
   bool get skill => widget.kind == 'skills';
+  bool get hasDraft =>
+      name.text.isNotEmpty ||
+      description.text.isNotEmpty ||
+      content.text.isNotEmpty;
+  bool importing = false, imported = false;
+  String? importError;
+  int importEpoch = 0;
   bool get editable =>
       model.ready && model.allowed && !model.busy && model.pending == null;
   @override
   void initState() {
     super.initState();
+    widget.scope.addListener(invalidateImport);
+    widget.scope.session.addListener(invalidateImport);
     unawaited(model.initialize());
   }
 
   @override
   void dispose() {
+    widget.scope.removeListener(invalidateImport);
+    widget.scope.session.removeListener(invalidateImport);
     model.dispose();
     content.dispose();
     name.dispose();
     description.dispose();
     super.dispose();
+  }
+
+  void invalidateImport() {
+    if (!importing || model.allowed) return;
+    importEpoch++;
+    setState(() => importing = false);
+  }
+
+  Future<void> importSkill() async {
+    if (!editable || hasDraft || importing) return;
+    final scope = widget.scope;
+    final epoch = ++importEpoch;
+    bool current() =>
+        mounted &&
+        epoch == importEpoch &&
+        identical(widget.scope, scope) &&
+        widget.agentId == model.agentId &&
+        editable &&
+        !hasDraft &&
+        ModalRoute.isCurrentOf(context) != false;
+    setState(() {
+      importing = true;
+      importError = null;
+    });
+    try {
+      final file = await widget.pickSkillFile();
+      if (!current() || file == null) return;
+      final draft = await readSkillMarkdown(file, isCurrent: current);
+      if (!current() || draft == null) return;
+      name.text = draft.name;
+      description.text = draft.description;
+      content.text = draft.content;
+      imported = true;
+    } on FormatException {
+      if (current()) importError = 'mobileKnowledgeImportInvalid';
+    } catch (_) {
+      if (current()) importError = 'mobileKnowledgeImportReadFailed';
+    } finally {
+      if (mounted && importEpoch == epoch) {
+        setState(() => importing = false);
+      }
+    }
   }
 
   Future<void> save() async {
@@ -167,6 +223,26 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
                   ],
                   if (skill) ...[
                     const Notice('mobileKnowledgeSkillReview'),
+                    if (importError case final error?) Notice(error),
+                    if (imported) const Notice('mobileKnowledgeImportedSkill'),
+                    ListenableBuilder(
+                      listenable: Listenable.merge([
+                        name,
+                        description,
+                        content,
+                      ]),
+                      builder: (context, _) => hasDraft
+                          ? const SizedBox.shrink()
+                          : OutlinedButton.icon(
+                              onPressed: editable && !importing
+                                  ? importSkill
+                                  : null,
+                              icon: const Icon(Icons.file_open_outlined),
+                              label: Text(
+                                context.tr('mobileKnowledgeImportSkill'),
+                              ),
+                            ),
+                    ),
                     OutlinedButton.icon(
                       onPressed: editable ? fillRecipe : null,
                       icon: const Icon(Icons.auto_awesome_outlined),

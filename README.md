@@ -59,6 +59,8 @@ The team still needs to agree on a launch date. Deliver the file in this chat.
 
 On the web or desktop, open **Connect apps → Packaged skills**. Preview the instructions, choose a local Bot, and save a draft. After approval, select the skill with `/` in that Bot’s direct chat. On Flutter, open **+ → Use skill** in the composer. The Bot loads the selected, reviewed instructions for that run.
 
+Use **Import SKILL.md** in the Bot’s skill editor to start from a local skill file on Web, desktop, or Flutter. Review the imported instructions in the editor, then save and approve the draft.
+
 ### Choose a local or cloud computer
 
 - **Local browser.** Choose **Settings → Computer → Local** to open an isolated browser on the server machine. It runs on your current device when the client and server are on that same device.

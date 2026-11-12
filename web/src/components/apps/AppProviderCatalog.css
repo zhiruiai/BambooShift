@@ -59,8 +59,17 @@
 }
 .provider-title {
   align-self: center;
+  min-width: 0;
   font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.provider-title strong {
   font-weight: 550;
+}
+.provider-status {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 .provider-description {
   grid-column: 1 / -1;
@@ -109,9 +118,6 @@
     height: 28px;
     align-self: center;
     font-size: 15px;
-  }
-  .provider-title {
-    overflow-wrap: anywhere;
   }
   .provider-description {
     grid-column: 1 / -1;

@@ -108,5 +108,27 @@
     "descriptionKey": "providerDeepWiki",
     "keywords": "public GitHub repository architecture codebase wiki documentation 公开仓库 源码解析 架构 文档",
     "documentation": "https://docs.devin.ai/work-with-devin/deepwiki-mcp"
+  },
+  {
+    "id": "context7",
+    "name": "Context7",
+    "category": "code",
+    "mark": "C7",
+    "url": "https://mcp.context7.com/mcp",
+    "authType": "none",
+    "descriptionKey": "providerContext7",
+    "keywords": "library framework package documentation versions React Vue Python SDK examples 库 框架 版本 开发文档 示例",
+    "documentation": "https://context7.com/docs/installation"
+  },
+  {
+    "id": "aws-knowledge",
+    "name": "AWS Knowledge",
+    "category": "code",
+    "mark": "AWS",
+    "url": "https://knowledge-mcp.global.api.aws",
+    "authType": "none",
+    "descriptionKey": "providerAwsKnowledge",
+    "keywords": "Amazon AWS S3 EC2 Lambda IAM CDK CloudFormation regions documentation architecture 亚马逊 云服务 开发文档 区域 架构",
+    "documentation": "https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server"
   }
 ]

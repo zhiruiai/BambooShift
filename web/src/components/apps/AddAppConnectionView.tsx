@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { AddAppConnection, ConnectedApp } from '../../../../shared/app-connections';
 import { validAppAddress } from '../../appConnections';
+import { RemoteMcpImport } from './RemoteMcpImport';
 import '../AppsDialog.css';
 import type { useAppsDialogContent } from './useAppsDialogContent';
 export type AppsDialogContentModel = ReturnType<typeof useAppsDialogContent>;
@@ -76,6 +77,25 @@ export function AddAppConnectionView({
     >
       <div className="apps-scroll dialog-form">
         {feedback}
+        {!customReview && props.canManage && (
+          <RemoteMcpImport
+            disabled={busy || uncertain}
+            hasDraft={
+              !!(
+                draft.name ||
+                draft.url ||
+                draft.token ||
+                draft.shared ||
+                draft.authType !== 'none'
+              )
+            }
+            onApply={({ name, url }) => {
+              if (busy || uncertain || !props.canManage || !scope.current(scope.ticket())) return;
+              setDraft({ name, url, authType: 'none', token: '', shared: false });
+              setError('');
+            }}
+          />
+        )}
         {customReview && <p className="field-help">{uiText('workspace:appProposalCustomForm')}</p>}
         <label>
           {uiText('apps:text_e4569e38b854')}

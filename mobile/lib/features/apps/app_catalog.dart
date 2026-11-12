@@ -15,6 +15,8 @@ const appProviderIds = {
   'microsoft-learn',
   'cloudflare-docs',
   'deepwiki',
+  'context7',
+  'aws-knowledge',
 };
 
 Future<List<Json>> loadAppProviders() async =>

@@ -26,6 +26,10 @@ test('provider presets contain only documented endpoints and no credentials or s
   assert.equal(providerDraft('gitlab')?.authType, 'oauth');
   assert.equal(providerDraft('cloudflare-docs')?.authType, 'none');
   assert.equal(providerDraft('deepwiki')?.authType, 'none');
+  assert.equal(providerDraft('context7')?.url, 'https://mcp.context7.com/mcp');
+  assert.equal(providerDraft('context7')?.authType, 'none');
+  assert.equal(providerDraft('aws-knowledge')?.url, 'https://knowledge-mcp.global.api.aws');
+  assert.equal(providerDraft('aws-knowledge')?.authType, 'none');
   const notion = appProviders[0];
   assert.equal(providerConnection(notion, [{ ...app, name: 'Notion' }]), undefined);
   assert.equal(
@@ -58,6 +62,7 @@ test('actual provider catalog filters categories and search and never labels an 
     await h.flush();
     assert.match(h.copy, /Notion/);
     assert.doesNotMatch(h.copy, /已连接/);
+    assert.match(h.copy, /需要重新授权/);
     all(h.tree, (node) => node.props?.['aria-label'] === '配置 Notion')[0].props.onClick();
     assert.deepEqual(opened, [app.id]);
     all(h.tree, (node) => node.props?.['aria-label'] === '配置 Linear')[0].props.onClick();
@@ -70,6 +75,15 @@ test('actual provider catalog filters categories and search and never labels an 
     assert.match(h.copy, /Cloudflare Docs/);
     assert.match(h.copy, /DeepWiki/);
     assert.doesNotMatch(h.copy, /Notion|Linear/);
+    h.setProps({ category: 'noAuth', search: 'AWS S3' });
+    await h.flush();
+    assert.match(h.copy, /AWS Knowledge/);
+    assert.match(h.copy, /无需登录/);
+    assert.doesNotMatch(h.copy, /Notion|Context7/);
+    h.setProps({ search: '' });
+    await h.flush();
+    assert.match(h.copy, /Context7/);
+    assert.doesNotMatch(h.copy, /GitHub MCP|Sentry/);
     h.setProps({ search: '源码解析' });
     await h.flush();
     assert.match(h.copy, /DeepWiki/);
@@ -77,7 +91,7 @@ test('actual provider catalog filters categories and search and never labels an 
     h.setProps({ search: 'unlisted-service' });
     await h.flush();
     assert.match(h.copy, /没有符合搜索条件/);
-    h.setProps({ search: '', canManage: false });
+    h.setProps({ search: '', category: 'code', canManage: false });
     await h.flush();
     assert.equal(
       all(h.tree, (node) => node.props?.['aria-label'] === '配置 GitHub')[0].props.disabled,

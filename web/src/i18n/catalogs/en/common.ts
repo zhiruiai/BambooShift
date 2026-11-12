@@ -1,5 +1,18 @@
 import type zh from '../zh-CN/common';
 export default {
+  skillFileImport: 'Import SKILL.md',
+  skillFileReading: 'Reading skill…',
+  skillFileHelp: 'Choose one SKILL.md file, edit and save a draft, then confirm to enable it.',
+  skillFileInvalidFile: 'Choose one .md skill file.',
+  skillFileTooLarge: 'The skill file must be no larger than 64 KiB.',
+  skillFileInvalidEncoding: 'The file is not valid UTF-8 text. Convert its encoding and try again.',
+  skillFileInvalidFormat:
+    'Start the file with YAML between separate --- lines. Duplicate fields and aliases are not supported.',
+  skillFileInvalidName:
+    'name must be nonempty text of at most 100 characters, without line breaks or control characters.',
+  skillFileInvalidDescription: 'description must be nonempty text of at most 1,000 characters.',
+  skillFileInvalidContent: 'The skill body must be nonempty and at most 16,000 characters.',
+  skillFileReadFailed: 'Could not read the file. Choose it again.',
   loadingWorkspace: 'Opening workspace…',
   save: 'Save',
   cancel: 'Cancel',

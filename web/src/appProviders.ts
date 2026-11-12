@@ -18,7 +18,9 @@ export type AppProvider = {
     | 'providerGitLab'
     | 'providerMicrosoftLearn'
     | 'providerCloudflareDocs'
-    | 'providerDeepWiki';
+    | 'providerDeepWiki'
+    | 'providerContext7'
+    | 'providerAwsKnowledge';
   documentation: string;
 };
 // Provider-owned endpoints verified against their published documentation.

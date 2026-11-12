@@ -2,6 +2,10 @@
 
 侧栏“连接应用”管理真实的 MCP HTTP 服务。列表、搜索、新增、详情、工具说明、重新授权、断开和移除共用现有弹窗与表单。工作空间文件、电脑和模型保留在“工作环境”区域。应用目录提供已登记服务商的官方 MCP 地址及文档。连接状态以实际授权和工具发现为准。
 
+目录的“无需登录”筛选可以找到支持匿名连接的服务。应用卡在连接前显示认证方式，在连接后显示实际状态。
+
+网页和桌面端的“添加连接”支持粘贴 `mcpServers` 或 VS Code `servers` 配置。从可用的公网 HTTPS 项目中选择一项，表单会填入可编辑的名称和地址，再按该服务的要求设置认证和确认连接。
+
 ## 使用范围
 
 空间拥有者提供服务名称、HTTPS 地址，选择无需认证、Bearer 访问凭据或网页登录授权，并确认与当前空间的 Bot 共享。连接成功后显示实际发现的工具和最后检查时间。凭据无效会进入“需要重新授权”；最初选择无需认证的连接也可补充凭据。断开清除本地保存的凭据与可用工具，重新使用需要再次连接；移除还会删除连接记录，历史操作消息保留。
@@ -37,6 +41,10 @@ Google 将 Gmail MCP 列为开发者预览，并将该阶段限制在获准的�
 ### Microsoft Learn
 
 Microsoft Learn 提供公开的微软与 Azure 文档检索、文档读取和代码示例搜索。选择“无需认证”即可连接，具体工具调用遵循 BambooShift 审批流程。已通过 BambooShift MCP 执行器验证工具发现和官方文档检索。[Microsoft Learn MCP 文档](https://learn.microsoft.com/en-us/training/support/mcp)
+
+### Context7 和 AWS Knowledge
+
+Context7 可查询开发库的最新文档和指定版本的代码示例。AWS Knowledge 可检索 AWS 官方文档、架构指引及服务的区域可用性。两者都可以匿名连接，服务商会限制匿名请求频率。工具请求仍按聊天中的应用审批规则处理。[Context7 文档](https://context7.com/docs/installation) · [AWS Knowledge MCP 文档](https://awslabs.github.io/mcp/servers/aws-knowledge-mcp-server)
 
 ## 通过共享 Bot 提供应用
 

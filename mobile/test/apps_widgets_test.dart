@@ -138,7 +138,15 @@ void main() {
       await tester.tap(find.widgetWithText(ChoiceChip, 'Code'));
       await tester.pumpAndSettle();
       expect(find.text('Atlassian'), findsNothing);
+      await tester.tap(find.widgetWithText(ChoiceChip, 'No sign-in'));
+      await tester.enterText(find.byType(TextField), 'aws s3');
+      await tester.pumpAndSettle();
+      expect(find.widgetWithText(ListTile, 'AWS Knowledge'), findsOneWidget);
+      expect(find.widgetWithText(ListTile, 'Context7'), findsNothing);
       await tester.enterText(find.byType(TextField), 'sentry');
+      await tester.pumpAndSettle();
+      expect(find.text('Sentry'), findsNothing);
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Code'));
       await tester.pumpAndSettle();
       expect(find.text('GitHub'), findsNothing);
       await tester.tap(find.widgetWithText(ListTile, 'Sentry'));

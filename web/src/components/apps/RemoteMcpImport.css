@@ -1,0 +1,33 @@
+.apps-import-open {
+  align-self: flex-start;
+}
+.apps-mcp-import {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+}
+.apps-mcp-import label {
+  min-width: 0;
+}
+.apps-mcp-import select,
+.apps-mcp-import textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.apps-mcp-import textarea {
+  resize: vertical;
+}
+.apps-import-address {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.apps-import-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
