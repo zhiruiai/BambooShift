@@ -197,17 +197,24 @@ try {
     baseUrl: 'http://127.0.0.1:' + model.address().port + '/v1',
     apiKey: modelKey,
   });
+  const bootstrap = async () => (await api(path + '/bootstrap', 200)).json();
+  const setup = await bootstrap();
+  const agent = setup.agents[0];
+  const primary = await (
+    await api(path + '/primary-bot', 200, 'PUT', {
+      mode: 'select',
+      expectedRevision: setup.primaryBot.revision,
+      agentId: agent.id,
+      checkIn: { ...setup.primaryBot.checkIn, enabled: false },
+    })
+  ).json();
 
   if (check) {
     const health = await (await api('/api/health', 200)).json();
     const homepage = await (await api('/', 200)).text();
     if (health.backend !== 'rust' || health.runtime !== 'pi' || !homepage.includes('id="root"'))
       throw Error('The preview did not serve the product UI and Pi backend.');
-    const bootstrap = async () => (await api(path + '/bootstrap', 200)).json();
-    const { conversations, agents } = await bootstrap();
-    const agent = agents[0];
-    const chat = conversations.find((entry) => !entry.isGroup && entry.agentIds.includes(agent.id));
-    await api(path + '/conversations/' + chat.id + '/messages', 202, 'POST', {
+    await api(path + '/conversations/' + primary.conversationId + '/messages', 202, 'POST', {
       content: prompt,
       agentId: agent.id,
       clientId: randomUUID(),
@@ -238,7 +245,7 @@ try {
     console.log(origin + '/login');
     console.log('Temporary account: ' + email);
     console.log('Temporary password: ' + password);
-    console.log('Open a Bot chat and send: ' + prompt);
+    console.log('Open the primary Bot chat and send: ' + prompt);
     console.log('Press Ctrl+C to stop the preview and remove its workspace.');
     if (!shutdown.signal.aborted)
       await Promise.race([
