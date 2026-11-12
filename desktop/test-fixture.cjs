@@ -170,6 +170,7 @@ function fakeElectron() {
       this.webContents = new Contents();
       this.webContents.session = options.webPreferences.session;
       this.webContents.loadGate = deferred();
+      void this.webContents.loadGate.promise.catch(() => {});
       views.push(this);
     }
     setBackgroundColor() {}
@@ -182,6 +183,16 @@ function fakeElectron() {
       const ses = new EventEmitter();
       Object.assign(ses, {
         cookies: new EventEmitter(),
+        fetch: async (url) => {
+          assert.equal(new URL(url).pathname, '/api/health');
+          const response = Response.json({
+            ok: true,
+            runtime: 'pi',
+            architecture: 'platform',
+            backend: 'rust',
+          });
+          return Object.defineProperty(response, 'url', { value: url });
+        },
         protocol: {
           handle: (scheme, handler) => {
             ses.protocolHandler = handler;

@@ -62,6 +62,53 @@ function sameOrigin(value, origin) {
   const url = webUrl(value);
   return !!url && url.origin === origin;
 }
+async function isWorkspaceService(session, origin, signal) {
+  const url = origin + '/api/health';
+  const response = await session.fetch(url, {
+    credentials: 'omit',
+    redirect: 'error',
+    cache: 'no-store',
+    headers: { Accept: 'application/json' },
+    signal,
+  });
+  const type = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
+  // Electron's session.fetch can omit Response.url. Redirects are disabled on the request.
+  if (
+    response.status !== 200 ||
+    response.redirected ||
+    (response.url && response.url !== url) ||
+    type !== 'application/json' ||
+    !response.body
+  ) {
+    void response.body?.cancel().catch(() => {});
+    return false;
+  }
+  const reader = response.body.getReader();
+  const chunks = [];
+  let size = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (signal.aborted) return false;
+      if (done) break;
+      size += value.byteLength;
+      if (size > 4096) return false;
+      chunks.push(Buffer.from(value));
+    }
+    const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    return (
+      result?.ok === true &&
+      result.runtime === 'pi' &&
+      result.architecture === 'platform' &&
+      result.backend === 'rust' &&
+      (result.surface === undefined || result.surface === 'product')
+    );
+  } catch {
+    return false;
+  } finally {
+    void reader.cancel().catch(() => {});
+  }
+}
 function appAuthorizationRequest(value, pageUrl, origin) {
   const keys = ['connectionId', 'expectedUserId', 'flowId', 'workspaceId'];
   const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -282,6 +329,7 @@ module.exports = {
   normalizeServerOrigin,
   webUrl,
   sameOrigin,
+  isWorkspaceService,
   appAuthorizationRequest,
   partitionFor,
   setupAsset,

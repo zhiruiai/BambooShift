@@ -71,6 +71,70 @@ class ChatComposerInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final available = availableChatMentions(choices, options);
+    final colors = Theme.of(context).colorScheme;
+    final mention = editable && available.isNotEmpty
+        ? ChatMentionButton(
+            scope: scope,
+            choices: available,
+            onSelect: (choice) => onMention(choice, null),
+          )
+        : null;
+    final field = TextField(
+      controller: input,
+      focusNode: focus,
+      onChanged: onChanged,
+      enabled: editable,
+      minLines: 1,
+      maxLines: compactHeight == null ? 6 : 3,
+      maxLength: 32000,
+      style: Theme.of(context).textTheme.bodyLarge,
+      textCapitalization: TextCapitalization.sentences,
+      decoration: InputDecoration(
+        hintText: context.tr(
+          options.skillId == null ? 'messageHint' : 'chatSkillTask',
+        ),
+        counterText: '',
+        filled: false,
+        isDense: true,
+        contentPadding: const EdgeInsets.fromLTRB(12, 14, 8, 14),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+      ),
+    );
+    final actions = [
+      if (onDictate != null)
+        IconButton(
+          tooltip: context.tr('voiceStartDictation'),
+          onPressed: onDictate,
+          icon: const Icon(Icons.mic_none, size: 22),
+        ),
+      if (onVoiceCall != null)
+        IconButton.filled(
+          tooltip: context.tr('voiceStartCall'),
+          onPressed: onVoiceCall,
+          icon: const Icon(Icons.graphic_eq),
+        )
+      else
+        Tooltip(
+          message: context.tr('send'),
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              padding: EdgeInsets.zero,
+              shape: const CircleBorder(),
+            ),
+            onPressed: onSend,
+            child: busy
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.arrow_upward),
+          ),
+        ),
+    ];
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -116,64 +180,42 @@ class ChatComposerInput extends StatelessWidget {
             },
           ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (editable && available.isNotEmpty)
-                ChatMentionButton(
-                  scope: scope,
-                  choices: available,
-                  onSelect: (choice) => onMention(choice, null),
-                ),
-              Expanded(
-                child: TextField(
-                  controller: input,
-                  focusNode: focus,
-                  onChanged: onChanged,
-                  enabled: editable,
-                  minLines: 1,
-                  maxLines: compactHeight == null ? 6 : 3,
-                  maxLength: 32000,
-                  style: const TextStyle(fontSize: 16),
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    hintText: context.tr(
-                      options.skillId == null ? 'messageHint' : 'chatSkillTask',
-                    ),
-                    counterText: '',
-                  ),
-                ),
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: colors.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: focus.hasFocus ? colors.primary : colors.outlineVariant,
               ),
-              if (onDictate != null)
-                IconButton(
-                  tooltip: context.tr('voiceStartDictation'),
-                  onPressed: onDictate,
-                  icon: const Icon(Icons.mic_none),
-                ),
-              if (onVoiceCall != null)
-                IconButton.filled(
-                  tooltip: context.tr('voiceStartCall'),
-                  onPressed: onVoiceCall,
-                  icon: const Icon(Icons.graphic_eq),
-                )
-              else ...[
-                const SizedBox(width: 8),
-                Tooltip(
-                  message: context.tr('send'),
-                  child: FilledButton(
-                    onPressed: onSend,
-                    child: busy
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.arrow_upward),
-                  ),
-                ),
-              ],
-            ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final largeText =
+                      MediaQuery.textScalerOf(context).scale(16) > 20;
+                  final narrow = constraints.maxWidth < (largeText ? 360 : 282);
+                  if (narrow) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        field,
+                        Row(children: [?mention, const Spacer(), ...actions]),
+                      ],
+                    );
+                  }
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ?mention,
+                      Expanded(child: field),
+                      ...actions,
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
         ),
       ],

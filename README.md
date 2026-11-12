@@ -4,7 +4,7 @@ English · [简体中文](README.zh-CN.md)
 
 **BambooShift is a self-hosted workspace for AI coworker teams and an open-source Grok Bot alternative.** Assign work, approve actions, and open the websites and files your team delivers in one chat. Pi powers delegation, web research, and computer use.
 
-**[Try the live demo](https://zhiruiai.github.io/BambooShift/)** · **[Download the latest release](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
+**[Try the live demo](https://zhiruiai.github.io/BambooShift/)** · **[Download the latest release](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · **[Contribute](CONTRIBUTING.md)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
 
 **One request. A whole AI team. A game you can open and play.** Open Starport Landing from the chat, check its five files in Source, then fly the spacecraft to a soft landing. The browser demo requires no account or API key.
 
@@ -244,5 +244,7 @@ Lockfiles record dependency versions. Dependencies retain their original license
 ## Contributing and license
 
 Bug reproductions, documentation improvements, and code changes are welcome. Use sample data in reproductions and include the checks you ran. [Contribution guide](CONTRIBUTING.md)
+
+Run `npm run dev:preview` after installing the project to try a real chat and file delivery with a local scripted model. The preview requires no model key. [First contribution](CONTRIBUTING.md#run-a-sample-task-locally)
 
 BambooShift’s original code is available under the [MIT License](LICENSE). See the [third-party notices](THIRD_PARTY.md) for dependency licenses.

@@ -33,11 +33,35 @@ async function verifyWindowsExecutable(path) {
 export async function verifyPackagedStartup(executablePath, expectedVersion, expectedName) {
   const profile = await mkdtemp(join(tmpdir(), 'pandamate-client-smoke-'));
   let visits = 0;
+  let probes = 0;
+  let health = 'operations';
   const server = createServer((request, response) => {
-    if (request.method === 'GET' && request.url === '/') {
+    if (request.method === 'GET' && request.url === '/api/health') {
+      probes++;
+      if (health === 'redirect') {
+        response.writeHead(302, { Location: '/unexpected' }).end();
+        return;
+      }
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(
+        JSON.stringify({
+          ok: true,
+          architecture: 'platform',
+          backend: 'rust',
+          ...(health === 'product' ? { runtime: 'pi' } : { surface: 'operations' }),
+        }),
+      );
+    } else if (request.method === 'GET' && request.url === '/') {
       visits++;
       response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       response.end('<!doctype html><title>Fixture workspace</title><h1>Fixture workspace</h1>');
+    } else if (request.url === '/unexpected') {
+      visits++;
+      response
+        .writeHead(200, { 'Content-Type': 'application/json' })
+        .end(
+          JSON.stringify({ ok: true, runtime: 'pi', architecture: 'platform', backend: 'rust' }),
+        );
     } else {
       response.writeHead(404);
       response.end();
@@ -65,11 +89,24 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
     await setup.locator('#workspace-url:enabled').waitFor();
     assert.equal(await setup.locator('#workspace-url').inputValue(), origin);
     assert.equal(visits, 0, 'A new profile must wait for explicit connection');
+    assert.equal(probes, 0, 'A new profile must wait before probing the suggested address');
     const language = setup.locator('#client-language');
     await language.selectOption('zh-CN');
     await setup.waitForFunction(() => document.documentElement.lang === 'zh-CN');
     await language.selectOption('en');
     await setup.waitForFunction(() => document.documentElement.lang === 'en');
+    await setup.locator('#connect-button').click();
+    await setup
+      .getByText('This address did not respond as a BambooShift workspace.', { exact: false })
+      .waitFor();
+    assert.equal(visits, 0, 'The operations listener must not open in the product window');
+    assert.equal(probes, 1);
+    health = 'redirect';
+    await setup.locator('#connect-button').click();
+    await setup.getByText('This workspace could not be reached.', { exact: false }).waitFor();
+    assert.equal(visits, 0, 'The health probe must not follow redirects');
+    assert.equal(probes, 2);
+    health = 'product';
     await setup.locator('#connect-button').click();
     await setup.waitForFunction(() => document.body.hidden);
     const connected = await application.evaluate(async ({ app, webContents }, origin) => {
@@ -92,6 +129,7 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
       version: expectedVersion,
     });
     assert.equal(visits, 1, 'Only the explicitly requested workspace should be loaded');
+    assert.equal(probes, 3, 'Retry must verify the service again');
   } finally {
     try {
       await application?.close();

@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 760px;
+  max-width: var(--chat-lane-width, 760px);
   margin: 8px auto;
   color: light-dark(#999, var(--text-muted));
   font-size: 12px;
@@ -38,8 +38,11 @@
 }
 .composer-area {
   position: relative;
-  padding: 0 22px 13px;
-  background: linear-gradient(transparent, light-dark(#fdfdfd, var(--surface)) 12%);
+  container-type: inline-size;
+  width: 100%;
+  max-width: calc(var(--chat-lane-width) + 56px);
+  align-self: center;
+  padding: 5px 28px 14px;
   flex-shrink: 0;
 }
 .setup-note {
@@ -60,52 +63,80 @@
   color: light-dark(#755598, var(--text-secondary));
 }
 .composer {
-  border: 1px solid light-dark(#e5e5e7, var(--border));
+  --composer-control-size: 34px;
+  position: relative;
+  border: 1px solid light-dark(#dbdbe0, var(--border));
   background: light-dark(#fff, var(--surface));
-  border-radius: 23px;
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  padding: 6px 7px;
-  box-shadow: 0 2px 6px light-dark(#00000003, var(--shadow-soft));
-  min-height: 45px;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'attach prompt actions';
+  align-items: end;
+  gap: 8px;
+  padding: 7px;
+  box-shadow: 0 2px 8px light-dark(#1818220a, var(--shadow-soft));
 }
-.composer > .icon-button {
-  background: light-dark(#f2f2f3, var(--surface-subtle));
-  border-radius: 50%;
-  width: 29px;
-  height: 29px;
-  color: light-dark(#929294, var(--text-muted));
+.composer:focus-within {
+  border-color: light-dark(#a991c0, var(--accent-border));
+}
+.composer-attach {
+  grid-area: attach;
+  background: light-dark(#f4f3f5, var(--surface-subtle));
+  border-radius: 11px;
+  color: light-dark(#625e69, var(--text-secondary));
+}
+.composer .composer-attach,
+.composer .composer-actions > button,
+.composer .voice-controls > button {
+  width: var(--composer-control-size);
+  height: var(--composer-control-size);
 }
 .composer textarea {
+  grid-area: prompt;
+  width: 100%;
   resize: none;
-  flex: 1;
-  max-height: 150px;
-  min-height: 29px;
-  height: 29px;
+  max-height: min(160px, 26dvh);
+  min-height: var(--composer-control-size);
   field-sizing: content;
-  line-height: 21px;
-  padding: 4px 0;
+  line-height: 22px;
+  padding: 6px 0;
   border: 0;
   background: transparent;
   box-shadow: none !important;
-  font-size: 12px;
-}
-.composer textarea::placeholder {
-  color: light-dark(#b9b9bd, var(--text-muted));
+  font-size: 14px;
 }
 .composer-actions {
+  grid-area: actions;
   display: flex;
   align-items: center;
-  height: 29px;
+  min-width: 0;
+}
+.composer-actions .dictation-button:not(.is-recording) {
+  color: light-dark(#625e69, var(--text-secondary));
+  background: transparent;
+}
+.composer-actions .dictation-button:hover:not(:disabled):not(.is-recording) {
+  background: light-dark(#f2f1f4, var(--surface-hover));
+}
+@container (max-width: 490px) {
+  .composer {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: 'prompt prompt' 'attach actions';
+    gap: 4px 6px;
+  }
+  .composer > textarea {
+    padding-inline: 6px;
+  }
+  .composer-actions {
+    flex-wrap: wrap;
+    justify-content: end;
+  }
 }
 .send-button {
   background: light-dark(#1d1d1f, var(--solid));
   color: light-dark(#fff, var(--solid-ink));
   display: grid;
   place-items: center;
-  width: 29px;
-  height: 29px;
   border-radius: 50%;
   border: 0;
   flex-shrink: 0;
@@ -119,11 +150,9 @@
   background: light-dark(#4a414f, var(--solid-hover));
 }
 .composer-footnote {
-  display: flex;
-  justify-content: space-between;
+  text-align: end;
   font-size: 12px;
-  color: light-dark(#b9b9bc, var(--text-muted));
-  padding: 8px 8px 0;
+  padding: 6px 2px 0;
 }
 .attachment-tray {
   display: flex;

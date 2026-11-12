@@ -64,6 +64,11 @@ test('shipped setup DOM translates all declared labels and attributes while reta
     page.elements.find((item) => item.attributes['data-i18n'] === 'accountLogin').textContent,
     /BambooShift account/,
   );
+  assert.match(
+    page.elements.find((item) => item.attributes['data-i18n'] === 'intro').textContent,
+    /HTTPS address.*start a BambooShift server/,
+  );
+  assert.equal(page.byId('use-local').textContent, 'Fill in local address');
   for (const element of page.elements.filter((item) => item.attributes['data-i18n']))
     assert.doesNotMatch(element.textContent, /[\u3400-\u9fff]/);
   page.byId('workspace-url').value = 'https://my-draft.example.test';

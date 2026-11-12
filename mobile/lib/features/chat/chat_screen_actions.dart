@@ -75,29 +75,95 @@ extension _ChatScreenActions on _ChatScreenState {
     inputFocus.requestFocus();
   }
 
-  Widget computerAction(WorkspaceController scope, String agentId) =>
-      IconButton(
-        tooltip: context.tr('mobileComputerTitle'),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder: (_) => ComputerScreen(scope: scope, agentId: agentId),
+  List<Widget> chatToolbar(ChatController controller, Json? lead, bool group) {
+    final scope = controller.scope;
+    final id = controller.conversationId;
+    final mainChat = controller.threadRootId == null;
+    final computerId =
+        mainChat && !voice.active && lead != null && !isManagedBot(lead)
+        ? lead['id']
+        : null;
+    final library = mainChat && !voice.active
+        ? chatProjectLibraryAction(context, scope, id)
+        : null;
+    final actions = <({IconData icon, String label, VoidCallback run})>[
+      if (library != null)
+        (
+          icon: Icons.folder_outlined,
+          label: 'mobileChatLibraryTitle',
+          run: library,
+        ),
+      if (computerId is String)
+        (
+          icon: Icons.computer_outlined,
+          label: 'mobileComputerTitle',
+          run: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => ComputerScreen(scope: scope, agentId: computerId),
+            ),
           ),
         ),
-        icon: const Icon(Icons.computer_outlined),
-      );
+      if (mainChat && group)
+        (
+          icon: Icons.tune,
+          label: 'groupSettings',
+          run: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) => GroupSettings(scope: scope, conversationId: id),
+            ),
+          ),
+        ),
+      (icon: Icons.refresh, label: 'refresh', run: _refresh),
+    ];
+    void perform(VoidCallback run) {
+      if (current(controller)) run();
+    }
 
-  Widget groupSettingsAction(WorkspaceController scope) => IconButton(
-    tooltip: context.tr('groupSettings'),
-    onPressed: () => Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (_) =>
-            GroupSettings(scope: scope, conversationId: widget.conversationId),
-      ),
-    ),
-    icon: const Icon(Icons.tune),
-  );
+    final normalText = MediaQuery.textScalerOf(context).scale(20) <= 25;
+    final direct =
+        actions.length == 1 ||
+        (MediaQuery.sizeOf(context).width >= 460 && normalText);
+    final visible = direct
+        ? actions
+        : actions
+              .where(
+                (action) =>
+                    !group &&
+                    normalText &&
+                    action.label == 'mobileComputerTitle',
+              )
+              .toList();
+    final menu = actions.where((action) => !visible.contains(action));
+    return [
+      for (final action in visible)
+        IconButton(
+          tooltip: context.tr(action.label),
+          onPressed: () => perform(action.run),
+          icon: Icon(action.icon),
+        ),
+      if (menu.isNotEmpty)
+        PopupMenuButton<VoidCallback>(
+          tooltip: context.tr('chatConversationActions'),
+          icon: const Icon(Icons.more_horiz),
+          onSelected: perform,
+          itemBuilder: (context) => [
+            for (final action in menu)
+              PopupMenuItem(
+                value: action.run,
+                child: Row(
+                  children: [
+                    Icon(action.icon, size: 20),
+                    const SizedBox(width: 12),
+                    Flexible(child: Text(context.tr(action.label))),
+                  ],
+                ),
+              ),
+          ],
+        ),
+    ];
+  }
 
   void applyDraftControls(ChatController controller, ChatDraftOptions next) {
     if (!canEditOptions(controller)) return;

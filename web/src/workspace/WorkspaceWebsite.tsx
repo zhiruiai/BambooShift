@@ -97,6 +97,7 @@ export function useWorkspaceWebsite(model: WorkspaceModel) {
     ) : null;
   return {
     panel,
+    dismiss: () => close(false),
     open: workspaceId && userId ? open : undefined,
     openSearchResult: workspaceId && userId ? openSearchResult : undefined,
   };

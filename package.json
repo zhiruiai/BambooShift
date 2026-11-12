@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "node scripts/run.mjs scripts/dev.ts",
+    "dev:preview": "node scripts/developer-preview.mjs",
     "dev:web": "vite --config web/vite.config.ts",
     "dev:operations": "vite --config operations/vite.config.ts",
     "dev:server": "node scripts/run.mjs scripts/start-backend.mjs",

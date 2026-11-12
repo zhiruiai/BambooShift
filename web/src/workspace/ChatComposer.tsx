@@ -389,13 +389,6 @@ export function ChatComposer(
               else event.preventDefault();
             }}
           >
-            <IconButton
-              label={uiText('workspace:text_c8a47d001848')}
-              disabled={uploading.has(selected)}
-              onClick={() => fileRef.current?.click()}
-            >
-              <Plus size={22} />
-            </IconButton>
             <ComposerInput
               key={composerKey}
               {...props}
@@ -406,6 +399,14 @@ export function ChatComposer(
                 toggleDictation();
               }}
             />
+            <IconButton
+              label={uiText('workspace:text_c8a47d001848')}
+              className="composer-attach"
+              disabled={uploading.has(selected)}
+              onClick={() => fileRef.current?.click()}
+            >
+              <Plus size={21} aria-hidden="true" />
+            </IconButton>
             <div className="composer-actions">
               <DictationButton
                 state={dictation.state}
@@ -487,10 +488,7 @@ export function ChatComposer(
               onChange={(e) => void upload(e.target.files)}
             />
           </form>
-          <div className="composer-footnote">
-            <span>{uiText('workspace:text_c08324e8ffe1')}</span>
-            <span>{uiText('workspace:text_8d5d9a2365aa')}</span>
-          </div>
+          <p className="composer-footnote">{uiText('workspace:text_8d5d9a2365aa')}</p>
         </div>
       )}
     </>

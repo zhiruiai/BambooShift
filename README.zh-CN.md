@@ -4,7 +4,7 @@
 
 **BambooShift是开源自托管的 AI 同事团队。** 作为 Grok Bot 平替，你可以在聊天里组队派活、审批操作，直接打开同事交付的网站和文件。Pi 驱动任务委派、联网调研和电脑操作。
 
-**[直接试玩](https://zhiruiai.github.io/BambooShift/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
+**[直接试玩](https://zhiruiai.github.io/BambooShift/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · **[参与共建](CONTRIBUTING.md)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
 
 **给一队 AI 同事一句话，拿到点开就能玩的小游戏。** 在星港任务小队打开交付卡，切到源码查看五个文件，再回到预览操纵飞船完成软着陆。
 
@@ -243,5 +243,7 @@ BambooShift 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 
 ## 贡献与许可
 
 欢迎提交缺陷复现、文档补充与代码改进。请使用示例数据复现问题，并注明相关验证。 [贡献指南](CONTRIBUTING.md)
+
+安装依赖后运行 `npm run dev:preview`，用本地脚本模型体验真实对话和文件交付，无需模型密钥。[首次贡献](CONTRIBUTING.md#run-a-sample-task-locally)
 
 BambooShift 自有代码采用 [MIT 许可证](LICENSE)。第三方组件的许可见 [第三方声明](THIRD_PARTY.md)。

@@ -5,25 +5,11 @@
   }
 }
 @media (max-width: 1150px) {
-  .app-shell,
-  .app-shell.with-detail {
+  .app-shell {
     grid-template-columns: 232px minmax(310px, 1fr);
   }
-  .details-panel {
-    position: absolute;
-    right: 17px;
-    top: 17px;
-    bottom: 17px;
-    width: 282px;
-    border-radius: 0 15px 15px 0;
-    box-shadow: -12px 0 35px light-dark(#29222e0a, var(--shadow-soft));
-    z-index: 8;
-  }
-  .with-detail .chat-panel {
-    padding-right: 0;
-  }
-  .header-status {
-    display: none;
+  .app-shell.with-detail {
+    grid-template-columns: 232px minmax(0, 1fr) 264px;
   }
   .chat-header {
     padding: 0 16px;
@@ -31,10 +17,22 @@
   .messages-scroll {
     padding: 0 21px;
   }
+  .composer-area {
+    max-width: calc(var(--chat-lane-width) + 42px);
+    padding-inline: 21px;
+  }
   .message-content {
     max-width: 91%;
   }
   .app-wordmark {
+    display: none;
+  }
+}
+@media (min-width: 761px) and (max-width: 980px) {
+  .app-shell.with-detail {
+    grid-template-columns: minmax(0, 1fr) 264px;
+  }
+  .with-detail > .sidebar {
     display: none;
   }
 }
@@ -151,23 +149,21 @@
   }
   .mobile-back {
     display: flex;
+    width: 36px;
+    height: 40px;
     margin-left: -7px;
-    margin-right: 2px;
   }
   .chat-header {
     height: 65px;
     padding: 0 13px;
     justify-content: flex-start;
+    gap: 6px;
   }
   .chat-title {
     flex: 1;
     gap: 7px;
-  }
-  .chat-title > span:not(.avatar):not(.group-avatar) {
-    font-size: 12px;
-  }
-  .chat-title small {
-    font-size: 12px;
+    margin: 0;
+    padding-inline: 0;
   }
   .chat-title > svg {
     display: none;
@@ -176,7 +172,8 @@
     gap: 0;
   }
   .chat-header-actions .icon-button {
-    width: 27px;
+    width: 36px;
+    height: 40px;
   }
   .messages-scroll {
     padding: 0 13px;
@@ -203,9 +200,7 @@
     max-width: 88%;
   }
   .message-bubble {
-    font-size: 12px;
     padding: 11px 12px;
-    line-height: 1.8;
   }
   .outgoing .message-content {
     max-width: 89%;
@@ -214,14 +209,16 @@
     font-size: 12px;
   }
   .composer-area {
-    padding: 0 10px calc(9px + env(safe-area-inset-bottom, 0px));
+    padding: 4px 10px calc(9px + env(safe-area-inset-bottom, 0px));
   }
   .composer {
-    min-height: 45px;
+    --composer-control-size: 38px;
+  }
+  .composer > textarea {
+    font-size: 16px;
   }
   .composer-footnote {
-    font-size: 12px;
-    padding-top: 6px;
+    display: none;
   }
   .setup-note {
     font-size: 12px;
@@ -366,14 +363,7 @@
     font-size: 18px;
   }
   .toast {
-    font-size: 12px;
-    min-width: 220px;
-    max-width: calc(100% - 24px);
-    bottom: 20px;
-  }
-  .mention-menu {
-    left: 20px;
-    right: 20px;
+    top: 74px;
   }
   .computer-message-card {
     min-width: 0;

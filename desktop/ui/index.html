@@ -17,16 +17,13 @@
   <body>
     <header class="window-header">
       <span class="wordmark">BambooShift</span>
-      <div class="header-settings">
-        <span class="window-label" data-i18n="colleague">你的 AI 同事</span
-        ><label class="language-label"
-          ><span data-i18n="language">客户端语言</span
-          ><select id="client-language" aria-describedby="language-help">
-            <option value="zh-CN">简体中文</option>
-            <option value="en">English</option>
-          </select></label
-        >
-      </div>
+      <label class="language-label"
+        ><span data-i18n="language">客户端语言</span
+        ><select id="client-language" aria-describedby="language-help">
+          <option value="zh-CN">简体中文</option>
+          <option value="en">English</option>
+        </select></label
+      >
     </header>
     <main class="setup-layout">
       <section class="connection-panel" aria-labelledby="page-title">
@@ -39,13 +36,11 @@
             alt="BambooShift 紫色小伙伴"
             data-i18n-alt="mascot"
           />
-          <span class="connection-label"
-            ><span class="status-dot"></span
-            ><span data-i18n="connectWorkspace">连接工作空间</span></span
-          >
         </div>
         <h1 id="page-title" data-i18n="heading">连接你的工作空间</h1>
-        <p class="intro" data-i18n="intro">输入工作空间地址，与你的 AI 同事继续协作。</p>
+        <p class="intro" data-i18n="intro">
+          使用团队提供的 HTTPS 地址，或先在本机启动 BambooShift 服务。
+        </p>
         <form id="connect-form" novalidate aria-busy="true">
           <label class="field-label" for="workspace-url" data-i18n="address">工作空间地址</label>
           <input
@@ -66,7 +61,7 @@
           />
           <div class="address-help" id="address-help">
             <span data-i18n="secureAddress">远程工作空间请使用 https:// 地址。</span>
-            <button id="use-local" data-i18n="useLocal" type="button" disabled>使用本机地址</button>
+            <button id="use-local" data-i18n="useLocal" type="button" disabled>填入本机地址</button>
           </div>
           <div id="error-panel" class="error-panel" role="alert" hidden>
             <span class="error-symbol" aria-hidden="true">!</span>
@@ -99,12 +94,11 @@
         <div class="workspace-note">
           <span class="note-icon" aria-hidden="true"></span>
           <div>
-            <strong data-i18n="returnTitle">工作继续，随时回来。</strong>
-            <p data-i18n="returnHelp">
-              电脑操作与任务在工作空间服务器上运行。关闭此应用后任务仍可继续，请保持服务器运行。
-            </p>
             <p data-i18n="accountLogin">
               连接后使用 BambooShift 账户登录；首次使用可在登录页注册个人或团队账户。
+            </p>
+            <p data-i18n="returnHelp">
+              任务在服务端运行。只要服务仍在线，关闭客户端后任务也可以继续。
             </p>
           </div>
         </div>
@@ -113,9 +107,6 @@
         </p>
         <p id="language-status" class="language-help" role="status" hidden></p>
       </section>
-      <footer class="setup-footer">
-        <span>BambooShift</span><span data-i18n="footer">同一个工作空间 · 从这里继续</span>
-      </footer>
     </main>
   </body>
 </html>

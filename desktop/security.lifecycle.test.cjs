@@ -65,6 +65,104 @@ test('connection state never auto-connects, retries only the attempted origin, a
   assert.equal(state.snapshot().status, 'setup');
 });
 
+test('workspace preflight rejects invalid product origins before loading or saving them', async () => {
+  const dataDir = tempDir();
+  const fake = fakeElectron();
+  const origin = 'https://workspace.example.com';
+  const endpoint = origin + '/api/health';
+  const controller = createController(fake, { dataDir, suggestedUrl: origin });
+  const session = fake.session.fromPartition(partitionFor(origin));
+  const product = { ok: true, runtime: 'pi', architecture: 'platform', backend: 'rust' };
+  const rejected = [
+    [
+      new Response('<html>Other site</html>', { headers: { 'content-type': 'text/html' } }),
+      endpoint,
+    ],
+    [Response.json({ ok: true }), endpoint],
+    [Response.json({ ...product, surface: 'operations' }), endpoint],
+    [Response.redirect('https://elsewhere.example.com/api/health'), endpoint],
+    [Response.json(product), 'https://elsewhere.example.com/api/health'],
+    [Response.json({ ...product, extra: 'x'.repeat(4097) }), endpoint],
+  ];
+  try {
+    controller.start();
+    const win = fake.windows[0];
+    for (const [response, url] of rejected) {
+      session.fetch = async (request, options) => {
+        assert.equal(request, endpoint);
+        assert.equal(options.credentials, 'omit');
+        assert.equal(options.cache, 'no-store');
+        assert.equal(options.redirect, 'error');
+        return Object.defineProperty(response, 'url', { value: url });
+      };
+      assert.equal((await controller.connect(origin)).status, 'error');
+      assert.equal(fake.views.at(-1).webContents.url, '');
+      assert.equal(win.children.length, 0);
+      assert.equal(readLastOrigin(dataDir), undefined);
+    }
+    // Electron can return a successful Response with an empty URL.
+    session.fetch = async () => Response.json(product);
+    const event = { sender: win.webContents, senderFrame: win.webContents.mainFrame };
+    const retry = fake.ipc.get('openbot-client:retry')(event);
+    fake.views.at(-1).webContents.loadGate.resolve();
+    assert.equal((await retry).status, 'connected');
+    assert.equal(win.children.length, 1);
+    assert.equal(readLastOrigin(dataDir), origin);
+  } finally {
+    controller.close();
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test('timing out or leaving preflight aborts the probe and fences late success', async () => {
+  const dataDir = tempDir();
+  const fake = fakeElectron();
+  const origin = 'https://workspace.example.com';
+  const controller = createController(fake, { dataDir, loadTimeoutMs: 25 });
+  const session = fake.session.fromPartition(partitionFor(origin));
+  let aborted;
+  try {
+    controller.start();
+    session.fetch = (_url, { signal }) =>
+      new Promise((_, reject) => {
+        signal.addEventListener(
+          'abort',
+          () => {
+            aborted = true;
+            reject(signal.reason);
+          },
+          { once: true },
+        );
+      });
+    assert.match((await controller.connect(origin)).error, /连接超时/);
+    assert.equal(aborted, true);
+    assert.equal(fake.views[0].webContents.url, '');
+
+    const late = deferred();
+    let signal;
+    session.fetch = (_url, options) => {
+      signal = options.signal;
+      return late.promise;
+    };
+    const attempt = controller.connect(origin);
+    controller.showSetup();
+    assert.equal(signal.aborted, true);
+    late.resolve(
+      Object.defineProperty(
+        Response.json({ ok: true, runtime: 'pi', architecture: 'platform', backend: 'rust' }),
+        'url',
+        { value: origin + '/api/health' },
+      ),
+    );
+    assert.equal((await attempt).status, 'setup');
+    assert.equal(fake.views[1].webContents.url, '');
+    assert.equal(readLastOrigin(dataDir), undefined);
+  } finally {
+    controller.close();
+    rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
 test('fake main lifecycle keeps setup IPC off remote pages, isolates sessions, handles offline retry and closes without backend actions', async () => {
   const dataDir = tempDir();
   const fake = fakeElectron();
@@ -118,6 +216,7 @@ test('fake main lifecycle keeps setup IPC off remote pages, isolates sessions, h
     assert.equal(controller.state().url, 'https://one.example.com');
     const retry = fake.ipc.get('openbot-client:retry')(event);
     const retryView = fake.views[1];
+    await new Promise((resolve) => setImmediate(resolve));
     assert.equal(retryView.webContents.url, 'https://one.example.com/');
     assert.equal(retryView.options.webPreferences.spellcheck, true);
     retryView.webContents.loadGate.resolve();
@@ -165,6 +264,7 @@ test('cold start resumes a previously successful origin once; environment sugges
     const controller = createController(fake, { dataDir });
     controller.start();
     assert.equal(fake.views.length, 1);
+    await new Promise((resolve) => setImmediate(resolve));
     assert.equal(fake.views[0].webContents.url, 'https://remembered.example.com/');
     assert.equal(
       fake.views[0].options.webPreferences.partition,
@@ -226,6 +326,7 @@ test('reopening a closed product window resumes its approved origin and retains 
     assert.equal(fake.windows.length, 2);
     assert.equal(fake.views.length, 2);
     const resumed = fake.views[1].webContents;
+    await new Promise((resolve) => setImmediate(resolve));
     assert.equal(resumed.getURL(), 'https://approved.example.com/');
     assert.equal(resumed.session, contents.session);
     resumed.loadGate.resolve();

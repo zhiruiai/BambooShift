@@ -96,6 +96,7 @@ export function ChatHeader({
       ? messageAvatarMotion(recentAction, false, { isOwner: canManage, userId: currentUserId })
       : undefined;
   const idle = ready && activity !== 'attention' && activity !== 'working';
+  const title = conversation?.title || uiText('workspace:text_56ca721193c9');
   return (
     <>
       {draggingFiles && (
@@ -126,44 +127,49 @@ export function ChatHeader({
           >
             <ArrowLeft size={20} />
           </IconButton>
-          <button className="chat-title" onClick={() => toggleDetails()}>
+          <button
+            type="button"
+            className="chat-title"
+            aria-expanded={showDetail}
+            title={title}
+            onClick={() => toggleDetails()}
+          >
             {conversation.isGroup ? (
-              <GroupAvatar key={conversation.id} agents={members} size={29} idle={idle} />
+              <GroupAvatar key={conversation.id} agents={members} size={34} idle={idle} />
             ) : (
               <Avatar
                 key={`${conversation.id}:${lead?.id || ''}`}
                 agent={lead}
-                size={28}
+                size={34}
                 motion={idle ? 'idle' : undefined}
               />
             )}
-            <span>
-              {conversation?.title || uiText('workspace:text_56ca721193c9')}
-              <small>
-                {working
+            <span className="chat-title-copy">
+              <strong>{title}</strong>
+              <small className={working && online ? 'chat-title-working' : undefined}>
+                {working && online
                   ? uiText('workspace:text_e556fe53f2b0')
-                  : conversation?.isGroup
+                  : conversation.isGroup
                     ? uiText('workspace:text_2639e5250a8e', { value0: members.length })
                     : lead?.role || uiText('workspace:text_da8763838968')}
                 {' · '}
                 {conversationVisibility(account?.workspace.kind)}
               </small>
             </span>
-            <ChevronDown size={13} />
+            <ChevronDown size={13} aria-hidden="true" />
           </button>
           <div className="chat-header-actions">
             {currentRosterEntry?.hidden && (
-              <span className="roster-hidden-label">
-                <EyeOff size={13} />
-                {uiText('workspace:text_19bd80d599f8')}
+              <span
+                className="roster-hidden-label"
+                role="img"
+                aria-label={uiText('workspace:text_19bd80d599f8')}
+                title={uiText('workspace:text_19bd80d599f8')}
+              >
+                <EyeOff size={14} aria-hidden="true" />
+                <span>{uiText('workspace:text_19bd80d599f8')}</span>
               </span>
             )}
-            <span className="header-status">
-              <span className={`tiny-dot ${working ? 'working' : ''}`} />
-              {working
-                ? uiText('workspace:text_f42082263714')
-                : uiText('workspace:text_b073db9c0bd6')}
-            </span>
             <IconButton
               label={uiText('workspace:text_555a2f61cb96')}
               className="chat-computer-trigger"

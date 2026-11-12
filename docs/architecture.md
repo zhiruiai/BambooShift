@@ -85,6 +85,8 @@ Enable synthesis by creating `speech/memo-synthesis.json` under the server's dat
 
 ## Deployment and source release
 
+`npm run dev:preview` builds the product UI and workers into a temporary runtime, then starts the regular Rust service with an isolated database. A loopback fixture implements the model protocol. The sample request passes through the same account session, chat API, Pi run and authorized workspace tools as a deployed workspace. The automated check opens the resulting file through the product download route and compares the bytes.
+
 Private deployment settings hold listeners, data paths and runtime locations. Model keys and computer credentials stay in restricted files, not public DTOs. Examples contain placeholders. SQLite keeps local deployment simple, while repositories separate storage, transport and domain behavior.
 
 `scripts/package-backend.mjs` assembles Rust binaries, both sites and worker runtimes. It builds workers from `server/workers/` and places them in the release's `runtime/packages/` directory. `scripts/source/` contains the source policy, privacy checks and exporter. The exporter selects public source, scans known private values and writes content hashes. See [source release](source-release.md) and [verification](verification.md).

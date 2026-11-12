@@ -221,9 +221,9 @@
 }
 .mention-menu {
   position: absolute;
-  bottom: 92px;
-  left: 60px;
-  right: 60px;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
   max-width: 360px;
   background: light-dark(white, var(--surface));
   border: 1px solid light-dark(#e4e0e9, var(--border));

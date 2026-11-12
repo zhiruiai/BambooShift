@@ -247,9 +247,6 @@
 .add-detail-row {
   color: light-dark(#84778f, var(--text-secondary));
 }
-.header-status {
-  color: light-dark(#85818c, var(--text-secondary));
-}
 .member-row small {
   color: light-dark(#85808c, var(--text-secondary));
 }
@@ -260,9 +257,6 @@
   color: light-dark(#b79558, var(--warning));
 }
 @media (max-width: 760px) {
-  .message-bubble {
-    font-size: 13px;
-  }
   .conversation-preview {
     font-size: 12px;
   }
@@ -283,9 +277,6 @@
   }
   .setup-note {
     font-size: 12px;
-  }
-  .composer textarea {
-    font-size: 13px;
   }
   .dialog-form input,
   .dialog-form textarea,

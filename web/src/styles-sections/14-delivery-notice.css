@@ -26,7 +26,7 @@
   color: light-dark(#9b766b, var(--danger));
 }
 .composer-actions {
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 .stop-button {
@@ -292,10 +292,6 @@ html[data-openbot-desktop='true'] .app-wordmark {
   margin-top: 2px;
 }
 @media (max-width: 760px) {
-  .mention-menu {
-    left: 12px;
-    right: 12px;
-  }
   .mention-menu button {
     min-height: 43px;
   }

@@ -361,21 +361,11 @@ class _ChatScreenState extends State<ChatScreen> {
             messages: messages,
             threadRootId: thread,
           ),
-          actions: [
-            if (thread == null && !voice.active) ChatProjectLibrary(scope, id),
-            if (thread == null &&
-                !voice.active &&
-                lead != null &&
-                !isManagedBot(lead))
-              computerAction(scope, lead['id'] as String),
-            if (thread == null && conversation?['isGroup'] == true)
-              groupSettingsAction(scope),
-            IconButton(
-              tooltip: context.tr('refresh'),
-              onPressed: _refresh,
-              icon: const Icon(Icons.refresh),
-            ),
-          ],
+          actions: chatToolbar(
+            controller,
+            lead,
+            conversation?['isGroup'] == true,
+          ),
         ),
         body: SafeArea(
           top: false,
@@ -479,6 +469,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   onSend:
                       attachments.blocksSend ||
                           !canSend ||
+                          (input.text.trim().isEmpty &&
+                              attachments.files.isEmpty) ||
                           (memoRequested && !memoAllowed)
                       ? null
                       : _send,

@@ -9,12 +9,11 @@
   // Keep product data and addresses outside this UI-only catalog.
   const entries = {
     pageTitle: ['连接工作空间 · BambooShift', 'Connect to a workspace · BambooShift'],
-    colleague: ['你的 AI 同事', 'Your AI colleagues'],
     connectWorkspace: ['连接工作空间', 'Connect to workspace'],
     heading: ['连接你的工作空间', 'Connect to your workspace'],
     intro: [
-      '输入工作空间地址，与你的 AI 同事继续协作。',
-      'Enter your workspace address to continue working with your AI colleagues.',
+      '使用团队提供的 HTTPS 地址，或先在本机启动 BambooShift 服务。',
+      'Use the HTTPS address provided by your team, or start a BambooShift server on this device first.',
     ],
     mascot: ['BambooShift 紫色小伙伴', 'BambooShift purple companion'],
     address: ['工作空间地址', 'Workspace address'],
@@ -23,7 +22,7 @@
       '远程工作空间请使用 https:// 地址。',
       'Use an https:// address for a remote workspace.',
     ],
-    useLocal: ['使用本机地址', 'Use local address'],
+    useLocal: ['填入本机地址', 'Fill in local address'],
     unavailable: ['暂时无法连接', 'Unable to connect'],
     errorHelp: [
       '请检查地址与网络，并确认工作空间正在运行。',
@@ -37,16 +36,14 @@
     reading: ['正在读取连接信息…', 'Reading connection details…'],
     checking: ['正在确认工作空间是否可用…', 'Checking workspace availability…'],
     connected: ['已连接，正在打开你的工作空间。', 'Connected. Opening your workspace.'],
-    returnTitle: ['工作继续，随时回来。', 'Your work continues. Come back anytime.'],
     returnHelp: [
-      '电脑操作与任务在工作空间服务器上运行。关闭此应用后任务仍可继续，请保持服务器运行。',
-      'Computer actions and tasks run on your workspace server. They can continue after you close this app; keep the server running.',
+      '任务在服务端运行。只要服务仍在线，关闭客户端后任务也可以继续。',
+      'Tasks run on your workspace server and can continue after this app closes.',
     ],
     accountLogin: [
       '连接后使用 BambooShift 账户登录；首次使用可在登录页注册个人或团队账户。',
       'After connecting, sign in with your BambooShift account. New users can register a personal or team account on the sign-in page.',
     ],
-    footer: ['同一个工作空间 · 从这里继续', 'Your workspace · Pick up where you left off'],
     language: ['客户端语言', 'Client language'],
     languageHelp: [
       '仅保存于此客户端；工作空间内的语言可在其设置中选择。',
@@ -106,7 +103,10 @@
     saveFile: ['保存 BambooShift 文件', 'Save BambooShift File'],
     saveShared: ['保存共享资料', 'Save Shared File'],
     save: ['保存', 'Save'],
-    notificationsAllow: ['允许 BambooShift 显示工作通知？', 'Allow BambooShift work notifications?'],
+    notificationsAllow: [
+      '允许 BambooShift 显示工作通知？',
+      'Allow BambooShift work notifications?',
+    ],
     notificationsHelp: [
       '只显示任务完成或需要确认的提醒，不显示对话内容。退出账户或更换空间后需重新允许。',
       'Show task completion and approval reminders without conversation content. Allow again after signing out or changing workspace.',
@@ -172,6 +172,10 @@
     connectFailed: [
       '无法连接这个空间。请检查地址、网络和服务状态，然后重试。',
       'This workspace could not be reached. Check the address, network, and service, then try again.',
+    ],
+    workspaceRequired: [
+      '这个地址没有提供 BambooShift 工作空间。请核对团队给出的产品地址，或确认本机服务已经启动。',
+      'This address did not respond as a BambooShift workspace. Check your team’s product address or make sure the local server has started.',
     ],
     setupFailed: [
       '连接页面无法加载，请重新安装客户端。',

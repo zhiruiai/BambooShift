@@ -64,7 +64,18 @@ export function WorkspaceLayout(model: WorkspaceModel) {
             modal || !selected || uploadingRef.current.has(selected) ? 'none' : 'copy';
         }}
       >
-        <ChatHeader {...model} />
+        <ChatHeader
+          {...model}
+          showDetail={!website.panel && showDetail}
+          toggleDetails={
+            website.panel
+              ? () => {
+                  website.dismiss();
+                  model.toggleDetails(true);
+                }
+              : model.toggleDetails
+          }
+        />
         {threadRoot && (
           <div className="reply-thread-bar">
             <button type="button" onClick={closeThread}>

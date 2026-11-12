@@ -25,65 +25,72 @@ class ChatProjectLibrary extends StatelessWidget {
   final WorkspaceController scope;
   final String conversationId;
 
-  List<Json> get _messages =>
-      scope.active && scope.find('conversations', conversationId) != null
-      ? scope
-            .items('messages')
-            .where((message) => message['conversationId'] == conversationId)
-            .toList()
-      : const [];
-
   @override
   Widget build(BuildContext context) {
-    final messages = _messages;
-    if (!messages.any((message) => websiteProjectFor(message) != null) &&
-        conversationLibraryLinks(messages).isEmpty &&
-        _conversationFileMessages(scope, messages).isEmpty) {
-      return const SizedBox.shrink();
-    }
-    return IconButton(
-      tooltip: context.tr('mobileChatLibraryTitle'),
-      icon: const Icon(Icons.folder_outlined),
-      onPressed: () {
-        if (!scope.active ||
-            scope.find('conversations', conversationId) == null) {
-          return;
-        }
-        Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (context) => Scaffold(
-              appBar: AppBar(title: Text(context.tr('mobileChatLibraryTitle'))),
-              body: ListenableBuilder(
-                listenable: Listenable.merge([scope, scope.session]),
-                builder: (context, _) {
-                  if (!scope.active ||
-                      scope.find('conversations', conversationId) == null) {
-                    return Center(child: Text(context.tr('scopeChanged')));
-                  }
-                  final messages = _messages;
-                  return ListView(
-                    padding: const EdgeInsets.all(12),
-                    children: [
-                      WebsiteProjectLibrary(scope: scope, messages: messages),
-                      _ChatLibraryFiles(
-                        scope: scope,
-                        messages: _conversationFileMessages(scope, messages),
-                      ),
-                      ChatLibraryLinks(
-                        scope: scope,
-                        conversationId: conversationId,
-                        links: conversationLibraryLinks(messages),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
+    final open = chatProjectLibraryAction(context, scope, conversationId);
+    return open == null
+        ? const SizedBox.shrink()
+        : IconButton(
+            tooltip: context.tr('mobileChatLibraryTitle'),
+            icon: const Icon(Icons.folder_outlined),
+            onPressed: open,
+          );
   }
+}
+
+VoidCallback? chatProjectLibraryAction(
+  BuildContext context,
+  WorkspaceController scope,
+  String conversationId,
+) {
+  bool available() =>
+      scope.active && scope.find('conversations', conversationId) != null;
+  List<Json> messages() => scope
+      .items('messages')
+      .where((message) => message['conversationId'] == conversationId)
+      .toList();
+
+  if (!available()) return null;
+  final current = messages();
+  if (!current.any((message) => websiteProjectFor(message) != null) &&
+      conversationLibraryLinks(current).isEmpty &&
+      _conversationFileMessages(scope, current).isEmpty) {
+    return null;
+  }
+  return () {
+    if (!context.mounted || !available()) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => Scaffold(
+          appBar: AppBar(title: Text(context.tr('mobileChatLibraryTitle'))),
+          body: ListenableBuilder(
+            listenable: Listenable.merge([scope, scope.session]),
+            builder: (context, _) {
+              if (!available()) {
+                return Center(child: Text(context.tr('scopeChanged')));
+              }
+              final records = messages();
+              return ListView(
+                padding: const EdgeInsets.all(12),
+                children: [
+                  WebsiteProjectLibrary(scope: scope, messages: records),
+                  _ChatLibraryFiles(
+                    scope: scope,
+                    messages: _conversationFileMessages(scope, records),
+                  ),
+                  ChatLibraryLinks(
+                    scope: scope,
+                    conversationId: conversationId,
+                    links: conversationLibraryLinks(records),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  };
 }
 
 class _ChatLibraryFiles extends StatefulWidget {

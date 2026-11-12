@@ -21,6 +21,7 @@ const {
   SETUP_URL,
   normalizeServerOrigin,
   sameOrigin,
+  isWorkspaceService,
   partitionFor,
   trustedSetupSender,
   trustedProductSender,
@@ -140,6 +141,7 @@ function createController(
     old.notificationInput = undefined;
     old.disposeNotifications?.();
     old.sharedFileDownload?.abort();
+    old.healthCheck.abort();
     clearTimeout(old.timer);
     for (const item of old.downloads) {
       try {
@@ -212,6 +214,7 @@ function createController(
       origin: attempt.origin,
       attempt,
       downloads: new Set(),
+      healthCheck: new AbortController(),
       timer: undefined,
       attached: false,
     };
@@ -270,6 +273,12 @@ function createController(
       loadTimeoutMs,
     );
     try {
+      const supported = await isWorkspaceService(ses, current.origin, current.healthCheck.signal);
+      if (connection !== current) return snapshot();
+      if (!supported) {
+        fail(current, t('workspaceRequired'));
+        return snapshot();
+      }
       await contents.loadURL(current.origin + '/');
       if (connection !== current || !machine.connected(attempt)) return snapshot();
       clearTimeout(current.timer);
