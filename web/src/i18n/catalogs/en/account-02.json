@@ -138,5 +138,7 @@
   "text_ef8c0923730e": "The device has been signed out.",
   "text_f188ddb79252": "Rename team",
   "text_f23e7e58a29f": "Confirm independent Bot creation",
-  "text_f4cf3ab79b7e": "Back to product sign-in"
+  "text_f4cf3ab79b7e": "Back to product sign-in",
+  "localWorkspace": "Local workspace",
+  "localWorkspaceHelp": "Use this computer without an account or password. Your conversations and settings stay in this local workspace."
 }

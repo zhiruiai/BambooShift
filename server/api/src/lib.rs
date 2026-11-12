@@ -9,6 +9,7 @@ pub mod db;
 pub mod error;
 mod error_locale;
 mod invitations;
+mod local_desktop;
 pub mod memory_imports;
 mod models;
 mod operator;

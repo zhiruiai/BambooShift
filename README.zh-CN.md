@@ -18,15 +18,19 @@
 | --- | --- |
 | **Web / PWA** | Windows、macOS、Linux 和移动浏览器可打开工作空间。浏览器支持时可安装 PWA。 |
 | **Windows x64** | 选择提供 Windows x64 客户端 ZIP 的版本，完整解压后运行 `BambooShift.exe`。便携包未签名，需要连接已有服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
-| **macOS Apple Silicon** | 下载桌面 ZIP 后连接已有服务。客户端采用临时签名，未经过 Apple 公证。Intel Mac 可使用网页。 [桌面连接说明](docs/desktop-client.md) |
+| **macOS Apple Silicon** | 下载桌面 ZIP 并连接运行中的服务。应用托管的个人空间是源码预览，尚未提供正式下载。客户端采用临时签名。 [桌面连接说明](docs/desktop-client.md) |
 | **Linux x64** | 发布页提供预编译服务端。按包内 README 安装，再通过浏览器进入工作空间。 [服务部署](server/api/deployment/README.md) |
 | **Android / iOS** | 通过移动浏览器使用。原生 Flutter 客户端以源码提供。 [移动端源码](mobile/README.md) |
 
-客户端连接同一个 BambooShift 服务，Bot 的电脑操作由已连接的工作电脑执行。下载较早的版本时，选择对应平台的附件，并运行该版本说明列出的程序。 [最新发布](https://github.com/zhiruiai/BambooShift/releases/latest)
+网页、Flutter 和连接服务的桌面端共享已部署的工作空间。桌面端单独启动的个人空间将数据保存在当前电脑。 [最新发布](https://github.com/zhiruiai/BambooShift/releases/latest)
 
 ## 快速开始
 
 已有服务的用户可以在浏览器打开工作空间，或将桌面客户端连接到服务地址。首次自托管可[安装 Linux x64 服务包](server/api/deployment/README.md#install-and-configure)，也可以从下方的源码步骤启动。
+
+### 本机个人空间预览
+
+桌面源码已包含应用托管的个人空间：点击 **在这台电脑开始**，配置 **设置 → 模型配置** 后无需账户密码即可使用。源码集成验证已覆盖启动及模型配置恢复。完整安装包仍在补齐原生依赖再分发材料和打包验收，严格打包检查目前会阻止发布，尚未提供正式下载。当前请使用下方源码启动方式或已发布的连接客户端。 [桌面说明与平台支持](docs/desktop-client.md)
 
 ### 从源码启动
 
@@ -63,7 +67,7 @@ Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 
 ### 选择本机或云端工作电脑
 
 - **本机浏览器。** 「设置 → 电脑 → 本机」使用服务所在电脑的隔离浏览器。客户端与服务在同一台电脑时，浏览器就在当前设备运行。
-- **Mac 原生应用。** 在「你的电脑」配对当前 Mac 上的独立 Worker，授予屏幕录制和辅助功能权限，再在会话电脑面板启用桌面操作。
+- **Mac 原生应用。** 使用含内置运行环境的 macOS 客户端，启动本机空间时勾选 **允许整机操作**。授予屏幕录制和辅助功能权限，再在会话电脑面板启用桌面操作。已部署的空间也可连接专用 Worker。 [Mac 整机操作](docs/desktop-client.md#macos-整机操作)
 - **云端执行。** 使用部署者已绑定的云电脑，或连接自己在另一台电脑、云服务器上运行的 Worker。 [选择执行位置](docs/computer.md#选择执行位置)
 
 想收藏项目，可以点 Star。想收到发版提醒，可选 **Watch → Custom → Releases**。欢迎在 [Issues](https://github.com/zhiruiai/BambooShift/issues) 分享第一个任务，或用[安装与兼容性表单](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml)反馈问题。
@@ -153,12 +157,12 @@ flowchart TB
 
 | 层 | 技术与职责 |
 | --- | --- |
-| 用户界面 | React、TypeScript、Vite 构建网页和 PWA。Electron 提供桌面连接壳，Flutter 提供移动端源码。 [Web](web/src/) · [桌面](desktop/) · [移动端](mobile/) |
+| 用户界面 | React、TypeScript、Vite 构建网页和 PWA。Electron 可连接已有服务，也可启动内置个人空间。Flutter 提供移动端源码。 [Web](web/src/) · [桌面](desktop/) · [移动端](mobile/) |
 | API 与持久化 | Rust、Axum、Tokio 和 SQLx/SQLite 管理身份、空间数据、会话事件、审批回执和例行任务。产品与运营入口使用独立会话。 [Rust 服务](server/api/) |
-| 智能体 | Pi Coding Agent SDK 在受监督的 Node.js Worker 中运行。模型服务由空间配置，任务委派与技能版本由工作空间约束。 [Pi Worker](server/workers/pi-worker/) |
-| 工具与执行 | 独立 Worker 负责 MCP、文档解析和电脑操作。Playwright 驱动隔离浏览器，macOS 原生桌面需专用助手和系统授权。 [执行层](server/workers/) · [电脑设置](docs/computer.md) |
+| 智能体运行时 | 受监督的 Node.js Worker 通过 Cordis 加载经过审查的引擎插件。Pi Coding Agent 是当前唯一内置的生产实现，SDK 和会话生命周期封装在引擎接口后；Rust 管理任务预算、委派和权限。 [引擎契约](server/workers/plugin-runtime/README.md) · [Pi 实现](server/workers/engines/pi/) |
+| 工具与执行 | 独立 Worker 负责 MCP、文档解析和电脑操作。Playwright 驱动隔离浏览器。内置 macOS 运行环境用 Cua Driver 执行用户主动启用的桌面操作，Rust 核验审批与执行目标。 [执行层](server/workers/) · [电脑设置](docs/computer.md) |
 
-[完整架构与权限边界](docs/architecture.md) · [源码发布与验证](docs/source-release.md)
+[完整架构与权限边界](docs/architecture.md) · [桌面与云端执行](docs/architecture.md#desktop-and-cloud-execution) · [源码发布与验证](docs/source-release.md)
 
 ## 创作者取材
 
@@ -229,12 +233,12 @@ flowchart TB
 
 | 用途 | 上游项目与组件 |
 | --- | --- |
-| 智能体执行与工具接入 | [Pi Coding Agent](https://github.com/earendil-works/pi) 提供 Bot 执行框架，[MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) 用于连接外部工具。 |
+| 智能体执行与工具接入 | [Pi Coding Agent](https://github.com/earendil-works/pi) 提供 Bot 执行框架，[MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) 用于连接外部工具，[Cordis core](server/workers/plugin-runtime/) 管理内置 Worker 插件的生命周期。 |
 | 服务端与存储 | [Tokio](https://tokio.rs/) 和 [Axum](https://github.com/tokio-rs/axum) 支撑 Rust 服务，[SQLx](https://github.com/transact-rs/sqlx) 访问 [SQLite](https://sqlite.org/)。 |
 | 网页、桌面与移动端 | [React](https://react.dev/) 和 [Vite](https://vite.dev/) 用于网页开发和构建，[Electron](https://www.electronjs.org/) 和 [Flutter](https://flutter.dev/) 分别用于桌面端和移动端。 |
 | 文档、图标与字体 | [PDF.js](https://mozilla.github.io/pdf.js/) 和 [Mammoth.js](https://github.com/mwilliamson/mammoth.js) 用于文档预览与解析，[Lucide](https://lucide.dev/) 提供界面图标。Flutter 网页端的中文字体派生自 [Noto Sans SC](https://fonts.google.com/noto/specimen/Noto+Sans+SC)。 |
 | Markdown 与图片 | [react-markdown](https://github.com/remarkjs/react-markdown) 和 [remark-gfm](https://github.com/remarkjs/remark-gfm) 渲染消息与技能文档，[sharp](https://sharp.pixelplumbing.com/) 用于处理图片附件。 |
-| 可选执行环境 | [Playwright](https://playwright.dev/) 和 [Chromium](https://www.chromium.org/) 用于浏览器操作，[whisper.cpp](https://github.com/ggml-org/whisper.cpp) 用于本地语音转写。 |
+| 可选执行环境 | [Playwright](https://playwright.dev/) 和 [Chromium](https://www.chromium.org/) 用于浏览器操作。[Cua Driver](legal/third-party/cua-driver-0.47.8/) 为内置 Mac 运行环境提供屏幕和输入能力，[whisper.cpp](https://github.com/ggml-org/whisper.cpp) 用于本地语音转写。 |
 
 BambooShift 是独立开发的项目。作为产品参照，可查阅 [Grok Bot 官方介绍](https://x.ai/news/introducing-grok-bot)。
 

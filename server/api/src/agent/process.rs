@@ -15,7 +15,7 @@ const MAX_SYSTEM_UTF16: usize = 128_000;
 const MAX_PROMPT_UTF16: usize = 256_000;
 
 fn start_fits(value: &Value, bytes: usize) -> bool {
-    // Match the Pi worker's JavaScript string and serialized frame limits.
+    // Match the agent worker's JavaScript string and serialized frame limits.
     bytes <= MAX_START_BYTES
         && [
             ("systemPrompt", MAX_SYSTEM_UTF16),
@@ -51,30 +51,30 @@ pub(super) fn serialize_run_prompt(prompt: &mut Value) -> Result<String> {
     Err(context_too_large())
 }
 
-pub(crate) struct PiProcess {
+pub(crate) struct AgentProcess {
     pub child: Child,
     input: ChildStdin,
     output: BufReader<ChildStdout>,
     frame: Vec<u8>,
 }
-impl PiProcess {
+impl AgentProcess {
     pub async fn spawn(state: &crate::db::State) -> Result<Self> {
-        let mut child = crate::workers::command(&state.config, crate::workers::Worker::Pi, &[])?
+        let mut child = crate::workers::command(&state.config, crate::workers::Worker::Agent, &[])?
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .kill_on_drop(true)
             .spawn()
-            .map_err(|_| ApiError::new(503, "Pi 执行进程暂不可用。"))?;
+            .map_err(|_| ApiError::new(503, "智能体执行进程暂不可用。"))?;
         let input = child
             .stdin
             .take()
-            .ok_or_else(|| ApiError::new(503, "Pi 执行通道不可用。"))?;
+            .ok_or_else(|| ApiError::new(503, "智能体执行通道不可用。"))?;
         let output = BufReader::new(
             child
                 .stdout
                 .take()
-                .ok_or_else(|| ApiError::new(503, "Pi 结果通道不可用。"))?,
+                .ok_or_else(|| ApiError::new(503, "智能体结果通道不可用。"))?,
         );
         Ok(Self {
             child,
@@ -103,18 +103,18 @@ impl PiProcess {
             .read_until(b'\n', &mut self.frame)
             .await?;
         if self.frame.len() > MAX_FRAME {
-            return Err(ApiError::new(502, "Pi 结果超过允许大小。"));
+            return Err(ApiError::new(502, "智能体结果超过允许大小。"));
         }
         if read == 0 && self.frame.is_empty() {
             return Ok(None);
         }
         if self.frame.last() != Some(&b'\n') {
-            return Err(ApiError::new(502, "Pi 结果帧不完整。"));
+            return Err(ApiError::new(502, "智能体结果帧不完整。"));
         }
         let line = std::mem::take(&mut self.frame);
         serde_json::from_slice(&line)
             .map(Some)
-            .map_err(|_| ApiError::new(502, "Pi 结果格式无效。"))
+            .map_err(|_| ApiError::new(502, "智能体结果格式无效。"))
     }
     pub async fn stop(&mut self) {
         let _ = self.child.kill().await;

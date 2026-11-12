@@ -1,6 +1,6 @@
 use super::{
     authority::ExecutionAccess,
-    process::PiProcess,
+    process::AgentProcess,
     queue,
     registry::{ActiveRun, AgentRegistry},
 };
@@ -17,7 +17,7 @@ pub(crate) async fn inject(
     grant: &ExecutionAccess,
     store: &WorkspaceStore,
     active: &ActiveRun,
-    process: &mut PiProcess,
+    process: &mut AgentProcess,
 ) -> Result<()> {
     if !(active.kind == "user" || (active.kind == "routine" && !active.background))
         || active.cancelled.load(Ordering::Acquire)

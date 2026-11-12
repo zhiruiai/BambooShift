@@ -3,6 +3,7 @@ import { parseChatQuestion } from '../../../shared/chat-questions';
 import type { BotAgent, Message } from '../../../shared/types';
 import { parseAppAction } from '../components/AppActionCard';
 import { Avatar, type AvatarMotion } from '../components/Avatar';
+import { remoteShellResultStatus } from '../components/RemoteShellDetails';
 import {
   mayDecideComputerAction,
   parseChatComputerAction,
@@ -24,7 +25,13 @@ export function messageAvatarMotion(
     const action = parseChatComputerAction(message.metadata?.action);
     if (mayDecideComputerAction(message, action, actor)) return 'attention';
     if (action?.status === 'running') return 'working';
-    return action?.status === 'done' ? 'done' : undefined;
+    if (action?.status === 'error') return 'error';
+    if (action?.status !== 'done') return;
+    if (action.type === 'local_shell' || action.type === 'remote_shell') {
+      const outcome = remoteShellResultStatus(action.result)?.kind;
+      return outcome === 'done' || outcome === 'error' ? outcome : undefined;
+    }
+    return 'done';
   }
   if (message.kind === 'approval') {
     const action = parseAppAction(message.metadata?.appAction);
@@ -36,9 +43,12 @@ export function messageAvatarMotion(
     )
       return 'attention';
     if (action?.status === 'running') return 'working';
-    return action?.status === 'done' && !action.result?.isError ? 'done' : undefined;
+    if (action?.status === 'error' || (action?.status === 'done' && action.result?.isError))
+      return 'error';
+    return action?.status === 'done' ? 'done' : undefined;
   }
   if (streaming) return 'working';
+  if (message.status === 'error') return 'error';
   return message.status === 'done' ? 'done' : undefined;
 }
 
@@ -91,7 +101,7 @@ export function ChatWorkingAvatar({
   if (motion === 'attention' || motion === 'working') return null;
   return (
     <div className="working-line" role="status">
-      <Avatar key={agent?.id} agent={agent} size={22} motion="working" />
+      <Avatar key={agent?.id} agent={agent} size={22} motion="thinking" />
       <span className="typing-dots" aria-hidden="true">
         <i />
         <i />

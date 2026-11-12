@@ -7,7 +7,7 @@ use tokio::process::Command;
 
 #[derive(Clone, Copy)]
 pub(crate) enum Worker {
-    Pi,
+    Agent,
     Mcp,
     Computer,
     Document,
@@ -15,7 +15,8 @@ pub(crate) enum Worker {
 impl Worker {
     fn name(self) -> &'static str {
         match self {
-            Self::Pi => "pi",
+            // Keep existing release and development entrypoint paths compatible.
+            Self::Agent => "pi",
             Self::Mcp => "mcp",
             Self::Computer => "computer",
             Self::Document => "document",
@@ -121,7 +122,7 @@ mod tests {
         let base = c.runtime_dir.join("packages/pi-worker");
         std::fs::create_dir_all(&base).unwrap();
         std::fs::write(base.join("index.mjs"), "").unwrap();
-        let built = command(&c, Worker::Pi, &["--max-old-space-size=192"]).unwrap();
+        let built = command(&c, Worker::Agent, &["--max-old-space-size=192"]).unwrap();
         let args = built
             .as_std()
             .get_args()
@@ -139,11 +140,11 @@ mod tests {
         let source = c.runtime_dir.join("server/workers/pi-worker/index.ts");
         std::fs::create_dir_all(source.parent().unwrap()).unwrap();
         std::fs::write(&source, "").unwrap();
-        assert!(command(&c, Worker::Pi, &[]).is_err());
+        assert!(command(&c, Worker::Agent, &[]).is_err());
         let loader = c.runtime_dir.join("node_modules/tsx/dist/loader.mjs");
         std::fs::create_dir_all(loader.parent().unwrap()).unwrap();
         std::fs::write(&loader, "").unwrap();
-        let dev = command(&c, Worker::Pi, &[]).unwrap();
+        let dev = command(&c, Worker::Agent, &[]).unwrap();
         let args = dev.as_std().get_args().collect::<Vec<_>>();
         assert_eq!(args[0], "--import");
         assert_eq!(args[1], loader);

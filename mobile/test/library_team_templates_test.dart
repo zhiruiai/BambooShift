@@ -144,7 +144,9 @@ void main() {
         await _openLibraryTemplates(tester, entry);
         final chooser = find.byType(AlertDialog);
         final rows = server.rows(language);
-        final starter = rows.firstWhere((row) => row['id'] == 'launch');
+        final starter = rows.firstWhere(
+          (row) => row['id'] == (english ? 'software-product' : 'launch'),
+        );
         final draft = starter['draft'] as Json;
         final title = draft['title'] as String;
         final summary = draft['summary'] as String;
@@ -162,6 +164,8 @@ void main() {
         }
         expect(server.writes, isEmpty);
 
+        await tester.ensureVisible(option);
+        await tester.pumpAndSettle();
         await tester.tap(option);
         await tester.pumpAndSettle();
         expect(

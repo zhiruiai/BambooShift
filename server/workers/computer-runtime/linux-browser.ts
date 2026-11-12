@@ -8,6 +8,7 @@ import type { BrowserContext, BrowserType } from 'playwright-core';
 import type { ComputerScreenConfiguration } from '../../../shared/computer-screens.js';
 import { sameDesktopSession } from '../../../shared/linux-desktop.js';
 import { createSharedBrowserEngine, type BrowserScreenSession } from './browser-engine.js';
+import type { BrowserTabOptions } from './browser-tabs.js';
 import { createBrowserLoginState } from './browser-login-state.js';
 import { browserLeaseJournal } from './linux-browser-leases.js';
 
@@ -261,7 +262,28 @@ export function createLinuxBrowserEngine(options: LinuxBrowserOptions) {
       await assertAvailable();
       await login.synchronize();
     };
+    const tabGuard = (options: BrowserTabOptions = {}): BrowserTabOptions => ({
+      ...options,
+      authorize() {
+        if (closed || failed) throw failure();
+        options.authorize?.();
+      },
+    });
     const session: BrowserScreenSession = {
+      tabs: {
+        async list(options) {
+          await assertAvailable();
+          return base.tabs!.list(tabGuard(options));
+        },
+        async select(tabId, options) {
+          await assertAvailable();
+          return base.tabs!.select(tabId, tabGuard(options));
+        },
+        async close(tabId, options) {
+          await assertAvailable();
+          return base.tabs!.close(tabId, tabGuard(options));
+        },
+      },
       peek: () => (failed ? undefined : base.peek()),
       async status() {
         if (failed) throw cleanupFailure();

@@ -8,6 +8,7 @@ const {
   SETUP_CSP,
   allowedResource,
   allowedDownload,
+  safeFilename,
 } = require('./security.cjs');
 function readLastOrigin(dataDir) {
   try {
@@ -55,13 +56,15 @@ function installSessionPolicy(
   allowClipboardWrite = () => false,
   allowMicrophone = () => false,
 ) {
+  const currentOrigin = () => (typeof origin === 'function' ? origin() : origin);
   ses.setPermissionRequestHandler((contents, permission, callback, details) => {
     let granted = false;
     try {
-      if (origin && permission === 'clipboard-sanitized-write')
-        granted = allowClipboardWrite(contents, details, origin) === true;
-      else if (origin && permission === 'media')
-        granted = allowMicrophone(contents, details, origin) === true;
+      const target = currentOrigin();
+      if (target && permission === 'clipboard-sanitized-write')
+        granted = allowClipboardWrite(contents, details, target) === true;
+      else if (target && permission === 'media')
+        granted = allowMicrophone(contents, details, target) === true;
     } catch {
       /* Destroyed frames and incomplete permission details fail closed. */
     }
@@ -74,16 +77,56 @@ function installSessionPolicy(
   ses.setDisplayMediaRequestHandler((_request, callback) => callback(null), {
     useSystemPicker: false,
   });
-  ses.webRequest.onBeforeRequest((details, callback) =>
+  ses.webRequest.onBeforeRequest((details, callback) => {
+    const target = currentOrigin();
     callback({
-      cancel: origin
-        ? !allowedResource(details.url, origin, details.resourceType)
-        : !setupAsset(details.url),
-    }),
-  );
+      cancel: target
+        ? !allowedResource(details.url, target, details.resourceType)
+        : Boolean(origin) || !setupAsset(details.url),
+    });
+  });
   ses.setUserAgent(
     ses.getUserAgent().replace(/\sOpenBotDesktop\/[^\s]+/g, '') + ' OpenBotDesktop/0.1',
   );
+}
+function createProductSessions({
+  session,
+  getConnection,
+  consumeClipboardWrite,
+  consumeMicrophone,
+  explainBlocked,
+  t,
+}) {
+  const configured = new WeakSet();
+  return (partition, origin, managed) => {
+    const ses = session.fromPartition(partition);
+    if (configured.has(ses)) return ses;
+    const boundOrigin = managed
+      ? () => {
+          const current = getConnection();
+          return current?.partition === partition ? current.origin : undefined;
+        }
+      : origin;
+    installSessionPolicy(ses, boundOrigin, consumeClipboardWrite, consumeMicrophone);
+    ses.on('will-download', (event, item, contents, frame) => {
+      const current = getConnection();
+      if (!downloadAllowed(item, contents, frame, current) || current.partition !== partition) {
+        event.preventDefault();
+        explainBlocked();
+        return;
+      }
+      // Leaving the save path unset keeps the native save dialog mandatory.
+      item.setSaveDialogOptions({
+        title: t('saveFile'),
+        defaultPath: safeFilename(item.getFilename()),
+        buttonLabel: t('save'),
+      });
+      current.downloads.add(item);
+      item.once('done', () => current.downloads.delete(item));
+    });
+    configured.add(ses);
+    return ses;
+  };
 }
 function downloadAllowed(item, contents, frame, connection) {
   return allowedDownload(
@@ -104,5 +147,6 @@ module.exports = {
   saveLastOrigin,
   createSetupProtocolHandler,
   installSessionPolicy,
+  createProductSessions,
   downloadAllowed,
 };

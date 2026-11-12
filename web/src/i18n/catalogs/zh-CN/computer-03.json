@@ -138,5 +138,12 @@
   "text_f5d87a8b74a0": " 字节",
   "text_f62b7174e4ee": "先点击网页输入框，再在这里输入",
   "text_f68f8447e7b1": "此操作未返回可展示的文本。",
-  "text_f755b01e2711": "待批准"
+  "text_f755b01e2711": "待批准",
+  "browser_tabs": "查看浏览器标签页",
+  "browser_select_tab": "切换浏览器标签页",
+  "browser_close_tab": "关闭浏览器标签页",
+  "local_shell": "在本机运行命令",
+  "localShellDetails": "本机命令执行详情",
+  "localShellSeconds": " 秒",
+  "localShellScope": "在已连接的本机上以当前系统用户权限执行，可访问工作区以外的文件和网络。工作目录仅决定起始位置，不限制访问范围。已发生的更改不会因失败、超时或取消而撤销。批准仅适用于本次操作。"
 }

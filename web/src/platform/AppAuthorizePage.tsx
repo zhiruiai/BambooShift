@@ -75,7 +75,9 @@ export function AppAuthorizePage({
         <>
           <p className="platform-help">
             {uiText('account:text_0f2ffdeb0496')}
-            {session.user?.name} · {session.user?.email}
+            {session.user?.localOnly
+              ? uiText('account:localWorkspace')
+              : `${session.user?.name} · ${session.user?.email}`}
           </p>
           {workspace && session.user ? (
             <AuthorizationHandoff
@@ -89,22 +91,24 @@ export function AppAuthorizePage({
           ) : (
             <p className="platform-error">{uiText('account:text_67a1918a9351')}</p>
           )}
-          <button
-            type="button"
-            className="platform-text-button"
-            onClick={async () => {
-              const ticket = ++version.current;
-              try {
-                await platformApi('/account/logout', 'POST');
-                if (version.current === ticket)
-                  window.location.assign(accountEntryPath('login', path));
-              } catch (cause) {
-                if (version.current === ticket) setError((cause as Error).message);
-              }
-            }}
-          >
-            {uiText('account:text_09392a2b9b8a')}
-          </button>
+          {!session.user?.localOnly && (
+            <button
+              type="button"
+              className="platform-text-button"
+              onClick={async () => {
+                const ticket = ++version.current;
+                try {
+                  await platformApi('/account/logout', 'POST');
+                  if (version.current === ticket)
+                    window.location.assign(accountEntryPath('login', path));
+                } catch (cause) {
+                  if (version.current === ticket) setError((cause as Error).message);
+                }
+              }}
+            >
+              {uiText('account:text_09392a2b9b8a')}
+            </button>
+          )}
         </>
       )}
     </AccountShell>

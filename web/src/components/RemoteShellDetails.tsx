@@ -68,9 +68,20 @@ export function remoteShellResultStatus(result: unknown) {
   return undefined;
 }
 
-export function RemoteShellDetails({ payload }: { payload: Record<string, unknown> }) {
+export function RemoteShellDetails({
+  payload,
+  execution = 'isolated',
+}: {
+  payload: Record<string, unknown>;
+  execution?: 'isolated' | 'local';
+}) {
   return (
-    <section className="remote-shell-details" aria-label={uiText('computer:text_f4719ae9413b')}>
+    <section
+      className="remote-shell-details"
+      aria-label={uiText(
+        execution === 'local' ? 'computer:localShellDetails' : 'computer:text_f4719ae9413b',
+      )}
+    >
       <span className="remote-shell-label">{uiText('computer:text_be12f84c407f')}</span>
       {typeof payload.command === 'string' && payload.command ? (
         <pre tabIndex={0} role="region" aria-label={uiText('computer:text_54c1568b500b')}>
@@ -95,10 +106,14 @@ export function RemoteShellDetails({ payload }: { payload: Record<string, unknow
         <dd>
           {uiText('computer:text_298754d6bec8')}
           {REMOTE_SHELL_TIMEOUT_MS / 1000}
-          {uiText('computer:text_293eef890e19')}
+          {uiText(
+            execution === 'local' ? 'computer:localShellSeconds' : 'computer:text_293eef890e19',
+          )}
         </dd>
       </dl>
-      <p className="remote-shell-scope">{uiText('computer:text_3b1f916bb177')}</p>
+      <p className="remote-shell-scope">
+        {uiText(execution === 'local' ? 'computer:localShellScope' : 'computer:text_3b1f916bb177')}
+      </p>
     </section>
   );
 }

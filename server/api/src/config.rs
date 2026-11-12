@@ -19,6 +19,23 @@ pub struct Config {
     pub node_binary: PathBuf,
     pub operations: Option<OperationsConfig>,
     pub releases: Option<crate::updates::ReleasesConfig>,
+    pub local_desktop: Option<LocalDesktopConfig>,
+}
+
+#[derive(Clone, serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct LocalDesktopConfig {
+    pub bootstrap_token: String,
+    #[serde(default)]
+    pub host_control: bool,
+    pub desktop_driver: Option<DesktopDriverConfig>,
+}
+#[derive(Clone, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct DesktopDriverConfig {
+    pub kind: String,
+    pub executable_path: PathBuf,
+    pub socket_path: PathBuf,
 }
 impl Config {
     pub fn from_private_file(path: &std::path::Path) -> Result<Self> {
@@ -33,6 +50,7 @@ impl Config {
             node_binary: Option<PathBuf>,
             operations: Option<OperationsConfig>,
             releases: Option<crate::updates::ReleasesConfig>,
+            local_desktop: Option<LocalDesktopConfig>,
         }
         let mut options = std::fs::OpenOptions::new();
         options.read(true);
@@ -68,6 +86,7 @@ impl Config {
         config.web_origin = parsed.web_origin;
         config.operations = parsed.operations;
         config.releases = parsed.releases;
+        config.local_desktop = parsed.local_desktop;
         if let Some(runtime) = parsed.runtime_dir {
             config.runtime_dir = runtime;
         }
@@ -87,6 +106,7 @@ impl Config {
             node_binary: PathBuf::from("node"),
             operations: None,
             releases: None,
+            local_desktop: None,
         }
     }
     pub fn validate(&self) -> Result<()> {
@@ -100,6 +120,25 @@ impl Config {
             return Err(ApiError::bad("执行环境路径无效，请检查私有服务配置。"));
         }
         validate_endpoint(self.bind, &self.public_origin, &self.web_origin)?;
+        if let Some(local) = &self.local_desktop {
+            if local.bootstrap_token.len() != 64
+                || !local
+                    .bootstrap_token
+                    .bytes()
+                    .all(|byte| byte.is_ascii_hexdigit())
+                || self.public_origin.is_some()
+                || self.web_origin.is_some()
+                || self.operations.is_some()
+                || local.desktop_driver.as_ref().is_some_and(|driver| {
+                    !local.host_control
+                        || driver.kind != "cua"
+                        || !driver.executable_path.is_absolute()
+                        || !driver.socket_path.is_absolute()
+                })
+            {
+                return Err(ApiError::bad("本机免登录模式必须使用独立的本机服务配置。"));
+            }
+        }
         if self
             .releases
             .as_ref()

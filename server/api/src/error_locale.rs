@@ -72,6 +72,27 @@ pub async fn translate(response: Response) -> Response {
 }
 fn message_en(message: &str, code: &str) -> &'static str {
     match message {
+        "本机免登录模式未启用。" => "Personal desktop mode is not enabled.",
+        "请从本机客户端打开这个工作空间。" => {
+            "Open this workspace from the desktop app on this computer."
+        }
+        "本机账户当前不可用。" => "The personal desktop account is unavailable.",
+        "本机免登录模式需要独立的个人数据目录。" => {
+            "Personal desktop mode requires a separate data directory."
+        }
+        "本机工作空间不可用。" => "The personal desktop workspace is unavailable.",
+        "本机个人空间无需密码。" => {
+            "The personal desktop workspace does not use a password."
+        }
+        "本机个人空间无需注册，请从客户端直接打开。" => {
+            "Open the personal workspace from the desktop app; registration is not needed."
+        }
+        "本机个人空间无需登录，请从客户端直接打开。" => {
+            "Open the personal workspace from the desktop app; sign-in is not needed."
+        }
+        "此电脑未启用本机命令执行能力。" => {
+            "Local command execution is not enabled on this computer."
+        }
         "Webhook 密钥无效或已失效。" => {
             "The webhook secret is invalid or no longer active."
         }

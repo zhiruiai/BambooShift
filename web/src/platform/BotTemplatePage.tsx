@@ -117,7 +117,7 @@ function TemplatePage({ token }: { token: string }) {
           <div className="platform-error" role="alert">
             <p>{state.error}</p>
             <p>{uiText('account:text_5f9382cd4ecb')}</p>
-            {state.session?.authenticated && (
+            {state.session?.authenticated && !state.session.user?.localOnly && (
               <button
                 type="button"
                 className="platform-text-button"

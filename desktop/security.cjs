@@ -291,18 +291,23 @@ class ConnectionState {
   snapshot() {
     return { ...this.value };
   }
-  begin(url) {
+  begin(url, managed = false) {
     const origin = normalizeServerOrigin(url);
-    this.lastAttempt = origin;
-    this.value = { ...this.value, status: 'connecting', url: origin, error: undefined };
-    return { sequence: ++this.sequence, origin };
+    if (!managed) this.lastAttempt = origin;
+    this.value = {
+      ...this.value,
+      status: 'connecting',
+      ...(!managed ? { url: origin } : {}),
+      error: undefined,
+    };
+    return { sequence: ++this.sequence, origin, ...(managed ? { managed } : {}) };
   }
   connected(attempt) {
     if (attempt.sequence !== this.sequence) return false;
     this.value = {
       ...this.value,
       status: 'connected',
-      lastOrigin: attempt.origin,
+      ...(!attempt.managed ? { lastOrigin: attempt.origin } : {}),
       error: undefined,
     };
     return true;

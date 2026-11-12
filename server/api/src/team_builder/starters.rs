@@ -12,8 +12,10 @@ use serde_json::{Value, json};
 use std::{collections::HashSet, sync::LazyLock};
 
 static CATALOG: LazyLock<Value> = LazyLock::new(|| {
-    serde_json::from_str(include_str!("../../../../shared/team-starter-templates.json"))
-        .expect("The checked-in team catalog is valid")
+    serde_json::from_str(include_str!(
+        "../../../../shared/team-starter-templates.json"
+    ))
+    .expect("The checked-in team catalog is valid")
 });
 
 pub async fn list(

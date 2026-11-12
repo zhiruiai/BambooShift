@@ -4,6 +4,7 @@ import '../../core/api.dart';
 import '../../core/workspace_controller.dart';
 import '../apps/app_approval_data.dart';
 import 'action_data.dart';
+import 'shell_action_data.dart';
 
 class ActionController extends ChangeNotifier {
   ActionController(
@@ -36,6 +37,11 @@ class ActionController extends ChangeNotifier {
       !uncertain &&
       current?.status == 'pending' &&
       current!.canDecide(scope.userId, scope.owner);
+
+  bool get canApprove =>
+      canDecide &&
+      (!isShellAction(current!) ||
+          shellRequestReadable(current!.value['payload']));
 
   ExactAppRead? alwaysAllowReview(ChatAction action) =>
       scope.personalOwner &&
@@ -104,10 +110,18 @@ class ActionController extends ChangeNotifier {
     }
   }
 
-  bool _matches(ChatAction? action, String displayed, bool alwaysAllow) =>
+  bool _matches(
+    ChatAction? action,
+    String displayed,
+    bool alwaysAllow,
+    bool approve,
+  ) =>
       action != null &&
       action.status == 'pending' &&
       action.fingerprint == displayed &&
+      (!approve ||
+          !isShellAction(action) ||
+          shellRequestReadable(action.value['payload'])) &&
       action.canDecide(scope.userId, scope.owner) &&
       (!alwaysAllow || alwaysAllowReview(action) != null);
 
@@ -121,7 +135,7 @@ class ActionController extends ChangeNotifier {
   }
 
   Future<void> decide(bool approve, {String? alwaysAllowFingerprint}) async {
-    if (!canDecide) return;
+    if (!canDecide || (approve && !canApprove)) return;
     final displayed = current!.fingerprint;
     final alwaysAllow = alwaysAllowFingerprint != null;
     if (alwaysAllow &&
@@ -137,7 +151,7 @@ class ActionController extends ChangeNotifier {
     notifyListeners();
     try {
       final action = await fresh();
-      if (!_matches(action, displayed, alwaysAllow)) {
+      if (!_matches(action, displayed, alwaysAllow, approve)) {
         throw const ApiException('ACTION_CHANGED', 'mobileChatActionChanged');
       }
       final dispatch = await scope.session.api.vault.serial(() async {
@@ -161,7 +175,7 @@ class ActionController extends ChangeNotifier {
       uncertain = true;
       if (!dispatch) return;
       final latest = current;
-      if (!_matches(latest, displayed, alwaysAllow)) {
+      if (!_matches(latest, displayed, alwaysAllow, approve)) {
         await _forgetDefinitiveRejection();
         throw const ApiException('ACTION_CHANGED', 'mobileChatActionChanged');
       }

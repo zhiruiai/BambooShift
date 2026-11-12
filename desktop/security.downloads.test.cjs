@@ -174,11 +174,13 @@ test('sandbox preload exposes only narrow setup methods and strips IPC event obj
   assert.equal(evaluate(SETUP_URL, false).exposed, undefined);
   const setup = evaluate(SETUP_URL, true);
   assert.deepEqual(Object.keys(setup.exposed).sort(), [
+    'cancelLocal',
     'connect',
     'getState',
     'onState',
     'retry',
     'setLanguage',
+    'startLocal',
   ]);
   await setup.exposed.connect({
     url: 'https://bot.example.com',
@@ -186,6 +188,12 @@ test('sandbox preload exposes only narrow setup methods and strips IPC event obj
   });
   assert.equal(setup.invoked[0][0], 'openbot-client:connect');
   assert.deepEqual(Object.keys(setup.invoked[0][1]), ['url']);
+  await setup.exposed.startLocal({ hostControl: true, arbitraryCommand: 'not forwarded' });
+  await setup.exposed.cancelLocal({ arbitraryPath: 'not forwarded' });
+  assert.deepEqual(JSON.parse(JSON.stringify(setup.invoked.slice(1))), [
+    ['openbot-client:start-local', { hostControl: true }],
+    ['openbot-client:cancel-local'],
+  ]);
   let received;
   const unsubscribe = setup.exposed.onState((value) => {
     received = value;

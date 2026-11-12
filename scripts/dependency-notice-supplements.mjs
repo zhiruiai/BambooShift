@@ -27,7 +27,8 @@ export async function readNoticeSupplements(sourceRoot) {
   const records = new Map();
   for (const item of manifest.packages) {
     if (
-      item.ecosystem !== 'cargo' ||
+      !['cargo', 'npm'].includes(item.ecosystem) ||
+      (item.ecosystem === 'npm' && !/^sha512-[A-Za-z0-9+/]+=*$/.test(item.integrity ?? '')) ||
       typeof item.name !== 'string' ||
       typeof item.version !== 'string' ||
       !/^[a-f0-9]{40}$/.test(item.revision) ||
@@ -36,7 +37,7 @@ export async function readNoticeSupplements(sourceRoot) {
       item.files.length > 64 ||
       records.has(key(item))
     )
-      throw Error('Dependency legal supplements must bind one exact Cargo version and commit.');
+      throw Error('Dependency legal supplements must bind an exact package version and commit.');
     const repo = /^https:\/\/github\.com\/([A-Za-z0-9_.-]+)\/([A-Za-z0-9_.-]+)$/.exec(
       item.repository,
     );
@@ -58,7 +59,7 @@ export async function readNoticeSupplements(sourceRoot) {
         url.href !== file.url ||
         url.search ||
         url.hash ||
-        !/^(?:licen[cs]e|copying|notice|copyright)(?:[._-]|$)/i.test(basename(url.pathname))
+        !/^(?:(?:licen[cs]e|copying|notice|copyright)(?:[._-]|$)|third[-_]party[-_]notices?(?:[._-]|$))/i.test(basename(url.pathname))
       )
         throw Error('Supplement legal source must point to a fixed-commit upstream license file.');
       const path = await guardedPath(root, resolve(root, file.path));
@@ -67,7 +68,7 @@ export async function readNoticeSupplements(sourceRoot) {
         throw Error('A supplement legal file does not match its reviewed SHA-256.');
       files.push({ root, path, sha256: file.sha256, url: file.url });
     }
-    records.set(key(item), { revision: item.revision, files });
+    records.set(key(item), { revision: item.revision, integrity: item.integrity, files });
   }
   return records;
 }
@@ -75,6 +76,11 @@ export async function readNoticeSupplements(sourceRoot) {
 export async function supplementFor(item, records) {
   const record = records.get(key(item));
   if (!record) return [];
+  if (item.ecosystem === 'npm') {
+    if (item.integrity !== record.integrity)
+      throw Error('Supplement integrity differs from the locked npm publication.');
+    return record.files;
+  }
   const vcs = JSON.parse(
     await boundedBytes(item.directory, join(item.directory, '.cargo_vcs_info.json'), 16384),
   );

@@ -32,6 +32,7 @@ pub struct Worker {
     pub cleanup_ok: AtomicBool,
     pub cleanup_capable: AtomicBool,
     pub private_takeover_capable: AtomicBool,
+    pub browser_tabs_capable: AtomicBool,
     pub execute_gate: Mutex<Option<Arc<Semaphore>>>,
     pub cleanup_gate: Mutex<Option<Arc<Semaphore>>>,
     pub png: Vec<u8>,
@@ -56,7 +57,7 @@ impl Server {
                 .unwrap();
             buffer.into_inner()
         };
-        let worker=Arc::new(Worker{origin:format!("http://{}",listener.local_addr().unwrap()),workspace:workspace.into(),instance:uuid::Uuid::new_v4().to_string(),control_origin:Mutex::new(Value::Null),screens:Mutex::new((0..2).map(|_|json!({"id":uuid::Uuid::new_v4().to_string(),"revision":uuid::Uuid::new_v4().to_string(),"session":{"id":uuid::Uuid::new_v4().to_string(),"generation":uuid::Uuid::new_v4().to_string()},"available":true,"lifecycle":{"state":"ready"},"surface":"browser"})).collect()),calls:Mutex::new(vec![]),lifecycle:Mutex::new(HashMap::new()),leases:Mutex::new(HashMap::new()),files:Mutex::new(HashMap::from([("report.txt".into(),b"remote report".to_vec())])),lifecycle_count:AtomicUsize::new(0),lose_lifecycle:AtomicBool::new(false),cleanup_ok:AtomicBool::new(true),cleanup_capable:AtomicBool::new(true),private_takeover_capable:AtomicBool::new(true),execute_gate:Mutex::new(None),cleanup_gate:Mutex::new(None),png:png(24,18),private_png:png(1440,900)});
+        let worker=Arc::new(Worker{origin:format!("http://{}",listener.local_addr().unwrap()),workspace:workspace.into(),instance:uuid::Uuid::new_v4().to_string(),control_origin:Mutex::new(Value::Null),screens:Mutex::new((0..2).map(|_|json!({"id":uuid::Uuid::new_v4().to_string(),"revision":uuid::Uuid::new_v4().to_string(),"session":{"id":uuid::Uuid::new_v4().to_string(),"generation":uuid::Uuid::new_v4().to_string()},"available":true,"lifecycle":{"state":"ready"},"surface":"browser"})).collect()),calls:Mutex::new(vec![]),lifecycle:Mutex::new(HashMap::new()),leases:Mutex::new(HashMap::new()),files:Mutex::new(HashMap::from([("report.txt".into(),b"remote report".to_vec())])),lifecycle_count:AtomicUsize::new(0),lose_lifecycle:AtomicBool::new(false),cleanup_ok:AtomicBool::new(true),cleanup_capable:AtomicBool::new(true),private_takeover_capable:AtomicBool::new(true),browser_tabs_capable:AtomicBool::new(false),execute_gate:Mutex::new(None),cleanup_gate:Mutex::new(None),png:png(24,18),private_png:png(1440,900)});
         let app = Router::new().fallback(dispatch).with_state(worker.clone());
         let task = tokio::spawn(async move {
             axum::serve(listener, app).await.unwrap();
@@ -112,6 +113,12 @@ async fn dispatch(State(worker): State<Arc<Worker>>, request: Request) -> Respon
                 .as_array_mut()
                 .unwrap()
                 .retain(|c| c != "operation-cleanup-v1");
+        }
+        if worker.browser_tabs_capable.load(Ordering::SeqCst) {
+            state["capabilities"]
+                .as_array_mut()
+                .unwrap()
+                .push(json!("browser-tabs-v1"));
         }
         if worker.private_takeover_capable.load(Ordering::SeqCst) {
             state["capabilities"]

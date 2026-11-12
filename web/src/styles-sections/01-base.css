@@ -234,6 +234,9 @@ button {
     transform-origin: center;
     animation: avatar-idle-blink 260ms ease-in-out 360ms;
   }
+  .avatar[data-avatar-motion='thinking'] > svg {
+    animation: avatar-consider 1050ms ease-in-out;
+  }
   .avatar[data-avatar-motion='working'] > svg {
     animation: avatar-breathe 850ms ease-in-out 2;
   }
@@ -242,6 +245,18 @@ button {
   }
   .avatar[data-avatar-motion='done'] > svg {
     animation: avatar-settle 480ms ease-out;
+  }
+  .avatar[data-avatar-motion='error'] > svg {
+    animation: avatar-deflate 560ms ease-out;
+  }
+  .avatar[data-avatar-motion='thinking'][data-avatar-sustained] > svg {
+    animation: avatar-consider 3200ms ease-in-out infinite;
+  }
+  .avatar[data-avatar-motion='working'][data-avatar-sustained] > svg {
+    animation: avatar-work-cycle 3200ms ease-in-out infinite;
+  }
+  .avatar[data-avatar-sustained]:not([data-avatar-visible='true']) > svg {
+    animation-play-state: paused;
   }
   .avatar[data-avatar-motion='preview'] > svg,
   .appearance-avatar-option[aria-pressed='true']:enabled
@@ -253,6 +268,27 @@ button {
 @keyframes avatar-idle-blink {
   42% {
     scale: 1 0.12;
+  }
+}
+@keyframes avatar-consider {
+  10% {
+    transform: rotate(-8deg) translateY(2%);
+  }
+  22% {
+    transform: rotate(4deg);
+  }
+  34%,
+  100% {
+    transform: none;
+  }
+}
+@keyframes avatar-work-cycle {
+  15% {
+    transform: translateY(-7%) scale(1.06);
+  }
+  31%,
+  100% {
+    transform: none;
   }
 }
 @keyframes avatar-breathe {
@@ -276,6 +312,14 @@ button {
   }
   59% {
     transform: scaleX(1.08) scaleY(0.91);
+  }
+}
+@keyframes avatar-deflate {
+  34% {
+    transform: translateY(5%) scaleX(1.05) scaleY(0.9) rotate(-7deg);
+  }
+  72% {
+    transform: rotate(3deg);
   }
 }
 @keyframes avatar-greet {

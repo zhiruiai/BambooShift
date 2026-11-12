@@ -6,6 +6,7 @@ import '../../core/chat_draft.dart';
 import '../../core/workspace_controller.dart';
 import '../../widgets/bot_avatar.dart';
 import 'action_data.dart';
+import 'chat_avatar_motion.dart';
 import 'chat_question_data.dart';
 
 class ChatHeaderTitle extends StatelessWidget {
@@ -26,22 +27,30 @@ class ChatHeaderTitle extends StatelessWidget {
   final List<Json> messages;
   final String? threadRootId;
 
-  bool get _hasCurrentAction {
+  BotAvatarMotion? get _activity {
     for (final message in messages.reversed) {
       if (chatThreadRoot(message) != threadRootId) continue;
-      if (message['role'] == 'user') return false;
+      if (message['role'] == 'user') break;
       if (message['role'] != 'assistant') continue;
       if (message['kind'] == 'question') {
-        return ChatQuestion.parse(message)?.canAnswer(scope) == true;
+        return ChatQuestion.parse(message)?.canAnswer(scope) == true
+            ? BotAvatarMotion.attention
+            : null;
       }
       if (message['kind'] == 'approval' || message['kind'] == 'computer') {
-        final action = ChatAction.fromMessage(message);
-        return action?.status == 'running' ||
-            (action?.status == 'pending' &&
-                action!.canDecide(scope.userId, scope.owner));
+        final motion = actionAvatarMotion(
+          ChatAction.fromMessage(message),
+          scope,
+        );
+        return motion == BotAvatarMotion.attention ||
+                motion == BotAvatarMotion.working
+            ? motion
+            : null;
       }
+      final motion = textAvatarMotion(message);
+      return motion?.running == true ? motion : null;
     }
-    return false;
+    return null;
   }
 
   @override
@@ -54,6 +63,9 @@ class ChatHeaderTitle extends StatelessWidget {
         !scope.disconnected &&
         botAvailable(currentBot) &&
         ModalRoute.isCurrentOf(context) != false;
+    final motion = active
+        ? _activity ?? (working ? BotAvatarMotion.thinking : null)
+        : null;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -64,8 +76,9 @@ class ChatHeaderTitle extends StatelessWidget {
             scope: scope,
             family: scope.session.avatarTheme,
             size: 26,
-            motion: active && working ? BotAvatarMotion.working : null,
-            blinkWhenIdle: active && !working && !_hasCurrentAction,
+            motion: motion,
+            sustainMotion: true,
+            blinkWhenIdle: active && motion == null,
           ),
         ),
         const SizedBox(width: 8),

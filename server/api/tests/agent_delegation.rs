@@ -204,6 +204,11 @@ async fn real_child_uses_profile_memory_and_research_guidance_and_returns_its_re
         assert!(guidance.contains("retrieved evidence from background knowledge"));
         assert!(guidance.contains("explain the specific limit"));
         assert!(!guidance.contains("shared_app_call"));
+        assert!(guidance.contains("You work inside BambooShift"));
+        assert!(
+            guidance.contains("execution engine is separate from the configured language model")
+        );
+        assert!(!guidance.contains("BambooShift uses Pi Coding Agent"));
     }
     let child_request = calls.iter().find(|v| role(v) == 1).unwrap().to_string();
     assert!(child_request.contains(input["id"].as_str().unwrap()));

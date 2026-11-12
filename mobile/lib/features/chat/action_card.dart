@@ -9,6 +9,8 @@ import '../../widgets/common.dart';
 import '../apps/app_approval_review.dart';
 import 'action_controller.dart';
 import 'action_data.dart';
+import 'shell_action_data.dart';
+import 'shell_action_details.dart';
 
 class ActionCard extends StatefulWidget {
   const ActionCard({
@@ -83,11 +85,25 @@ class _ActionCardState extends State<ActionCard> {
               ),
               const SizedBox(height: 6),
               SelectableText(
-                action.title,
+                action.kind == 'computer' &&
+                        const [
+                          'browser_tabs',
+                          'browser_select_tab',
+                          'browser_close_tab',
+                          'remote_shell',
+                          'local_shell',
+                        ].contains(action.title)
+                    ? context.tr(action.title)
+                    : action.title,
                 style: const TextStyle(fontSize: 14),
               ),
               Text(
-                context.tr('mobileChatStatus_${action.status}'),
+                context.tr(
+                  isShellAction(action) && action.terminal
+                      ? shellResultLabel(action.value['result']) ??
+                            'mobileChatStatus_${action.status}'
+                      : 'mobileChatStatus_${action.status}',
+                ),
                 style: const TextStyle(fontSize: 13),
               ),
               if (receipt != null)
@@ -105,28 +121,36 @@ class _ActionCardState extends State<ActionCard> {
                   '${context.tr('mobileChatRequester')}: ${actionText(requester['name'] ?? requester['userId'])}',
                   style: const TextStyle(fontSize: 13),
                 ),
-              ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                title: Text(
-                  context.tr('mobileChatParameters'),
-                  style: const TextStyle(fontSize: 14),
-                ),
-                children: [
-                  SelectableText(
-                    actionText(
-                      action.value[action.kind == 'app'
-                          ? 'arguments'
-                          : 'payload'],
+              if (isShellAction(action))
+                ShellActionDetails(
+                  payload: action.value['payload'] as Json,
+                  local: action.value['type'] == 'local_shell',
+                  result: action.terminal ? action.value['result'] : null,
+                )
+              else ...[
+                ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  title: Text(
+                    context.tr('mobileChatParameters'),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  children: [
+                    SelectableText(
+                      actionText(
+                        action.value[action.kind == 'app'
+                            ? 'arguments'
+                            : 'payload'],
+                      ),
+                      style: const TextStyle(fontSize: 13),
                     ),
+                  ],
+                ),
+                if (action.value['result'] != null)
+                  SelectableText(
+                    actionText(action.value['result']),
                     style: const TextStyle(fontSize: 13),
                   ),
-                ],
-              ),
-              if (action.value['result'] != null)
-                SelectableText(
-                  actionText(action.value['result']),
-                  style: const TextStyle(fontSize: 13),
-                ),
+              ],
               if (action.value['error'] is String)
                 Notice(actionText(action.value['error'])),
               if (controller.error != null) Notice(controller.error!),
@@ -145,7 +169,7 @@ class _ActionCardState extends State<ActionCard> {
                         widget.scope.owner,
                       )) ...[
                     FilledButton(
-                      onPressed: controller.canDecide
+                      onPressed: controller.canApprove
                           ? () => controller.decide(true)
                           : null,
                       child: Text(context.tr('mobileChatApprove')),

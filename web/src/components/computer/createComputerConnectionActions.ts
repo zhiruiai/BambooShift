@@ -60,7 +60,8 @@ export function createComputerConnectionActions(read: () => ComputerConnectionAc
       if (
         approve &&
         ((!file && (state.controlled || !state.screenReady)) ||
-          (action.type === 'remote_shell' && !remoteShellRequestReadable(action.payload)))
+          (['remote_shell', 'local_shell'].includes(action.type) &&
+            !remoteShellRequestReadable(action.payload)))
       )
         return;
       return action;
@@ -80,7 +81,7 @@ export function createComputerConnectionActions(read: () => ComputerConnectionAc
         if (
           current(version) &&
           approve &&
-          !['upload_file', 'download_file', 'remote_shell'].includes(action.type)
+          !['upload_file', 'download_file', 'remote_shell', 'local_shell'].includes(action.type)
         )
           await screenshot();
       });

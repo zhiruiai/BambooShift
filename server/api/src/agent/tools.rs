@@ -125,7 +125,7 @@ pub(crate) fn check_fence(active: &ActiveRun, generation: u64) -> Result<()> {
             "原任务已停止或收到新要求，此次操作已取消。",
         ))
     } else {
-        Ok(())
+        active.family.deadline.remaining_ms().map(|_| ())
     }
 }
 pub(crate) async fn authorize_membership(store: &WorkspaceStore, active: &ActiveRun) -> Result<()> {

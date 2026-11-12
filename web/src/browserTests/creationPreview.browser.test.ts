@@ -205,27 +205,45 @@ test(
       assert.equal(await page.locator('#message-tail').count(), 0);
       const worker = page.locator('.working-line .avatar > svg');
       const headerAvatar = page.locator('.chat-header [data-avatar-motion="idle"] .avatar-eyes');
+      const activeHeader = page.locator('.chat-header [data-avatar-sustained] > svg');
       const avatarAnimation = (element: Element) => getComputedStyle(element).animationName;
+      const avatarPlayState = (element: Element) => getComputedStyle(element).animationPlayState;
       await worker.waitFor();
       assert.equal(await worker.evaluate(avatarAnimation), 'none');
+      assert.equal(await activeHeader.evaluate(avatarAnimation), 'none');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
-      assert.equal(await worker.evaluate(avatarAnimation), 'avatar-breathe');
-      assert.equal(await headerAvatar.count(), 0, 'working does not animate the header');
+      assert.equal(await worker.evaluate(avatarAnimation), 'avatar-consider');
+      assert.equal(await activeHeader.evaluate(avatarAnimation), 'avatar-consider');
+      const header = page.locator('.chat-header');
+      const shown = page.locator('.chat-header [data-avatar-visible="true"]');
+      const offscreen = page.locator('.chat-header [data-avatar-visible="false"]');
+      await shown.waitFor();
+      assert.equal(await activeHeader.evaluate(avatarPlayState), 'running');
+      await header.evaluate((element) => {
+        element.style.transform = 'translateX(200vw)';
+      });
+      await offscreen.waitFor({ state: 'attached' });
+      assert.equal(await activeHeader.evaluate(avatarPlayState), 'paused');
+      await header.evaluate((element) => {
+        element.style.removeProperty('transform');
+      });
+      await shown.waitFor();
       const advance = page.getByRole('button', { name: 'Advance synthetic run' });
       await advance.press('Enter');
       await page.locator('#message-tail .typing-cursor').waitFor();
       assert.equal(await page.locator('.typing-cursor').count(), 1);
       const activeAvatar = page.locator('#message-tail .avatar > svg');
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-breathe');
+      assert.equal(await activeHeader.evaluate(avatarAnimation), 'avatar-work-cycle');
+      assert.equal(
+        await activeHeader.evaluate((element) => getComputedStyle(element).animationIterationCount),
+        'infinite',
+      );
       await advance.press('Enter');
       await page.locator('#message-tail .typing-cursor').waitFor({ state: 'detached' });
       await worker.waitFor();
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'none');
-      assert.equal(
-        await headerAvatar.count(),
-        0,
-        'the task is still running after the stream ends',
-      );
+      assert.equal(await activeHeader.evaluate(avatarAnimation), 'avatar-consider');
       await advance.press('Enter');
       const completion = page.locator('#message-tail [data-avatar-motion="done"]');
       await completion.waitFor();
@@ -255,7 +273,12 @@ test(
       const questionAvatar = page.locator('#message-follow-up-question .avatar > svg');
       await questionAvatar.waitFor();
       assert.equal(await questionAvatar.evaluate(avatarAnimation), 'avatar-attention');
-      assert.equal(await headerAvatar.count(), 0, 'needs input has a static header');
+      assert.equal(
+        await page
+          .locator('.chat-header [data-avatar-motion="attention"] > svg')
+          .evaluate(avatarAnimation),
+        'avatar-attention',
+      );
       assert.equal(await page.getByText('Bot profile draft', { exact: true }).count(), 1);
       assert.equal(await page.getByText('Avatar theme draft', { exact: true }).count(), 1);
 
@@ -274,6 +297,14 @@ test(
       await themeCard.getByRole('button', { name: 'Apply on this device' }).press('Enter');
       await themeCard.getByRole('status').filter({ hasText: 'Applied on this device' }).waitFor();
       assert.equal((await storedAppearance(page)).customAvatarTheme.name, 'Chat comet theme');
+
+      await advance.press('Enter');
+      await page.locator('#message-tail [data-avatar-motion="working"]').waitFor();
+      await advance.press('Enter');
+      const failed = page.locator('#message-tail [data-avatar-motion="error"]');
+      await failed.waitFor();
+      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-deflate');
+      await failed.waitFor({ state: 'detached' });
 
       assert.deepEqual(requested, [
         {

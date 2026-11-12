@@ -138,5 +138,12 @@
   "text_f5d87a8b74a0": " bytes",
   "text_f62b7174e4ee": "Click the webpage input field first, then type here",
   "text_f68f8447e7b1": "This operation returned no displayable text.",
-  "text_f755b01e2711": "Awaiting approval"
+  "text_f755b01e2711": "Awaiting approval",
+  "browser_tabs": "View browser tabs",
+  "browser_select_tab": "Switch browser tab",
+  "browser_close_tab": "Close browser tab",
+  "local_shell": "Run on this computer",
+  "localShellDetails": "Local command execution details",
+  "localShellSeconds": " seconds",
+  "localShellScope": "Runs on the connected local computer with the current OS user’s access, including files outside the workspace and network access. The working directory is a starting folder, not an access boundary. Changes are not undone on failure, timeout or cancellation. Approval applies only to this operation."
 }

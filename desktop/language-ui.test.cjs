@@ -66,7 +66,7 @@ test('shipped setup DOM translates all declared labels and attributes while reta
   );
   assert.match(
     page.elements.find((item) => item.attributes['data-i18n'] === 'intro').textContent,
-    /HTTPS address.*start a BambooShift server/,
+    /Create a workspace on this computer.*existing BambooShift service/,
   );
   assert.equal(page.byId('use-local').textContent, 'Fill in local address');
   for (const element of page.elements.filter((item) => item.attributes['data-i18n']))
@@ -167,4 +167,54 @@ test('preload exposes only a strict language enum without exposing IPC to produc
   assert.equal(api, undefined);
   run('openbot-app://setup/', false);
   assert.equal(api, undefined);
+});
+
+test('the local workspace action shows availability and cancel without disturbing a remote address draft', async () => {
+  const fixture = bridgeFixture();
+  const startup = deferred();
+  fixture.bridge.startLocal = () => startup.promise;
+  fixture.bridge.cancelLocal = async () => ({
+    status: 'setup',
+    language: 'en',
+    localAvailable: true,
+  });
+  const page = setupDom(fixture.bridge);
+  await settle();
+  assert.equal(page.byId('start-local').disabled, true);
+  assert.match(page.byId('local-description').textContent, /no usable local runtime/);
+  fixture.publish({ localAvailable: true });
+  assert.equal(page.byId('start-local').disabled, false);
+  page.byId('workspace-url').value = 'https://draft.example.test';
+  page.byId('workspace-url').emit('input');
+  page.byId('start-local').emit('click');
+  assert.equal(page.byId('cancel-local').hidden, false);
+  assert.equal(page.byId('connect-button').disabled, true);
+  page.byId('cancel-local').emit('click');
+  await settle();
+  assert.equal(page.byId('start-local').disabled, false);
+  assert.equal(page.byId('workspace-url').value, 'https://draft.example.test');
+  startup.resolve({ status: 'connected' });
+  await settle();
+  assert.equal(page.document.body.hidden, false);
+  page.hide();
+});
+
+test('full computer control is offered only for an eligible local package and starts unchecked', async () => {
+  const fixture = bridgeFixture();
+  fixture.bridge.startLocal = async (choice) => {
+    fixture.calls.push(choice);
+    return { status: 'setup', localAvailable: true, localHostControlAvailable: true };
+  };
+  const page = setupDom(fixture.bridge);
+  await settle();
+  assert.equal(page.byId('host-control-option').hidden, true);
+  fixture.publish({ localAvailable: true, localHostControlAvailable: true });
+  assert.equal(page.byId('host-control-option').hidden, false);
+  assert.equal(page.byId('host-control').checked, false);
+  page.byId('host-control').checked = true;
+  page.byId('host-control').emit('change');
+  page.byId('start-local').emit('click');
+  await settle();
+  assert.deepEqual(JSON.parse(JSON.stringify(fixture.calls)), [{ hostControl: true }]);
+  page.hide();
 });

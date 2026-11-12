@@ -1,8 +1,10 @@
 import { mkdir } from 'node:fs/promises';
 import type { BrowserContext, BrowserType, Page } from 'playwright-core';
 import { browserEnvironment } from './browser-environment.js';
+import { createBrowserTabs, type BrowserTabs } from './browser-tabs.js';
 
 export interface BrowserScreenSession {
+  tabs?: BrowserTabs;
   peek(): { page: Page; context: BrowserContext } | undefined;
   open(): Promise<{ page: Page; context: BrowserContext }>;
   close(): Promise<void>;
@@ -255,6 +257,17 @@ export function createSharedBrowserEngine(options: SharedBrowserEngineOptions): 
         : undefined;
     };
     const session: BrowserScreenSession = {
+      tabs: createBrowserTabs({
+        pages: () =>
+          [...state.pages].filter((page) => {
+            const owner = owners.get(page);
+            return !!owner && owner.screen === state && live(owner);
+          }),
+        active: () => peek()?.page,
+        select: (page) => {
+          state.active = page;
+        },
+      }),
       peek,
       async open() {
         if (state.closing) await state.closing;

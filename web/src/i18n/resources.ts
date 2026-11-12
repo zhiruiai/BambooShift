@@ -1,3 +1,5 @@
+import zhreferenceConversationExport from './catalogs/zh-CN/referenceConversationExport';
+import enreferenceConversationExport from './catalogs/en/referenceConversationExport';
 import zhreferenceWebResearch from './catalogs/zh-CN/referenceWebResearch';
 import enreferenceWebResearch from './catalogs/en/referenceWebResearch';
 import zhreferenceMcpImport from './catalogs/zh-CN/referenceMcpImport';
@@ -118,6 +120,7 @@ export const uiResources = {
       ...zhreferencePackagedSkills,
       ...zhreferenceWebResearch,
       ...zhreferenceMcpImport,
+      ...zhreferenceConversationExport,
     },
   },
   en: {
@@ -151,6 +154,7 @@ export const uiResources = {
       ...enreferencePackagedSkills,
       ...enreferenceWebResearch,
       ...enreferenceMcpImport,
+      ...enreferenceConversationExport,
     },
   },
 };

@@ -18,15 +18,19 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 | --- | --- |
 | **Web / PWA** | Open the workspace in a Windows, macOS, Linux, or mobile browser. Install as a PWA when your browser supports it. |
 | **Windows x64** | Choose a release with a Windows x64 client ZIP. Extract the entire archive and run `BambooShift.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
-| **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. The client uses ad-hoc signing without Apple notarization. Intel Macs can use the web app. [Desktop setup](docs/desktop-client.md) |
+| **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. App-managed personal workspaces are a source preview, not yet a release download. The app uses ad-hoc signing. [Desktop setup](docs/desktop-client.md) |
 | **Linux x64** | Download the prebuilt server, follow the bundled README, and open the workspace in your browser. [Server deployment](server/api/deployment/README.md) |
 | **Android / iOS** | Use a mobile browser. The native Flutter app is available as source. [Mobile source](mobile/README.md) |
 
-Clients share one BambooShift server. The connected work computer executes Bot computer actions. For older releases, select the equivalent platform asset and use the executable named in its release notes. [Latest release](https://github.com/zhiruiai/BambooShift/releases/latest)
+Web, Flutter, and connected desktop clients share the deployed workspace. A desktop personal workspace stores its data on the computer running it. [Latest release](https://github.com/zhiruiai/BambooShift/releases/latest)
 
 ## Quick start
 
 If you already have a server, open its workspace in your browser or connect the desktop client to its address. To host your own server, [install the Linux x64 server archive](server/api/deployment/README.md#install-and-configure) or start from source below.
+
+### Personal workspace preview
+
+The desktop source includes an app-managed personal workspace: **Start on this computer**, configure **Settings → Models**, and work without an account password. Source integration tests cover startup and restoring model settings. The bundled-runtime package is not yet a release asset: native dependency redistribution notices and packaged acceptance are still being completed, and its strict packaging check currently blocks distribution. Use the source setup below or the released connection client today. [Desktop setup and platform coverage](docs/desktop-client.md)
 
 ### Run from source
 
@@ -64,7 +68,7 @@ Use **Import SKILL.md** in the Bot’s skill editor to start from a local skill 
 ### Choose a local or cloud computer
 
 - **Local browser.** Choose **Settings → Computer → Local** to open an isolated browser on the server machine. It runs on your current device when the client and server are on that same device.
-- **Native Mac apps.** Pair a dedicated Worker on your current Mac under **Your computer**, grant Screen Recording and Accessibility, then enable desktop control in the chat’s computer panel.
+- **Native Mac apps.** In a macOS build with the bundled runtime, choose **Allow computer control** when opening the personal workspace. Grant Screen Recording and Accessibility and enable desktop control in the chat. A deployed workspace can also connect to a dedicated Worker. [Mac computer control](docs/desktop-client.md#macos-整机操作)
 - **Cloud execution.** Use a cloud computer your administrator has linked, or connect a Worker you run on a separate computer or cloud server. [Execution locations](docs/computer.md#选择执行位置)
 
 Star the repo to bookmark it. For release notifications, choose **Watch → Custom → Releases**. Share your first task in [Issues](https://github.com/zhiruiai/BambooShift/issues), or use the [installation and compatibility form](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml).
@@ -154,12 +158,12 @@ flowchart TB
 
 | Layer | Stack and responsibility |
 | --- | --- |
-| Client | React, TypeScript, and Vite build the web app and PWA. Electron provides the desktop connection shell. Flutter provides the native mobile source. [Web](web/src/) · [Desktop](desktop/) · [Mobile](mobile/) |
+| Client | React, TypeScript, and Vite build the web app and PWA. Electron connects to a deployed workspace or starts the bundled personal workspace. Flutter provides the native mobile source. [Web](web/src/) · [Desktop](desktop/) · [Mobile](mobile/) |
 | API and data | Rust, Axum, Tokio, and SQLx/SQLite manage identity, workspace data, chat events, approval receipts, and scheduled routines. Product and operations entry points use separate sessions. [Rust service](server/api/) |
-| Agent harness | The Pi Coding Agent SDK runs in a supervised Node.js worker. The workspace selects the model service and scopes delegation and skill versions. [Pi worker](server/workers/pi-worker/) |
-| Tools and execution | Separate workers handle MCP, document parsing, and computer use. Playwright drives isolated browsers. macOS desktop control requires a dedicated helper and system permission. [Workers](server/workers/) · [Computer setup](docs/computer.md) |
+| Agent runtime | A supervised Node.js worker uses Cordis to load reviewed engine providers. Pi Coding Agent is the only bundled production provider; its SDK and session lifecycle live behind the engine interface. Rust owns task budgets, delegation and permissions. [Engine contract](server/workers/plugin-runtime/README.md) · [Pi provider](server/workers/engines/pi/) |
+| Tools and execution | Separate workers handle MCP, document parsing, and computer use. Playwright drives isolated browsers. The bundled macOS runtime uses Cua Driver for opted-in native desktop control. Rust still checks approvals and execution targets. [Workers](server/workers/) · [Computer setup](docs/computer.md) |
 
-[Architecture and authorization](docs/architecture.md) · [Source releases and verification](docs/source-release.md)
+[Architecture and authorization](docs/architecture.md) · [Desktop and cloud execution](docs/architecture.md#desktop-and-cloud-execution) · [Source releases and verification](docs/source-release.md)
 
 ## Creator kit
 
@@ -230,12 +234,12 @@ Thanks to everyone who tries BambooShift, reports issues, shares reproductions, 
 
 | Area | Upstream projects and components |
 | --- | --- |
-| Agent execution and tool connections | [Pi Coding Agent](https://github.com/earendil-works/pi) provides the Bot execution harness. The [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) connects external tools. |
+| Agent execution and tool connections | [Pi Coding Agent](https://github.com/earendil-works/pi) provides the Bot execution harness. The [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) connects external tools. [Cordis core](server/workers/plugin-runtime/) manages bundled worker plugin lifecycles. |
 | Server and storage | [Tokio](https://tokio.rs/) and [Axum](https://github.com/tokio-rs/axum) support the Rust service. [SQLx](https://github.com/transact-rs/sqlx) accesses [SQLite](https://sqlite.org/). |
 | Web, desktop, and mobile | [React](https://react.dev/) and [Vite](https://vite.dev/) power the web front end. [Electron](https://www.electronjs.org/) and [Flutter](https://flutter.dev/) are used for the desktop and mobile clients, respectively. |
 | Documents, icons, and fonts | [PDF.js](https://mozilla.github.io/pdf.js/) and [Mammoth.js](https://github.com/mwilliamson/mammoth.js) handle document previews and parsing. [Lucide](https://lucide.dev/) provides UI icons. The Chinese font in Flutter web is derived from [Noto Sans SC](https://fonts.google.com/noto/specimen/Noto+Sans+SC). |
 | Markdown and images | [react-markdown](https://github.com/remarkjs/react-markdown) and [remark-gfm](https://github.com/remarkjs/remark-gfm) render messages and skill documents. [sharp](https://sharp.pixelplumbing.com/) processes image attachments. |
-| Optional execution environments | [Playwright](https://playwright.dev/) and [Chromium](https://www.chromium.org/) support browser use. [whisper.cpp](https://github.com/ggml-org/whisper.cpp) handles local speech transcription. |
+| Optional execution environments | [Playwright](https://playwright.dev/) and [Chromium](https://www.chromium.org/) support browser use. [Cua Driver](legal/third-party/cua-driver-0.47.8/) handles native screen and input on the bundled Mac runtime. [whisper.cpp](https://github.com/ggml-org/whisper.cpp) handles local speech transcription. |
 
 BambooShift is an independent project. For the original product reference, see the [official Grok Bot introduction](https://x.ai/news/introducing-grok-bot).
 

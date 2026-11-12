@@ -305,6 +305,28 @@ async function legalSupplement(f, changes = {}) {
   return { bytes, manifest, path, crate, file };
 }
 
+test('npm license supplements require the exact locked publication integrity', async (t) => {
+  const f = await fixture(t);
+  await f.npm('missing-license');
+  const root = join(f.sourceRoot, 'legal/third-party');
+  await mkdir(join(root, 'missing-license'), { recursive: true });
+  const bytes = Buffer.from('Synthetic original MIT legal text');
+  await writeFile(join(root, 'missing-license/LICENSE'), bytes);
+  const revision = 'c'.repeat(40);
+  const manifest = { version: 1, packages: [{
+    ecosystem: 'npm', name: 'missing-license', version: '1.2.3', revision,
+    repository: 'https://github.com/example/upstream', integrity: 'sha512-synthetic',
+    files: [{ path: 'missing-license/LICENSE', sha256: createHash('sha256').update(bytes).digest('hex'),
+      url: `https://raw.githubusercontent.com/example/upstream/${revision}/LICENSE` }],
+  }] };
+  await writeFile(join(root, 'manifest.json'), JSON.stringify(manifest));
+  assert.equal((await f.run()).missing.length, 0);
+  const [record] = (await f.index()).packages;
+  assert.deepEqual(await readFile(join(f.root, 'notices', record.files[0].path)), bytes);
+  f.lock.packages['node_modules/missing-license'].integrity = 'sha512-different';
+  await assert.rejects(f.run({ output: join(f.root, 'changed-npm') }), /locked npm publication/);
+});
+
 test('reviewed supplements preserve bytes and bind both published crate commit and upstream hash', async (t) => {
   const f = await fixture(t);
   const supplement = await legalSupplement(f);

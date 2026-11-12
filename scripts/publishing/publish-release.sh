@@ -18,6 +18,17 @@ files=("$source_name" "$server_name" "$mac_name")
 platforms=(linux-x64 macos-arm64)
 windows_notes_en=""
 windows_notes_zh=""
+mac_notes_en="- **macOS Apple Silicon client** connects to a separate $RELEASE_BRAND server. The app uses a local ad-hoc signature and has no Apple notarization."
+mac_notes_zh="macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。"
+# The publisher may be newer than a resumed draft's pinned build source.
+# Only describe a bundled workspace when that source actually built one.
+if [[ -f scripts/desktop/runtime-package.mjs ]]; then
+  source_workflow="$(git show "$RELEASE_SOURCE:.github/workflows/release.yml" 2>/dev/null || true)"
+  if [[ "$source_workflow" == *'npm run client:package -- --platform darwin --arch arm64 --with-runtime'* ]]; then
+    mac_notes_en="- **macOS Apple Silicon app** includes a local workspace for chat and files, and can also connect to an existing server. Opting into computer control enables approved local commands; native desktop control also requires macOS Screen Recording and Accessibility permissions. The independent browser requires a separate Chrome installation. The app uses a local ad-hoc signature and has no Apple notarization."
+    mac_notes_zh="macOS Apple Silicon 应用内置本机聊天和文件工作空间，也可连接已有服务。勾选允许整机操作后可执行已批准的本机命令；原生桌面另需 macOS 录屏和辅助功能权限，独立浏览器另需安装 Chrome。应用采用临时签名，未经过 Apple 公证。"
+  fi
+fi
 for file in "$source_name" "$server_name"; do
   test -s "$builds/bambooshift-linux-x64/$file"
   cp "$builds/bambooshift-linux-x64/$file" "$publish_dir/"
@@ -83,12 +94,12 @@ if [[ "$release_count" == 0 ]]; then
 $release_brand $RELEASE_TAG · $RELEASE_DAY
 
 - **$RELEASE_PACKAGE_NAME source archive** includes the web, server, desktop, and Flutter source with the release version. GitHub’s automatic Source code links contain the original tagged commit.
-- **Linux x64 server** includes the product web app, operations console, and worker bundles. Read the README in the archive for setup.
-- **macOS Apple Silicon client** connects to a separate $RELEASE_BRAND server. The app uses a local ad-hoc signature and has no Apple notarization.
+- **Linux x64 server** includes the product web app, operations console, and worker bundles. Read the README in the archive for setup. Independent browser jobs require Chrome on the execution computer.
+$mac_notes_en
 $windows_notes_en
 - **SHA256SUMS.txt** lists the checksums for the archives.
 
-$RELEASE_PACKAGE_NAME 源码包包含带发布版本号的各端源码。GitHub 自动生成的 Source code 下载项对应原始提交。Linux x64 服务包包含网页和运营控制台。macOS Apple Silicon 客户端需连接单独运行的服务，采用临时签名，未经过 Apple 公证。$windows_notes_zh
+$RELEASE_PACKAGE_NAME 源码包包含带发布版本号的各端源码。GitHub 自动生成的 Source code 下载项对应原始提交。Linux x64 服务包包含网页和运营控制台，独立浏览器任务要求执行电脑安装 Chrome。$mac_notes_zh$windows_notes_zh
 NOTES
   release="$(gh api --method POST "repos/$GITHUB_REPOSITORY/releases" \
     -f "tag_name=$RELEASE_TAG" -f "name=$title" -F "body=@$notes" -F draft=true -F prerelease=false)"

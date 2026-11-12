@@ -88,6 +88,47 @@ h1 {
   color: #68616f;
   margin: 10px 0 26px;
 }
+.local-workspace {
+  margin-bottom: 24px;
+}
+.local-description,
+.local-error {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #68616f;
+}
+.local-error {
+  color: #865447;
+}
+.host-control-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #e8e4ec;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.host-control-option input {
+  accent-color: #634978;
+  margin: 3px 0 0;
+}
+.host-control-option small {
+  display: block;
+  margin-top: 3px;
+  color: #68616f;
+  font-size: 12px;
+}
+.existing-workspace {
+  margin: 0 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid #e8e4ec;
+  font-size: 15px;
+  font-weight: 600;
+}
 .field-label {
   display: block;
   font-size: 13px;

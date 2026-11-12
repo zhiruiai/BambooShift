@@ -19,6 +19,7 @@ import '../voice/voice_memo_data.dart';
 import '../voice/voice_transcript_card.dart';
 import 'action_card.dart';
 import 'action_data.dart';
+import 'chat_avatar_motion.dart';
 import 'chat_markdown.dart';
 import 'chat_message_controls.dart';
 import 'chat_question_card.dart';
@@ -134,15 +135,6 @@ class ChatMessage extends StatelessWidget {
     }
     final action = ChatAction.fromMessage(message);
     if (action != null) {
-      final result = action.value['result'];
-      final motion = switch (action.status) {
-        'pending' when action.canDecide(scope.userId, scope.owner) =>
-          BotAvatarMotion.attention,
-        'running' => BotAvatarMotion.working,
-        'done' when result is! Map || result['isError'] != true =>
-          BotAvatarMotion.done,
-        _ => null,
-      };
       return _withActionAvatar(
         ActionCard(
           key: ValueKey('${scope.workspaceId}:${message['id']}:${action.id}'),
@@ -150,7 +142,7 @@ class ChatMessage extends StatelessWidget {
           message: message,
           action: action,
         ),
-        motion,
+        actionAvatarMotion(action, scope),
       );
     }
     if (message['kind'] == 'file') {
@@ -215,12 +207,7 @@ class ChatMessage extends StatelessWidget {
               family: scope.session.avatarTheme,
               size: 32,
               scope: currentAgent == null ? null : scope,
-              motion: switch (message['status']) {
-                'running' when message['metadata']?['streamEnded'] != true =>
-                  BotAvatarMotion.working,
-                'done' => BotAvatarMotion.done,
-                _ => null,
-              },
+              motion: textAvatarMotion(message),
             ),
             const SizedBox(width: 8),
           ],

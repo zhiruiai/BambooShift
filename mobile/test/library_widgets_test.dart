@@ -35,7 +35,7 @@ Future<void> libraryReach(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
-  testWidgets('bundled originals provide all seven localized profiles', (
+  testWidgets('bundled originals provide all nine localized profiles', (
     tester,
   ) async {
     final catalogs = await tester.runAsync(
@@ -54,6 +54,8 @@ void main() {
         'organization',
         'briefing',
         'support',
+        'analysis',
+        'recruitment',
       ]);
       for (final item in catalog) {
         expect(item.profile.keys.toSet(), {

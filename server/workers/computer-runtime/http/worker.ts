@@ -10,6 +10,7 @@ import {
 } from '../../computer-worker/index.js';
 import type { DesktopAdapter } from '../desktop.js';
 import { IsolatedShellRunner, type IsolatedShellConfiguration } from '../isolated-shell.js';
+import { HostShellRunner } from '../host-shell.js';
 import {
   createLinuxDesktopAdapter,
   linuxDesktopMaintenanceState,
@@ -31,7 +32,7 @@ import {
   SHARED_SCREEN_CAPABILITY,
   WORKSPACE_SCOPE_HEADER,
 } from '../../../../shared/computer-screens.js';
-import { ISOLATED_SHELL_CAPABILITY } from '../../../../shared/isolated-shell.js';
+import { ISOLATED_SHELL_CAPABILITY, LOCAL_SHELL_CAPABILITY } from '../../../../shared/isolated-shell.js';
 import {
   VIRTUAL_DESKTOP_CAPABILITY,
   parseDesktopSession,
@@ -62,6 +63,7 @@ export function createComputerWorker(options: {
   screenOnly?: boolean;
   screenPool?: boolean;
   hostDesktop?: boolean;
+  hostShell?: boolean;
   screenLifecycle?: boolean;
   isolatedShell?: IsolatedShellConfiguration;
   linuxDesktop?: Pick<
@@ -74,6 +76,8 @@ export function createComputerWorker(options: {
   const sharedScreen = !!options.workspaceScopeId && !options.screenPool && !options.screenId;
   if (options.hostDesktop && (!sharedScreen || !options.desktopAdapter))
     throw new Error('A host desktop requires a workspace-scoped standalone worker.');
+  if (options.hostShell && !sharedScreen)
+    throw new Error('A host shell requires a workspace-scoped standalone worker.');
   const desktopAdapter =
     options.desktopAdapter ??
     (options.linuxDesktop ? createLinuxDesktopAdapter(options.linuxDesktop) : undefined);
@@ -82,6 +86,7 @@ export function createComputerWorker(options: {
     browserSession: options.browserSession,
   });
   const shell = new IsolatedShellRunner(resolve(options.workspaceDir), options.isolatedShell);
+  const hostShell = new HostShellRunner(resolve(options.workspaceDir), options.hostShell);
   const app = express();
   const instanceId = options.instanceId ?? randomUUID();
   const operations = new ComputerOperationRegistry();
@@ -137,6 +142,7 @@ export function createComputerWorker(options: {
     ...(options.screenPool ? [SCREEN_POOL_CAPABILITY] : []),
     ...(sharedScreen ? [SHARED_SCREEN_CAPABILITY] : []),
     ...(options.hostDesktop ? [HOST_DESKTOP_CAPABILITY] : []),
+    ...(!runtime.shellCleanupUnknown && (await hostShell.available()) ? [LOCAL_SHELL_CAPABILITY] : []),
     ...(options.screenLifecycle ? [SCREEN_LIFECYCLE_CAPABILITY] : []),
     ...(!runtime.shellCleanupUnknown && (await shell.available())
       ? [ISOLATED_SHELL_CAPABILITY]
@@ -374,6 +380,7 @@ export function createComputerWorker(options: {
     options,
     computer,
     shell,
+    hostShell,
     runtime,
     operations,
     shellJobs,
@@ -440,6 +447,7 @@ export function createComputerWorker(options: {
       for (const transfer of transfers) transfer.abort();
       await cancelShells();
       await shell.close();
+      await hostShell.close();
       await computer.close();
       await queue;
       await operations.close();

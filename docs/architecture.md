@@ -11,6 +11,32 @@ React operations                  → Operator listener → Platform services
                                 Pi / MCP / Computer / Document workers
 ```
 
+## Desktop and cloud execution
+
+The Electron app can start a personal workspace using its bundled Rust service and Node.js workers. Its main process owns startup, local session bootstrap, and shutdown. The Rust product API and authorization rules are shared with Web and Flutter. A deployed service can use its own browser, a paired worker, or a provisioned cloud computer.
+
+```mermaid
+flowchart LR
+    Desktop["Electron desktop"] -->|"Open personal workspace"| Local["App-owned Rust service · local SQLite and files"]
+    Desktop -->|"Connect to an existing workspace"| Hosted["Deployed Rust service · workspace data"]
+    Web["Web / PWA"] --> Hosted
+    Mobile["Flutter"] --> Hosted
+    Local <-->|"Run events and scoped tools"| LocalPi["Node.js · Pi worker"]
+    Hosted <-->|"Run events and scoped tools"| HostedPi["Node.js · Pi worker"]
+    LocalPi --> Model["Configured model provider"]
+    HostedPi --> Model
+    Local -->|"Approved action"| LocalComputer["Local browser or opted-in macOS computer"]
+    Hosted -->|"Approved action"| WorkComputer["Service browser · paired worker · configured cloud computer"]
+    LocalComputer --> Cua["Cua Driver · macOS screen and input"]
+```
+
+- [Electron main process](../desktop/main.cjs) and [local launcher](../desktop/local-runtime.cjs) start the bundled service on a private loopback origin and exchange a fresh, process-specific token for a local product session. The Rust listener on that origin keeps personal workspace data in the app profile.
+- [Rust service](../server/api/src/) owns task state, credentials, workspace authorization, and approvals. The same product API serves the React UI inside Electron and over Web, as well as the Flutter client for deployed workspaces. The operations listener applies to separately deployed servers.
+- The supervised [agent worker](../server/workers/pi-worker/) owns the framed protocol, cancellation, task budget and terminal receipt. MIT [Cordis core](../server/workers/plugin-runtime/) supplies reviewed engine providers and the Rust tool bridge. The [Pi provider](../server/workers/engines/pi/) is the only bundled production engine; SDK loading, model configuration, event adaptation and session cleanup are private to it. An alternative provider must implement the same tested contract. Historical worker entry paths remain compatible with existing deployments.
+- [Computer runtime](../server/workers/computer-runtime/) uses Playwright for isolated browser work. In the opted-in macOS personal workspace, Electron supervises the MIT [Cua Driver](../legal/third-party/cua-driver-0.47.8/) and the computer worker connects to it through a private socket. System permission and chat approval apply to native input. Remote and cloud execution use their configured worker connection.
+
+[Desktop setup](desktop-client.md) · [Computer configuration](computer.md)
+
 ## Business backend
 
 `server/api/src` owns Axum HTTP routes, identity, workspace repositories and domain services. One startup acquires the data lock and starts one scheduler. The operator listener does not create another writer or scheduler.
@@ -21,17 +47,22 @@ Avatar theme preferences use the account and workspace as a composite key in the
 
 Domains include agents, primary Bots, sharing, templates, memories, skills, scheduling, application connections, teaching and computer control. Handlers validate requests and call services; repositories own transactions and serialization. Durable receipts prevent duplicate mutations after uncertain responses. Restart never automatically replays unknown external actions, and expected revisions reject stale changes.
 
-## Pi and workers
+## Agent engines and workers
 
 Rust selects a workspace-owned model profile and asks `server/workers/pi-worker` to run the real Pi SDK session. Pi returns streaming events and tool requests; Rust authorizes business tools. The run registry owns roots, children, queues, generations and cancellation. Trusted Bot identity and actual requester metadata are distinct from message contents.
 
 A personal primary Bot may delegate to eligible colleagues in their existing private conversations; workgroups keep their own members. Child sessions inherit root authority and cancellation without importing unrelated histories. Memory and skill proposals persist in Rust; proposed skills require review before activation.
 
+[Cross-owner Bot collaboration](bot-federation.md) is a future extension design, not a shipped federation feature. It preserves Rust authority and uses a reviewed Cordis transport adapter for optional cross-server task exchange.
+
 Small sets of approved skills and memories fit directly into the Pi system prompt. Larger sets use bounded listings and explicit continuations. Skill reads use the approved versions captured for the run family. Shared skill reads also recheck the current share grant. Recall searches the current Bot's own memories, with a run-start snapshot for daily check-ins. A long conversation drops the oldest eligible history first and includes the omission count. The current request and structured clarifications retain their own fields.
 
 Teaching records bounded successful manual actions for one Bot/computer lease, excludes typed contents and allows review before one model request creates a proposed skill. It does not replay demonstrations. Usage records actual reported tokens with deduplication; unknown usage and cost remain unknown.
 
-- `server/workers/pi-worker`: Pi SDK sessions and model events.
+- `server/workers/pi-worker`: supervised run protocol, tool receipts, budget and cancellation. The entry path remains compatible with existing deployments.
+- `server/workers/agent-runtime`: engine-neutral host/worker protocol.
+- `server/workers/engines/pi`: the current production engine's SDK, model configuration, session lifecycle and event adapter.
+- `server/workers/plugin-runtime`: [Cordis lifecycle and service injection](../server/workers/plugin-runtime/README.md) for statically bundled trusted worker plugins. Rust remains the authority for every forwarded tool request.
 - `server/workers/mcp-worker`: MCP transport, schema discovery and OAuth protocol.
 - `server/workers/document-worker`: bounded text, PDF, DOCX and image parsing.
 - `server/workers/computer-runtime`: computer surfaces and their HTTP adapter; Express serves only this worker protocol, not account or business routes.
@@ -78,10 +109,10 @@ For a Bot voice memo, the owner opts in to a voice reply on one message in a dir
 
 Enable synthesis by creating `speech/memo-synthesis.json` under the server's data directory with permissions `0600`. Install both configured voices on the server.
 
-| Host | Example configuration |
-| --- | --- |
-| macOS | `{"version":1,"enabled":true,"engine":"macos-say","voices":{"zh-CN":"Tingting","en-US":"Samantha"}}` |
-| Linux with `/usr/bin/espeak-ng` | `{"version":1,"enabled":true,"engine":"espeak-ng","voices":{"zh-CN":"cmn","en-US":"en-us"}}` |
+| Host                            | Example configuration                                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| macOS                           | `{"version":1,"enabled":true,"engine":"macos-say","voices":{"zh-CN":"Tingting","en-US":"Samantha"}}` |
+| Linux with `/usr/bin/espeak-ng` | `{"version":1,"enabled":true,"engine":"espeak-ng","voices":{"zh-CN":"cmn","en-US":"en-us"}}`         |
 
 ## Deployment and source release
 

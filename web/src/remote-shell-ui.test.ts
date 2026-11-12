@@ -102,6 +102,72 @@ test('remote shell approval renders the full command, relative directory and exe
   );
 });
 
+test('local shell shares the request/result UI while explaining actual host access', async () => {
+  const [shell, dialog, app] = await compiled;
+  const local = { ...action, type: 'local_shell' };
+  const html = render(dialog.ComputerActionEntry, {
+    action: local,
+    busy: false,
+    controlled: false,
+    owner: true,
+    onApprove() {
+      throw Error('SSR must not approve');
+    },
+    onReject() {},
+  });
+  for (const text of [
+    '在本机运行命令',
+    '当前系统用户权限',
+    '工作区以外的文件和网络',
+    '不限制访问范围',
+    'reports/本周',
+    '最长 30 秒',
+    '允许本次操作',
+  ])
+    assert.ok(html.includes(text), text);
+  assert.doesNotMatch(html, /无网络访问|仅在远程工作区执行/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  const malformed = dialog.ComputerActionEntry({
+    action: { ...local, payload: {} },
+    busy: false,
+    controlled: false,
+    owner: true,
+    onApprove() {},
+    onReject() {},
+  });
+  assert.equal(
+    find(malformed, (node) => node.type === 'button' && node.props.className === 'primary-button')
+      .props.disabled,
+    true,
+  );
+  assert.equal(
+    find(malformed, (node) => node.type === 'button' && node.props.className === 'secondary-button')
+      .props.disabled,
+    false,
+  );
+  const outcome = { ...success, exitCode: 2, stderr: 'Synthetic failure' };
+  const finished = { ...local, status: 'done', result: outcome };
+  const record = render(app.ComputerRecord, {
+    message: {
+      id: 'msg',
+      conversationId: 'chat',
+      role: 'assistant',
+      status: 'done',
+      content: '',
+      metadata: { action: finished },
+      createdAt: action.createdAt,
+    },
+    onClick() {},
+  });
+  assert.match(record, /执行失败 · 退出码 2/);
+  assert.match(record, /remote-shell-result/);
+  assert.doesNotMatch(record, /已完成|无网络访问/);
+  assert.match(
+    render(shell.RemoteShellDetails, { payload: { command: 'pwd' }, execution: 'local' }),
+    /本机命令执行详情/,
+  );
+});
+
 test('remote shell results distinguish success, nonzero exit, signal, timeout and cancellation', async () => {
   const [shell] = await compiled;
   for (const [result, label] of [
@@ -300,4 +366,26 @@ test('chat computer cards state who may approve without presenting another perso
   assert.match(other, /拥有者不能代为审批/);
   assert.doesNotMatch(other, /电脑操作等待你批准/);
   assert.doesNotMatch(own, /电脑操作等待你批准/);
+});
+
+
+test('avatar reacts to the actual command outcome after shell transport settles', async () => {
+  const { messageAvatarMotion } = await compile('web/src/workspace/ChatAvatar.tsx');
+  const actor = { isOwner: true, userId: 'synthetic-user' };
+  for (const type of ['remote_shell', 'local_shell']) {
+    for (const [result, expected] of [
+      [{ exitCode: 0 }, 'done'],
+      [{ exitCode: 7 }, 'error'],
+      [{ timedOut: true, exitCode: null }, 'error'],
+      [{ cancelled: true, exitCode: null }, undefined],
+    ] as const) {
+      const message = {
+        role: 'assistant',
+        kind: 'computer',
+        status: 'done',
+        metadata: { action: { ...action, type, status: 'done', result } },
+      };
+      assert.equal(messageAvatarMotion(message, false, actor), expected);
+    }
+  }
 });

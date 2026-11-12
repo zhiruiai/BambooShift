@@ -14,6 +14,7 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
     options,
     computer,
     shell,
+    hostShell,
     runtime,
     operations,
     shellJobs,
@@ -50,10 +51,11 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
     }
   });
   app.post('/execute', async (req, res) => {
-    if (req.body?.type === 'remote_shell') {
+    if (req.body?.type === 'remote_shell' || req.body?.type === 'local_shell') {
       let job: ShellJob | undefined;
       try {
         const action = validateComputerAction(req.body);
+        const runner = action.type === 'local_shell' ? hostShell : shell;
         job = reserveShell(req.get('X-OpenBot-Action-Id'));
         const reserved = job;
         const result = await transfer(
@@ -64,10 +66,10 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
             combined.throwIfAborted();
             if (runtime.takeoverPending || computer.takeoverStatus().active)
               throw new Error('用户正在接管电脑，远程命令已取消。');
-            if (!(await shell.available())) throw new Error('远程命令隔离环境不可用。');
+            if (!(await runner.available())) throw new Error('此电脑未启用所请求的命令执行能力。');
             combined.throwIfAborted();
             reserved.provenStopped = false;
-            const result = await shell.run(action.command, action.path, combined);
+            const result = await runner.run(action.command, action.path, combined);
             reserved.result = result;
             reserved.provenStopped = true;
             return result;
@@ -76,6 +78,7 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
         );
         res.json(result);
       } catch (error: any) {
+        if (job && error?.cleanupConfirmed === true) job.provenStopped = true;
         if (!res.destroyed) res.status(400).json({ error: error.message });
       } finally {
         if (job) {

@@ -87,6 +87,18 @@ extension _ChatScreenActions on _ChatScreenState {
         ? chatProjectLibraryAction(context, scope, id)
         : null;
     final actions = <({IconData icon, String label, VoidCallback run})>[
+      if (mainChat)
+        (
+          icon: Icons.download_outlined,
+          label: 'exportTitle',
+          run: () => Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (_) =>
+                  ConversationExportScreen(scope: scope, conversationId: id),
+            ),
+          ),
+        ),
       if (library != null)
         (
           icon: Icons.folder_outlined,

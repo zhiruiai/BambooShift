@@ -23,6 +23,7 @@ pub(super) struct RunKnowledge {
 
 pub(crate) struct DelegationFamily {
     pub(super) root_kind: &'static str,
+    pub(super) deadline: super::run_deadline::RunDeadline,
     snapshots: Mutex<HashMap<String, Value>>,
     local_definitions: Mutex<HashMap<String, (Value, Vec<Value>)>>,
     knowledge: Mutex<HashMap<String, Arc<RunKnowledge>>>,
@@ -51,6 +52,7 @@ impl DelegationFamily {
     pub fn new(root_kind: &'static str) -> Self {
         Self {
             root_kind,
+            deadline: super::run_deadline::RunDeadline::new(root_kind),
             snapshots: Mutex::new(HashMap::new()),
             local_definitions: Mutex::new(HashMap::new()),
             knowledge: Mutex::new(HashMap::new()),

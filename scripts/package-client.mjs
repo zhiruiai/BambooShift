@@ -15,11 +15,12 @@ import { dirname, extname, isAbsolute, join, relative, resolve } from 'node:path
 import { fileURLToPath } from 'node:url';
 
 import { writeMacLocalizations } from './client-localizations.mjs';
+import { parseClientArguments } from './desktop/options.mjs';
+import { stageDesktopRuntime } from './desktop/runtime-package.mjs';
+export { parseClientArguments } from './desktop/options.mjs';
 import { desktopProductName, readDesktopProductName } from './publishing/package-names.mjs';
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url));
-const platforms = new Set(['darwin', 'win32', 'linux']);
-const architectures = new Set(['arm64', 'x64']);
 const licenseFiles = ['LICENSE', 'NOTICE', 'THIRD_PARTY.md'];
 const entryFiles = [
   'package.json',
@@ -34,6 +35,8 @@ const entryFiles = [
   'notifications.cjs',
   'menus.cjs',
   'language.cjs',
+  'local-runtime.cjs',
+  'product-view.cjs',
 ];
 const uiExtensions = new Set([
   '.html',
@@ -50,32 +53,6 @@ const uiExtensions = new Set([
   '.woff',
   '.woff2',
 ]);
-
-export function parseClientArguments(
-  argv,
-  host = { platform: process.platform, arch: process.arch },
-) {
-  const options = { platform: host.platform, arch: host.arch, help: false, dryRun: false };
-  const seen = new Set();
-  for (let index = 0; index < argv.length; index++) {
-    const [flag, ...rest] = argv[index].split('=');
-    if (seen.has(flag)) throw new Error(`参数重复：${flag}`);
-    seen.add(flag);
-    if (flag === '--help' || flag === '-h' || flag === '--dry-run') {
-      if (rest.length) throw new Error(`${flag} 不接受参数值。`);
-      options[flag === '--dry-run' ? 'dryRun' : 'help'] = true;
-    } else if (flag === '--platform' || flag === '--arch') {
-      const value = rest.length ? rest.join('=') : argv[++index];
-      if (!value || value.startsWith('-')) throw new Error(`${flag} 缺少参数值。`);
-      options[flag.slice(2)] = value;
-    } else throw new Error(`未知参数：${argv[index]}。运行 --help 查看用法。`);
-  }
-  if (!options.help && !platforms.has(options.platform))
-    throw new Error('--platform 只支持 darwin、win32、linux。');
-  if (!options.help && !architectures.has(options.arch))
-    throw new Error('--arch 只支持 arm64、x64。');
-  return options;
-}
 
 function assertNodeVersion() {
   const [major, minor] = process.versions.node.split('.').map(Number);
@@ -290,7 +267,10 @@ export async function publishClientPackage(
 
 export async function packageClient(options) {
   assertNodeVersion();
-  const target = parseClientArguments(['--platform', options.platform, '--arch', options.arch]);
+  const target = parseClientArguments([
+    '--platform', options.platform, '--arch', options.arch,
+    ...(options.withRuntime ? ['--with-runtime'] : []),
+  ]);
   const source = join(projectRoot, 'desktop');
   const { files, manifest } = await collectClientFiles(source);
   const electron = JSON.parse(
@@ -326,6 +306,10 @@ export async function packageClient(options) {
       await copyFile(join(source, file), targetPath);
     }
     for (const file of licenseFiles) await copyFile(join(projectRoot, file), join(stage, file));
+    const runtimePath = target.withRuntime ? join(working, 'bambooshift-runtime') : undefined;
+    const bundledRuntime = runtimePath ? await stageDesktopRuntime({
+      output: runtimePath, platform: target.platform, arch: target.arch,
+    }) : undefined;
     const icon = await makeIcon(target.platform, working);
     const cache = join(output, '.electron-cache');
     try {
@@ -364,6 +348,7 @@ export async function packageClient(options) {
         },
       },
       asar: true,
+      ...(runtimePath ? { extraResource: [runtimePath] } : {}),
       prune: false,
       derefSymlinks: false,
       overwrite: true,
@@ -419,7 +404,8 @@ export async function packageClient(options) {
           bundles: [relative(output, destination)],
           localSignature: target.platform === 'darwin' ? 'ad-hoc' : null,
           signedForDistribution: false,
-          serviceIncluded: false,
+          serviceIncluded: Boolean(bundledRuntime),
+          ...(bundledRuntime ? { runtime: bundledRuntime } : {}),
         },
         null,
         2,
@@ -433,7 +419,7 @@ export async function packageClient(options) {
       join(working, 'previous'),
     );
     console.log(
-      `客户端已生成：\n${destination}\n服务需单独运行或连接远程服务。本产物未做发行签名/公证。`,
+      `客户端已生成：\n${destination}\n${bundledRuntime ? '包含本机工作空间服务，也可连接已有服务。' : '服务需单独运行或连接远程服务。'}本产物未做发行签名/公证。`,
     );
     if (target.platform !== process.platform || target.arch !== process.arch)
       console.log('该跨平台/架构产物尚未在目标系统运行验证。');
@@ -450,7 +436,7 @@ async function main() {
   const options = parseClientArguments(process.argv.slice(2));
   if (options.help) {
     console.log(
-      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--dry-run]\n默认当前系统/架构，输出到 release/client。仅打包桌面客户端，会替换同目标的旧产物。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
+      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--with-runtime] [--dry-run]\n默认当前系统/架构，输出到 release/client。默认打包连接客户端；--with-runtime 内置本机服务（同架构 macOS/Linux）。会替换同目标的旧产物。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
     );
     return;
   }
@@ -463,7 +449,7 @@ async function main() {
           arch: options.arch,
           source: 'desktop/',
           output: `release/client/${name}-${options.platform}-${options.arch}`,
-          includesService: false,
+          includesService: options.withRuntime,
           startsClient: false,
         },
         null,

@@ -1,6 +1,9 @@
+import { useEffect, useMemo, useState } from 'react';
+import { ConversationExportDialog } from '../components/ConversationExportDialog';
 import { uiText } from '../i18n';
 import {
   ArrowLeft,
+  Download,
   BookOpen,
   ChevronDown,
   EyeOff,
@@ -49,6 +52,7 @@ export function ChatHeader({
   online,
   connectionLabel,
   refresh,
+  sendScope,
 }: Pick<
   WorkspaceModel,
   | 'draggingFiles'
@@ -79,23 +83,35 @@ export function ChatHeader({
   | 'online'
   | 'connectionLabel'
   | 'refresh'
+  | 'sendScope'
 >) {
-  const ready = online && !working && lead?.status === 'idle';
-  const recentAction = ready
-    ? messages.findLast(
-        (message) =>
-          message.role === 'user' ||
-          (message.role === 'assistant' &&
-            (message.kind === 'question' ||
-              message.kind === 'computer' ||
-              message.kind === 'approval')),
-      )
+  const [exportTarget, setExportTarget] = useState<{ id: string; ticket: number }>();
+  const exportId = exportTarget?.id;
+  useEffect(() => setExportTarget(undefined), [conversation?.id]);
+  const exportCurrent = useMemo(
+    () => () => !!exportTarget && sendScope.current(exportTarget.ticket),
+    [sendScope, exportTarget],
+  );
+  const recent = online
+    ? messages.findLast((message) => message.role === 'user' || message.role === 'assistant')
     : undefined;
+  const streaming =
+    recent?.status === 'running' &&
+    recent.metadata?.streamEnded !== true &&
+    !!recent.content &&
+    (!recent.kind || recent.kind === 'text');
   const activity =
-    recentAction?.role === 'assistant'
-      ? messageAvatarMotion(recentAction, false, { isOwner: canManage, userId: currentUserId })
+    recent?.role === 'assistant'
+      ? messageAvatarMotion(recent, streaming, { isOwner: canManage, userId: currentUserId })
       : undefined;
-  const idle = ready && activity !== 'attention' && activity !== 'working';
+  const avatarMotion =
+    activity === 'attention' || activity === 'working'
+      ? activity
+      : online && working
+        ? 'thinking'
+        : online && lead?.status === 'idle'
+          ? 'idle'
+          : undefined;
   const title = conversation?.title || uiText('workspace:text_56ca721193c9');
   return (
     <>
@@ -135,13 +151,20 @@ export function ChatHeader({
             onClick={() => toggleDetails()}
           >
             {conversation.isGroup ? (
-              <GroupAvatar key={conversation.id} agents={members} size={34} idle={idle} />
+              <GroupAvatar
+                key={conversation.id}
+                agents={members}
+                size={34}
+                motion={avatarMotion}
+                sustain
+              />
             ) : (
               <Avatar
                 key={`${conversation.id}:${lead?.id || ''}`}
                 agent={lead}
                 size={34}
-                motion={idle ? 'idle' : undefined}
+                motion={avatarMotion}
+                sustain
               />
             )}
             <span className="chat-title-copy">
@@ -197,6 +220,17 @@ export function ChatHeader({
               </IconButton>
               {menuOpen && (
                 <div className="dropdown-menu">
+                  <button
+                    onClick={() => {
+                      const ticket = sendScope.ticket();
+                      if (!sendScope.current(ticket)) return;
+                      setExportTarget({ id: conversation.id, ticket });
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <Download size={15} />
+                    {uiText('workspace:exportTitle')}
+                  </button>
                   <button onClick={() => openSearch('current')}>
                     <Search size={15} />
                     {uiText('workspace:text_f36015210bfe')}
@@ -295,6 +329,16 @@ export function ChatHeader({
             </div>
           </div>
         </header>
+      )}
+      {exportId && exportId === conversation?.id && account?.workspace.id && currentUserId && (
+        <ConversationExportDialog
+          key={`${account.workspace.id}:${exportId}`}
+          conversationId={exportId}
+          workspaceId={account.workspace.id}
+          userId={currentUserId}
+          current={exportCurrent}
+          onClose={() => setExportTarget(undefined)}
+        />
       )}
       {!online && (
         <div className="connection-banner" role="status">

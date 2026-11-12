@@ -8,6 +8,8 @@ import type { BrowserContext, Page } from 'playwright-core';
 import type { ComputerState } from '../../../shared/types.js';
 import type { BrowserScreenSession } from '../computer-runtime/browser-engine.js';
 import { browserEnvironment } from '../computer-runtime/browser-environment.js';
+import { createBrowserTabs } from '../computer-runtime/browser-tabs.js';
+import { executeBrowserPage } from '../computer-runtime/browser-page.js';
 import {
   listComputerEntries,
   readComputerText,
@@ -35,6 +37,13 @@ import { captureDownload } from './download.js';
 import { localComputerStatus } from './local-status.js';
 const execFileAsync = promisify(execFile);
 export class LocalComputer {
+  private readonly browserTabs = createBrowserTabs({
+    pages: () => this.context?.pages() ?? [],
+    active: () => this.page,
+    select: (page) => {
+      this.page = page;
+    },
+  });
   private context?: BrowserContext;
   private page?: Page;
   private launching?: Promise<Page>;
@@ -215,13 +224,16 @@ export class LocalComputer {
       this.page = current?.page;
       this.context = current?.context;
     }
-    return localComputerStatus(
+    const state = localComputerStatus(
       this.surface,
       this.desktopState,
       this.page,
       this.takeoverStatus().active,
       this.browserState,
     );
+    if (this.leaseOptions.browserSession && !this.leaseOptions.browserSession.tabs)
+      state.capabilities = state.capabilities.filter((value) => value !== 'browser-tabs-v1');
+    return state;
   }
   private async browser(): Promise<Page> {
     if (this.leaseOptions.browserSession) {
@@ -363,6 +375,8 @@ export class LocalComputer {
     const action = validateComputerAction(raw);
     if (action.type === 'remote_shell')
       throw new Error('此命令仅支持通过隔离检查的远程电脑，本机不可执行。');
+    if (action.type === 'local_shell')
+      throw new Error('本机命令必须通过已启用整机权限的执行器。');
     if (['upload_file', 'download_file'].includes(action.type))
       throw new Error('二进制文件传输必须通过已绑定资料库的控制端执行。');
     if (isSurfaceAction(action.type)) {
@@ -371,6 +385,16 @@ export class LocalComputer {
         throw new Error(
           `当前为 ${this.surface === 'desktop' ? '整机桌面' : '独立浏览器'} 模式，请使用对应操作；模式只能由用户手动切换。`,
         );
+    }
+    if (['browser_tabs', 'browser_select_tab', 'browser_close_tab'].includes(action.type)) {
+      const tabs = this.leaseOptions.browserSession
+        ? this.leaseOptions.browserSession.tabs
+        : this.browserTabs;
+      if (!tabs) throw new Error('当前浏览器不支持标签页管理，请升级电脑执行器。');
+      const guard = { ...options, authorize: () => this.assertAgentAccess() };
+      if (action.type === 'browser_select_tab') return tabs.select(action.tabId!, guard);
+      if (action.type === 'browser_close_tab') return tabs.close(action.tabId!, guard);
+      return tabs.list(guard);
     }
     if (action.type.startsWith('desktop_') && action.type !== 'desktop_screenshot') {
       await this.assertDesktopReady();
@@ -431,40 +455,7 @@ export class LocalComputer {
       default: {
         const page = await this.browser();
         this.assertAgentAccess();
-        if (action.type === 'browser_navigate') {
-          await resolveBrowserTarget(new URL(action.url!));
-          const response = await page.goto(action.url!, {
-            waitUntil: 'domcontentloaded',
-            timeout: 30_000,
-          });
-          if (response && response.status() >= 400)
-            throw new Error(
-              `网页请求失败 (${response.status()})：${(await page.locator('body').innerText()).slice(0, 300)}`,
-            );
-        }
-        if (action.type === 'browser_click')
-          await page.locator(action.selector!).first().click({ timeout: 10_000 });
-        if (action.type === 'browser_type')
-          await page.locator(action.selector!).first().fill(action.text!, { timeout: 10_000 });
-        if (action.type === 'browser_scroll')
-          await page.mouse.wheel(0, action.direction === 'up' ? -650 : 650);
-        if (action.type === 'browser_back')
-          await page.goBack({ waitUntil: 'domcontentloaded', timeout: 20_000 });
-        // Visible text and selectors let Pi inspect a real page without executing page JS.
-        const text = (await page.locator('body').innerText({ timeout: 10_000 })).slice(0, 16_000);
-        const controls = await page
-          .locator('a,button,input,textarea,select')
-          .evaluateAll((elements) =>
-            elements.slice(0, 100).map((el) => ({
-              tag: el.tagName.toLowerCase(),
-              text: (el.textContent ?? '').trim().slice(0, 100),
-              id: el.id || undefined,
-              name: el.getAttribute('name') ?? undefined,
-              placeholder: el.getAttribute('placeholder') ?? undefined,
-              href: el.getAttribute('href') ?? undefined,
-            })),
-          );
-        return { url: page.url(), title: await page.title(), text, controls };
+        return executeBrowserPage(page, action);
       }
     }
   }

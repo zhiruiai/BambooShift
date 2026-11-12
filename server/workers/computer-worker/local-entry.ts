@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { isAbsolute } from 'node:path';
 import { createComputerWorker } from '../computer-runtime/http/worker.js';
 import type { DesktopAdapter } from '../computer-runtime/desktop.js';
+import { createCuaDesktopAdapter } from '../computer-runtime/cua-desktop.js';
 
 const lines = createInterface({ input: process.stdin, crlfDelay: Infinity });
 const raw = await new Promise<string>((resolve, reject) => {
@@ -13,9 +14,18 @@ const raw = await new Promise<string>((resolve, reject) => {
   });
 });
 if (raw.length > 16384) throw new Error('Invalid local execution configuration.');
-const config = JSON.parse(raw) as { workspace: string; workspaceId: string; publicOrigin?: string };
+const config = JSON.parse(raw) as {
+  workspace: string; workspaceId: string; publicOrigin?: string; hostControl?: boolean;
+  desktopDriver?: { kind: 'cua'; executablePath: string; socketPath: string };
+};
 if (!isAbsolute(config.workspace) || !/^[a-f0-9-]{36}$/.test(config.workspaceId))
   throw new Error('Invalid local execution configuration.');
+if ((config.hostControl !== undefined && typeof config.hostControl !== 'boolean') ||
+  (config.desktopDriver && (!config.hostControl || config.publicOrigin ||
+    config.desktopDriver.kind !== 'cua' || !isAbsolute(config.desktopDriver.executablePath) ||
+    !isAbsolute(config.desktopDriver.socketPath))))
+  throw new Error('Invalid local desktop configuration.');
+if (config.hostControl && config.publicOrigin) throw new Error('Host control requires personal mode.');
 if (config.publicOrigin) process.env.OPENBOT_PUBLIC_ORIGIN = config.publicOrigin;
 const token = randomBytes(32).toString('base64url');
 const disabledDesktop: DesktopAdapter = {
@@ -46,7 +56,10 @@ const worker = createComputerWorker({
   token,
   workspaceDir: config.workspace,
   workspaceScopeId: config.workspaceId,
-  desktopAdapter: disabledDesktop,
+  desktopAdapter: config.hostControl && config.desktopDriver
+    ? createCuaDesktopAdapter(config.desktopDriver) : disabledDesktop,
+  hostDesktop: Boolean(config.hostControl && config.desktopDriver),
+  hostShell: config.hostControl === true,
 });
 const server = worker.app.listen(0, '127.0.0.1');
 await new Promise<void>((resolve, reject) => {

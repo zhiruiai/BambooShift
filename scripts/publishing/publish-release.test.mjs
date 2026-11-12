@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { delimiter, join } from 'node:path';
 import test from 'node:test';
@@ -13,7 +13,10 @@ const tagRef = 'refs/tags/' + releaseTag;
 const apiBoundary = 'TEST_RELEASE_API_BOUNDARY';
 const apiBoundaryStatus = 27;
 
-async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
+async function fixture(
+  t,
+  { brand = 'BambooShift', packageName = brand, runtimePackaging = 'none' } = {},
+) {
   const base = await mkdtemp(join(tmpdir(), 'pandamate-release-tag-'));
   t.after(() => rm(base, { recursive: true, force: true }));
   const work = join(base, 'work');
@@ -49,6 +52,19 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
   );
   await mkdir(join(work, '.github', 'workflows'), { recursive: true });
   await writeFile(join(work, '.github', 'workflows', 'ci.yml'), 'name: Synthetic CI\n');
+  if (runtimePackaging !== 'none') {
+    await mkdir(join(work, 'scripts', 'desktop'), { recursive: true });
+    await writeFile(
+      join(work, 'scripts', 'desktop', 'runtime-package.mjs'),
+      '// Synthetic build support\n',
+    );
+    await writeFile(
+      join(work, '.github', 'workflows', 'release.yml'),
+      'run: npm run client:package -- --platform darwin --arch arm64' +
+        (runtimePackaging === 'bundled' ? ' --with-runtime' : '') +
+        '\n',
+    );
+  }
   git(work, 'add', '.');
   git(work, 'commit', '-qm', 'Source revision');
   git(work, 'push', '-q', 'origin', 'main');
@@ -67,7 +83,8 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
     const path = join(builds, 'bambooshift-' + platform);
     await mkdir(path, { recursive: true });
     await writeFile(join(path, 'source-tree.txt'), stamped + '\n');
-    for (const kind of kinds) await writeFile(join(path, packageName + '-' + releaseTag + '-' + kind), kind);
+    for (const kind of kinds)
+      await writeFile(join(path, packageName + '-' + releaseTag + '-' + kind), kind);
   }
 
   return {
@@ -77,6 +94,26 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
     git: (...args) => git(work, ...args),
     remoteTag: () => git(remote, 'rev-parse', tagRef + '^{commit}'),
     manifest: join(builds, 'bambooshift-macos-arm64', 'source-tree.txt'),
+    async captureReleaseNotes() {
+      const notes = join(base, 'captured-notes.md');
+      await writeFile(
+        join(bin, 'gh'),
+        String.raw`#!${process.execPath}
+const fs = require('node:fs');
+const args = process.argv.slice(2);
+const api = args.find(arg => arg.startsWith('repos/'));
+if (api.endsWith('/releases?per_page=100')) {
+  console.log('[[]]');
+} else if (api.endsWith('/releases') && args.includes('POST')) {
+  fs.copyFileSync(args.find(arg => arg.startsWith('body=@')).slice(6), ${JSON.stringify(notes)});
+  console.error(${JSON.stringify(apiBoundary)});
+  process.exit(${apiBoundaryStatus});
+} else throw Error('Unexpected fixture API request');
+`,
+        { mode: 0o755 },
+      );
+      return () => readFile(notes, 'utf8');
+    },
     tag(target) {
       git(work, 'tag', '-a', releaseTag, target, '-m', brand + ' release from ' + source);
       git(work, 'push', '-q', 'origin', tagRef);
@@ -85,7 +122,9 @@ async function fixture(t, { brand = 'BambooShift', packageName = brand } = {}) {
       // All existing assets have their expected digests, so a resume should
       // keep both the archived bytes and the existing release title.
       await writeFile(join(bin, 'curl'), '#!/bin/sh\nexit 99\n', { mode: 0o755 });
-      await writeFile(join(bin, 'gh'), `#!/usr/bin/env node
+      await writeFile(
+        join(bin, 'gh'),
+        `#!/usr/bin/env node
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -117,7 +156,9 @@ if (api.endsWith('/releases?per_page=100')) {
 } else {
   throw new Error('Unexpected release API call');
 }
-`, { mode: 0o755 });
+`,
+        { mode: 0o755 },
+      );
     },
     publish() {
       return spawnSync('bash', [publisher], {
@@ -146,12 +187,35 @@ function assertReachedReleaseApi(result) {
   assert.match(result.stderr, new RegExp(apiBoundary));
 }
 
+test('release notes describe the runtime actually built by the pinned source, including legacy drafts', async (t) => {
+  for (const runtimePackaging of ['none', 'available', 'bundled']) {
+    const f = await fixture(t, { runtimePackaging });
+    const notes = await f.captureReleaseNotes();
+    assertReachedReleaseApi(f.publish());
+    const body = await notes();
+    assert.match(body, /Independent browser jobs require Chrome/);
+    assert.match(body, /no Apple notarization/);
+    if (runtimePackaging === 'bundled') {
+      assert.match(body, /includes a local workspace for chat and files/);
+      assert.match(body, /Screen Recording and Accessibility/);
+      assert.match(body, /独立浏览器另需安装 Chrome/);
+      assert.doesNotMatch(body, /connects to a separate/);
+    } else {
+      assert.match(body, /connects to a separate BambooShift server/);
+      assert.doesNotMatch(body, /includes a local workspace/);
+    }
+  }
+});
+
 test('a stamped build pushes a tag to the existing source commit and can resume it', async (t) => {
   const f = await fixture(t);
   assert.notEqual(f.git('rev-parse', 'HEAD^{tree}'), f.stamped);
   assertReachedReleaseApi(f.publish());
   assert.equal(f.remoteTag(), f.source);
-  assert.equal(f.git('for-each-ref', '--format=%(subject)', tagRef), 'BambooShift release from ' + f.source);
+  assert.equal(
+    f.git('for-each-ref', '--format=%(subject)', tagRef),
+    'BambooShift release from ' + f.source,
+  );
   assert.equal(f.git('rev-parse', 'HEAD'), f.source);
   assert.equal(f.git('write-tree'), f.stamped);
   assertReachedReleaseApi(f.publish());
@@ -190,7 +254,10 @@ test('a legacy MosoCrew source resumes with its original PandaMate archive names
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout.trim(), 'https://example.test/release');
   assert.equal(f.remoteTag(), f.source);
-  assert.equal(f.git('for-each-ref', '--format=%(subject)', tagRef), 'MosoCrew release from ' + f.source);
+  assert.equal(
+    f.git('for-each-ref', '--format=%(subject)', tagRef),
+    'MosoCrew release from ' + f.source,
+  );
 });
 
 test('a mismatched build manifest stops release before pushing a tag', async (t) => {

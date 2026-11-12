@@ -76,14 +76,23 @@ void main() {
   testWidgets(
     'avatar states use finite, distinct motion and respect reduced motion',
     (tester) async {
-      Widget scene(BotAvatarMotion? motion, {bool reduced = false}) => testApp(
+      Widget scene(
+        BotAvatarMotion? motion, {
+        bool reduced = false,
+        bool sustain = false,
+        bool tickerEnabled = true,
+      }) => testApp(
         MediaQuery(
           data: MediaQueryData(disableAnimations: reduced),
           child: Scaffold(
-            body: BotAvatar(
-              bot: const {'avatar': 'orb'},
-              family: 'pandas',
-              motion: motion,
+            body: TickerMode(
+              enabled: tickerEnabled,
+              child: BotAvatar(
+                bot: const {'avatar': 'orb'},
+                family: 'pandas',
+                motion: motion,
+                sustainMotion: sustain,
+              ),
             ),
           ),
         ),
@@ -114,6 +123,25 @@ void main() {
       await tester.pump(const Duration(milliseconds: 80));
       expect(transform().transform.entry(1, 3), 0);
       expect(transform().transform.entry(1, 0), lessThan(0));
+
+      await tester.pumpWidget(scene(BotAvatarMotion.thinking, sustain: true));
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(transform().transform.entry(1, 0), lessThan(0));
+      await tester.pump(const Duration(milliseconds: 900));
+      expect(transform().transform.entry(1, 3), closeTo(0, .01));
+      await tester.pump(const Duration(milliseconds: 1800));
+      await tester.pump(const Duration(milliseconds: 250));
+      expect(transform().transform.entry(1, 0), lessThan(0));
+      await tester.pumpWidget(
+        scene(BotAvatarMotion.thinking, sustain: true, tickerEnabled: false),
+      );
+      expect(reaction, findsNothing);
+
+      await tester.pumpWidget(scene(BotAvatarMotion.error));
+      await tester.pump(const Duration(milliseconds: 260));
+      expect(transform().transform.entry(1, 3), greaterThan(0));
+      expect(transform().transform.entry(1, 1), lessThan(1));
+      await tester.pumpAndSettle();
 
       await tester.pumpWidget(scene(BotAvatarMotion.attention, reduced: true));
       await tester.pumpAndSettle();

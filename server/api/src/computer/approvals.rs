@@ -79,6 +79,19 @@ pub async fn request(
     let current = target.state().await;
     let mut payload = validation::action(input, current["desktop"]["kind"] == "virtual")?;
     let kind = payload["type"].as_str().unwrap().to_owned();
+    if kind == "local_shell" && !target.saved.has("local-shell-v1") {
+        return Err(ApiError::new(409, "此电脑未启用本机命令执行能力。"));
+    }
+    if matches!(
+        kind.as_str(),
+        "browser_tabs" | "browser_select_tab" | "browser_close_tab"
+    ) && !target.saved.has("browser-tabs-v1")
+    {
+        return Err(ApiError::new(
+            409,
+            "此电脑尚不支持标签页管理，请先升级执行器。",
+        ));
+    }
     if kind == "remote_shell"
         && !target
             .saved
@@ -351,7 +364,7 @@ async fn execute(
         },
         &action["payload"],
     );
-    if kind == "remote_shell" {
+    if matches!(kind, "remote_shell" | "local_shell") {
         request.shell_id = action["id"].as_str().map(str::to_owned);
     }
     let value = job
@@ -360,7 +373,7 @@ async fn execute(
         .await?
         .json()?;
     authorize().await?;
-    if kind == "remote_shell" {
+    if matches!(kind, "remote_shell" | "local_shell") {
         super::validation::shell_result(&value)?;
     }
     if !with_frame {

@@ -20,7 +20,7 @@ import {
   until,
 } from './testSupport/creationFlowFixture';
 
-test('seven original bilingual profiles are valid independent starting points without portable secrets or scheduled work', () => {
+test('nine original bilingual profiles are valid independent starting points without portable secrets or scheduled work', () => {
   const asset = (path: string) =>
     readFileSync(new URL(`../../${path}/bot-starter-templates.json`, import.meta.url));
   assert.deepEqual(asset('mobile/assets/templates'), asset('shared'));
@@ -39,6 +39,8 @@ test('seven original bilingual profiles are valid independent starting points wi
           ['organization', 'drop', '#e65e91'],
           ['briefing', 'spark', '#b96b22'],
           ['support', 'arch', '#32766d'],
+          ['analysis', 'gem', '#187f9a'],
+          ['recruitment', 'arch', '#8b5eaa'],
         ],
       );
       assert.equal(starterCategoryLabel('engineering'), locale === 'en' ? 'Engineering' : '编程');
@@ -89,7 +91,7 @@ test('catalog search, category, full instruction preview and explicit selection 
   );
   try {
     await ui.flush();
-    assert.equal(all(ui.tree, (n) => n.props?.className?.startsWith('starter-card')).length, 7);
+    assert.equal(all(ui.tree, (n) => n.props?.className?.startsWith('starter-card')).length, 9);
     const search = all(ui.tree, (n) => n.type === 'input')[0];
     search.props.onChange({ target: { value: '不存在的模板' } });
     await ui.flush();
@@ -121,13 +123,17 @@ test('catalog search, category, full instruction preview and explicit selection 
 test('read-only viewers can inspect while stale or unmounted catalog callbacks cannot apply a profile', async () => {
   let live = true,
     selected = 0;
-  const ui = await harness('web/src/components/StarterTemplateCatalog.tsx', 'StarterTemplateCatalog', {
-    canCreate: false,
-    current: () => live,
-    onChoose: () => {
-      selected++;
+  const ui = await harness(
+    'web/src/components/StarterTemplateCatalog.tsx',
+    'StarterTemplateCatalog',
+    {
+      canCreate: false,
+      current: () => live,
+      onChoose: () => {
+        selected++;
+      },
     },
-  });
+  );
   try {
     await ui.flush();
     all(ui.tree, (n) => n.props?.className?.startsWith('starter-card'))[0].props.onClick();

@@ -5,6 +5,7 @@ export type WorkspaceRole = 'owner' | 'member';
 export interface PlatformUser {
   id: string;
   email: string;
+  localOnly?: boolean;
   name: string;
   status: AccountStatus;
   createdAt: string;

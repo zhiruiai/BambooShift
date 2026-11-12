@@ -1,4 +1,5 @@
 export const ISOLATED_SHELL_CAPABILITY = 'isolated-shell-v1';
+export const LOCAL_SHELL_CAPABILITY = 'local-shell-v1';
 export const REMOTE_SHELL_TIMEOUT_MS = 30_000;
 export const REMOTE_SHELL_MAX_COMMAND = 16_000;
 export const REMOTE_SHELL_MAX_OUTPUT_BYTES = 256 * 1024;

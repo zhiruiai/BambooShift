@@ -12,9 +12,46 @@
     connectWorkspace: ['连接工作空间', 'Connect to workspace'],
     heading: ['连接你的工作空间', 'Connect to your workspace'],
     intro: [
-      '使用团队提供的 HTTPS 地址，或先在本机启动 BambooShift 服务。',
-      'Use the HTTPS address provided by your team, or start a BambooShift server on this device first.',
+      '在这台电脑创建工作空间，或连接已有的 BambooShift 服务。',
+      'Create a workspace on this computer or connect to an existing BambooShift service.',
     ],
+    startLocal: ['在这台电脑开始', 'Start on this computer'],
+    existingWorkspace: ['连接已有工作空间', 'Connect to an existing workspace'],
+    localWorkspaceNote: [
+      '对话和文件保存在这台电脑。退出应用会停止本机任务。',
+      'Chats and files stay on this computer. Quitting the app stops local tasks.',
+    ],
+    localRuntimeUnavailable: [
+      '此安装包未提供可用的本地运行环境。你仍可以连接已有工作空间。',
+      'This installation has no usable local runtime. You can still connect to an existing workspace.',
+    ],
+    localRuntimeStarting: ['正在启动本地工作空间…', 'Starting the local workspace…'],
+    localRuntimeFailed: [
+      '无法启动本地工作空间。请重试或连接已有工作空间。',
+      'The local workspace could not start. Retry or connect to an existing workspace.',
+    ],
+    localRuntimeTimeout: [
+      '本地工作空间启动超时，请重试。',
+      'Starting the local workspace timed out. Please retry.',
+    ],
+    localRuntimeExited: [
+      '本地工作空间已停止，可以重新启动。',
+      'The local workspace has stopped. You can start it again.',
+    ],
+    hostControl: ['允许整机操作', 'Allow computer control'],
+    hostControlHelp: [
+      'Bot 可在你批准后操作屏幕、键鼠、文件和终端。macOS 可能要求录屏和辅助功能权限。',
+      'With your approval, Bots can use the screen, keyboard, mouse, files, and terminal. macOS may ask for Screen Recording and Accessibility permissions.',
+    ],
+    localHostControlUnavailable: [
+      '此安装包未提供整机操作。你可以使用普通本机工作空间。',
+      'Computer control is unavailable in this installation. You can still use the local workspace.',
+    ],
+    localHostControlFailed: [
+      '整机操作组件未能启动。请重试，或取消勾选后打开本机工作空间。',
+      'Computer control could not start. Retry, or turn off computer control and open the local workspace.',
+    ],
+    cancelLocal: ['取消启动', 'Cancel startup'],
     mascot: ['BambooShift 紫色小伙伴', 'BambooShift purple companion'],
     address: ['工作空间地址', 'Workspace address'],
     addressPlaceholder: ['https://你的工作空间地址', 'https://your-workspace.example'],

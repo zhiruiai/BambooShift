@@ -50,8 +50,10 @@ export function WorkspaceChooser({
       <div className="account-person">
         <AccountInitial name={session.user?.name} />
         <div>
-          <strong>{session.user?.name}</strong>
-          <small>{session.user?.email}</small>
+          <strong>
+            {session.user?.localOnly ? uiText('account:localWorkspace') : session.user?.name}
+          </strong>
+          {!session.user?.localOnly && <small>{session.user?.email}</small>}
         </div>
       </div>
       <div className="account-space-list">
@@ -95,31 +97,35 @@ export function WorkspaceChooser({
           <UserRound size={15} />
           {uiText('account:text_5ce662ac8d87')}
         </a>
-        <button className="secondary-button" type="button" onClick={() => setCreating(true)}>
-          <Plus size={15} />
-          {uiText('account:text_d2ec1c315266')}
-        </button>
-        <button
-          className="platform-text-button"
-          type="button"
-          disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            setError('');
-            try {
-              await platformApi('/account/logout', 'POST');
-              onSessionChange?.({ authenticated: false, workspaces: [] });
-              window.location.assign('/login');
-            } catch (cause) {
-              setError((cause as Error).message);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        >
-          <LogOut size={14} />
-          {uiText('account:text_e76774368ccf')}
-        </button>
+        {!session.user?.localOnly && (
+          <>
+            <button className="secondary-button" type="button" onClick={() => setCreating(true)}>
+              <Plus size={15} />
+              {uiText('account:text_d2ec1c315266')}
+            </button>
+            <button
+              className="platform-text-button"
+              type="button"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                setError('');
+                try {
+                  await platformApi('/account/logout', 'POST');
+                  onSessionChange?.({ authenticated: false, workspaces: [] });
+                  window.location.assign('/login');
+                } catch (cause) {
+                  setError((cause as Error).message);
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <LogOut size={14} />
+              {uiText('account:text_e76774368ccf')}
+            </button>
+          </>
+        )}
       </div>
       {creating && (
         <TeamCreateDialog
@@ -256,7 +262,9 @@ export function AccountMenu({
         <AccountInitial name={session.user?.name} />
         <span>
           <strong>
-            {active?.name || session.user?.name || uiText('account:text_aff95a53b063')}
+            {session.user?.localOnly
+              ? uiText('account:localWorkspace')
+              : active?.name || session.user?.name || uiText('account:text_aff95a53b063')}
           </strong>
           <small>
             {active?.kind === 'team'
@@ -277,8 +285,10 @@ export function AccountMenu({
             aria-label={uiText('account:text_70f527ddc222')}
           >
             <div className="account-menu-heading">
-              <strong>{session.user?.name}</strong>
-              <small>{session.user?.email}</small>
+              <strong>
+                {session.user?.localOnly ? uiText('account:localWorkspace') : session.user?.name}
+              </strong>
+              {!session.user?.localOnly && <small>{session.user?.email}</small>}
             </div>
             <a className="account-menu-item" role="menuitem" href="/account">
               <UserRound size={16} />
@@ -315,7 +325,8 @@ export function AccountMenu({
                 <span>{uiText('account:text_2e6bfec616ad')}</span>
               </a>
             )}
-            {active?.status === 'active' &&
+            {!session.user?.localOnly &&
+              active?.status === 'active' &&
               active.kind === 'personal' &&
               active.role === 'owner' && (
                 <a
@@ -371,48 +382,52 @@ export function AccountMenu({
                 <span>{uiText('account:text_b1bea2878095')}</span>
               </button>
             )}
-            <button
-              className="account-menu-item"
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                trigger.current?.focus();
-                setOpen(false);
-                setCreating(true);
-              }}
-            >
-              <Plus size={16} />
-              <span>{uiText('account:text_4ce7ada52267')}</span>
-            </button>
+            {!session.user?.localOnly && (
+              <button
+                className="account-menu-item"
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  trigger.current?.focus();
+                  setOpen(false);
+                  setCreating(true);
+                }}
+              >
+                <Plus size={16} />
+                <span>{uiText('account:text_4ce7ada52267')}</span>
+              </button>
+            )}
             {error && (
               <p className="platform-error" role="alert">
                 {error}
               </p>
             )}
-            <button
-              className="account-menu-item"
-              type="button"
-              role="menuitem"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                setError('');
-                try {
-                  await platformApi('/account/logout', 'POST');
-                  onSessionChange?.({ authenticated: false, workspaces: [] });
-                  window.location.assign('/login');
-                } catch (cause) {
-                  setError((cause as Error).message);
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            >
-              <LogOut size={16} />
-              <span>
-                {busy ? uiText('account:text_0ae60dd37b14') : uiText('account:text_e76774368ccf')}
-              </span>
-            </button>
+            {!session.user?.localOnly && (
+              <button
+                className="account-menu-item"
+                type="button"
+                role="menuitem"
+                disabled={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  setError('');
+                  try {
+                    await platformApi('/account/logout', 'POST');
+                    onSessionChange?.({ authenticated: false, workspaces: [] });
+                    window.location.assign('/login');
+                  } catch (cause) {
+                    setError((cause as Error).message);
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                <LogOut size={16} />
+                <span>
+                  {busy ? uiText('account:text_0ae60dd37b14') : uiText('account:text_e76774368ccf')}
+                </span>
+              </button>
+            )}
           </div>,
           document.body,
         )}

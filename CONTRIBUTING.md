@@ -21,12 +21,13 @@ to test your own model provider.
 
 ## Find the right place to contribute
 
-| If you want to improve | Start here | Run |
-| --- | --- | --- |
-| Chat, accessibility, or responsive layout | `web/src/workspace/` or `mobile/lib/features/chat/` | `npm run test:web` or `cd mobile && ./tool/flutter.sh test` |
-| Add a documented MCP provider | `shared/app-providers.json` and both UI languages | `npm run sync:app-catalog`, then `npm run check:source` |
-| Change who can use a tool or what happens on cancellation | `server/api/src/agent/` and the matching domain service | `npm run backend:test` |
-| Improve a worker or the desktop connection flow | `server/workers/` or `desktop/` | `npm run test:runtime` or `npm run client:test` |
+| If you want to improve                                    | Start here                                                                  | Run                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Chat, accessibility, or responsive layout                 | `web/src/workspace/` or `mobile/lib/features/chat/`                         | `npm run test:web` or `cd mobile && ./tool/flutter.sh test`           |
+| Add a documented MCP provider                             | `shared/app-providers.json` and both UI languages                           | `npm run sync:app-catalog`, then `npm run check:source`               |
+| Change who can use a tool or what happens on cancellation | `server/api/src/agent/` and the matching domain service                     | `npm run backend:test`                                                |
+| Add a trusted bundled worker plugin                       | [Cordis host and lifecycle recipe](server/workers/plugin-runtime/README.md) | `node scripts/run.mjs --test server/workers/plugin-runtime/*.test.ts` |
+| Improve a worker or the desktop connection flow           | `server/workers/` or `desktop/`                                             | `npm run test:runtime` or `npm run client:test`                       |
 
 If you are looking for a first change, try reproducing a layout issue at narrow
 widths, verifying an installation path, or improving a translation. A screenshot

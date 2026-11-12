@@ -30,7 +30,7 @@ export function ComputerActionEntry({
   onReject: () => void;
   onApprove: () => void;
 }) {
-  const isRemoteShell = a.type === 'remote_shell';
+  const isRemoteShell = a.type === 'remote_shell' || a.type === 'local_shell';
   const isFileTransfer = a.type === 'upload_file' || a.type === 'download_file';
   const outcome =
     isRemoteShell && (a.status === 'done' || a.status === 'error')
@@ -44,7 +44,10 @@ export function ComputerActionEntry({
         <small>{time(a.createdAt)}</small>
       </div>
       {isRemoteShell ? (
-        <RemoteShellDetails payload={a.payload} />
+        <RemoteShellDetails
+          payload={a.payload}
+          execution={a.type === 'local_shell' ? 'local' : 'isolated'}
+        />
       ) : isFileTransfer ? (
         <ComputerFileSummary type={a.type} payload={a.payload} />
       ) : (

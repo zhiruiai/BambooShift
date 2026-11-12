@@ -37,8 +37,8 @@ function frame(response, delta, reason) {
   response.end('data: [DONE]\n\n');
 }
 
-async function checkDocumentCodec(runtime, image) {
-  const worker = spawn(process.execPath, [join(runtime, 'packages/document-worker/index.mjs')], {
+async function checkDocumentCodec(runtime, image, nodeBinary) {
+  const worker = spawn(nodeBinary, [join(runtime, 'packages/document-worker/index.mjs')], {
     cwd: runtime,
     env: { LANG: 'en_US.UTF-8' },
     stdio: ['pipe', 'pipe', 'ignore'],
@@ -74,6 +74,11 @@ async function checkDocumentCodec(runtime, image) {
 export async function checkBackendPackage(packagePath) {
   const artifact = resolve(packagePath),
     runtime = join(artifact, 'runtime');
+  const bundled = await lstat(join(artifact, 'desktop-runtime.json')).then(() => true, (error) => {
+    if (error.code === 'ENOENT') return false;
+    throw error;
+  });
+  const nodeBinary = bundled ? join(artifact, 'bin/node') : process.execPath;
   const directory = await mkdtemp(join(tmpdir(), 'openbot-package-acceptance-'));
   const calls = [];
   const model = createServer(async (request, response) => {
@@ -125,7 +130,7 @@ export async function checkBackendPackage(packagePath) {
     await assert.rejects(lstat(join(runtime, 'server')), { code: 'ENOENT' });
     const publicIcon = await readFile(join(runtime, 'dist/icon-192.png'));
     await readFile(join(runtime, 'operations-dist/index.html'));
-    await checkDocumentCodec(runtime, publicIcon);
+    await checkDocumentCodec(runtime, publicIcon, nodeBinary);
     model.listen(0, '127.0.0.1');
     await once(model, 'listening');
     const config = join(directory, 'server.private.json');
@@ -136,7 +141,7 @@ export async function checkBackendPackage(packagePath) {
         bind: '127.0.0.1:0',
         operations: { bind: '127.0.0.1:0' },
         runtimeDir: runtime,
-        nodeBinary: process.execPath,
+        nodeBinary,
       }),
       { mode: 0o600 },
     );

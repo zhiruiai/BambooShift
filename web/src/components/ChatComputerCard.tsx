@@ -112,6 +112,9 @@ export function ComputerCard({
 }
 
 export const computerActionLabels: Record<string, string> = localizedData(() => ({
+  browser_tabs: uiText('computer:browser_tabs'),
+  browser_select_tab: uiText('computer:browser_select_tab'),
+  browser_close_tab: uiText('computer:browser_close_tab'),
   browser_navigate: uiText('computer:text_bdc799e5677d'),
   browser_click: uiText('computer:text_a617f9f6faef'),
   browser_download: uiText('computer:text_68532ddc30a9'),
@@ -132,6 +135,7 @@ export const computerActionLabels: Record<string, string> = localizedData(() => 
   download_file: uiText('computer:text_920b2b450375'),
   terminal_command: uiText('computer:text_c5cb1328d49b'),
   remote_shell: uiText('computer:text_2da33b1cff3a'),
+  local_shell: uiText('computer:local_shell'),
 }));
 
 export function objectValue(value: unknown): Record<string, unknown> {
@@ -161,7 +165,10 @@ export function computerRecordStatus(
       ? { label: uiText('computer:text_f755b01e2711'), kind: 'pending' }
       : { label: uiText('computer:receiptStarting'), kind: 'starting' };
   if (status === 'running') return { label: uiText('computer:text_dc9591e56d50'), kind: 'running' };
-  if (action.type === 'remote_shell' && (status === 'done' || status === 'error')) {
+  if (
+    ['remote_shell', 'local_shell'].includes(String(action.type)) &&
+    (status === 'done' || status === 'error')
+  ) {
     const outcome = remoteShellResultStatus(action.result);
     if (outcome) return outcome;
   }
@@ -190,7 +197,7 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
     status = computerRecordStatus(message, action);
   const type = typeof action.type === 'string' ? action.type : '';
   const isFileTransfer = type === 'upload_file' || type === 'download_file';
-  const isRemoteShell = type === 'remote_shell';
+  const isRemoteShell = type === 'remote_shell' || type === 'local_shell';
   const pending = status.kind === 'pending';
   const active = status.kind === 'starting' || status.kind === 'running';
   const showActionResult =
@@ -257,7 +264,10 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
         <p className="computer-record-screen">{uiText('computer:receiptAssignedScreen')}</p>
       )}
       {isRemoteShell ? (
-        <RemoteShellDetails payload={payload} />
+        <RemoteShellDetails
+          payload={payload}
+          execution={type === 'local_shell' ? 'local' : 'isolated'}
+        />
       ) : isFileTransfer ? (
         <ComputerFileSummary
           type={type}

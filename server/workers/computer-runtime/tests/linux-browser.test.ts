@@ -70,6 +70,7 @@ test('readonly status never launches; two pinned screens launch distinct profile
     a = configuration(),
     b = configuration();
   assert.equal((await f.engine.screen(a).status!()).available, true);
+  assert.deepEqual(await f.engine.screen(a).tabs!.list(), { tabs: [], truncated: false });
   assert.deepEqual(f.counts(), { proxies: 0, closed: 0 });
   const first = await f.engine.screen(a).open(),
     second = await f.engine.screen(b).open();

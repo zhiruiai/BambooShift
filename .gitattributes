@@ -1,0 +1,5 @@
+# Preserve upstream notice bytes for the recorded SHA-256 checks, including on Windows.
+legal/third-party/** -text
+# These upstream originals contain whitespace that must not be reformatted.
+legal/third-party/canvas-1.1.0/skia/third_party/etc1/LICENSE -whitespace
+legal/third-party/canvas-1.1.0/skia-third-party/libwebp/COPYING -whitespace

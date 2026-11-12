@@ -3,6 +3,8 @@ pub(crate) mod avatar_jobs;
 mod avatar_theme;
 mod avatar_uploads;
 pub(crate) mod avatars;
+mod conversation_export;
+mod conversation_markdown;
 mod creation;
 pub(crate) mod creation_preview;
 mod credentials;
@@ -118,6 +120,10 @@ pub fn router() -> axum::Router<crate::db::State> {
             patch(mutations::edit_agent).delete(mutations::remove_agent),
         )
         .route("/api/workspaces/{wid}/conversations", post(groups::post))
+        .route(
+            "/api/workspaces/{wid}/conversations/{id}/export",
+            get(conversation_export::get).head(conversation_export::authorize),
+        )
         .route(
             "/api/workspaces/{wid}/conversations/{id}",
             patch(groups::patch).delete(mutations::delete_chat),

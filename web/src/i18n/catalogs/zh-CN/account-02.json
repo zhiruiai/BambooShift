@@ -138,5 +138,7 @@
   "text_ef8c0923730e": "该设备已退出登录。",
   "text_f188ddb79252": "修改团队名称",
   "text_f23e7e58a29f": "确认创建独立 Bot",
-  "text_f4cf3ab79b7e": "返回产品账号登录"
+  "text_f4cf3ab79b7e": "返回产品账号登录",
+  "localWorkspace": "本机个人空间",
+  "localWorkspaceHelp": "无需注册或登录，即可在这台电脑上使用。对话和设置保存在本机个人空间。"
 }

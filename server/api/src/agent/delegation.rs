@@ -241,7 +241,7 @@ pub(crate) fn delegate<'a>(
         let content = result["content"].as_str().unwrap_or("");
         let excerpt = content.chars().take(16000).collect::<String>();
         let details = json!({"agentId":target,"conversationId":destination_id,"resultMessageId":result["id"],"status":if result["status"]=="done" {"completed"} else {"error"},"content":excerpt,"truncated":content.chars().count()>16000});
-        Ok(json!({"content":[{"type":"text","text":details.to_string()}],"details":details}))
+        Ok(json!({"content":[{"type":"text","text":details.to_string()}],"details":details,"isError":result["status"]!="done"}))
     })
 }
 fn member(conversation: &Value, id: &str) -> bool {

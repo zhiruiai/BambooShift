@@ -7,6 +7,7 @@ import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'chat_controller.dart';
+import 'conversation_export_screen.dart';
 import 'chat_composer_input.dart';
 import 'chat_header_title.dart';
 import 'chat_mentions.dart';

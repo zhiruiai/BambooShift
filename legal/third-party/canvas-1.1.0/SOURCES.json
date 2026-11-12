@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "package": {
+    "name": "@napi-rs/canvas-darwin-arm64",
+    "version": "1.1.0",
+    "integrity": "sha512-iqwST4g0oH+x8VCpBIYh+MYokv/mVvkM+v9oJGB0d9A3P2qBh42ogJlVyWq9SpPCrAjS7tplMb1D3OIfxl+utw==",
+    "registryTarball": "https://registry.npmjs.org/@napi-rs/canvas-darwin-arm64/-/canvas-darwin-arm64-1.1.0.tgz",
+    "repository": "https://github.com/Brooooooklyn/canvas",
+    "revision": "5246bbf5573fdf53b5672a4d096d4d8fa660a406"
+  },
+  "provenance": {
+    "url": "https://registry.npmjs.org/-/npm/v1/attestations/@napi-rs%2fcanvas-darwin-arm64@1.1.0",
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "subjectSha512": "8aac124f8834a07fb1f150a9048621f8c62892ffe656f90cfaff6824607477d0373f6a81878da8809955c96abd4a93c2ac08d2eeda6531bd43dce21fc65faeb7",
+    "verification": "Subject digest matched package-lock integrity; resolved source matched the published provenance payload. Cryptographic attestation signature verification was not performed in this collection."
+  },
+  "skia": {
+    "repository": "https://github.com/google/skia",
+    "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9",
+    "source": "Canvas git tree submodule entry at the package provenance revision"
+  },
+  "packageFiles": [
+    {
+      "path": "skia.darwin-arm64.node",
+      "sha256": "cbb47482c01dcc92cf2488ae8a8b0e26c61e49e21060ed78976b929080757ec9",
+      "includedInThisNoticeDirectory": false
+    },
+    {
+      "path": "sbom.cdx.json",
+      "sha256": "5c4a86d7be73c58ac66fedd273baed2da041fc993742eb8090c1680108d2f139",
+      "includedInThisNoticeDirectory": true
+    }
+  ],
+  "coverage": "Unchanged Canvas LICENSE, Skia LICENSE and selected in-tree notices, and notices for all 12 native dependencies selected by the packaged SBOM. Cargo and additional vendored C dependencies are not fully covered by this collection. The SBOM is upstream metadata, not an independently verified linker manifest.",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "0b8e3b4f0042f33677406344854c1dcce3a2878eb3a3f6baee58c6f5752655ce",
+      "url": "https://raw.githubusercontent.com/Brooooooklyn/canvas/5246bbf5573fdf53b5672a4d096d4d8fa660a406/LICENSE",
+      "repository": "https://github.com/Brooooooklyn/canvas",
+      "revision": "5246bbf5573fdf53b5672a4d096d4d8fa660a406"
+    },
+    {
+      "path": "skia-third-party/brotli/LICENSE",
+      "sha256": "3d180008e36922a4e8daec11c34c7af264fed5962d07924aea928c38e8663c94",
+      "url": "https://skia.googlesource.com/external/github.com/google/brotli.git/+/6d03dfbedda1615c4cba1211f8d81735575209c8/LICENSE?format=TEXT",
+      "repository": "https://skia.googlesource.com/external/github.com/google/brotli.git",
+      "revision": "6d03dfbedda1615c4cba1211f8d81735575209c8"
+    },
+    {
+      "path": "skia-third-party/expat/COPYING",
+      "sha256": "31b15de82aa19a845156169a17a5488bf597e561b2c318d159ed583139b25e87",
+      "url": "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git/+/6154446fccefbf3ca644894f598969113b0c7bcd/COPYING?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/github.com/libexpat/libexpat.git",
+      "revision": "6154446fccefbf3ca644894f598969113b0c7bcd"
+    },
+    {
+      "path": "skia-third-party/freetype/LICENSE.TXT",
+      "sha256": "bd36c8b474855fa294c2ec5c184544478ef3720aad37d65a6296a4f264fd2d3b",
+      "url": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git/+/264b5fbf5b912b39f98d038bf75d39be0a73f21b/LICENSE.TXT?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git",
+      "revision": "264b5fbf5b912b39f98d038bf75d39be0a73f21b"
+    },
+    {
+      "path": "skia-third-party/freetype/docs/FTL.TXT",
+      "sha256": "5a5ee54c5001bbad1cdc1a57cc3dd4c42199b2da09d39c7ee41fab002d02967f",
+      "url": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git/+/264b5fbf5b912b39f98d038bf75d39be0a73f21b/docs/FTL.TXT?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git",
+      "revision": "264b5fbf5b912b39f98d038bf75d39be0a73f21b"
+    },
+    {
+      "path": "skia-third-party/freetype/src/bdf/README",
+      "sha256": "7984455e7e5a9faba3797c8bf095fbe10cc846316b7320aff8c58402e22b82fe",
+      "url": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git/+/264b5fbf5b912b39f98d038bf75d39be0a73f21b/src/bdf/README?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git",
+      "revision": "264b5fbf5b912b39f98d038bf75d39be0a73f21b"
+    },
+    {
+      "path": "skia-third-party/freetype/src/pcf/README",
+      "sha256": "18d9782898d9eac04476e2f744678137b2a889689ed3e923e052fc396a86f86b",
+      "url": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git/+/264b5fbf5b912b39f98d038bf75d39be0a73f21b/src/pcf/README?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/freetype2.git",
+      "revision": "264b5fbf5b912b39f98d038bf75d39be0a73f21b"
+    },
+    {
+      "path": "skia-third-party/harfbuzz/COPYING",
+      "sha256": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+      "url": "https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git/+/9cb1fee51069b206effb4736e443b038d230789d/COPYING?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/github.com/harfbuzz/harfbuzz.git",
+      "revision": "9cb1fee51069b206effb4736e443b038d230789d"
+    },
+    {
+      "path": "skia-third-party/highway/LICENSE",
+      "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+      "url": "https://chromium.googlesource.com/external/github.com/google/highway.git/+/457c891775a7397bdb0376bb1031e6e027af1c48/LICENSE?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/github.com/google/highway.git",
+      "revision": "457c891775a7397bdb0376bb1031e6e027af1c48"
+    },
+    {
+      "path": "skia-third-party/highway/LICENSE-BSD3",
+      "sha256": "d25e82e26acd42ca3ccc9993622631163425b869b9e16284226d534cff6470f2",
+      "url": "https://chromium.googlesource.com/external/github.com/google/highway.git/+/457c891775a7397bdb0376bb1031e6e027af1c48/LICENSE-BSD3?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/github.com/google/highway.git",
+      "revision": "457c891775a7397bdb0376bb1031e6e027af1c48"
+    },
+    {
+      "path": "skia-third-party/icu/LICENSE",
+      "sha256": "e55522d81edc687a341a4411e0776e54ca654e90147f354a90458aaced4116af",
+      "url": "https://chromium.googlesource.com/chromium/deps/icu.git/+/d578f2e8b7bd5938e21cfb6bf15c079e0aa5b738/LICENSE?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/deps/icu.git",
+      "revision": "d578f2e8b7bd5938e21cfb6bf15c079e0aa5b738"
+    },
+    {
+      "path": "skia-third-party/libjpeg-turbo/LICENSE.md",
+      "sha256": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430",
+      "url": "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git/+/e14cbfaa85529d47f9f55b0f104a579c1061f9ad/LICENSE.md?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git",
+      "revision": "e14cbfaa85529d47f9f55b0f104a579c1061f9ad"
+    },
+    {
+      "path": "skia-third-party/libjpeg-turbo/README.ijg",
+      "sha256": "75815e3bf6484201a3c3d17a1bbf10f2e8e3237f84df10a2357ea896db2a81d6",
+      "url": "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git/+/e14cbfaa85529d47f9f55b0f104a579c1061f9ad/README.ijg?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/deps/libjpeg_turbo.git",
+      "revision": "e14cbfaa85529d47f9f55b0f104a579c1061f9ad"
+    },
+    {
+      "path": "skia-third-party/libjxl/AUTHORS",
+      "sha256": "00be88a8e3275f8f52a147ecede84c11900fd3180f88478d7cc9f55acabf3a35",
+      "url": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git/+/332feb17d17311c748445f7ee75c4fb55cc38530/AUTHORS?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git",
+      "revision": "332feb17d17311c748445f7ee75c4fb55cc38530"
+    },
+    {
+      "path": "skia-third-party/libjxl/LICENSE",
+      "sha256": "8405932022a556380c2d8c272eff154a923feb197233f348ce5f7334fb0a5ede",
+      "url": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git/+/332feb17d17311c748445f7ee75c4fb55cc38530/LICENSE?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git",
+      "revision": "332feb17d17311c748445f7ee75c4fb55cc38530"
+    },
+    {
+      "path": "skia-third-party/libjxl/PATENTS",
+      "sha256": "91915f8ae056a68a3c5bdf05d9f6f78bb6903e27a8ca3a8434c9e4ac87300575",
+      "url": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git/+/332feb17d17311c748445f7ee75c4fb55cc38530/PATENTS?format=TEXT",
+      "repository": "https://chromium.googlesource.com/external/gitlab.com/wg1/jpeg-xl.git",
+      "revision": "332feb17d17311c748445f7ee75c4fb55cc38530"
+    },
+    {
+      "path": "skia-third-party/libpng/LICENSE",
+      "sha256": "bdb0a645ea18c60507d0368379b1ac5474b92255fcc2d115e07486a7672ba526",
+      "url": "https://skia.googlesource.com/third_party/libpng.git/+/d5515b5b8be3901aac04e5bd8bd5c89f287bcd33/LICENSE?format=TEXT",
+      "repository": "https://skia.googlesource.com/third_party/libpng.git",
+      "revision": "d5515b5b8be3901aac04e5bd8bd5c89f287bcd33"
+    },
+    {
+      "path": "skia-third-party/libwebp/COPYING",
+      "sha256": "5aec868f669e384a22372a4e8a1a6cd7d44c64cd451f960ca69cc170d1e13acf",
+      "url": "https://chromium.googlesource.com/webm/libwebp.git/+/845d5476a866141ba35ac133f856fa62f0b7445f/COPYING?format=TEXT",
+      "repository": "https://chromium.googlesource.com/webm/libwebp.git",
+      "revision": "845d5476a866141ba35ac133f856fa62f0b7445f"
+    },
+    {
+      "path": "skia-third-party/libwebp/PATENTS",
+      "sha256": "cc3273e0694ea5896145e0677699b53471b03ea43021ddc50e7923fbb9f5023c",
+      "url": "https://chromium.googlesource.com/webm/libwebp.git/+/845d5476a866141ba35ac133f856fa62f0b7445f/PATENTS?format=TEXT",
+      "repository": "https://chromium.googlesource.com/webm/libwebp.git",
+      "revision": "845d5476a866141ba35ac133f856fa62f0b7445f"
+    },
+    {
+      "path": "skia-third-party/wuffs/LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "url": "https://skia.googlesource.com/external/github.com/google/wuffs-mirror-release-c.git/+/e3f919ccfe3ef542cfc983a82146070258fb57f8/LICENSE?format=TEXT",
+      "repository": "https://skia.googlesource.com/external/github.com/google/wuffs-mirror-release-c.git",
+      "revision": "e3f919ccfe3ef542cfc983a82146070258fb57f8"
+    },
+    {
+      "path": "skia-third-party/zlib/LICENSE",
+      "sha256": "e1cfcc55c325b3f78cf55df9664abaa066e2271dffe8213347d9fccdfbac8f2c",
+      "url": "https://chromium.googlesource.com/chromium/src/third_party/zlib/+/646b7f569718921d7d4b5b8e22572ff6c76f2596/LICENSE?format=TEXT",
+      "repository": "https://chromium.googlesource.com/chromium/src/third_party/zlib",
+      "revision": "646b7f569718921d7d4b5b8e22572ff6c76f2596"
+    },
+    {
+      "path": "skia/LICENSE",
+      "sha256": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    },
+    {
+      "path": "skia/modules/skcms/LICENSE",
+      "sha256": "e59bb5c5c6ba426a9ac4ba9fe667ad14c5166b12aa25be8af1d122b14fbe2e36",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/modules/skcms/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    },
+    {
+      "path": "skia/third_party/etc1/LICENSE",
+      "sha256": "5366e97b4478f15a1e2fd7e6094337426597df28de50cd9fed3f2e7e87f1229e",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/third_party/etc1/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    },
+    {
+      "path": "skia/third_party/expat/LICENSE",
+      "sha256": "cca48bacd6e7ed63f00b42a346bcc8549a460b41efe75d93db350fc882f54dca",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/third_party/expat/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    },
+    {
+      "path": "skia/third_party/harfbuzz/LICENSE",
+      "sha256": "cca48bacd6e7ed63f00b42a346bcc8549a460b41efe75d93db350fc882f54dca",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/third_party/harfbuzz/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    },
+    {
+      "path": "skia/third_party/wuffs/LICENSE",
+      "sha256": "e59bb5c5c6ba426a9ac4ba9fe667ad14c5166b12aa25be8af1d122b14fbe2e36",
+      "url": "https://raw.githubusercontent.com/google/skia/b94213a11b3a2edadfae89f0c57a7f4ab72772c9/third_party/wuffs/LICENSE",
+      "repository": "https://github.com/google/skia",
+      "revision": "b94213a11b3a2edadfae89f0c57a7f4ab72772c9"
+    }
+  ]
+}

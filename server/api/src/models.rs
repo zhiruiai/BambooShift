@@ -13,8 +13,16 @@ pub(crate) struct User {
     pub created_at: i64,
 }
 impl User {
+    pub fn local_only(&self) -> bool {
+        self.password_hash == crate::local_desktop::PASSWORD_MARKER
+    }
     pub fn public(&self) -> Value {
-        json!({"id":self.id,"email":self.email,"name":self.name,"status":self.status,"createdAt":iso(self.created_at)})
+        let mut value = json!({"id":self.id,"email":self.email,"name":self.name,"status":self.status,"createdAt":iso(self.created_at)});
+        if self.local_only() {
+            value["email"] = json!("");
+            value["localOnly"] = json!(true);
+        }
+        value
     }
 }
 #[derive(Clone, FromRow)]

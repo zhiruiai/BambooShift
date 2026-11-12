@@ -155,8 +155,11 @@ export async function collectDependencyNotices({
   output = join(root, '.build/notices'),
   cargoMetadata,
   npmPackages,
+  npmScope = 'bundled-web',
   strict = true,
 } = {}) {
+  if (!['bundled-web', 'bundled-runtime'].includes(npmScope))
+    throw Error('Unsupported bundled dependency notice scope.');
   sourceRoot = await realDirectory(resolve(sourceRoot));
   output = resolve(output);
   try {
@@ -255,10 +258,12 @@ export async function collectDependencyNotices({
       scope:
         npmPackages === undefined
           ? 'Audit of all installed npm packages and the locked Cargo host dependency graph, including development/build dependencies. Optional uninstalled npm packages are listed separately.'
-          : 'Exact supplied bundled Web npm packages and the locked Cargo host dependency graph, including Rust development/build dependencies.',
-      npmScope: npmPackages === undefined ? 'all-installed-audit' : 'bundled-web',
+          : `Exact supplied ${npmScope === 'bundled-runtime' ? 'worker runtime' : 'Web'} npm packages and the locked Cargo host dependency graph, including Rust development/build dependencies.`,
+      npmScope: npmPackages === undefined ? 'all-installed-audit' : npmScope,
       externalRuntimeDependencies:
-        'Worker npm dependencies remain external and are installed separately using runtime/package-lock.json. This notice index does not imply that node_modules are shipped in the service archive.',
+        npmScope === 'bundled-runtime'
+          ? 'The desktop package includes the listed worker npm dependencies installed from runtime/package-lock.json. Node and optional native driver notices are carried separately.'
+          : 'Worker npm dependencies remain external and are installed separately using runtime/package-lock.json. This notice index does not imply that node_modules are shipped in the service archive.',
       unchangedUpstreamTexts: true,
       packages,
       absentOptional: npm.absentOptional,

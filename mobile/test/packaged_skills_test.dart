@@ -58,10 +58,10 @@ bool _canPress(WidgetTester tester, Finder button) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('both locales load the same seven complete workflow recipes', () async {
+  test('both locales load the same nine complete workflow recipes', () async {
     final en = await loadSkillRecipes('en'), zh = await loadSkillRecipes('zh');
     final ids = en.map((item) => item['id']).toSet();
-    expect(ids.length, 7);
+    expect(ids.length, 9);
     expect(zh.map((item) => item['id']), en.map((item) => item['id']));
     for (final recipe in [...en, ...zh]) {
       for (final field in ['name', 'description', 'content']) {

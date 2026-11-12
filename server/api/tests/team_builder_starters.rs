@@ -16,7 +16,19 @@ async fn starter_is_an_editable_idempotent_plan_without_model_or_implicit_work()
         .iter()
         .map(|item| item["id"].as_str().unwrap())
         .collect();
-    assert_eq!(ids, ["launch", "close", "support", "study", "creator", "office"]);
+    assert_eq!(
+        ids,
+        [
+            "launch",
+            "close",
+            "support",
+            "study",
+            "creator",
+            "office",
+            "account-health",
+            "software-product"
+        ]
+    );
     assert_eq!(catalog[0]["draft"]["title"], "产品发布小组");
     assert_eq!(
         f.request("GET", &catalog_path, None, true, Some(&f.member))
@@ -75,6 +87,30 @@ async fn starter_is_an_editable_idempotent_plan_without_model_or_implicit_work()
             .0,
         409
     );
+    for (language, title) in [
+        ("en", "Customer Health Review Team"),
+        ("zh-CN", "客户健康复盘小组"),
+    ] {
+        let (status, review) = f
+            .request(
+                "POST",
+                &start_path,
+                Some(json!({
+                    "requestId": uuid::Uuid::new_v4().to_string(),
+                    "goal": "Review synthetic account signals",
+                    "template": {"id":"account-health", "language":language}
+                })),
+                false,
+                Some(&f.owner),
+            )
+            .await;
+        assert_eq!(status, 202, "{review}");
+        assert_eq!(review["status"], "ready");
+        assert_eq!(review["draft"]["title"], title);
+        assert_eq!(review["draft"]["leadKey"], "signals");
+        assert_eq!(review["draft"]["members"].as_array().unwrap().len(), 3);
+        assert!(review["result"].is_null());
+    }
     let staged = f.bootstrap().await;
     for key in ["agents", "conversations", "messages", "routines", "skills"] {
         assert_eq!(staged[key], before[key]);

@@ -11,7 +11,14 @@ import { useAvatarAppearance } from '../avatarAppearance';
 import { AvatarArtwork } from './AvatarArtwork';
 import { GeneratedAvatarArtwork } from './GeneratedAvatarArtwork';
 
-export type AvatarMotion = 'idle' | 'working' | 'attention' | 'done' | 'preview';
+export type AvatarMotion =
+  'idle' | 'thinking' | 'working' | 'attention' | 'done' | 'error' | 'preview';
+
+const runningMotion = (motion: AvatarMotion | undefined) =>
+  motion === 'thinking' || motion === 'working';
+
+const terminalMotion = (motion: AvatarMotion | undefined) =>
+  motion === 'done' || motion === 'error';
 
 export function Avatar({
   agent,
@@ -19,6 +26,7 @@ export function Avatar({
   className = '',
   motion,
   awaitingCompletion = false,
+  sustain = false,
   userId,
 }: {
   agent?: Partial<BotAgent>;
@@ -26,6 +34,7 @@ export function Avatar({
   className?: string;
   motion?: AvatarMotion;
   awaitingCompletion?: boolean;
+  sustain?: boolean;
   userId?: string;
 }) {
   const account = useAccount();
@@ -87,28 +96,58 @@ export function Avatar({
     if (previous === motion || (awaitingCompletion && motion === undefined)) return;
     previousMotion.current = motion;
     if (
-      motion === 'done' &&
-      previous === 'working' &&
+      terminalMotion(motion) &&
+      (runningMotion(previous) || previous === 'attention') &&
       !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     ) {
       setJustFinished(true);
-    } else if (previous === 'done') {
+    } else if (terminalMotion(previous)) {
       setJustFinished(false);
     }
   }, [motion, awaitingCompletion]);
   const effect =
     image || sharedPath || agent?.avatarImageId
       ? undefined
-      : motion === 'done'
+      : terminalMotion(motion)
         ? justFinished
-          ? 'done'
+          ? motion
           : undefined
         : motion;
+  const element = useRef<HTMLSpanElement>(null);
+  const sustained = sustain && runningMotion(effect);
+  useEffect(() => {
+    const target = element.current;
+    if (!sustained || !target) return;
+    let visible = typeof IntersectionObserver === 'undefined';
+    const update = () => {
+      target.dataset.avatarVisible = String(visible && !document.hidden);
+    };
+    const observer =
+      typeof IntersectionObserver === 'undefined'
+        ? undefined
+        : new IntersectionObserver(
+            ([entry]) => {
+              visible = entry?.isIntersecting === true && entry.intersectionRatio >= 0.25;
+              update();
+            },
+            { threshold: 0.25 },
+          );
+    observer?.observe(target);
+    document.addEventListener('visibilitychange', update);
+    update();
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener('visibilitychange', update);
+      delete target.dataset.avatarVisible;
+    };
+  }, [sustained]);
   return (
     <span
+      ref={element}
       className={`avatar ${className}`}
       data-avatar-motion={effect}
-      onAnimationEnd={effect === 'done' ? () => setJustFinished(false) : undefined}
+      data-avatar-sustained={sustained ? '' : undefined}
+      onAnimationEnd={terminalMotion(effect) ? () => setJustFinished(false) : undefined}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -135,11 +174,13 @@ export function Avatar({
 export function GroupAvatar({
   agents,
   size = 40,
-  idle = false,
+  motion,
+  sustain = false,
 }: {
   agents: BotAgent[];
   size?: number;
-  idle?: boolean;
+  motion?: AvatarMotion;
+  sustain?: boolean;
 }) {
   return (
     <span className="group-avatar" style={{ width: size, height: size }} aria-hidden="true">
@@ -149,7 +190,8 @@ export function GroupAvatar({
           agent={a}
           size={size * 0.62}
           className={`group-avatar-${i}`}
-          motion={idle && i === 0 ? 'idle' : undefined}
+          motion={i === 0 ? motion : undefined}
+          sustain={sustain && i === 0}
         />
       ))}
     </span>

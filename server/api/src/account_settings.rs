@@ -52,6 +52,9 @@ pub async fn change_password(
     };
     sessions::expected_body(&body, &identity)?;
     security::rate_limit(&state, peer, "account-password").await?;
+    if identity.user.local_only() {
+        return Err(ApiError::bad("本机个人空间无需密码。"));
+    }
     if !password::check(&state, old.clone(), &identity.user.password_hash).await? {
         return Err(ApiError::bad("当前密码不正确。"));
     }

@@ -35,10 +35,23 @@
   const arrow = document.getElementById('connect-arrow');
   const localButton = document.getElementById('use-local');
   const changeButton = document.getElementById('change-address');
+  const startLocalButton = document.getElementById('start-local');
+  const startLocalLabel = document.getElementById('start-local-label');
+  const localSpinner = document.getElementById('local-spinner');
+  const localDescription = document.getElementById('local-description');
+  const localErrorMessage = document.getElementById('local-error');
+  const cancelLocalButton = document.getElementById('cancel-local');
+  const hostControlOption = document.getElementById('host-control-option');
+  const hostControlInput = document.getElementById('host-control');
   const errorPanel = document.getElementById('error-panel');
   const errorMessage = document.getElementById('error-message');
   const statusMessage = document.getElementById('connection-status');
   let status = 'loading';
+  let localAvailable = false;
+  let localStarting = false;
+  let hostControlAvailable = false;
+  let hostControlEdited = false;
+  let localError = '';
   let lastAttemptUrl = '';
   let edited = false;
   let eventVersion = 0;
@@ -50,10 +63,23 @@
     visibleError = error;
     visibleNote = note;
     document.body.hidden = status === 'connected';
-    const busy = status === 'loading' || status === 'connecting' || status === 'connected';
+    const busy =
+      localStarting || status === 'loading' || status === 'connecting' || status === 'connected';
+    startLocalButton.disabled = busy || !localAvailable || !bridge?.startLocal;
+    hostControlOption.hidden = !hostControlAvailable;
+    hostControlInput.disabled = busy;
+    startLocalLabel.textContent = t(localStarting ? 'localRuntimeStarting' : 'startLocal');
+    localSpinner.hidden = !localStarting;
+    localDescription.textContent = t(
+      localAvailable || status === 'loading' ? 'localWorkspaceNote' : 'localRuntimeUnavailable',
+    );
+    localErrorMessage.hidden = !localError;
+    localErrorMessage.textContent = localError ? languageApi.message(locale, localError) : '';
+    cancelLocalButton.hidden = !localStarting;
+    cancelLocalButton.disabled = !bridge?.cancelLocal;
     form.setAttribute('aria-busy', String(busy));
     address.disabled = busy;
-    languageSelect.disabled = status === 'connecting' || status === 'connected';
+    languageSelect.disabled = localStarting || status === 'connecting' || status === 'connected';
     localButton.disabled = busy;
     connectButton.disabled = busy || !bridge;
     errorPanel.hidden = !error;
@@ -61,8 +87,8 @@
     address.setAttribute('aria-invalid', String(Boolean(error)));
     address.setAttribute('aria-describedby', error ? 'address-help error-message' : 'address-help');
     changeButton.hidden = !error || !bridge;
-    spinner.hidden = !busy;
-    arrow.hidden = busy;
+    spinner.hidden = localStarting || !busy;
+    arrow.hidden = !localStarting && busy;
     connectLabel.textContent =
       status === 'loading'
         ? t('preparing')
@@ -82,12 +108,18 @@
     if (!state || typeof state !== 'object') return false;
     if (!['setup', 'connecting', 'connected', 'error'].includes(state.status)) return false;
     if (state.language) applyLanguage(state.language, state.languagePersisted !== false);
+    localAvailable = state.localAvailable === true;
+    localStarting = state.localStarting === true;
+    hostControlAvailable = state.localHostControlAvailable === true;
+    if (state.status === 'connected') hostControlEdited = false;
+    if (!hostControlEdited) hostControlInput.checked = state.localHostControlSelected === true;
+    localError = typeof state.localError === 'string' ? state.localError.slice(0, 1000) : '';
     const savedUrl = typeof state.url === 'string' && state.url ? state.url : DEFAULT_URL;
     if (first || !edited || state.status === 'connecting' || state.status === 'connected') {
       address.value = savedUrl;
       edited = false;
     }
-    if (state.status === 'connecting') lastAttemptUrl = savedUrl;
+    if (state.status === 'connecting' && !localStarting) lastAttemptUrl = savedUrl;
     render(state.status, typeof state.error === 'string' ? state.error.slice(0, 1000) : '');
     return true;
   }
@@ -113,7 +145,7 @@
 
   async function connect(event) {
     event.preventDefault();
-    if (!bridge || ['loading', 'connecting', 'connected'].includes(status)) return;
+    if (localStarting || !bridge || ['loading', 'connecting', 'connected'].includes(status)) return;
     let url;
     try {
       url = workspaceUrl(address.value);
@@ -142,6 +174,36 @@
     }
   }
 
+  async function localAction(method) {
+    const ticket = ++operation;
+    localStarting = method === 'startLocal';
+    localError = '';
+    render(status);
+    try {
+      const state =
+        method === 'startLocal'
+          ? await bridge.startLocal({
+              hostControl: hostControlAvailable && hostControlInput.checked === true,
+            })
+          : await bridge.cancelLocal();
+      if (ticket === operation) applyState(state);
+    } catch {
+      if (ticket !== operation) return;
+      localStarting = false;
+      localError = t('localRuntimeFailed');
+      render('setup');
+    }
+  }
+
+  hostControlInput.addEventListener('change', () => {
+    hostControlEdited = true;
+  });
+  startLocalButton.addEventListener('click', () => {
+    if (!startLocalButton.disabled) void localAction('startLocal');
+  });
+  cancelLocalButton.addEventListener('click', () => {
+    if (localStarting && bridge?.cancelLocal) void localAction('cancelLocal');
+  });
   form.addEventListener('submit', (event) => void connect(event));
   address.addEventListener('input', () => {
     edited = true;

@@ -30,6 +30,10 @@ fn product() -> Router<State> {
             }),
         )
         .route("/api/account/session", get(accounts::session))
+        .route(
+            "/api/account/local-session",
+            post(crate::local_desktop::session),
+        )
         .route("/api/account/register", post(accounts::register))
         .route("/api/account/login", post(accounts::login))
         .route("/api/account/logout", post(accounts::logout))

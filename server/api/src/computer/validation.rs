@@ -10,7 +10,11 @@ pub const ACTIONS: &[&str] = &[
     "download_file",
     "terminal_command",
     "remote_shell",
+    "local_shell",
     "browser_navigate",
+    "browser_tabs",
+    "browser_select_tab",
+    "browser_close_tab",
     "browser_click",
     "browser_download",
     "browser_type",
@@ -27,7 +31,8 @@ pub const ACTIONS: &[&str] = &[
 pub fn readonly(kind: &str) -> bool {
     matches!(
         kind,
-        "list_files"
+        "browser_tabs"
+            | "list_files"
             | "read_file"
             | "download_file"
             | "terminal_command"
@@ -74,6 +79,16 @@ pub fn action(input: &Value, virtual_desktop: bool) -> Result<Value> {
         return Err(ApiError::bad("电脑操作参数无效。"));
     }
     let mut out = json!({"type":kind});
+    if kind == "browser_tabs" {
+        return Ok(out);
+    }
+    if matches!(kind, "browser_select_tab" | "browser_close_tab") {
+        if !input["tabId"].as_str().is_some_and(model::uuid) {
+            return Err(ApiError::bad("请选择当前 Bot 标签页列表中的有效 tabId。"));
+        }
+        out["tabId"] = input["tabId"].clone();
+        return Ok(out);
+    }
     for key in [
         "fileId",
         "path",
@@ -121,12 +136,17 @@ pub fn action(input: &Value, virtual_desktop: bool) -> Result<Value> {
     if out.get("path").is_some()
         || matches!(
             kind,
-            "read_file" | "write_file" | "download_file" | "browser_download" | "remote_shell"
+            "read_file"
+                | "write_file"
+                | "download_file"
+                | "browser_download"
+                | "remote_shell"
+                | "local_shell"
         )
     {
         out["path"] = json!(path(
             &out["path"],
-            if kind == "remote_shell" {
+            if matches!(kind, "remote_shell" | "local_shell") {
                 Some(".")
             } else {
                 None
@@ -144,7 +164,7 @@ pub fn action(input: &Value, virtual_desktop: bool) -> Result<Value> {
     {
         return Err(ApiError::bad("终端仅支持只读命令：pwd、ls、date、uname。"));
     }
-    if kind == "remote_shell"
+    if matches!(kind, "remote_shell" | "local_shell")
         && !out["command"].as_str().is_some_and(|s| {
             !s.trim().is_empty() && s.encode_utf16().count() <= 16000 && !s.contains('\0')
         })

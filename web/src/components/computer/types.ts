@@ -23,12 +23,16 @@ export type TakeoverStatus = {
   surface?: 'browser' | 'desktop';
 };
 export const labels: Record<string, string> = localizedData(() => ({
+  browser_tabs: uiText('computer:browser_tabs'),
+  browser_select_tab: uiText('computer:browser_select_tab'),
+  browser_close_tab: uiText('computer:browser_close_tab'),
   browser_navigate: uiText('computer:text_bdc799e5677d'),
   browser_click: uiText('computer:text_51fa25e900f7'),
   browser_download: uiText('computer:text_68532ddc30a9'),
   browser_type: uiText('computer:text_6495aeb002d4'),
   terminal_command: uiText('computer:text_e53f35dc006b'),
   remote_shell: uiText('computer:text_2da33b1cff3a'),
+  local_shell: uiText('computer:local_shell'),
   browser_scroll: uiText('computer:text_449dfbcab15f'),
   browser_back: uiText('computer:text_b6050ccef309'),
   list_files: uiText('computer:text_ba2f52ed2e4d'),

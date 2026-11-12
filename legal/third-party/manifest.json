@@ -38,6 +38,171 @@
           "url": "https://raw.githubusercontent.com/etemesi254/zune-image/fa2c767a01d7d9373911d0bf63e0588553d67e0e/LICENSE.md"
         }
       ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@cordisjs/core",
+      "version": "3.18.1",
+      "revision": "4658414e9414464ff1d08d076882fb66c1a3bb1c",
+      "repository": "https://github.com/cordiverse/cordis",
+      "integrity": "sha512-yRuATOamFxeD1ztE2L3o1SaHuT2zw5DTXijQYxt9azVNeILbvtomfGG6sLZegrynJO9XZbNvXbOlQ7LBJDOlAg==",
+      "files": [
+        {
+          "path": "cordis-core-3.18.1/LICENSE",
+          "sha256": "034fb52b1d57360ecbae6cb1632a88f86fd7c3d3f5631a5f082710203dda0be7",
+          "url": "https://raw.githubusercontent.com/cordiverse/cordis/4658414e9414464ff1d08d076882fb66c1a3bb1c/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@aws-sdk/credential-provider-http",
+      "version": "3.972.82",
+      "revision": "258c14447eefd8e028db1a50ab49aac8312c0af9",
+      "repository": "https://github.com/aws/aws-sdk-js-v3",
+      "integrity": "sha512-vQzlDHlC24Yz42p+rT4NBoP/5VdetkBoujbOLq9h6QYWC8THuZSPYnXIR9OP3XcOrdMgPBBipOrdssfxnIiWUg==",
+      "files": [
+        {
+          "path": "aws-sdk-v3-2026-10-30/LICENSE",
+          "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+          "url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/258c14447eefd8e028db1a50ab49aac8312c0af9/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@aws-sdk/credential-provider-login",
+      "version": "3.972.87",
+      "revision": "258c14447eefd8e028db1a50ab49aac8312c0af9",
+      "repository": "https://github.com/aws/aws-sdk-js-v3",
+      "integrity": "sha512-C4ZFmcwM+Zj14Z8huVUk54Gv4uzT1ZdzG9cY3Gdh8FePakq7Bss1OFsgZjAhWFOkFOGpBvFBeu0OWjWf8HNKRQ==",
+      "files": [
+        {
+          "path": "aws-sdk-v3-2026-10-30/LICENSE",
+          "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+          "url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/258c14447eefd8e028db1a50ab49aac8312c0af9/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@aws-sdk/nested-clients",
+      "version": "3.997.54",
+      "revision": "258c14447eefd8e028db1a50ab49aac8312c0af9",
+      "repository": "https://github.com/aws/aws-sdk-js-v3",
+      "integrity": "sha512-/OczlavsS7U5sOodRO10Ug4R/AKFVZiXTstKipWe68EfjPkmdDFNXNl9FCJyXWkg1DG6RBm3qAuVB8FNW9O8KQ==",
+      "files": [
+        {
+          "path": "aws-sdk-v3-2026-10-30/LICENSE",
+          "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+          "url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/258c14447eefd8e028db1a50ab49aac8312c0af9/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "standardwebhooks",
+      "version": "1.1.1",
+      "revision": "b4d2c14fc5b4ccff3ff271e3b087dff812254c59",
+      "repository": "https://github.com/standard-webhooks/standard-webhooks",
+      "integrity": "sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==",
+      "files": [
+        {
+          "path": "standardwebhooks-1.1.1/LICENSE",
+          "sha256": "5ec8c7b26b64d881a6706617bed25c049f97f2f35de034c756de8546fd6dbe27",
+          "url": "https://raw.githubusercontent.com/standard-webhooks/standard-webhooks/b4d2c14fc5b4ccff3ff271e3b087dff812254c59/libraries/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-agent-core",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-PoKY84SKUwnt7S5QBZaGUqfNO1kjP3KHpHUA9QpFTj4cOjaVWMYIcBPJ6FDRCdE8Zen9OSECQUd0uUfVgtSmgA==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-ai",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-hQM/C4+1w8rHYACzDDf+0vQMnEnpzIop1tptIERVgR3ZeT/hHSzBNG8PaWPgxWQjqSeKCyBZSyp8uTT6eKK1pQ==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-codemode",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-23CNAXpS9DuLzPMyYuvrXVVio46x4YhffCgCqaWmF7F5H8PooqjrQvX4ucF6M0BhUd+x2tV6r1J0dv8cCME4Cg==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-coding-agent",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-Z41LpZ3yYHSC/UUps6Mr39UMFPwH8elhJBG9DY1P7kuzsE5qSK/6eMj2EHzO5evJRQWLbKSqUMw+4nCNtIyiQg==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-telemetry",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-MLIfowwUYIY65jSjMX82paZOrX/NTvLk6D08h+3Jq42a99RzUOewzuCR0zOlPul3D6UBfddat76VT6LvsHEs1w==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@earendil-works/pi-tui",
+      "version": "1.4.0",
+      "revision": "4a080252f06caf63a525d7873c5d94d3c23887e0",
+      "repository": "https://github.com/earendil-works/pi",
+      "integrity": "sha512-4obPOjgOD7g4mGSlngIvxyujC1UPdmyI9zdVthbr8GufacFEX+Ce0+scPgHg++k2xj5+QjESM2d5TxvIuzCVmg==",
+      "files": [
+        {
+          "path": "pi-1.4.0/LICENSE",
+          "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+          "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
+        }
+      ]
     }
   ]
 }

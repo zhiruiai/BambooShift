@@ -96,14 +96,15 @@ function Fixture() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const nearBottom = useRef(true);
   const composerRef = useRef<HTMLTextAreaElement>(null);
+  const running = stage < 3 || stage === 5;
   const chatMessages = [
     ...messages,
     message('tail', {
-      status: stage < 3 ? 'running' : 'done',
+      status: running ? 'running' : stage === 6 ? 'error' : 'done',
       metadata: stage === 2 ? { streamEnded: true } : undefined,
       content: stage === 0 ? '' : 'The two drafts are ready to review.',
     }),
-    ...(stage < 4
+    ...(stage !== 4
       ? []
       : [
           message('follow-up-question', {
@@ -139,6 +140,7 @@ function Fixture() {
           </button>
           <button onClick={() => setGroupHeader((value) => !value)}>Toggle group header</button>
           <ChatHeader
+            sendScope={scope as ChatProps['sendScope']}
             draggingFiles={false}
             uploading={new Set()}
             selected={conversation.id}
@@ -147,7 +149,7 @@ function Fixture() {
             toggleDetails={noOp}
             members={groupHeader ? [agent, { ...agent, id: 'synthetic-teammate' }] : [agent]}
             lead={agent}
-            working={stage < 3}
+            working={running}
             messages={chatMessages}
             canManage={owner}
             currentUserId={userId}
@@ -219,7 +221,7 @@ function Fixture() {
             reactToMessage={async () => {}}
             sendScope={scope as ChatProps['sendScope']}
             modal={dialog ? 'create' : null}
-            working={stage < 3}
+            working={running}
             currentWorker={agent}
             voice={{ state: { supported: false, voices: [] } } as unknown as ChatProps['voice']}
           />

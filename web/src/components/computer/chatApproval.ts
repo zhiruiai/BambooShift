@@ -118,7 +118,8 @@ export function mayDecideComputerAction(
 
 export function mayAllowComputerAction(action: ChatComputerAction) {
   return (
-    (action.type !== 'remote_shell' || remoteShellRequestReadable(action.payload)) &&
+    (!['remote_shell', 'local_shell'].includes(action.type) ||
+      remoteShellRequestReadable(action.payload)) &&
     (action.expiresAt === undefined ||
       (typeof action.expiresAt === 'string' && Date.parse(action.expiresAt) > Date.now()))
   );

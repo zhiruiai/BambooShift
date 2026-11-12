@@ -39,8 +39,37 @@
         </div>
         <h1 id="page-title" data-i18n="heading">连接你的工作空间</h1>
         <p class="intro" data-i18n="intro">
-          使用团队提供的 HTTPS 地址，或先在本机启动 BambooShift 服务。
+          在这台电脑创建工作空间，或连接已有的 BambooShift 服务。
         </p>
+        <section class="local-workspace" aria-labelledby="start-local">
+          <button id="start-local" class="primary-button" type="button" disabled>
+            <span id="local-spinner" class="spinner" aria-hidden="true" hidden></span>
+            <span id="start-local-label" data-i18n="startLocal">在这台电脑开始</span>
+          </button>
+          <p id="local-description" class="local-description" data-i18n="localWorkspaceNote">
+            对话和文件保存在这台电脑。退出应用会停止本机任务。
+          </p>
+          <label id="host-control-option" class="host-control-option" hidden>
+            <input id="host-control" type="checkbox" aria-describedby="host-control-help" />
+            <span>
+              <strong data-i18n="hostControl">允许整机操作</strong>
+              <small id="host-control-help" data-i18n="hostControlHelp">
+                Bot 可在你批准后操作屏幕、键鼠、文件和终端。
+              </small>
+            </span>
+          </label>
+          <p id="local-error" class="local-error" role="alert" hidden></p>
+          <button
+            id="cancel-local"
+            class="change-address"
+            type="button"
+            data-i18n="cancelLocal"
+            hidden
+          >
+            取消启动
+          </button>
+        </section>
+        <h2 class="existing-workspace" data-i18n="existingWorkspace">连接已有工作空间</h2>
         <form id="connect-form" novalidate aria-busy="true">
           <label class="field-label" for="workspace-url" data-i18n="address">工作空间地址</label>
           <input

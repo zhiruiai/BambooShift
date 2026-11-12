@@ -22,7 +22,17 @@ const _exportedColors = {
   'gem': Color(0xffed7299),
 };
 
-enum BotAvatarMotion { working, attention, done, preview }
+enum BotAvatarMotion {
+  thinking,
+  working,
+  attention,
+  done,
+  error,
+  preview;
+
+  bool get running => this == thinking || this == working;
+  bool get terminal => this == done || this == error;
+}
 
 class BotAvatar extends StatelessWidget {
   const BotAvatar({
@@ -35,6 +45,7 @@ class BotAvatar extends StatelessWidget {
     this.previewTheme,
     this.useDeviceTheme = true,
     this.motion,
+    this.sustainMotion = false,
     this.blinkWhenIdle = false,
   });
   final Json bot;
@@ -45,6 +56,7 @@ class BotAvatar extends StatelessWidget {
   final GeneratedAvatarTheme? previewTheme;
   final bool useDeviceTheme;
   final BotAvatarMotion? motion;
+  final bool sustainMotion;
   final bool blinkWhenIdle;
   @override
   Widget build(BuildContext context) {
@@ -96,10 +108,11 @@ class BotAvatar extends StatelessWidget {
           );
     final fallback = SizedBox.square(
       dimension: size,
-      child: path == null && motion != null
+      child: path == null && bot['avatarImageId'] == null && motion != null
           ? _AvatarReaction(
               key: ValueKey((theme, shape, color)),
               motion: motion!,
+              sustain: sustainMotion,
               size: size,
               child: artwork,
             )
@@ -122,11 +135,13 @@ class _AvatarReaction extends StatefulWidget {
   const _AvatarReaction({
     super.key,
     required this.motion,
+    required this.sustain,
     required this.size,
     required this.child,
   });
 
   final BotAvatarMotion motion;
+  final bool sustain;
   final double size;
   final Widget child;
 
@@ -134,33 +149,90 @@ class _AvatarReaction extends StatefulWidget {
   State<_AvatarReaction> createState() => _AvatarReactionState();
 }
 
-class _AvatarReactionState extends State<_AvatarReaction> {
-  bool justFinished = false;
+class _AvatarReactionState extends State<_AvatarReaction>
+    with WidgetsBindingObserver {
+  Timer? _replay;
+  int _cycle = 0;
+  bool _justFinished = false;
+
+  bool get _foreground {
+    final state = WidgetsBinding.instance.lifecycleState;
+    return state == null || state == AppLifecycleState.resumed;
+  }
+
+  bool get _sustained => widget.sustain && widget.motion.running;
+  bool get _enabled =>
+      _foreground &&
+      TickerMode.valuesOf(context).enabled &&
+      MediaQuery.maybeDisableAnimationsOf(context) != true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.sustain) WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_enabled) _replay?.cancel();
+  }
 
   @override
   void didUpdateWidget(_AvatarReaction oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.motion != widget.motion) {
-      justFinished =
-          widget.motion == BotAvatarMotion.done &&
-          oldWidget.motion == BotAvatarMotion.working;
+    if (oldWidget.sustain != widget.sustain) {
+      final binding = WidgetsBinding.instance;
+      if (widget.sustain) {
+        binding.addObserver(this);
+      } else {
+        binding.removeObserver(this);
+        _replay?.cancel();
+      }
     }
+    if (oldWidget.motion == widget.motion) return;
+    _replay?.cancel();
+    _justFinished =
+        widget.motion.terminal &&
+        (oldWidget.motion.running ||
+            oldWidget.motion == BotAvatarMotion.attention);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _replay?.cancel();
+    if (mounted) setState(() => _cycle++);
+  }
+
+  @override
+  void dispose() {
+    if (widget.sustain) WidgetsBinding.instance.removeObserver(this);
+    _replay?.cancel();
+    super.dispose();
+  }
+
+  void _scheduleReplay() {
+    if (!_enabled || !_sustained) return;
+    _replay?.cancel();
+    _replay = Timer(const Duration(milliseconds: 1800), () {
+      if (mounted && _enabled && _sustained) setState(() => _cycle++);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final motion = widget.motion;
-    if (MediaQuery.maybeDisableAnimationsOf(context) == true ||
-        (motion == BotAvatarMotion.done && !justFinished)) {
-      return widget.child;
-    }
+    if (!_enabled || (motion.terminal && !_justFinished)) return widget.child;
     return TweenAnimationBuilder<double>(
-      key: ValueKey(motion),
+      key: ValueKey((motion, _cycle)),
+      onEnd: _sustained ? _scheduleReplay : null,
       duration: Duration(
         milliseconds: switch (motion) {
-          BotAvatarMotion.working => 1700,
+          BotAvatarMotion.thinking => 1050,
+          BotAvatarMotion.working => _sustained ? 1150 : 1700,
           BotAvatarMotion.attention => 620,
           BotAvatarMotion.done => 480,
+          BotAvatarMotion.error => 560,
           BotAvatarMotion.preview => 520,
         },
       ),
@@ -170,8 +242,12 @@ class _AvatarReactionState extends State<_AvatarReaction> {
         final phase = progress * math.pi;
         final transform = Matrix4.identity();
         switch (motion) {
+          case BotAvatarMotion.thinking:
+            transform
+              ..translateByDouble(0, .02 * widget.size * math.sin(phase), 0, 1)
+              ..rotateZ(-.14 * math.sin(2 * phase));
           case BotAvatarMotion.working:
-            final breath = math.sin(2 * phase);
+            final breath = math.sin(_sustained ? phase : 2 * phase);
             final lift = breath * breath;
             final scale = 1 + .07 * lift;
             transform
@@ -191,6 +267,12 @@ class _AvatarReactionState extends State<_AvatarReaction> {
               final settle = -math.sin(2 * phase);
               transform.scaleByDouble(1 + .08 * settle, 1 - .09 * settle, 1, 1);
             }
+          case BotAvatarMotion.error:
+            final sink = math.sin(phase);
+            transform
+              ..translateByDouble(0, .05 * widget.size * sink, 0, 1)
+              ..scaleByDouble(1 + .05 * sink, 1 - .10 * sink, 1, 1)
+              ..rotateZ(-.13 * math.sin(2 * phase));
           case BotAvatarMotion.preview:
             transform
               ..translateByDouble(0, -.06 * widget.size * math.sin(phase), 0, 1)

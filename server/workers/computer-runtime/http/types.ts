@@ -1,6 +1,7 @@
 import type express from 'express';
 import type { LocalComputer } from '../../computer-worker/index.js';
 import type { IsolatedShellRunner } from '../isolated-shell.js';
+import type { HostShellRunner } from '../host-shell.js';
 import type { RemoteShellResult } from '../../../../shared/isolated-shell.js';
 import type { ComputerOperationRegistry } from '../computer-operations.js';
 export interface ShellJob {
@@ -25,6 +26,7 @@ export interface WorkerRoutes {
   options: { workspaceDir: string };
   computer: LocalComputer;
   shell: IsolatedShellRunner;
+  hostShell: HostShellRunner;
   runtime: WorkerState;
   operations: ComputerOperationRegistry;
   shellJobs: Map<string, ShellJob>;

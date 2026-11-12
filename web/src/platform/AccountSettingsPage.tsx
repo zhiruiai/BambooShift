@@ -110,7 +110,9 @@ export function AccountSettingsPage() {
           <Avatar size={33} />
           <span>BambooShift</span>
         </a>
-        <span className="account-settings-identity">{session.user.email}</span>
+        <span className="account-settings-identity">
+          {session.user.localOnly ? uiText('account:localWorkspace') : session.user.email}
+        </span>
       </header>
       <section className="platform-team-content account-settings-content">
         <a
@@ -126,8 +128,16 @@ export function AccountSettingsPage() {
         </a>
         <div className="platform-page-heading">
           <div>
-            <h1>{uiText('account:text_5ce662ac8d87')}</h1>
-            <p>{uiText('account:text_47d5e326a5d3')}</p>
+            <h1>
+              {uiText(
+                session.user.localOnly ? 'account:localWorkspace' : 'account:text_5ce662ac8d87',
+              )}
+            </h1>
+            <p>
+              {uiText(
+                session.user.localOnly ? 'account:localWorkspaceHelp' : 'account:text_47d5e326a5d3',
+              )}
+            </p>
           </div>
         </div>
         {error && (
@@ -161,13 +171,15 @@ export function AccountSettingsPage() {
             setOutcome(result);
           }}
         />
-        <AccountDevices
-          key={`devices:${session.user.id}`}
-          userId={session.user.id}
-          gate={gate}
-          onIdentityChanged={() => queueMicrotask(() => void check())}
-          onExpired={() => setSession({ authenticated: false, workspaces: [] })}
-        />
+        {!session.user.localOnly && (
+          <AccountDevices
+            key={`devices:${session.user.id}`}
+            userId={session.user.id}
+            gate={gate}
+            onIdentityChanged={() => queueMicrotask(() => void check())}
+            onExpired={() => setSession({ authenticated: false, workspaces: [] })}
+          />
+        )}
       </section>
     </main>
   );
@@ -313,10 +325,12 @@ export function AccountSettingsForms({
             }
           }}
         >
-          <label>
-            {uiText('account:text_a9eaab0fd837')}
-            <input value={user.email} readOnly autoComplete="username" />
-          </label>
+          {!user.localOnly && (
+            <label>
+              {uiText('account:text_a9eaab0fd837')}
+              <input value={user.email} readOnly autoComplete="username" />
+            </label>
+          )}
           <label>
             {uiText('account:text_50b5b1d2abef')}
             <input
@@ -361,117 +375,119 @@ export function AccountSettingsForms({
           </div>
         </form>
       </section>
-      <section className="platform-section" aria-labelledby="account-password-heading">
-        <div className="platform-section-heading">
-          <div>
-            <h2 id="account-password-heading">{uiText('account:text_08d008062411')}</h2>
-            <p>{uiText('account:text_742a35dfcd40')}</p>
+      {!user.localOnly && (
+        <section className="platform-section" aria-labelledby="account-password-heading">
+          <div className="platform-section-heading">
+            <div>
+              <h2 id="account-password-heading">{uiText('account:text_08d008062411')}</h2>
+              <p>{uiText('account:text_742a35dfcd40')}</p>
+            </div>
+            <KeyRound size={19} />
           </div>
-          <KeyRound size={19} />
-        </div>
-        <form
-          className="dialog-form account-settings-form"
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const problem = passwordProblem(current, next, confirmation);
-            if (problem) {
-              setPasswordError(problem);
-              return;
-            }
-            if (!gate.begin()) return;
-            setSaving('password');
-            setPasswordError('');
-            try {
-              const result = await submitPasswordChange({
-                expectedUserId: user.id,
-                currentPassword: current,
-                newPassword: next,
-              });
-              setCurrent('');
-              setNext('');
-              setConfirmation('');
-              onPassword(result);
-            } catch (cause) {
-              setCurrent('');
-              setNext('');
-              setConfirmation('');
-              setPasswordError((cause as Error).message);
-              if (cause instanceof PlatformApiError && [401, 409].includes(cause.status))
-                onRevalidate();
-            } finally {
-              setSaving(null);
-              gate.finish();
-            }
-          }}
-        >
-          <input
-            type="text"
-            className="account-password-username"
-            aria-label={uiText('account:text_a9eaab0fd837')}
-            autoComplete="username"
-            value={user.email}
-            readOnly
-            tabIndex={-1}
-          />
-          <label>
-            {uiText('account:text_a114cfb687e6')}
+          <form
+            className="dialog-form account-settings-form"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              const problem = passwordProblem(current, next, confirmation);
+              if (problem) {
+                setPasswordError(problem);
+                return;
+              }
+              if (!gate.begin()) return;
+              setSaving('password');
+              setPasswordError('');
+              try {
+                const result = await submitPasswordChange({
+                  expectedUserId: user.id,
+                  currentPassword: current,
+                  newPassword: next,
+                });
+                setCurrent('');
+                setNext('');
+                setConfirmation('');
+                onPassword(result);
+              } catch (cause) {
+                setCurrent('');
+                setNext('');
+                setConfirmation('');
+                setPasswordError((cause as Error).message);
+                if (cause instanceof PlatformApiError && [401, 409].includes(cause.status))
+                  onRevalidate();
+              } finally {
+                setSaving(null);
+                gate.finish();
+              }
+            }}
+          >
             <input
-              required
-              type="password"
-              autoComplete="current-password"
-              maxLength={128}
-              value={current}
-              disabled={gate.busy}
-              onChange={(event) => setCurrent(event.target.value)}
+              type="text"
+              className="account-password-username"
+              aria-label={uiText('account:text_a9eaab0fd837')}
+              autoComplete="username"
+              value={user.email}
+              readOnly
+              tabIndex={-1}
             />
-          </label>
-          <label>
-            {uiText('account:text_515e9c7cf7b2')}
-            <input
-              required
-              type="password"
-              autoComplete="new-password"
-              minLength={10}
-              maxLength={128}
-              value={next}
-              disabled={gate.busy}
-              onChange={(event) => setNext(event.target.value)}
-              placeholder={uiText('account:text_205cc823d72b')}
-            />
-          </label>
-          <label>
-            {uiText('account:text_6fde05a916c6')}
-            <input
-              required
-              type="password"
-              autoComplete="new-password"
-              minLength={10}
-              maxLength={128}
-              value={confirmation}
-              disabled={gate.busy}
-              onChange={(event) => setConfirmation(event.target.value)}
-            />
-          </label>
-          {passwordError && (
-            <p className="platform-error" role="alert" tabIndex={-1} ref={passwordFeedback}>
-              {passwordError}
-            </p>
-          )}
-          <div className="dialog-actions">
-            <button
-              className="primary-button"
-              disabled={gate.busy || !current || !next || !confirmation}
-            >
-              {saving === 'password' ? (
-                <Loader2 size={15} className="spin" />
-              ) : (
-                <ShieldCheck size={15} />
-              )}
-              {uiText('account:text_ada41d39dde0')}
-            </button>
-          </div>
-        </form>
-      </section>
+            <label>
+              {uiText('account:text_a114cfb687e6')}
+              <input
+                required
+                type="password"
+                autoComplete="current-password"
+                maxLength={128}
+                value={current}
+                disabled={gate.busy}
+                onChange={(event) => setCurrent(event.target.value)}
+              />
+            </label>
+            <label>
+              {uiText('account:text_515e9c7cf7b2')}
+              <input
+                required
+                type="password"
+                autoComplete="new-password"
+                minLength={10}
+                maxLength={128}
+                value={next}
+                disabled={gate.busy}
+                onChange={(event) => setNext(event.target.value)}
+                placeholder={uiText('account:text_205cc823d72b')}
+              />
+            </label>
+            <label>
+              {uiText('account:text_6fde05a916c6')}
+              <input
+                required
+                type="password"
+                autoComplete="new-password"
+                minLength={10}
+                maxLength={128}
+                value={confirmation}
+                disabled={gate.busy}
+                onChange={(event) => setConfirmation(event.target.value)}
+              />
+            </label>
+            {passwordError && (
+              <p className="platform-error" role="alert" tabIndex={-1} ref={passwordFeedback}>
+                {passwordError}
+              </p>
+            )}
+            <div className="dialog-actions">
+              <button
+                className="primary-button"
+                disabled={gate.busy || !current || !next || !confirmation}
+              >
+                {saving === 'password' ? (
+                  <Loader2 size={15} className="spin" />
+                ) : (
+                  <ShieldCheck size={15} />
+                )}
+                {uiText('account:text_ada41d39dde0')}
+              </button>
+            </div>
+          </form>
+        </section>
+      )}
     </>
   );
 }

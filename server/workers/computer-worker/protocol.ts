@@ -32,7 +32,11 @@ export type ComputerActionType =
   | 'download_file'
   | 'terminal_command'
   | 'remote_shell'
+  | 'local_shell'
   | 'browser_navigate'
+  | 'browser_tabs'
+  | 'browser_select_tab'
+  | 'browser_close_tab'
   | 'browser_click'
   | 'browser_download'
   | 'browser_type'
@@ -47,6 +51,7 @@ export type ComputerActionType =
   | 'desktop_drag';
 export interface ComputerActionInput {
   type: ComputerActionType;
+  tabId?: string;
   fileId?: string;
   sourceName?: string;
   size?: number;
@@ -92,7 +97,11 @@ const actionTypes = new Set<ComputerActionType>([
   'download_file',
   'terminal_command',
   'remote_shell',
+  'local_shell',
   'browser_navigate',
+  'browser_tabs',
+  'browser_select_tab',
+  'browser_close_tab',
   'browser_click',
   'browser_download',
   'browser_type',
@@ -107,6 +116,7 @@ const actionTypes = new Set<ComputerActionType>([
   'desktop_drag',
 ]);
 const readOnlyTypes = new Set([
+  'browser_tabs',
   'list_files',
   'read_file',
   'download_file',
@@ -262,6 +272,7 @@ export const capabilities = [
   'binary-file-transfer',
   'read-only-terminal',
   'browser',
+  'browser-tabs-v1',
   'browser-screenshot',
   'browser-download',
   'human-approval',
@@ -274,6 +285,15 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
     throw new Error('需要电脑操作参数。');
   const a = input as ComputerActionInput;
   if (!actionTypes.has(a.type)) throw new Error('不支持的电脑操作。');
+  if (a.type === 'browser_tabs') return { type: a.type };
+  if (a.type === 'browser_select_tab' || a.type === 'browser_close_tab') {
+    if (
+      typeof a.tabId !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(a.tabId)
+    )
+      throw new Error('请选择当前 Bot 标签页列表中的有效 tabId。');
+    return { type: a.type, tabId: a.tabId };
+  }
   if (['upload_file', 'download_file'].includes(a.type)) {
     if (['sourceName', 'size', 'sha256'].some((key) => Object.hasOwn(a, key)))
       throw new Error('文件审批信息必须由资料库生成。');
@@ -303,7 +323,7 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
   if (a.type === 'write_file' && a.content === undefined) throw new Error('需要文件内容。');
   if (a.type === 'terminal_command' && !Object.hasOwn(terminalCommands, a.command ?? ''))
     throw new Error('终端仅支持只读命令：pwd、ls、date、uname。');
-  if (a.type === 'remote_shell') {
+  if (a.type === 'remote_shell' || a.type === 'local_shell') {
     const { command, cwd } = validateShellInput(a.command, a.path);
     return { type: a.type, command, path: cwd };
   }

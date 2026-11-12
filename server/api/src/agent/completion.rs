@@ -1,4 +1,4 @@
-use super::process::{PiProcess, workspace_directory};
+use super::process::{AgentProcess, workspace_directory};
 use crate::{
     db::State,
     error::{ApiError, Result},
@@ -114,7 +114,7 @@ async fn complete_with_profile(
     }
     let run_id = uuid::Uuid::new_v4().to_string();
     let start = json!({"type":"start","version":1,"runId":run_id,"cwd":workspace_directory(&store.directory)?,"systemPrompt":system,"prompt":prompt,"profile":{"provider":profile["provider"],"model":profile["model"],"baseUrl":profile["baseUrl"],"apiKey":profile["apiKey"],"vision":false},"tools":[]});
-    let mut process = PiProcess::spawn(state).await?;
+    let mut process = AgentProcess::spawn(state).await?;
     let result = async {
         access.authorize(state).await?;
         tokio::select! {

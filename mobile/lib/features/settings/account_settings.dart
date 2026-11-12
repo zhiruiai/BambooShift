@@ -21,6 +21,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   final currentPassword = TextEditingController();
   final newPassword = TextEditingController();
   List<Json> sessions = [];
+  bool get localOnly => widget.session.user?['localOnly'] == true;
   bool busy = false;
   String? error;
   bool get active =>
@@ -61,6 +62,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   }
 
   Future<void> _read() async {
+    if (localOnly) return;
     try {
       final value = await request('GET', '/api/account/sessions');
       if (value['userId'] != userId) {
@@ -148,14 +150,18 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.tr('account'))),
+    appBar: AppBar(
+      title: Text(context.tr(localOnly ? 'localWorkspace' : 'account')),
+    ),
     body: RefreshIndicator(
       onRefresh: _read,
       child: ListView(
         padding: const EdgeInsets.all(20),
         children: [
           Text(
-            widget.session.user?['email'] as String? ?? '',
+            localOnly
+                ? context.tr('localWorkspaceHelp')
+                : widget.session.user?['email'] as String? ?? '',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 20),
@@ -170,60 +176,62 @@ class _AccountSettingsState extends State<AccountSettings> {
             onPressed: busy ? null : _save,
             child: Text(context.tr('save')),
           ),
-          const SizedBox(height: 32),
-          Text(
-            context.tr('changePassword'),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: currentPassword,
-            enabled: !busy,
-            obscureText: true,
-            autocorrect: false,
-            enableSuggestions: false,
-            maxLength: 128,
-            decoration: InputDecoration(
-              labelText: context.tr('currentPassword'),
+          if (!localOnly) ...[
+            const SizedBox(height: 32),
+            Text(
+              context.tr('changePassword'),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: newPassword,
-            enabled: !busy,
-            obscureText: true,
-            autocorrect: false,
-            enableSuggestions: false,
-            maxLength: 128,
-            decoration: InputDecoration(
-              labelText: context.tr('newPassword'),
-              helperText: context.tr('passwordHint'),
-            ),
-          ),
-          OutlinedButton(
-            onPressed: busy ? null : _password,
-            child: Text(context.tr('changePassword')),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            context.tr('sessions'),
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 12),
-          for (final item in sessions)
-            Card(
-              child: ListTile(
-                title: Text(item['name'] as String? ?? ''),
-                subtitle: Text(
-                  '${item['createdAt'] ?? ''}${item['current'] == true ? ' · ${context.tr('thisDevice')}' : ''}',
-                ),
-                trailing: IconButton(
-                  tooltip: context.tr('revokeSession'),
-                  onPressed: busy ? null : () => _revoke(item),
-                  icon: const Icon(Icons.logout),
-                ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: currentPassword,
+              enabled: !busy,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              maxLength: 128,
+              decoration: InputDecoration(
+                labelText: context.tr('currentPassword'),
               ),
             ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newPassword,
+              enabled: !busy,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              maxLength: 128,
+              decoration: InputDecoration(
+                labelText: context.tr('newPassword'),
+                helperText: context.tr('passwordHint'),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: busy ? null : _password,
+              child: Text(context.tr('changePassword')),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              context.tr('sessions'),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 12),
+            for (final item in sessions)
+              Card(
+                child: ListTile(
+                  title: Text(item['name'] as String? ?? ''),
+                  subtitle: Text(
+                    '${item['createdAt'] ?? ''}${item['current'] == true ? ' · ${context.tr('thisDevice')}' : ''}',
+                  ),
+                  trailing: IconButton(
+                    tooltip: context.tr('revokeSession'),
+                    onPressed: busy ? null : () => _revoke(item),
+                    icon: const Icon(Icons.logout),
+                  ),
+                ),
+              ),
+          ],
         ],
       ),
     ),

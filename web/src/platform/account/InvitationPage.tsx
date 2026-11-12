@@ -1,7 +1,11 @@
 import { uiText } from '../../i18n';
 import { ArrowRight, Loader2, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { AccountSession, InvitationPreview, WorkspaceSummary } from '../../../../shared/platform';
+import type {
+  AccountSession,
+  InvitationPreview,
+  WorkspaceSummary,
+} from '../../../../shared/platform';
 import '../Platform.css';
 import { accountEntryPath, platformApi, platformTime, workspacePath } from '../platformApi';
 import { AccountShell } from './AccountShell';
@@ -123,25 +127,27 @@ export function InvitationPage({ token }: { token: string }) {
                 {busy ? <Loader2 size={16} className="spin" /> : <Users size={16} />}
                 {busy ? uiText('account:text_56d3b7cbe694') : uiText('account:text_c2bfabb77e64')}
               </button>
-              <button
-                className="platform-text-button"
-                type="button"
-                disabled={busy}
-                onClick={async () => {
-                  setBusy(true);
-                  setError('');
-                  try {
-                    await platformApi('/account/logout', 'POST');
-                    window.location.assign(accountEntryPath('login', next));
-                  } catch (cause) {
-                    setError((cause as Error).message);
-                  } finally {
-                    setBusy(false);
-                  }
-                }}
-              >
-                {uiText('account:text_81ad47418686')}
-              </button>
+              {!session.user?.localOnly && (
+                <button
+                  className="platform-text-button"
+                  type="button"
+                  disabled={busy}
+                  onClick={async () => {
+                    setBusy(true);
+                    setError('');
+                    try {
+                      await platformApi('/account/logout', 'POST');
+                      window.location.assign(accountEntryPath('login', next));
+                    } catch (cause) {
+                      setError((cause as Error).message);
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  {uiText('account:text_81ad47418686')}
+                </button>
+              )}
             </>
           ) : (
             <>

@@ -27,13 +27,27 @@ impl LocalExecutor {
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .kill_on_drop(true);
+        if config
+            .local_desktop
+            .as_ref()
+            .is_some_and(|value| value.host_control)
+        {
+            for name in ["HOME", "USER", "LOGNAME", "TMPDIR", "LANG"] {
+                if let Some(value) = std::env::var_os(name) {
+                    command.env(name, value);
+                }
+            }
+        }
         #[cfg(unix)]
         command.process_group(0);
         let mut child = command.spawn().map_err(|_| unavailable())?;
         let mut input = child.stdin.take().unwrap();
         let output = child.stdout.take().unwrap();
         let mut output = BufReader::new(output);
-        let config = json!({"workspace":directory.join("workspace"),"workspaceId":workspace,"publicOrigin":origin});
+        let local = config.local_desktop.as_ref();
+        let config = json!({"workspace":directory.join("workspace"),"workspaceId":workspace,
+            "publicOrigin":origin,"hostControl":local.is_some_and(|value| value.host_control),
+            "desktopDriver":local.and_then(|value| value.desktop_driver.as_ref())});
         let startup = async {
             input.write_all(config.to_string().as_bytes()).await?;
             input.write_all(b"\n").await?;

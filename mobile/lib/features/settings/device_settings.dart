@@ -42,8 +42,14 @@ class DeviceSettings extends StatelessWidget {
           if (session.user != null)
             Card(
               child: ListTile(
-                title: Text(session.user!['name'] as String? ?? ''),
-                subtitle: Text(session.user!['email'] as String? ?? ''),
+                title: Text(
+                  session.user?['localOnly'] == true
+                      ? context.tr('localWorkspace')
+                      : session.user!['name'] as String? ?? '',
+                ),
+                subtitle: session.user?['localOnly'] == true
+                    ? null
+                    : Text(session.user!['email'] as String? ?? ''),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => Navigator.push(
                   context,
@@ -141,7 +147,7 @@ class DeviceSettings extends StatelessWidget {
             ),
           ),
           if (session.error != null) Notice(session.error!),
-          if (session.user != null)
+          if (session.user != null && session.user?['localOnly'] != true)
             Padding(
               padding: const EdgeInsets.only(top: 20),
               child: OutlinedButton.icon(

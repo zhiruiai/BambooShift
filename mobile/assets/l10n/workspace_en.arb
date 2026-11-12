@@ -108,5 +108,19 @@
   "mobileWorkspaceTransferMissing": "The transfer has a receipt, but the routine no longer exists. It will not be recreated.",
   "mobileWorkspaceTransferNotFound": "No receipt was found yet. This does not prove it was not applied. Check again or close an unaccepted request.",
   "mobileWorkspaceTransferInvalid": "The receipt does not match the original request. It is retained for checking.",
-  "mobileWorkspaceTransferRecoveryChanged": "Recovery information changed or is unavailable. Reopen to check."
+  "mobileWorkspaceTransferRecoveryChanged": "Recovery information changed or is unavailable. Reopen to check.",
+  "exportTitle": "Export conversation",
+  "exportDescription": "Includes all saved messages and threads at export time. Attachments include names and sizes only. Interactive cards include saved text only; running replies may be unfinished.",
+  "exportTooLarge": "This conversation exceeds the 10 MiB export limit. No partial file was saved.",
+  "exportFailed": "Could not export this conversation. Check your access and try again.",
+  "exportPreparing": "Preparing the complete conversation…",
+  "exportCount": "{count} messages ready",
+  "exportCopied": "Conversation copied.",
+  "exportClose": "Close / cancel",
+  "exportCopy": "Copy Markdown",
+  "exportDownload": "Download Markdown",
+  "exportShare": "Save / share Markdown",
+  "exportCancelled": "Export cancelled.",
+  "localWorkspace": "Local workspace",
+  "localWorkspaceHelp": "Use this computer without an account or password. Your conversations and settings stay in this local workspace."
 }

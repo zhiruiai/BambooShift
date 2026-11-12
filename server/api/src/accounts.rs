@@ -91,6 +91,12 @@ pub async fn register(
     headers: HeaderMap,
     Body(body): Body,
 ) -> Result<Response> {
+    if state.config.local_desktop.is_some() {
+        return Err(ApiError::new(
+            403,
+            "本机个人空间无需注册，请从客户端直接打开。",
+        ));
+    }
     security::rate_limit(&state, peer, "register").await?;
     let address = error::email(&body["email"])?;
     let name = error::text(&body["name"], "姓名", 60)?;
@@ -137,6 +143,12 @@ pub(crate) async fn login_as(
     body: Value,
     purpose: &str,
 ) -> Result<Response> {
+    if state.config.local_desktop.is_some() {
+        return Err(ApiError::new(
+            403,
+            "本机个人空间无需登录，请从客户端直接打开。",
+        ));
+    }
     security::rate_limit(state, peer, &format!("{purpose}-login")).await?;
     let address = error::email(&body["email"])?;
     let raw = body["password"]
