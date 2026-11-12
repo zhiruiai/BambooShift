@@ -10,7 +10,7 @@ export default {
   mcpImportCancel: '取消导入',
   mcpImportReplace: '替换当前表单',
   mcpImportReplaceHelp:
-    '这会替换当前名称和地址，清空令牌，并重置认证方式和共享确认。取消导入可保留当前表单。',
+    '替换草稿会清空令牌和共享确认。识别到官方地址时，表单会预选推荐的认证方式。取消导入可保留当前草稿。',
   mcpImportSkipped: '已跳过 {{count}} 个不支持、无效或重复的条目。',
   mcpImportInvalidJson: 'JSON 格式不正确，请粘贴完整的配置对象。',
   mcpImportInvalidShape: '请使用包含 mcpServers 或 servers 的 JSON 对象。',

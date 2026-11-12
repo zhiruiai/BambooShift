@@ -3,6 +3,7 @@ import { Loader2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { AddAppConnection, ConnectedApp } from '../../../../shared/app-connections';
 import { validAppAddress } from '../../appConnections';
+import { providerForEndpoint } from '../../appProviders';
 import { RemoteMcpImport } from './RemoteMcpImport';
 import '../AppsDialog.css';
 import type { useAppsDialogContent } from './useAppsDialogContent';
@@ -12,40 +13,16 @@ export function AddAppConnectionView({
   ...model
 }: AppsDialogContentModel & { feedback: ReactNode }) {
   const {
-    view,
-    selectedApp,
     props,
-    close,
     busy,
     navigate,
-    error,
-    notice,
     uncertain,
-    loading,
-    refresh,
-    search,
-    setSearch,
-    apps,
-    visible,
     draft,
     customReview,
     setError,
     mutate,
     scope,
     setDraft,
-    toolsLoading,
-    toolsError,
-    tools,
-    ownBusy,
-    oauthBusyRef,
-    setOAuthBusy,
-    reconnect,
-    confirm,
-    setReauthorize,
-    reauthorize,
-    setToken,
-    setConfirm,
-    token,
   } = model;
   return (
     <form
@@ -91,7 +68,14 @@ export function AddAppConnectionView({
             }
             onApply={({ name, url }) => {
               if (busy || uncertain || !props.canManage || !scope.current(scope.ticket())) return;
-              setDraft({ name, url, authType: 'none', token: '', shared: false });
+              const provider = providerForEndpoint(url);
+              setDraft({
+                name,
+                url,
+                authType: provider?.authType ?? 'none',
+                token: '',
+                shared: false,
+              });
               setError('');
             }}
           />
@@ -123,7 +107,8 @@ export function AddAppConnectionView({
             readOnly={!!customReview}
             disabled={busy || !props.canManage}
             onChange={(event) => {
-              if (!customReview) setDraft({ ...draft, url: event.target.value });
+              if (!customReview)
+                setDraft({ ...draft, url: event.target.value, token: '', shared: false });
             }}
             placeholder="https://example.com/mcp"
             autoComplete="off"

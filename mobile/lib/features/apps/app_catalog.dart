@@ -4,20 +4,7 @@ import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
 
-const appProviderIds = {
-  'notion',
-  'linear',
-  'github',
-  'sentry',
-  'atlassian',
-  'slack',
-  'gitlab',
-  'microsoft-learn',
-  'cloudflare-docs',
-  'deepwiki',
-  'context7',
-  'aws-knowledge',
-};
+export 'app_catalog_ids.g.dart';
 
 Future<List<Json>> loadAppProviders() async =>
     (jsonDecode(await rootBundle.loadString('assets/apps/providers.json'))

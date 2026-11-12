@@ -104,23 +104,26 @@ test(
       },
       servers: { Other: { type: 'http', url: 'https://other.example.com/mcp' } },
     });
-    async function inspect() {
+    async function inspect(
+      source = config,
+      selected = 'https://docs.example.com/mcp',
+      optionCount = 3,
+      expectedWrites = 0,
+    ) {
       await page.getByRole('button', { name: 'Import MCP configuration', exact: true }).click();
-      await page.getByLabel('MCP configuration JSON', { exact: true }).fill(config);
+      await page.getByLabel('MCP configuration JSON', { exact: true }).fill(source);
       await page.getByRole('button', { name: 'Find remote services', exact: true }).click();
       assert.equal(await page.getByLabel('MCP configuration JSON', { exact: true }).count(), 0);
       assert.equal(
         await page.getByLabel('Remote service', { exact: true }).locator('option').count(),
-        3,
+        optionCount,
       );
       assert.doesNotMatch(
         await page.locator('body').innerText(),
         /PASTED_SECRET|ENV_SECRET|DO_NOT_RUN/,
       );
-      assert.equal(writes.length, 0);
-      await page
-        .getByLabel('Remote service', { exact: true })
-        .selectOption('https://docs.example.com/mcp');
+      assert.equal(writes.length, expectedWrites);
+      await page.getByLabel('Remote service', { exact: true }).selectOption(selected);
     }
     await name.fill('Unsubmitted draft');
     await address.fill('https://previous.example.com/mcp');
@@ -163,6 +166,40 @@ test(
     ]);
     assert.equal(await name.inputValue(), 'Edited docs');
     assert.equal(await address.inputValue(), 'https://docs.example.com/reviewed-mcp');
+
+    const official = JSON.stringify({
+      mcpServers: {
+        'Company Slack': { url: 'https://mcp.slack.com/mcp', authType: 'none' },
+        'Code review': {
+          url: 'https://api.githubcopilot.com/mcp/readonly',
+          headers: { Authorization: 'PASTED_SECRET' },
+        },
+        'Alternate Slack': { url: 'https://mcp.slack.com/mcp/' },
+      },
+    });
+    for (const [url, expectedAuth] of [
+      ['https://mcp.slack.com/mcp/', 'none'],
+      ['https://mcp.slack.com/mcp', 'oauth'],
+      ['https://api.githubcopilot.com/mcp/readonly', 'bearer'],
+    ]) {
+      await inspect(official, url, 4, 1);
+      await page.getByRole('button', { name: 'Use name and address', exact: true }).click();
+      await page.getByRole('button', { name: 'Replace current form', exact: true }).click();
+      assert.equal(await address.inputValue(), url);
+      assert.equal(await auth.inputValue(), expectedAuth);
+      assert.equal(await consent.isChecked(), false);
+      assert.equal(await submit.isDisabled(), true);
+    }
+    assert.equal(await name.inputValue(), 'Code review');
+    const token = page.getByLabel(/^Access token/);
+    assert.equal(await token.inputValue(), '');
+    await token.fill('MANUALLY_ENTERED_TOKEN');
+    await consent.check();
+    await address.fill('https://other.example.com/mcp');
+    assert.equal(await token.inputValue(), '');
+    assert.equal(await consent.isChecked(), false);
+    assert.equal(await submit.isDisabled(), true);
+
     await page.getByRole('button', { name: 'Import MCP configuration', exact: true }).click();
     const box = page.locator('.apps-mcp-import');
     const fits = await box.evaluate((node) => {

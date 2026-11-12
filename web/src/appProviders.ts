@@ -25,6 +25,11 @@ export type AppProvider = {
 };
 // Provider-owned endpoints verified against their published documentation.
 export const appProviders = catalog as readonly AppProvider[];
+
+export function providerForEndpoint(canonicalUrl: string) {
+  return appProviders.find((provider) => new URL(provider.url).href === canonicalUrl);
+}
+
 const address = (value: string) => value.replace(/\/$/, '');
 export function providerConnection(provider: AppProvider, apps: ConnectedApp[]) {
   return (

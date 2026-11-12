@@ -10,7 +10,7 @@ export default {
   mcpImportCancel: 'Cancel import',
   mcpImportReplace: 'Replace current form',
   mcpImportReplaceHelp:
-    'This replaces the current name and address, clears its token, and resets authentication and sharing consent. Cancel import to keep your current form.',
+    'Replacing the draft clears its token and sharing confirmation. For a recognized official address, the form selects the recommended authentication method. Cancel to keep your current draft.',
   mcpImportSkipped: '{{count}} unsupported, invalid, or duplicate entries were skipped.',
   mcpImportInvalidJson: 'This is not valid JSON. Paste a complete configuration object.',
   mcpImportInvalidShape: 'Use a JSON object containing mcpServers or servers.',
