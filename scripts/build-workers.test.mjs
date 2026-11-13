@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, symlink, rm, readdir } from 'node:fs/promises';
+import { mkdtemp, readFile, symlink, rm, readdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline';
 import { once } from 'node:events';
@@ -77,9 +78,80 @@ test('released workers contain only audited execution helpers and an exact produ
     for (const worker of summary.workers) {
       assert.match(worker.sha256, /^[a-f0-9]{64}$/);
       assert.ok(worker.inputs.every((input) => /^(?:server\/workers|shared)\//.test(input)));
-      assert.deepEqual(await readdir(join(directory, 'packages', worker.worker)), ['index.mjs']);
+      assert.equal(worker.files.length, worker.worker === 'pi-worker' ? 2 : 1);
+      assert.deepEqual(
+        (await readdir(join(directory, 'packages', worker.worker))).sort(),
+        worker.files.map((file) => file.path.split('/').at(-1)).sort(),
+      );
+      for (const file of worker.files) {
+        const bytes = await readFile(join(directory, file.path));
+        assert.equal(file.bytes, bytes.length);
+        assert.equal(file.sha256, createHash('sha256').update(bytes).digest('hex'));
+      }
+      assert.deepEqual(
+        worker.files.find((file) => file.path === worker.entry),
+        {
+          path: worker.entry,
+          bytes: worker.bytes,
+          sha256: worker.sha256,
+        },
+      );
     }
     assert.ok(!summary.workers.some((w) => w.inputs.some((p) => p.endsWith('run.mjs'))));
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('rebuilding accepts Windows inventory separators and only removes unchanged owned Pi chunks', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-worker-rebuild-'));
+  try {
+    const previous = await buildWorkers(directory);
+    const expected = structuredClone(previous);
+    const pi = previous.workers.find((worker) => worker.worker === 'pi-worker');
+    const chunk = pi.files.find((file) => file.path !== pi.entry);
+    const bytes = await readFile(join(directory, chunk.path));
+    const retired = { ...chunk, path: 'packages/pi-worker/worker-retired.mjs' };
+    const edited = { ...chunk, path: 'packages/pi-worker/worker-edited.mjs' };
+    await writeFile(join(directory, retired.path), bytes);
+    await writeFile(join(directory, edited.path), 'synthetic manual edit');
+    const unknown = join(directory, 'packages/pi-worker/keep-unknown.mjs');
+    await writeFile(unknown, 'synthetic unmanaged file');
+    const otherWorkerFile = join(directory, 'packages/mcp-worker/keep-unknown.mjs');
+    await writeFile(otherWorkerFile, 'synthetic other worker file');
+    pi.files.push(retired, edited);
+    // A previous Windows build must remain readable on any release host.
+    pi.files = pi.files.map((file) => ({ ...file, path: file.path.replaceAll('/', '\\') }));
+    pi.entry = pi.entry.replaceAll('/', '\\');
+    await writeFile(join(directory, 'workers.json'), JSON.stringify(previous));
+
+    const current = await buildWorkers(directory);
+    await assert.rejects(readFile(join(directory, retired.path)), { code: 'ENOENT' });
+    assert.equal(await readFile(join(directory, edited.path), 'utf8'), 'synthetic manual edit');
+    assert.equal(await readFile(unknown, 'utf8'), 'synthetic unmanaged file');
+    assert.equal(await readFile(otherWorkerFile, 'utf8'), 'synthetic other worker file');
+    assert.deepEqual(current, expected);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('a prior Pi inventory cannot authorize cleanup outside its package', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-worker-path-'));
+  try {
+    const summary = await buildWorkers(directory);
+    const pi = summary.workers.find((worker) => worker.worker === 'pi-worker');
+    for (const path of [
+      'packages/pi-worker/../mcp-worker/index.mjs',
+      'packages\\pi-worker\\..\\mcp-worker\\index.mjs',
+      '/outside.mjs',
+      'C:\\outside.mjs',
+    ]) {
+      pi.files.push({ ...pi.files[0], path });
+      await writeFile(join(directory, 'workers.json'), JSON.stringify(summary));
+      await assert.rejects(buildWorkers(directory), /outside its generated package directory/);
+      pi.files.pop();
+    }
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
@@ -131,6 +203,65 @@ test('all four compiled workers start without a tsx loader, source entries, ambi
       worker.process.kill('SIGKILL');
       await worker.done;
     }
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('the actual external-package build redirects dependency initialization before importing Cordis', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-external-console-'));
+  try {
+    await buildWorkers(directory);
+    await symlink(resolve(root, 'node_modules'), join(directory, 'node_modules'), 'dir');
+    const cordis = pathToFileURL(resolve(root, 'node_modules/@cordisjs/core/lib/index.mjs')).href;
+    const sentinel = 'SYNTHETIC_EXTERNAL_INITIALIZER';
+    const wrapper =
+      'data:text/javascript,' +
+      encodeURIComponent(`export * from ${JSON.stringify(cordis)}; console.info('${sentinel}');`);
+    const probe = join(directory, 'probe.mjs');
+    await writeFile(
+      probe,
+      `
+import { registerHooks } from 'node:module';
+registerHooks({ resolve(specifier, context, next) {
+  if (specifier === '@cordisjs/core') return { url: ${JSON.stringify(wrapper)}, shortCircuit: true };
+  return next(specifier, context);
+}});
+await import('./packages/pi-worker/index.mjs');
+`,
+    );
+    const process = spawn(globalThis.process.execPath, [probe], {
+      cwd: directory,
+      env: { LANG: 'en_US.UTF-8' },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    let stdout = '',
+      stderr = '';
+    process.stdout.setEncoding('utf8').on('data', (value) => {
+      stdout += value;
+    });
+    process.stderr.setEncoding('utf8').on('data', (value) => {
+      stderr += value;
+    });
+    const done = once(process, 'close');
+    const timer = setTimeout(() => process.kill('SIGKILL'), 10000);
+    try {
+      process.stdin.end(JSON.stringify({ type: 'invalid' }) + '\n');
+      const [code] = await done;
+      assert.equal(code, 0);
+    } finally {
+      clearTimeout(timer);
+      process.kill();
+    }
+    assert.equal(stdout.includes(sentinel), false);
+    assert.deepEqual(
+      stdout
+        .trim()
+        .split('\n')
+        .map((line) => JSON.parse(line)),
+      [{ version: 1, type: 'protocol_error', code: 'INVALID_COMMAND' }],
+    );
+    assert.equal(stderr.trim(), sentinel);
+  } finally {
     await rm(directory, { recursive: true, force: true });
   }
 });

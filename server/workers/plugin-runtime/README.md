@@ -34,6 +34,12 @@ An engine plugin must register its factory through `ctx.workerEngines.register()
 
 ## Add a reviewed bundled plugin
 
+Choose the existing extension point that fits the contribution:
+
+- **Workflow instructions:** use the reviewed skill editor or add a bilingual recipe to `mobile/assets/skills/{en,zh}.json`. Skills do not grant new tools, run package scripts or load a worker plugin.
+- **MCP connectors:** add a documented provider to `shared/app-providers.json`, update both UI languages, and run `npm run sync:app-catalog`. The existing [MCP executor](../mcp-worker/README.md) and [connection service](../../../docs/app-connections.md) retain discovery, authorization and approvals.
+- **Worker or engine behavior:** use the trusted source registry below. An engine example is not another production provider, and a plugin cannot grant itself Rust tool contracts.
+
 Add a source module under the worker tree, import it explicitly in `bundled.ts`, and add its stable ID to `trustedBundledPlugins`. The host does not resolve plugin names to filesystem paths, scan user directories, load npm packages on demand, or execute workspace/model-supplied code. The optional registry argument used by host tests accepts trusted in-process plugin objects; it is not a wire or settings format.
 
 Declare required services with Cordis `inject`. Register synchronous resources through `ctx.effect()` so Cordis removes them when the plugin unloads. For asynchronous resource teardown, use the injected cleanup service:
@@ -60,7 +66,21 @@ export const reviewedPlugin: Plugin.Object<WorkerPluginContext> = {
 };
 ```
 
+Run the [complete standalone example](examples/minimal-plugin.fixture.ts) from the repository root after `npm ci`:
+
+```sh
+node --import tsx server/workers/plugin-runtime/examples/minimal-plugin.fixture.ts
+```
+
+It creates the real Cordis host with this example alone, rejects an ungranted tool, and disposes its timer and asynchronous cleanup. It prints `activeTimers: 0`, `cleanupCalls: 1` and `toolCalls: 0`. It needs no model, account, server, credentials or network service. The `.fixture.ts` file is test-only and is rejected by the release bundler if accidentally imported into a production worker. Put a reviewed implementation in a normal source module before registering it in `bundled.ts`.
+
 Cordis 3.18.1 starts asynchronous native disposal callbacks without waiting for their results. `pluginCleanup.onDispose()` is the small adapter that lets the worker await those tasks and report a fixed error without writing plugin exception details to its stdout protocol. Use it for asynchronous teardown; use ordinary effects for synchronous listeners and timers. Missing required services or startup failures reject host creation. Tool registration rejects duplicates and names absent from the Rust run contract.
+
+### Worker output boundary
+
+Worker stdout belongs exclusively to the existing version 1 JSON frame writer. Do not call `process.stdout.write()` or create another stdout logger from a plugin, and never emit your own protocol frames. Before importing plugins or SDKs, the actual worker entry point routes the standard `console` methods to stderr, then dynamically imports the worker implementation. The release builder preserves this module boundary: `index.mjs` is the bootstrap, and its separate implementation chunk contains external dependencies. Both files are inventoried with hashes and byte sizes in `workers.json`. This includes external dependency initialization, plugin startup and cleanup diagnostics, so a normal `console.info()` cannot turn a valid task into a malformed-frame error.
+
+The Rust supervisor discards stderr; arbitrary SDK diagnostics are not stored or shown in chat. A developer running the worker directly may see stderr, so never log credentials or private content. This routing is not secret redaction and is not isolation against trusted code deliberately writing to stdout or capturing another logger. The standalone example's final JSON summary is outside the worker protocol. Full-entry process tests cover external/import/startup/cleanup diagnostics, successful settlement, cancellation and the existing frame redaction in source and split-bundle modes. A separate release test runs the actual `buildWorkers()` output with an external dependency initializer that logs.
 
 **This is not a security boundary for untrusted JavaScript.** A bundled plugin runs with the worker process's OS access and could import Node filesystem/network/process APIs. Review, distribution, OS process permissions and Rust authorization still matter. Cordis dependency injection does not provide filesystem, shell, network or per-plugin memory isolation. This host intentionally does not implement a third-party plugin marketplace or installer.
 

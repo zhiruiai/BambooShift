@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, realpath, unlink, writeFile } from 'node:fs/promises';
 import { resolve, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -12,6 +12,7 @@ const entries = {
   'computer-worker': 'server/workers/computer-worker/local-entry.ts',
   'document-worker': 'server/workers/document-worker/index.ts',
 };
+const inventoryPath = (path) => path.replaceAll('\\', '/');
 function assertPureInputs(inputs) {
   for (const input of inputs) {
     const name = input.replaceAll('\\', '/');
@@ -22,10 +23,51 @@ function assertPureInputs(inputs) {
   }
 }
 
+async function previousPiFiles(output) {
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(resolve(output, 'workers.json'), 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  }
+  const files = manifest.workers?.find((worker) => worker.worker === 'pi-worker')?.files ?? [];
+  if (!Array.isArray(files)) throw Error('The previous Pi worker inventory is invalid.');
+  const normalized = files.map((file) => ({ ...file, path: inventoryPath(file.path) }));
+  for (const file of normalized) {
+    if (
+      !/^packages\/pi-worker\/[^/\\]+\.mjs$/.test(file.path) ||
+      !/^[a-f0-9]{64}$/.test(file.sha256)
+    )
+      throw Error('A previous Pi worker file is outside its generated package directory.');
+  }
+  return normalized;
+}
+
+async function removeUnchangedPreviousPiFiles(output, previous, current) {
+  const keep = new Set(current.map((file) => file.path));
+  const packagePath = resolve(await realpath(output), 'packages/pi-worker');
+  for (const file of previous) {
+    if (keep.has(file.path)) continue;
+    const path = resolve(output, file.path);
+    const stat = await lstat(path).catch((error) => {
+      if (error.code === 'ENOENT') return undefined;
+      throw error;
+    });
+    // Keep unknown, replaced and linked files even if a stale inventory names them.
+    if (!stat?.isFile()) continue;
+    if (dirname(await realpath(path)) !== packagePath)
+      throw Error('A previous Pi worker file resolves outside its generated package directory.');
+    const bytes = await readFile(path);
+    if (createHash('sha256').update(bytes).digest('hex') === file.sha256) await unlink(path);
+  }
+}
+
 export async function buildWorkers(output = resolve(root, '.build/runtime')) {
   output = resolve(output);
   if (output === root || output === resolve(root, 'server/workers'))
     throw Error('Choose a separate runtime output directory.');
+  const previous = await previousPiFiles(output);
   const summaries = [];
   const imports = new Set();
   for (const [name, entry] of Object.entries(entries)) {
@@ -33,7 +75,16 @@ export async function buildWorkers(output = resolve(root, '.build/runtime')) {
     const result = await build({
       absWorkingDir: root,
       entryPoints: [entry],
-      outfile,
+      ...(name === 'pi-worker'
+        ? {
+            // Preserve the bootstrap's await import boundary for external SDK initializers.
+            outdir: dirname(outfile),
+            entryNames: 'index',
+            chunkNames: '[name]-[hash]',
+            outExtension: { '.js': '.mjs' },
+            splitting: true,
+          }
+        : { outfile }),
       bundle: true,
       packages: 'external',
       platform: 'node',
@@ -57,12 +108,21 @@ export async function buildWorkers(output = resolve(root, '.build/runtime')) {
     const file = result.outputFiles.find((file) => file.path === outfile);
     if (!file) throw Error(`The worker output is missing: ${name}`);
     await mkdir(dirname(outfile), { recursive: true });
-    await writeFile(outfile, file.contents);
+    const files = [];
+    for (const outputFile of result.outputFiles) {
+      await writeFile(outputFile.path, outputFile.contents);
+      files.push({
+        path: inventoryPath(relative(output, outputFile.path)),
+        bytes: outputFile.contents.length,
+        sha256: createHash('sha256').update(outputFile.contents).digest('hex'),
+      });
+    }
     summaries.push({
       worker: name,
-      entry: relative(output, outfile),
+      entry: inventoryPath(relative(output, outfile)),
       bytes: file.contents.length,
       sha256: createHash('sha256').update(file.contents).digest('hex'),
+      files: files.sort((a, b) => a.path.localeCompare(b.path)),
       inputs: Object.keys(result.metafile.inputs).sort(),
     });
   }
@@ -79,6 +139,11 @@ export async function buildWorkers(output = resolve(root, '.build/runtime')) {
     dependencies: manifest.dependencies,
     workers: summaries,
   };
+  await removeUnchangedPreviousPiFiles(
+    output,
+    previous,
+    summaries.find((worker) => worker.worker === 'pi-worker').files,
+  );
   await writeFile(resolve(output, 'workers.json'), JSON.stringify(summary, null, 2) + '\n');
   return summary;
 }
