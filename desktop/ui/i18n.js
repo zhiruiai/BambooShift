@@ -38,6 +38,45 @@
       '本地工作空间已停止，可以重新启动。',
       'The local workspace has stopped. You can start it again.',
     ],
+    localWorkspaceMenu: ['本机工作空间…', 'Workspace on this computer…'],
+    localStatusWorkspace: ['本机个人空间正在运行', 'Your local workspace is running'],
+    localStatusWorkspaceHelp: [
+      '对话和工作空间文件保存在这台电脑。本次未开启整机操作，可继续聊天和处理工作空间文件。',
+      'Chats and workspace files stay on this computer. Computer control is off; you can still chat and work with workspace files.',
+    ],
+    localStatusControl: ['本机整机操作已开启', 'Local computer control is enabled'],
+    localStatusControlHelp: [
+      '本次已开启整机操作，可在工作空间的电脑面板查看可用能力。',
+      'Computer control is enabled for this session. Check capabilities in the workspace computer panel.',
+    ],
+    localStatusPermissionBoundary: [
+      '录屏、键鼠仍需系统授权，电脑操作仍需审批。此窗口不会更改权限。',
+      'Screen, keyboard and mouse access still require OS permission; actions follow workspace approval rules. This window changes no permissions.',
+    ],
+    localStatusRemote: ['已连接已有工作空间', 'Connected to an existing workspace'],
+    localStatusRemoteHelp: [
+      '工作由已连接的服务运行，执行电脑由该服务选择。使用桌面客户端不会自动授权操作这台电脑。',
+      'Tasks use the computer connected to your existing service. This desktop client does not automatically select this computer.',
+    ],
+    localStatusDisconnected: ['尚未打开工作空间', 'No workspace is open'],
+    localStatusDisconnectedHelp: [
+      '在启动页选择“在这台电脑开始”，配置模型后即可免登录使用。需要操作本机终端或其他应用时，启动前选择“允许整机操作”。',
+      'Choose “Start on this computer”, then configure a model. No sign-in is needed. Select “Allow computer control” before starting to use host commands or other apps.',
+    ],
+    localStatusStarting: ['工作空间正在连接或启动', 'Workspace is connecting or starting'],
+    localStatusStartingHelp: [
+      '连接完成后再查看本次运行方式。此窗口不会取消启动或更改执行权限。',
+      'Check the active mode after the connection completes. This window does not cancel startup or change execution permissions.',
+    ],
+    localStatusStopWarning: [
+      '返回启动页会停止本机任务，已保存的对话和文件保留。可在那里调整“允许整机操作”后重新启动。',
+      'Returning to startup stops local tasks. Saved chats and files remain. Adjust “Allow computer control” there, then start again.',
+    ],
+    localStatusLeaveRemote: [
+      '返回启动页只断开此客户端，服务端任务继续。随后可选择“在这台电脑开始”。',
+      'Returning to startup disconnects this client; tasks on the existing service continue. Then choose “Start on this computer”.',
+    ],
+    localStatusAdjust: ['返回启动页调整', 'Return to startup to adjust'],
     hostControl: ['允许整机操作', 'Allow computer control'],
     hostControlHelp: [
       'Bot 可在你批准后操作屏幕、键鼠、文件和终端。macOS 可能要求录屏和辅助功能权限。',

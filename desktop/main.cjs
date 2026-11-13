@@ -124,6 +124,7 @@ function createController(
   const { explainBlocked, menuTarget, bindContextMenu, installMenu } = createMenus({
     getConnection,
     getWindow,
+    getLocalRuntimeState: () => ({ available: localAvailable, starting: Boolean(localOperation) }),
     machine,
     Menu,
     dialog,
@@ -256,6 +257,7 @@ function createController(
       fail,
       bindContextMenu,
     });
+    current.hostControl = managed && localLaunch.hostControl === true;
     connection = current;
     const { view } = current;
     const contents = view.webContents;

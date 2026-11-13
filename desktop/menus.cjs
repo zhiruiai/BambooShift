@@ -4,6 +4,7 @@ const { webUrl } = require('./security.cjs');
 function createMenus({
   getConnection,
   getWindow,
+  getLocalRuntimeState,
   machine,
   Menu,
   dialog,
@@ -16,7 +17,8 @@ function createMenus({
 }) {
   let noticeAt = 0,
     noticeOpen = false,
-    shortcutsOpen = false;
+    shortcutsOpen = false,
+    localWorkspaceOpen = false;
   async function showShortcuts() {
     const window = getWindow();
     if (!window || window.isDestroyed() || !window.isVisible() || shortcutsOpen) return;
@@ -57,6 +59,62 @@ function createMenus({
       // The window can close while a native dialog is opening.
     } finally {
       shortcutsOpen = false;
+    }
+  }
+  async function showLocalWorkspace() {
+    const window = getWindow();
+    if (!window || window.isDestroyed() || !window.isVisible() || localWorkspaceOpen) return;
+    const current = getConnection();
+    const sequence = machine.sequence;
+    const local = getLocalRuntimeState();
+    const pending = local.starting || Boolean(current && !current.attached);
+    const mode = pending
+      ? 'localStatusStarting'
+      : current?.managed
+        ? current.hostControl
+          ? 'localStatusControl'
+          : 'localStatusWorkspace'
+        : current
+          ? 'localStatusRemote'
+          : 'localStatusDisconnected';
+    const canAdjust = Boolean(local.available && current?.attached && !pending);
+    const detail = [t(!local.available && !current ? 'localRuntimeUnavailable' : mode + 'Help')];
+    if (current?.managed && current.hostControl && !pending)
+      detail.push(t('localStatusPermissionBoundary'));
+    if (!local.available && current) detail.push(t('localRuntimeUnavailable'));
+    else if (canAdjust)
+      detail.push(t(current.managed ? 'localStatusStopWarning' : 'localStatusLeaveRemote'));
+    localWorkspaceOpen = true;
+    try {
+      const result = await dialog.showMessageBox(window, {
+        type: 'info',
+        title: t('localWorkspaceMenu'),
+        message: t(mode),
+        detail: detail.join('\n\n'),
+        buttons: canAdjust ? [t('cancel'), t('localStatusAdjust')] : [t('gotIt')],
+        defaultId: 0,
+        cancelId: 0,
+        noLink: true,
+      });
+      if (
+        result.response !== 1 ||
+        !canAdjust ||
+        getWindow() !== window ||
+        window.isDestroyed() ||
+        !window.isVisible() ||
+        machine.sequence !== sequence ||
+        getConnection() !== current ||
+        !current.attached ||
+        current.view.webContents.isDestroyed() ||
+        getLocalRuntimeState().starting
+      )
+        return;
+      // A native click can return to setup only for the exact connection described above.
+      showSetup();
+    } catch {
+      // Dismissal or a closed window must never change the workspace or its access choice.
+    } finally {
+      localWorkspaceOpen = false;
     }
   }
   function explainBlocked() {
@@ -185,6 +243,7 @@ function createMenus({
       {
         label: t('workspace'),
         submenu: [
+          { label: t('localWorkspaceMenu'), click: () => void showLocalWorkspace() },
           {
             label: t('reconnect'),
             accelerator: 'CmdOrCtrl+R',

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13T10:48:27.916Z",
+  "platform": "macOS Apple Silicon",
+  "scope": "Actual independently packaged desktop applications using synthetic local profiles",
+  "firstRun": {
+    "packageAsarSha256": "a99d6c0c877390c63de6d6f1eda1a101873982fb3164e2c82e9cdfc8f07a01c6",
+    "freshProfile": true,
+    "workspaceChoiceShownBeforeConnection": true,
+    "hostControlInitiallyUnchecked": true,
+    "localWorkspaceOpenedWithoutAccountLogin": true,
+    "modelSetupEntryVisibleInChat": true,
+    "modelSetupEntryOpenedConfiguration": true
+  },
+  "nativeMenu": {
+    "packageAsarSha256": "edbc3b483a8f0a7b9bda5fddd2ee415d928898fbc77ed674f63aa0504a42f855",
+    "language": "zh-CN",
+    "actualNativeMenuOpened": true,
+    "actualCancelClicked": true,
+    "serviceHealthyWhileOpen": true,
+    "sameServiceHealthyAfterCancel": true,
+    "serviceConfigurationUnchanged": true,
+    "hostControlChoiceUnchanged": true,
+    "localWorkspaceRemainedVisible": true,
+    "explicitReturnClicked": true,
+    "startupPageVisible": true,
+    "managedServiceStopped": true,
+    "hostControlStillDisabled": true,
+    "syntheticDataPreserved": true
+  },
+  "tests": {
+    "desktopPassed": 88,
+    "failed": 0,
+    "skipped": 0,
+    "coverage": "English/Chinese text, local modes, existing remote service, starting state, duplicate dialogs, stale connection and window results"
+  },
+  "notVerified": [
+    "Host-control enabled GUI and current packaged Pi/Rust command approval and conversation-stop chain",
+    "Operating-system screen capture and keyboard/mouse permissions",
+    "Other platforms and public artifact release"
+  ],
+  "privacy": "Synthetic data only; no account, endpoint, host path, token or workspace identifier included."
+}
