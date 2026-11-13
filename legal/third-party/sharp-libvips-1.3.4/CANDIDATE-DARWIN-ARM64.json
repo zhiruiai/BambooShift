@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13",
+  "status": "local-candidate-only",
+  "platform": "darwin-arm64",
+  "productionDependenciesChanged": false,
+  "managedRuntimeReleaseEnabled": false,
+  "correspondingSourceArtifactDelivered": false,
+  "upstream": {
+    "repository": "https://github.com/lovell/sharp-libvips",
+    "revision": "ebb95f8add54eee8bed840e3fb587e4cbec857d7",
+    "recipe": "https://github.com/lovell/sharp-libvips/blob/ebb95f8add54eee8bed840e3fb587e4cbec857d7/build/posix.sh",
+    "recipeSha256": "333031b3b49bf1a16d0b9d6812d98f67c404218932ef8c0b389388524a524b36",
+    "versionsSha256": "c0ad634f7c2ac8994f831dd0bcb5c60043db7ba4ddd9cc2dbc3703b15f4ec7e5",
+    "arm64ToolchainSha256": "752c37ab0b1b9401ec9cad4ef0d6588511b6a1011fe8789acba4066f65cccf99",
+    "arm64MesonCrossFileSha256": "d9143811fe878743bc874d92de848a87a2c9a334b0d39e34d49b56c0a025a5ee"
+  },
+  "productionContract": {
+    "imageInputs": ["PNG", "JPEG", "WebP"],
+    "output": "PNG after orientation correction, bounded resize and metadata removal",
+    "svg": "UTF-8 text attachment; no production Sharp rasterization",
+    "gif": "Rejected as an unsupported attachment; not a first-frame product feature",
+    "developmentSvgRendering": "Unchanged; icon/avatar export retains the complete official Sharp dependency"
+  },
+  "buildChanges": {
+    "features": [
+      "Explicit libvips -Drsvg=disabled",
+      "Skip librsvg source/patch/build and the macOS rustup/cargo-c installation steps",
+      "Retain all other upstream codec and font-stack selections"
+    ],
+    "privacy": [
+      "Clang -ffile-prefix-map=<build-root>=/bambooshift-native-build and -fdebug-prefix-map=<build-root>=/bambooshift-native-build",
+      "Three source patches set GLib/GIO, Pango and libvips fallback directories under /bambooshift-native-runtime; installation paths and environment overrides remain unchanged",
+      "libheif -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif with its existing -DENABLE_PLUGIN_LOADING=0",
+      "Tar uid/gid=0, owner/group=root, mtime=0; omit atime/ctime and build logs"
+    ],
+    "buildOnlyTools": {
+      "python": "3.14.7",
+      "meson": "1.12.1",
+      "ninja": "1.13.2",
+      "cmake": "4.4.4",
+      "compiler": "Apple Clang 21.0.0",
+      "deploymentTarget": "macOS 11.0",
+      "jobs": 2,
+      "isolatedSdkAdjustment": "The selected Apple CLT lacked its default libc++ include directory. An isolated clang++ wrapper selected the matching SDK usr/include/c++/v1 via -isystem; no global tool installation or product runtime dependency was added.",
+      "wheelHashes": {
+        "meson==1.12.1": "930bc7542cbd9f57009e182fd014eba48cf1a0180a7b9006d2d32d8f168d8b02",
+        "ninja==1.13.2": "fd82e26c0706ad4ab88e5fdd26f3fab0a987a90f810160f6c322e752c6af298b",
+        "cmake==4.4.4": "883962a72b1b3a16ff445427f24c8caca9797dd9e563bbe208cbcd89e877f9d3"
+      }
+    }
+  },
+  "candidate": {
+    "library": "libvips-cpp.8.18.7.dylib",
+    "librarySha256": "79743693b1a3bfa5e3190c8515efad66b7906cb41229050b5230817a45519e0d",
+    "archive": {
+      "artifact": "bambooshift-native-image-codecs-darwin-arm64-norsvg-candidate.tar.gz",
+      "sha256": "69c97d9092dd65b5c28a38b5cdcbed58d330c379a23ec71780af69b5c5734c70",
+      "bytes": 8586886,
+      "entries": 730
+    },
+    "identity": "Custom local build; not the original @img/sharp-libvips npm publication and not an official upstream binary"
+  },
+  "abi": {
+    "sharp": "0.35.5",
+    "vips": "8.18.7",
+    "unchangedOriginalAddonSha256": "791921f975371be33aed727e06283282cc001c960792eb52505b579fdaaf1b55",
+    "addonDependency": "@rpath/libvips-cpp.8.18.7.dylib",
+    "actualLoadedLibraryVerified": true,
+    "method": "Node process.report sharedObjects resolved to the isolated candidate file, whose hash matched the staged dylib. The original Sharp addon hash was unchanged.",
+    "pngJpegWebpSmoke": "passed",
+    "svgInputCapability": false,
+    "actualSvgDecode": "rejected as unsupported",
+    "signature": "Ad-hoc codesign --verify --strict passed; this is not Developer ID signing or notarization"
+  },
+  "imageContract": {
+    "command": "OPENBOT_IMAGE_CONTRACT_RUNTIME=<isolated-runtime> OPENBOT_IMAGE_CONTRACT_NODE=<node24> TSX_DISABLE_CACHE=1 <node24> --import tsx --test server/workers/document-worker/tests/image-contract.test.ts",
+    "sourceCommit": "0d665675ad4f4ea5d364a3e54979d80a9f2a0676",
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0,
+    "candidateHashCheckedBeforeAndAfter": true,
+    "scope": [
+      "EXIF orientations 1-8 for PNG/JPEG/WebP",
+      "Embedded P3 and CMYK profiles converted before metadata stripping",
+      "Transparent edges and bounded resizing",
+      "Animated WebP first frame and APNG default-image behavior",
+      "10 MiB, 20 megapixel, 12000-pixel input limits",
+      "2048 output sizing and 8 MiB-triggered 1280 fallback",
+      "Unsupported/mismatched inputs"
+    ],
+    "notExercised": [
+      "Other CPU/OS targets",
+      "Complete desktop package with this replacement library",
+      "New process cancellation behavior; existing ownership/cancellation code was unchanged"
+    ]
+  },
+  "privacy": {
+    "libraryPrivatePathOrAccountValueHits": 0,
+    "archivePrivateContentHits": 0,
+    "archiveNonNeutralOwnerOrTimestampEntries": 0,
+    "archiveUnsafePathsOrExternalLinks": 0,
+    "scannedEntries": 730,
+    "scope": "Exact local build prefix, home-directory prefixes and known local account value; all archived regular-file contents and ownership/timestamp/link metadata were checked. Original third-party author attribution remains intact."
+  },
+  "heifHeaderRegeneration": {
+    "pluginLoadingEnabled": false,
+    "pluginLoadingMacro": "undefined, false in #if",
+    "onlyConsumer": "libheif/init.cc, inside #if ENABLE_PLUGIN_LOADING",
+    "preprocessedTranslationUnitBeforeSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
+    "preprocessedTranslationUnitAfterSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
+    "identicalPreprocessedTranslationUnit": true,
+    "headerBeforeSha256": "958566b20f8dffdce22025fde18dd529d4ba8dc24fba705d5b0ea78a4bb24ae2",
+    "headerAfterSha256": "ffc22608355e731a101c320290c6bf3af16cbb5ba52b8e78a44cdae682043061",
+    "mechanism": "Official CMake configure_file from exact upstream heif_version.h.in; PLUGIN_DIRECTORY supplied via supported option in full build recipe."
+  },
+  "reproduction": {
+    "completePublicOneCommandRebuildAvailable": false,
+    "localBuildCompleted": true,
+    "method": "Full pinned POSIX recipe built the candidate. GLib/Pango/libvips were then clean-rebuilt with the published default-directory patches and relinked. The disabled libheif plugin header default was regenerated with upstream CMake configure_file; its only consumer preprocessed identically before/after, so library bytes were unchanged.",
+    "sourceCatalog": "SOURCE-INPUTS-CANDIDATE.json",
+    "sourcePatches": "candidate-patches/",
+    "localRecipeEvidenceSha256": "55a56c11c2b5eab7d7034544d99cbe75157f5c6c85684ee7ed3463c999e388ac",
+    "commands": [
+      {
+        "purpose": "Local full build (entry point is retained locally, not yet published)",
+        "command": "BAMBOOSHIFT_BUILD_TOOLS=<isolated-build-tools> BAMBOOSHIFT_BUILD_JOBS=2 bash <candidate-build>/run.sh"
+      },
+      {
+        "purpose": "Feature selection on the pinned libvips recipe",
+        "parameters": [
+          "-Drsvg=disabled",
+          "-Dmodules=disabled",
+          "-Dauto_features=enabled",
+          "-Ddeprecated=false",
+          "-Dintrospection=disabled"
+        ]
+      },
+      {
+        "purpose": "Check original addon dependency",
+        "command": "otool -L <isolated-runtime>/node_modules/@img/sharp-darwin-arm64/lib/sharp-darwin-arm64-0.35.5.node"
+      },
+      {
+        "purpose": "Local signature verification",
+        "command": "codesign --verify --strict <candidate>/lib/libvips-cpp.8.18.7.dylib"
+      },
+      {
+        "purpose": "Header regeneration",
+        "command": "cmake -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif -DENABLE_PLUGIN_LOADING=0 <pinned-libheif-source>",
+        "note": "This is the supported parameter selection for a clean build. The observed incremental header-only regeneration used the same template and project version via CMake configure_file; preprocessor hashes are recorded separately."
+      }
+    ]
+  },
+  "resolvedVipsDependencies": [
+    {
+      "name": "glib-2.0",
+      "version": "2.90.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "gio-2.0",
+      "version": "2.90.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "gobject-2.0",
+      "version": "2.90.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "expat",
+      "version": "2.8.5",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "threads",
+      "version": "unknown",
+      "type": "system"
+    },
+    {
+      "name": "zlib",
+      "version": "1.3.1.zlib-ng",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libarchive",
+      "version": "3.8.9",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "imagequant",
+      "version": "2.4.1",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "cgif",
+      "version": "0.5.4",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libexif",
+      "version": "0.6.26",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libjpeg",
+      "version": "5.0.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libuhdr",
+      "version": "2.0.2",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libpng",
+      "version": "1.6.58",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libwebp",
+      "version": "1.6.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libwebpmux",
+      "version": "1.6.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libwebpdemux",
+      "version": "1.6.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "pangocairo",
+      "version": "1.58.2",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "pangoft2",
+      "version": "1.58.2",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "fontconfig",
+      "version": "2.18.3",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libtiff-4",
+      "version": "4.7.2",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "lcms2",
+      "version": "2.19",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libhwy",
+      "version": "1.4.0",
+      "type": "pkgconfig"
+    },
+    {
+      "name": "libheif",
+      "version": "1.23.5",
+      "type": "pkgconfig"
+    }
+  ],
+  "remainingReleaseRequirements": [
+    "Publish and exercise a complete clean rebuild entry point with toolchain inputs, every patch, library-replacement instructions and the corresponding-source artifact. A source URL catalog is not source delivery.",
+    "Complete legal review and include all applicable original license/copyright texts for the custom native artifact. Removing librsvg does not make libvips or libheif MIT-licensed.",
+    "Qualify the exact replacement in a full managed desktop package, including launch, cancellation, privacy, signing and supported target platforms.",
+    "Give the custom artifact an explicit provenance/integrity identity before any runtime dependency change. Keep the existing managed-runtime release gate disabled until acceptance is complete."
+  ],
+  "legacyAudit": "DISTRIBUTION.json remains the audit of the locked official npm binaries. Its macOS librsvg notice gaps are not waived by this separate candidate."
+}

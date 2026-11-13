@@ -1,0 +1,11 @@
+--- a/pango/meson.build
++++ b/pango/meson.build
+@@ -109,7 +109,7 @@
+   '-DG_LOG_USE_STRUCTURED=1',
+   '-DPANGO_COMPILATION',
+   '-DSYSCONFDIR="@0@"'.format(pango_sysconfdir),
+-  '-DLIBDIR="@0@"'.format(pango_libdir),
++  '-DLIBDIR="@0@"'.format('/bambooshift-native-runtime/lib'),
+ ]
+ 
+ pango_inc = include_directories('.')

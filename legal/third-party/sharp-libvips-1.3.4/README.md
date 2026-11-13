@@ -115,3 +115,24 @@ package acceptance. Such local acceptance is separate from release readiness.
 The four notice gaps describe the resolved macOS paths and must not be presented
 as proof of missing dependencies on every other platform. No image-processing
 capability was removed to avoid completing the audit.
+
+## Separate macOS arm64 candidate
+
+[CANDIDATE-DARWIN-ARM64.json](CANDIDATE-DARWIN-ARM64.json) records a local
+source-built alternative with libvips' official `-Drsvg=disabled` option. The
+unchanged Sharp addon loaded the new library, and the image contract suite passed
+27 checks against its exact hash. PNG/JPEG/WebP processing, EXIF correction,
+colour profiles and image limits passed; font-stack selection is unchanged. SVG attachments
+already use the text reader; development icon and avatar exports continue to use
+the complete official Sharp dependency.
+
+The candidate's library and archive passed the recorded path, account-value and
+archive-metadata checks. [SOURCE-INPUTS-CANDIDATE.json](SOURCE-INPUTS-CANDIDATE.json)
+lists the fixed source inputs; [candidate-patches](candidate-patches/) contains
+the small source changes that remove build-machine fallback directories. The
+record distinguishes the completed local build from an unpublished full rebuild
+entry point and an undelivered corresponding-source artifact.
+
+This candidate does not replace the locked npm binaries, clear their existing
+notice gaps, or enable a release. Full license materials, source delivery,
+replacement instructions and managed desktop package acceptance remain required.

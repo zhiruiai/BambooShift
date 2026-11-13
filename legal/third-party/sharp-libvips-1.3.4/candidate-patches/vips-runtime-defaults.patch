@@ -1,0 +1,13 @@
+--- a/meson.build
++++ b/meson.build
+@@ -645,8 +645,8 @@
+ 
+ gettext_domain = 'vips@0@.@1@'.format(version_major, version_minor)
+ cfg_var.set_quoted('GETTEXT_PACKAGE', gettext_domain)
+-cfg_var.set_quoted('VIPS_PREFIX', prefix_dir)
+-cfg_var.set_quoted('VIPS_LIBDIR', lib_dir)
++cfg_var.set_quoted('VIPS_PREFIX', '/bambooshift-native-runtime')
++cfg_var.set_quoted('VIPS_LIBDIR', '/bambooshift-native-runtime/lib')
+ if cc.has_function('ngettext')
+     cfg_var.set('ENABLE_NLS', true)
+     have_bind_textdomain_codeset = cc.has_function('bind_textdomain_codeset')
