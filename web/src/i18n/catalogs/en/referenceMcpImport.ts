@@ -1,7 +1,12 @@
 export default {
   mcpImportOpen: 'Import MCP configuration',
   mcpImportHelp:
-    'Paste an mcpServers or VS Code servers JSON object. Only the name and public HTTPS address are copied. Credentials and commands are ignored. Nothing connects until you review and submit the form below.',
+    'Paste mcpServers or VS Code servers JSON. Credentials and commands are removed on this device. Only names and addresses are sent to your workspace for preview; it does not contact external services. Review and submit the form to connect.',
+  mcpImportInspectBusy: 'Checking addresses…',
+  mcpImportInspectFailed:
+    'Could not preview these addresses. Try again or enter the service manually.',
+  mcpImportNeedsUpdate:
+    'This workspace needs an update to preview imports. You can enter the service manually.',
   mcpImportJson: 'MCP configuration JSON',
   mcpImportInspect: 'Find remote services',
   mcpImportChoose: 'Remote service',

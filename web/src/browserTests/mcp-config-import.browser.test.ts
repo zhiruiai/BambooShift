@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { build } from 'esbuild';
 import { chromium } from 'playwright-core';
+import { MAX_MCP_IMPORT_LENGTH } from '../remoteMcpImport';
 
 const origin = 'https://import.example.test';
 const workspace = '11111111-1111-4111-8111-111111111111';
@@ -62,6 +63,7 @@ test(
     const errors: string[] = [],
       outbound: string[] = [];
     const writes: unknown[] = [];
+    const previews: unknown[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.route('**/*', (route) => {
       const request = route.request(),
@@ -77,6 +79,26 @@ test(
         });
       if (url.pathname === '/fixture.js')
         return route.fulfill({ contentType: 'text/javascript', body: js });
+      if (url.pathname === `/api/workspaces/${workspace}/apps/import/preview`) {
+        assert.equal(request.method(), 'POST');
+        const projection = request.postDataJSON();
+        previews.push(projection);
+        assert.deepEqual(Object.keys(projection).sort(), ['candidates', 'skipped']);
+        assert.doesNotMatch(
+          JSON.stringify(projection),
+          /PASTED_SECRET|ENV_SECRET|DO_NOT_RUN|headers|token|env|command/,
+        );
+        const candidates = projection.candidates.filter(
+          (entry: { url: string }) => entry.url !== 'https://127.0.0.1/mcp',
+        );
+        return route.fulfill({
+          json: {
+            candidates,
+            skipped: projection.skipped + projection.candidates.length - candidates.length,
+            error: null,
+          },
+        });
+      }
       if (url.pathname === `/api/workspaces/${workspace}/apps`) {
         if (request.method() === 'GET') return route.fulfill({ json: [] });
         assert.equal(request.method(), 'POST');
@@ -113,6 +135,7 @@ test(
       await page.getByRole('button', { name: 'Import MCP configuration', exact: true }).click();
       await page.getByLabel('MCP configuration JSON', { exact: true }).fill(source);
       await page.getByRole('button', { name: 'Find remote services', exact: true }).click();
+      await page.getByLabel('Remote service', { exact: true }).waitFor();
       assert.equal(await page.getByLabel('MCP configuration JSON', { exact: true }).count(), 0);
       assert.equal(
         await page.getByLabel('Remote service', { exact: true }).locator('option').count(),
@@ -201,6 +224,22 @@ test(
     assert.equal(await submit.isDisabled(), true);
 
     await page.getByRole('button', { name: 'Import MCP configuration', exact: true }).click();
+    await page
+      .getByLabel('MCP configuration JSON', { exact: true })
+      .fill(config.padEnd(MAX_MCP_IMPORT_LENGTH + 1, ' '));
+    assert.equal(
+      (await page.locator('.apps-mcp-import textarea').inputValue()).length,
+      MAX_MCP_IMPORT_LENGTH + 1,
+    );
+    await page.getByRole('button', { name: 'Find remote services', exact: true }).click();
+    await page
+      .getByText('Use a configuration of at most 65,536 characters.', { exact: true })
+      .waitFor();
+    assert.equal(
+      previews.length,
+      5,
+      'oversized paste must be rejected, never silently truncated and previewed',
+    );
     const box = page.locator('.apps-mcp-import');
     const fits = await box.evaluate((node) => {
       const r = node.getBoundingClientRect();
@@ -210,6 +249,7 @@ test(
     await page.evaluate(() => (window as unknown as { revokeOwner(): void }).revokeOwner());
     await box.waitFor({ state: 'hidden' });
     assert.equal(writes.length, 1);
+    assert.equal(previews.length, 5);
     assert.deepEqual(outbound, []);
     assert.deepEqual(errors, []);
   },

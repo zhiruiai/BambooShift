@@ -5,6 +5,7 @@ import type { AddAppConnection, ConnectedApp } from '../../../../shared/app-conn
 import { validAppAddress } from '../../appConnections';
 import { providerForEndpoint } from '../../appProviders';
 import { RemoteMcpImport } from './RemoteMcpImport';
+import type { RemoteMcpPreview } from '../../remoteMcpImport';
 import '../AppsDialog.css';
 import type { useAppsDialogContent } from './useAppsDialogContent';
 export type AppsDialogContentModel = ReturnType<typeof useAppsDialogContent>;
@@ -56,7 +57,9 @@ export function AddAppConnectionView({
         {feedback}
         {!customReview && props.canManage && (
           <RemoteMcpImport
+            key={`${props.userId}:${props.workspaceId}`}
             disabled={busy || uncertain}
+            draftVersion={draft}
             hasDraft={
               !!(
                 draft.name ||
@@ -66,6 +69,19 @@ export function AddAppConnectionView({
                 draft.authType !== 'none'
               )
             }
+            onInspect={async (projection) => {
+              const ticket = scope.ticket();
+              if (busy || uncertain || !props.canManage || !scope.current(ticket))
+                throw new DOMException('Import view is no longer active.', 'AbortError');
+              const preview = await scope.request<RemoteMcpPreview>(
+                '/apps/import/preview',
+                'POST',
+                projection,
+              );
+              if (!scope.current(ticket))
+                throw new DOMException('Import view is no longer active.', 'AbortError');
+              return preview;
+            }}
             onApply={({ name, url }) => {
               if (busy || uncertain || !props.canManage || !scope.current(scope.ticket())) return;
               const provider = providerForEndpoint(url);

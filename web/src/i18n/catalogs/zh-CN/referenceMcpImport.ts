@@ -1,7 +1,10 @@
 export default {
   mcpImportOpen: '导入 MCP 配置',
   mcpImportHelp:
-    '粘贴包含 mcpServers 或 VS Code servers 的 JSON 配置。只填入名称和公网 HTTPS 地址，忽略凭据与命令。核对并提交下方表单之前，不会连接任何服务。',
+    '粘贴 mcpServers 或 VS Code servers JSON。凭据和命令在本机移除，仅将名称、地址交给当前工作空间预览，不访问外部服务。核对并提交表单后才会连接。',
+  mcpImportInspectBusy: '正在检查地址…',
+  mcpImportInspectFailed: '暂时无法预览地址，请重试或手动填写服务。',
+  mcpImportNeedsUpdate: '当前工作空间需要更新才能预览导入，你可以先手动填写服务。',
   mcpImportJson: 'MCP 配置 JSON',
   mcpImportInspect: '识别远程服务',
   mcpImportChoose: '远程服务',

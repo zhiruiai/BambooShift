@@ -196,6 +196,11 @@ void main() {
       expect(writes, 0);
       f.session.selectWorkspace({...f.session.workspace!, 'role': 'owner'});
       await tester.pump();
+      await tester.scrollUntilVisible(
+        submit,
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(tester.widget<CheckboxListTile>(consent).value, isFalse);
       expect(tester.widget<FilledButton>(submit).onPressed, isNull);
       await tester.pumpWidget(const SizedBox());

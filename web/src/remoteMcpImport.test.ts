@@ -1,8 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { MAX_MCP_IMPORT_LENGTH, parseRemoteMcpImport } from './remoteMcpImport';
+import {
+  MAX_MCP_IMPORT_LENGTH,
+  parseRemoteMcpImport,
+  readRemoteMcpPreview,
+} from './remoteMcpImport';
 
-test('MCP and VS Code imports project only editable names and canonical HTTP endpoints', () => {
+test('MCP and VS Code imports project names and raw credential-free HTTPS strings for preview', () => {
   const result = parseRemoteMcpImport(
     JSON.stringify({
       mcpServers: {
@@ -29,10 +33,11 @@ test('MCP and VS Code imports project only editable names and canonical HTTP end
   assert.deepEqual(result, {
     ok: true,
     candidates: [
-      { name: 'Docs', url: 'https://docs.example.com/mcp' },
+      { name: 'Docs', url: 'https://DOCS.example.com:443/mcp' },
       { name: 'second', url: 'https://other.example.com/mcp' },
+      { name: 'duplicate', url: 'https://docs.example.com/mcp' },
     ],
-    skipped: 3,
+    skipped: 2,
   });
   assert.doesNotMatch(JSON.stringify(result), /SECRET|Authorization|headers|token|command|env/);
 });
@@ -40,25 +45,14 @@ test('MCP and VS Code imports project only editable names and canonical HTTP end
 test('unsafe, credential, placeholder, unsupported and malformed entries never become candidates', () => {
   const urls = [
     'http://example.com/mcp',
-    'https://localhost/mcp',
-    'https://127.1/mcp',
-    'https://2130706433/mcp',
-    'https://[::1]/mcp',
-    'https://10.0.0.1/mcp',
-    'https://intranet/mcp',
-    'https://host.internal/mcp',
-    'https://host.local./mcp',
-    'https://host.test/mcp',
-    'https://host.onion/mcp',
     'https://user:SECRET@example.com/mcp',
     'https://example.com/mcp?token=SECRET',
     'https://example.com/mcp?',
     'https://example.com/mcp#SECRET',
-    'https://example.com:8443/mcp',
     'https://example.com/${TOKEN}',
     'https://example.com/<token>',
     'https://example.com/a\nb',
-    'https://example.com/' + '汉'.repeat(300),
+    'https://example.com/' + '汉'.repeat(700),
   ];
   for (const url of urls)
     assert.deepEqual(
@@ -126,4 +120,38 @@ test('members and exact endpoint proposal reviews have no configuration import e
     /导入 MCP 配置/,
   );
   assert.match(render(AddAppConnectionView, model), /导入 MCP 配置/);
+});
+
+test('preview response validates counts, consistency and safe fields without echoing extras', () => {
+  const candidate = { name: 'Docs', url: 'https://example.com/mcp' };
+  const result = { candidates: [candidate], skipped: 0, error: null };
+  assert.deepEqual(
+    readRemoteMcpPreview({
+      ...result,
+      token: 'SYNTHETIC_SECRET',
+      candidates: [{ ...candidate, headers: { Authorization: 'SYNTHETIC_SECRET' } }],
+    }),
+    result,
+  );
+  assert.deepEqual(readRemoteMcpPreview({ candidates: [], skipped: 100, error: 'empty' }), {
+    candidates: [],
+    skipped: 100,
+    error: 'empty',
+  });
+  for (const value of [
+    null,
+    [],
+    {},
+    { candidates: [], skipped: 0, error: null },
+    { ...result, error: 'empty' },
+    { ...result, skipped: -1 },
+    { ...result, skipped: 100 },
+    { ...result, skipped: 0.5 },
+    { ...result, candidates: [candidate, candidate] },
+    { ...result, candidates: [{ ...candidate, name: ' Docs ' }] },
+    { ...result, candidates: [{ ...candidate, url: 'https://user:SYNTHETIC@example.com/mcp' }] },
+    { ...result, candidates: [{ ...candidate, url: 'https://example.com/?token=SYNTHETIC' }] },
+    { ...result, candidates: [{ ...candidate, url: 'https://example.com/' + 'a'.repeat(2048) }] },
+  ])
+    assert.throws(() => readRemoteMcpPreview(value), /^Error: Invalid import preview response\.$/);
 });

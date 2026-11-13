@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-13",
+  "sourceBaseline": "0502d14",
+  "scope": "Remote MCP configuration projection and owner-only preview across Web and Flutter; implementation changes accompanying this record",
+  "tests": {
+    "rustIntegration": { "passed": 6, "failed": 0 },
+    "webProjectionAndInteraction": { "passed": 71, "failed": 0 },
+    "chromeNarrowScreenFlow": { "passed": 1, "failed": 0 },
+    "flutterProjection": { "passed": 59, "failed": 0 },
+    "flutterPreviewAndImportWidgets": { "passed": 21, "failed": 0 },
+    "flutterExistingConnectionAndCredentialRegressions": { "passed": 13, "failed": 0 },
+    "flutterScope": "Synthetic transport; English and Chinese import at 320px with 1.4x text scaling. Existing scroll tests locate lazy-list controls before inspecting them.",
+    "webProductionBuild": "passed",
+    "operationsProductionBuild": "passed"
+  },
+  "realHttp": {
+    "environment": "Isolated final release backend with a fresh temporary personal workspace",
+    "hostControl": false,
+    "localSessionOpenedWithoutRegistration": true,
+    "internationalDomainAndPathCanonicalized": true,
+    "canonicalDuplicatesCollapsed": true,
+    "privateAddressExcluded": true,
+    "previewDidNotCreateConnection": true,
+    "unauthenticatedAndWrongActorRequestsDenied": true,
+    "unexpectedCredentialFieldDenied": true,
+    "externalAccountConnectionsAttempted": 0
+  },
+  "boundaries": [
+    "Pasted headers, credential fields, environment variables and commands are not sent to preview.",
+    "Replacement confirmation is tied to the current draft; cancellation, unmount and revoked scope cannot apply late results.",
+    "A 65,537-code-unit paste is rejected without truncation or a preview request.",
+    "Preview accepts a bounded 256KiB body while other app endpoints retain 64KiB.",
+    "Product Origin and Sec-Fetch guards remain active; the operations router does not expose preview."
+  ],
+  "notVerified": [
+    "Provider-specific live OAuth and account compatibility",
+    "Physical Android or iOS device execution of this new import flow",
+    "Unattended batch connection creation or local command MCP installation"
+  ],
+  "privacy": "Synthetic data only. No account, token, endpoint, host path, workspace identifier or screenshot is included."
+}

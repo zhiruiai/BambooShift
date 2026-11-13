@@ -47,10 +47,6 @@ void main() {
       );
       expect(fields[2].controller!.text, isEmpty);
       expect(fields[2].obscureText, isTrue);
-      expect(
-        tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
-        isFalse,
-      );
       await tester.scrollUntilVisible(
         find.widgetWithText(FilledButton, 'Save connection'),
         160,
@@ -60,6 +56,10 @@ void main() {
               matching: find.byType(Scrollable),
             )
             .first,
+      );
+      expect(
+        tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+        isFalse,
       );
       expect(
         tester

@@ -1,0 +1,520 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "name": "only names and canonical addresses survive",
+      "input": {
+        "mcpServers": {
+          " Docs ": {
+            "url": "https://DOCS.example.com:443/mcp",
+            "headers": {
+              "Authorization": "SYNTHETIC_HEADER"
+            },
+            "token": "SYNTHETIC_TOKEN",
+            "env": {
+              "KEY": "SYNTHETIC_ENV"
+            }
+          },
+          "local": {
+            "url": "https://local.example.com/mcp",
+            "command": "synthetic-command"
+          },
+          "arguments": {
+            "url": "https://arguments.example.com/mcp",
+            "args": []
+          },
+          "legacy": {
+            "url": "https://old.example.com/sse",
+            "type": "sse"
+          }
+        },
+        "servers": {
+          "second": {
+            "url": "https://other.example.com/mcp",
+            "type": "http",
+            "transport": "streamable-http"
+          },
+          "duplicate": {
+            "url": "https://docs.example.com/mcp"
+          },
+          "bad-type": {
+            "url": "https://bad.example.com/mcp",
+            "type": null
+          }
+        },
+        "inputs": [
+          {
+            "id": "synthetic-key",
+            "type": "promptString"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "candidates": [
+          {
+            "name": "Docs",
+            "url": "https://docs.example.com/mcp"
+          },
+          {
+            "name": "second",
+            "url": "https://other.example.com/mcp"
+          }
+        ],
+        "skipped": 5
+      },
+      "projectionExpected": {
+        "ok": true,
+        "candidates": [
+          {
+            "name": "Docs",
+            "url": "https://DOCS.example.com:443/mcp"
+          },
+          {
+            "name": "second",
+            "url": "https://other.example.com/mcp"
+          },
+          {
+            "name": "duplicate",
+            "url": "https://docs.example.com/mcp"
+          }
+        ],
+        "skipped": 4
+      }
+    },
+    {
+      "name": "numeric object keys have JavaScript enumeration order",
+      "source": "{\"servers\":{\"10\":{\"url\":\"https://example.com/shared\"},\"2\":{\"url\":\"https://example.com/shared\"},\"first\":{\"url\":\"https://example.com/other\"}}}",
+      "expected": {
+        "ok": true,
+        "candidates": [
+          {
+            "name": "2",
+            "url": "https://example.com/shared"
+          },
+          {
+            "name": "first",
+            "url": "https://example.com/other"
+          }
+        ],
+        "skipped": 1
+      },
+      "projectionExpected": {
+        "ok": true,
+        "candidates": [
+          {
+            "name": "2",
+            "url": "https://example.com/shared"
+          },
+          {
+            "name": "first",
+            "url": "https://example.com/other"
+          }
+        ],
+        "skipped": 1
+      }
+    },
+    {
+      "name": "malformed JSON",
+      "source": "invalid SYNTHETIC_SECRET",
+      "expected": {
+        "ok": false,
+        "reason": "json"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "json"
+      }
+    },
+    {
+      "name": "null root",
+      "input": null,
+      "expected": {
+        "ok": false,
+        "reason": "shape"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "shape"
+      }
+    },
+    {
+      "name": "array root",
+      "input": [],
+      "expected": {
+        "ok": false,
+        "reason": "shape"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "shape"
+      }
+    },
+    {
+      "name": "missing groups",
+      "input": {},
+      "expected": {
+        "ok": false,
+        "reason": "shape"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "shape"
+      }
+    },
+    {
+      "name": "malformed second group",
+      "input": {
+        "mcpServers": {},
+        "servers": []
+      },
+      "expected": {
+        "ok": false,
+        "reason": "shape"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "shape"
+      }
+    },
+    {
+      "name": "empty groups",
+      "input": {
+        "mcpServers": {},
+        "servers": {}
+      },
+      "expected": {
+        "ok": false,
+        "reason": "empty"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "empty"
+      }
+    },
+    {
+      "name": "non-object entries",
+      "input": {
+        "servers": {
+          "a": [],
+          "b": null,
+          "c": "https://example.com/mcp"
+        }
+      },
+      "expected": {
+        "ok": false,
+        "reason": "empty"
+      },
+      "projectionExpected": {
+        "ok": false,
+        "reason": "empty"
+      }
+    }
+  ],
+  "addresses": [
+    {
+      "name": "root path and default port",
+      "input": "HTTPS://EXAMPLE.COM:443",
+      "url": "https://example.com/",
+      "projected": true
+    },
+    {
+      "name": "leading zero default port",
+      "input": "https://example.com:00443/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "empty port",
+      "input": "https://example.com:/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "missing authority slashes",
+      "input": "https:example.com/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "extra authority slashes",
+      "input": "https:////example.com/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "dot segments",
+      "input": "https://example.com/a/./b/../mcp",
+      "url": "https://example.com/a/mcp",
+      "projected": true
+    },
+    {
+      "name": "percent encoded dot segments",
+      "input": "https://example.com/a/%2e/%2E%2e/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "preserve escaped path spelling",
+      "input": "https://example.com/%7e/%2f/%41",
+      "url": "https://example.com/%7e/%2f/%41",
+      "projected": true
+    },
+    {
+      "name": "preserve malformed percent path",
+      "input": "https://example.com/%zz/%",
+      "url": "https://example.com/%zz/%",
+      "projected": true
+    },
+    {
+      "name": "unicode path is UTF8 encoded",
+      "input": "https://example.com/资料",
+      "url": "https://example.com/%E8%B5%84%E6%96%99",
+      "projected": true
+    },
+    {
+      "name": "international domain",
+      "input": "https://bücher.example/mcp",
+      "url": "https://xn--bcher-kva.example/mcp",
+      "projected": true
+    },
+    {
+      "name": "international domain already encoded",
+      "input": "https://XN--BCHER-KVA.example/mcp",
+      "url": "https://xn--bcher-kva.example/mcp",
+      "projected": true
+    },
+    {
+      "name": "Unicode normalization",
+      "input": "https://bücher.example/mcp",
+      "url": "https://xn--bcher-kva.example/mcp",
+      "projected": true
+    },
+    {
+      "name": "IDNA nontransitional mapping",
+      "input": "https://faß.example/mcp",
+      "url": "https://xn--fa-hia.example/mcp",
+      "projected": true
+    },
+    {
+      "name": "Unicode domain separator",
+      "input": "https://docs。example.com/mcp",
+      "url": "https://docs.example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "full width domain mapping",
+      "input": "https://ｅｘａｍｐｌｅ.com/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "percent encoded domain",
+      "input": "https://%65xample.com/mcp",
+      "url": "https://example.com/mcp",
+      "projected": true
+    },
+    {
+      "name": "trailing domain dot retained",
+      "input": "https://example.com./mcp",
+      "url": "https://example.com./mcp",
+      "projected": true
+    },
+    {
+      "name": "HTTP is not HTTPS",
+      "input": "http://example.com/mcp",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "nondefault port",
+      "input": "https://example.com:8443/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "credential userinfo",
+      "input": "https://user:SYNTHETIC@example.com/mcp",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "empty userinfo",
+      "input": "https://@example.com/mcp",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "empty username and password",
+      "input": "https://:@example.com/mcp",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "query credentials",
+      "input": "https://example.com/mcp?token=SYNTHETIC",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "empty query",
+      "input": "https://example.com/mcp?",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "fragment",
+      "input": "https://example.com/mcp#fragment",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "IPv4",
+      "input": "https://127.0.0.1/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "IPv4 shortened",
+      "input": "https://127.1/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "IPv4 decimal",
+      "input": "https://2130706433/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "IPv4 hexadecimal",
+      "input": "https://0x7f.1/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "IPv6",
+      "input": "https://[::1]/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "single label",
+      "input": "https://intranet/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "reserved suffix",
+      "input": "https://host.local./mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "Unicode private suffix mapping",
+      "input": "https://host.ｌｏｃａｌ/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "invalid punycode",
+      "input": "https://xn--.example/mcp",
+      "url": null,
+      "projected": true
+    },
+    {
+      "name": "placeholder",
+      "input": "https://example.com/${TOKEN}",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "HTML placeholder",
+      "input": "https://example.com/<token>",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "backslash",
+      "input": "https://example.com/a\\b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "leading space",
+      "input": " https://example.com/mcp",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "control",
+      "input": "https://example.com/a\nb",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "format control",
+      "input": "https://example.com/a‮b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "Unicode format boundary U+890",
+      "input": "https://example.com/a࢐b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "Unicode format boundary U+891",
+      "input": "https://example.com/a࢑b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "Unicode format boundary U+1343F",
+      "input": "https://example.com/a𓐿b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "Unicode format boundary U+E007F",
+      "input": "https://example.com/a󠁿b",
+      "url": null,
+      "projected": false
+    },
+    {
+      "name": "Unicode format boundary U+13440",
+      "input": "https://example.com/a𓑀b",
+      "url": "https://example.com/a%F0%93%91%80b",
+      "projected": true
+    },
+    {
+      "name": "Unicode format boundary U+E0080",
+      "input": "https://example.com/a󠂀b",
+      "url": "https://example.com/a%F3%A0%82%80b",
+      "projected": true
+    }
+  ],
+  "limits": {
+    "sourceUtf16": 65536,
+    "servers": 100,
+    "nameUtf16": 80,
+    "urlUtf8": 2048
+  },
+  "invalidNames": [
+    "",
+    " ",
+    "hidden‮label",
+    "name"
+  ],
+  "invalidTransports": [
+    "stdio",
+    "sse",
+    "HTTP",
+    "",
+    null,
+    1,
+    {},
+    []
+  ]
+}

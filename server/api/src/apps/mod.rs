@@ -4,6 +4,7 @@ mod bridge;
 pub mod connections;
 mod credentials;
 mod endpoint;
+mod import_preview;
 pub mod interactive_policy;
 mod interactive_rules;
 pub mod model;
@@ -49,6 +50,10 @@ pub fn router() -> axum::Router<crate::db::State> {
         .route(
             "/api/workspaces/{wid}/apps",
             get(routes::list).post(routes::add),
+        )
+        .route(
+            "/api/workspaces/{wid}/apps/import/preview",
+            post(import_preview::post).layer(axum::extract::DefaultBodyLimit::max(256 * 1024)),
         )
         .route("/api/workspaces/{wid}/apps/{id}", delete(routes::remove))
         .route("/api/workspaces/{wid}/apps/{id}/tools", get(routes::tools))

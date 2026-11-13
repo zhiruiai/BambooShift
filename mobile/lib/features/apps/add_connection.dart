@@ -8,6 +8,9 @@ import 'apps_controller.dart';
 import 'connection_details.dart';
 import 'custom_mcp_target.dart';
 import 'pending_check.dart';
+import 'mcp_import_preview.dart';
+import 'remote_mcp_import.dart';
+import 'remote_mcp_import_view.dart';
 
 class AddConnection extends StatefulWidget {
   const AddConnection({
@@ -116,7 +119,7 @@ class _AddConnectionState extends State<AddConnection> {
         final provider = _reviewedProvider;
         if (provider == null && custom == null) return;
         await controller.refresh();
-        if (!mounted || !_canAdd || controller.error != null) return;
+        if (!mounted || !_canAdd || !shared || controller.error != null) return;
         final existing = custom == null
             ? findProviderConnection(provider!, controller.apps)
             : findExactMcpConnection(custom.url, controller.apps);
@@ -152,6 +155,20 @@ class _AddConnectionState extends State<AddConnection> {
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
+  }
+
+  void applyImported(RemoteMcpCandidate candidate) {
+    if (!_canAdd || _submitting || _review) return;
+    final provider = providers
+        .where((value) => value['url'] == candidate.url)
+        .firstOrNull;
+    setState(() {
+      name.text = candidate.name;
+      url.text = candidate.url;
+      auth = provider?['authType'] as String? ?? 'none';
+      token.clear();
+      shared = false;
+    });
   }
 
   @override
@@ -201,6 +218,28 @@ class _AddConnectionState extends State<AddConnection> {
                       ],
                     ),
                   const SizedBox(height: 16),
+                  if (!_review && controller.scope.owner) ...[
+                    RemoteMcpImportView(
+                      enabled: enabled,
+                      hasDraft: () =>
+                          name.text.isNotEmpty ||
+                          url.text.isNotEmpty ||
+                          token.text.isNotEmpty ||
+                          shared ||
+                          auth != 'oauth',
+                      draftVersion: () => (
+                        name: name.text,
+                        url: url.text,
+                        token: token.text,
+                        auth: auth,
+                        shared: shared,
+                      ),
+                      onApply: applyImported,
+                      onInspect: (draft) =>
+                          previewRemoteMcpImport(controller, draft),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                   TextField(
                     controller: name,
                     enabled: enabled,
@@ -234,6 +273,7 @@ class _AddConnectionState extends State<AddConnection> {
                   DropdownButtonFormField<String>(
                     initialValue: auth,
                     key: ValueKey(auth),
+                    isExpanded: true,
                     decoration: InputDecoration(
                       labelText: context.tr('mobileAppsAuth'),
                     ),
@@ -241,7 +281,11 @@ class _AddConnectionState extends State<AddConnection> {
                       for (final type in ['oauth', 'bearer', 'none'])
                         DropdownMenuItem(
                           value: type,
-                          child: Text(context.tr('mobileAppsAuth_$type')),
+                          child: Text(
+                            context.tr('mobileAppsAuth_$type'),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                     ],
                     onChanged: enabled && !_catalogReview
