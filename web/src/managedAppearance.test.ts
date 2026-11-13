@@ -108,7 +108,7 @@ test('legacy appearance without an avatar migrates without changing non-avatar p
     },
   });
   try {
-    assert.equal(current.store.getSnapshot().avatarTheme, 'companions');
+    assert.equal(current.store.getSnapshot().avatarTheme, 'classic');
     assert.equal(current.store.getSnapshot().theme, 'light');
     assert.equal(current.store.getSnapshot().spellCheck, false);
     assert.equal(value, old);
@@ -133,7 +133,7 @@ test('malformed, oversized and credential-bearing legacy records never reach nat
     });
     try {
       assert.equal(writes, 0);
-      assert.equal(current.store.getSnapshot().avatarTheme, 'companions');
+      assert.equal(current.store.getSnapshot().avatarTheme, 'classic');
     } finally {
       current.close();
     }
@@ -185,7 +185,7 @@ test('blocked origin storage does not disable a usable native store, and a malfo
     });
     try {
       assert.equal(malformed.store.getSnapshot().storageAvailable, false);
-      assert.equal(malformed.store.getSnapshot().avatarTheme, 'companions');
+      assert.equal(malformed.store.getSnapshot().avatarTheme, 'classic');
     } finally {
       malformed.close();
     }

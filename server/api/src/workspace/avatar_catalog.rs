@@ -26,6 +26,11 @@ pub(crate) static THEME_MOTIFS: LazyLock<Vec<String>> = LazyLock::new(|| {
     ORIGINAL_THEMES
         .into_iter()
         .map(str::to_owned)
+        .chain(std::iter::once(
+            serde_json::from_str::<Theme>(include_str!("../../../../shared/avatar-classic.json"))
+                .expect("bundled classic avatar must be valid")
+                .id,
+        ))
         .chain(
             catalog
                 .packs
@@ -37,4 +42,18 @@ pub(crate) static THEME_MOTIFS: LazyLock<Vec<String>> = LazyLock::new(|| {
 
 pub(crate) fn has_theme(id: &str) -> bool {
     THEME_MOTIFS.iter().any(|theme| theme == id)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn classic_is_syncable_without_changing_existing_theme_identifiers() {
+        assert!(has_theme("classic"));
+        assert!(has_theme("companions"));
+        assert!(has_theme("grokbot-blob"));
+        assert_eq!(THEME_MOTIFS.len(), 46);
+        assert!(!has_theme("../classic"));
+    }
 }

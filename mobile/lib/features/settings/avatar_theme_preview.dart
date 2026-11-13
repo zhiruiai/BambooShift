@@ -33,7 +33,7 @@ class AvatarThemePreview extends StatelessWidget {
               previewTheme: generated,
               useDeviceTheme: false,
               size: 27,
-              motion: selected && shape == 'orb'
+              motion: selected && family != defaultAvatarTheme && shape == 'orb'
                   ? BotAvatarMotion.preview
                   : null,
             ),

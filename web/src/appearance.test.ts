@@ -109,7 +109,7 @@ test('device preferences synchronously style html before subscribing, and persis
       theme: 'light',
       accent: 'neutral',
       spellCheck: true,
-      avatarTheme: 'companions',
+      avatarTheme: 'classic',
     });
     assert.equal(Object.isFrozen(f.store.getSnapshot()), true);
   } finally {

@@ -11,6 +11,7 @@ import {
   AVATAR_SHAPES,
   AVATAR_THEMES,
   ORIGINAL_AVATAR_THEMES,
+  BUILTIN_AVATAR_THEMES,
   avatarColor,
   avatarShape,
   avatarTheme,
@@ -30,7 +31,7 @@ test('existing device preferences preserve page appearance and default only the 
   };
   const store = createAppearanceStore({ storage, storageEvents: events });
   try {
-    assert.equal(store.getSnapshot().avatarTheme, 'companions');
+    assert.equal(store.getSnapshot().avatarTheme, 'classic');
     store.update({ avatarTheme: 'pandas' });
     assert.deepEqual(JSON.parse(raw), {
       version: 1,
@@ -88,8 +89,8 @@ test('the original SVG families contain six distinct forms and safe Bot colors w
       );
     }
   assert.equal(images.size, 30);
-  assert.equal(avatarTheme(undefined), 'companions');
-  assert.equal(avatarTheme({ toString: () => 'pandas' }), 'companions');
+  assert.equal(avatarTheme(undefined), 'classic');
+  assert.equal(avatarTheme({ toString: () => 'pandas' }), 'classic');
   assert.equal(avatarShape('https://untrusted.test'), 'orb');
   assert.equal(avatarColor('url(https://untrusted.test)'), '#1084FE');
   assert.equal(avatarColor('#A1B2C3'), '#A1B2C3');
@@ -153,11 +154,11 @@ test('actual appearance chooser changes every Avatar while uploaded images keep 
   const controls = all(module.exports.AppearanceSettings({})).filter(
     (node) => node.props?.['data-theme-choice'],
   );
-  assert.equal(controls.length, ORIGINAL_AVATAR_THEMES.length);
+  assert.equal(controls.length, BUILTIN_AVATAR_THEMES.length);
   const one = { id: 'a', avatar: 'orb', color: '#123456' };
   const two = { id: 'b', avatar: 'leaf', color: '#654321' };
   for (const theme of ['dinosaurs', 'chicks', 'elephants'] as const) {
-    controls[ORIGINAL_AVATAR_THEMES.indexOf(theme)].props.onClick();
+    controls.find((node) => node.props['data-theme-choice'] === theme).props.onClick();
     for (const agent of [one, two]) {
       const markup = renderToStaticMarkup(module.exports.Avatar({ agent }));
       assert.match(markup, new RegExp(`data-avatar-theme="${theme}"`));

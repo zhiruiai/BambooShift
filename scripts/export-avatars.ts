@@ -4,7 +4,7 @@ import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 import { AvatarArtwork, AvatarSourceArtwork } from '../web/src/components/AvatarArtwork';
-import { AVATAR_THEMES, AVATAR_THEME_NAMES } from '../web/src/avatarThemes';
+import { ORIGINAL_AVATAR_THEMES, AVATAR_THEME_NAMES } from '../web/src/avatarThemes';
 import './avatars/sync-community-packs.mjs';
 import type { BotAgent } from '../shared/types';
 
@@ -20,9 +20,7 @@ const directory = resolve('web/public/avatars');
 await mkdir(directory, { recursive: true });
 await copyFile('shared/avatar-face-motion.json', 'mobile/assets/avatars/avatar-face-motion.json');
 const rows: string[] = [];
-for (const theme of AVATAR_THEMES.filter(
-  (theme) => !theme.startsWith('open-avatar-') && !theme.startsWith('grokbot-'),
-)) {
+for (const theme of ORIGINAL_AVATAR_THEMES) {
   const target = resolve(directory, theme);
   const mobile = resolve('mobile/assets/avatars', theme);
   await Promise.all([mkdir(target, { recursive: true }), mkdir(mobile, { recursive: true })]);

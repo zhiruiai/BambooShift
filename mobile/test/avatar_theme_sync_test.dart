@@ -10,6 +10,7 @@ import 'package:openbot_mobile/core/avatar_preferences.dart';
 import 'package:openbot_mobile/features/settings/device_settings.dart';
 import 'package:openbot_mobile/features/workspaces/workspace_screen.dart';
 import 'package:openbot_mobile/widgets/avatar_appearance.dart';
+import 'package:openbot_mobile/widgets/avatar_pack_face.dart';
 import 'package:openbot_mobile/widgets/bot_avatar.dart';
 
 import 'generated_avatar_theme_test.dart' show themeData;
@@ -303,7 +304,10 @@ void main() {
       return (provider as SvgAssetLoader).assetName;
     }
 
-    expect(artwork(), 'assets/avatars/companions/orb.svg');
+    expect(
+      tester.widget<AvatarPackFace>(find.byType(AvatarPackFace)).theme,
+      'grokbot-blob',
+    );
     await tester.runAsync(f.session.avatarSync.reload);
     await tester.pump();
     expect(artwork(), 'assets/avatars/elephants/orb.svg');

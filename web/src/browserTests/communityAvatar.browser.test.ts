@@ -49,6 +49,21 @@ test(
         .locator('#selected-avatar [data-avatar-eye]')
         .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('d')));
     assert.equal(await page.locator('[data-community-sample]').count(), 40);
+    assert.equal(await page.locator('#selected-avatar [data-avatar-theme="classic"]').count(), 1);
+    assert.equal(
+      await page.locator('#selected-avatar .avatar-classic-body').getAttribute('fill'),
+      '#1c1c1c',
+    );
+    assert.equal(
+      await page.locator('[data-theme-choice="classic"]').getAttribute('aria-pressed'),
+      'true',
+    );
+    const classicPoses = [];
+    for (const value of ['idle', 'thinking', 'working', 'attention', 'done', 'error']) {
+      await state(value);
+      classicPoses.push((await eyes()).join(' '));
+    }
+    assert.equal(new Set(classicPoses).size, 6);
     for (const pack of COMMUNITY_AVATAR_PACKS) {
       await chooseGroup(pack.name);
       assert.equal(await page.locator('[data-theme-choice]').count(), pack.themes.length);

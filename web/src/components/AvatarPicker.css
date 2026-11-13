@@ -172,6 +172,13 @@
   border-radius: 50%;
   object-fit: cover;
 }
+.avatar-classic-body {
+  stroke: transparent;
+  stroke-width: 1.25;
+}
+[data-theme='dark'] .avatar-classic-body {
+  stroke: #777777;
+}
 @media (max-width: 480px) {
   .avatar-upload {
     padding: 12px;

@@ -4,9 +4,17 @@ Two pinned, offline geometry packs extend BambooShift's original avatar themes.
 They contain **all 22 Open Bot Avatar characters** (7 starters and 15 gallery
 characters) and **all 18 community GrokBot shapes**, not a selection of six.
 
+The default **Classic black** preset is defined separately in
+`shared/avatar-classic.json`. It combines six of the existing community GrokBot
+shapes with a charcoal body and the pack's light eyes. It keeps the same vector
+geometry, task expressions, visibility and reduced-motion handling. This is a
+community-derived preset, not an official xAI asset. Existing explicit theme
+choices remain unchanged; new and unset preferences use Classic black.
+
 `catalog.json` is the small cross-client theme allowlist. Theme IDs are stable:
 `open-avatar-<sourceId>` and `grokbot-<sourceId>`. A theme changes the shared
-silhouette; each Bot keeps its existing role key and color. Source names remain
+silhouette; each Bot keeps its existing role key. Individual community themes
+keep role colors, while the Classic black preset uses its fixed monochrome palette. Source names remain
 available alongside English and Chinese display labels.
 
 ## Drawing contract

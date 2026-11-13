@@ -17,11 +17,14 @@ class AvatarPackFace extends StatefulWidget {
     this.state = 'idle',
     this.sustain = false,
     this.blinkWhenIdle = false,
+    this.repeatIdleBlink = false,
+    this.outlineColor,
     this.label,
   });
   final String theme, state;
   final Color color;
-  final bool sustain, blinkWhenIdle;
+  final Color? outlineColor;
+  final bool sustain, blinkWhenIdle, repeatIdleBlink;
   final String? label;
   @override
   State<AvatarPackFace> createState() => AvatarPackFaceState();
@@ -34,6 +37,7 @@ class AvatarPackFaceState extends State<AvatarPackFace>
   AvatarEyeRings? _rings, _from, _target;
   AssetBundle? _bundle;
   ScrollPosition? _scroll;
+  Timer? _idleTimer;
   Duration? _previous;
   double _elapsed = 0, _transition = 420, _blink = 0;
   int _generation = 0, _expression = 0;
@@ -88,6 +92,9 @@ class AvatarPackFaceState extends State<AvatarPackFace>
       _expression = 0;
       _blinkDone = false;
       _retarget();
+    } else if (!oldWidget.blinkWhenIdle && widget.blinkWhenIdle) {
+      _elapsed = 0;
+      _blinkDone = false;
     }
     _syncClock();
   }
@@ -96,6 +103,8 @@ class AvatarPackFaceState extends State<AvatarPackFace>
     final generation = ++_generation;
     final theme = widget.theme;
     _stop();
+    _idleTimer?.cancel();
+    _idleTimer = null;
     _shape = null;
     _rings = _from = _target = null;
     _gaze = Offset.zero;
@@ -155,6 +164,15 @@ class AvatarPackFaceState extends State<AvatarPackFace>
 
   void _syncClock() {
     if (_shape == null) return;
+    final repeat =
+        _enabled &&
+        widget.repeatIdleBlink &&
+        widget.blinkWhenIdle &&
+        widget.state == 'idle';
+    if (!repeat) {
+      _idleTimer?.cancel();
+      _idleTimer = null;
+    }
     if (_reduced) {
       _rings = _from = _target;
       _transition = 420;
@@ -165,6 +183,22 @@ class AvatarPackFaceState extends State<AvatarPackFace>
     final moving = _enabled && (_transition < 420 || _working || _idleBlink);
     if (moving && !_ticker.isActive) _ticker.start();
     if (!moving) _stop();
+    if (repeat && _blinkDone && _idleTimer == null) {
+      // Rest between blinks instead of scheduling animation frames all day.
+      final delay =
+          (_shape!.blinkSlot('idle') -
+                  700 -
+                  _shape!.pack.motion('blinkDurationMs', 320))
+              .clamp(500, 30000)
+              .round();
+      _idleTimer = Timer(Duration(milliseconds: delay), () {
+        _idleTimer = null;
+        if (!mounted || !_enabled) return;
+        _elapsed = 0;
+        _blinkDone = false;
+        _syncClock();
+      });
+    }
   }
 
   void _tick(Duration elapsed) {
@@ -221,6 +255,7 @@ class AvatarPackFaceState extends State<AvatarPackFace>
     _generation++;
     WidgetsBinding.instance.removeObserver(this);
     _scroll?.removeListener(_scheduleVisibility);
+    _idleTimer?.cancel();
     _ticker.dispose();
     super.dispose();
   }
@@ -239,6 +274,7 @@ class AvatarPackFaceState extends State<AvatarPackFace>
                 shape: _shape!,
                 rings: _rings!,
                 color: widget.color,
+                outlineColor: widget.outlineColor,
                 blink: _blink,
                 gaze: _gaze,
               ),

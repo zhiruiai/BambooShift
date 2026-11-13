@@ -15,6 +15,7 @@ import 'package:openbot_mobile/features/settings/avatar_theme_picker.dart';
 import 'package:openbot_mobile/widgets/bot_avatar.dart';
 import 'package:openbot_mobile/widgets/avatar_face.dart';
 import 'package:openbot_mobile/widgets/avatar_face_art.dart';
+import 'package:openbot_mobile/widgets/avatar_pack_face.dart';
 
 import 'action_card_support.dart';
 import 'support.dart';
@@ -70,9 +71,10 @@ void main() {
     await tester.pumpAndSettle();
     await waitFor(
       tester,
-      () => find.byKey(const ValueKey('avatar-face')).evaluate().isNotEmpty,
+      () => find.byType(AvatarPackFace).evaluate().isNotEmpty,
     );
-    expect(find.byType(BotAvatar), findsNWidgets(15));
+    expect(find.byType(BotAvatar), findsNWidgets(18));
+    await tester.ensureVisible(find.text('Elephants'));
     await tester.tap(find.text('Elephants'));
     await tester.pumpAndSettle();
     await waitFor(
@@ -91,6 +93,7 @@ void main() {
     'only the active chat header blinks once and respects reduced motion',
     (tester) async {
       final f = await fixture((_) async => jsonResponse({}));
+      await f.session.preferences(avatars: 'companions');
       f.scope.data = bootstrap(
         agents: [
           {'id': 'bot-a', 'name': 'Research', 'avatar': 'orb'},
@@ -166,6 +169,7 @@ void main() {
     tester,
   ) async {
     final f = await fixture((_) async => jsonResponse({}));
+    await f.session.preferences(avatars: 'companions');
     Json question(String requester) => {
       'id': 'question-a',
       'conversationId': 'chat-a',

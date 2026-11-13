@@ -9,10 +9,12 @@ class AvatarPackPainter extends CustomPainter {
     required this.color,
     required this.blink,
     required this.gaze,
+    this.outlineColor,
   });
   final AvatarPackShape shape;
   final AvatarEyeRings rings;
   final Color color;
+  final Color? outlineColor;
   final double blink;
   final Offset gaze;
 
@@ -23,8 +25,18 @@ class AvatarPackPainter extends CustomPainter {
       ..save()
       ..translate((size.width - side) / 2, (size.height - side) / 2)
       ..scale(side / 100)
-      ..drawPath(shape.body, Paint()..color = color)
-      ..clipPath(shape.body);
+      ..drawPath(shape.body, Paint()..color = color);
+    final outline = outlineColor;
+    if (outline != null) {
+      canvas.drawPath(
+        shape.body,
+        Paint()
+          ..color = outline
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.2,
+      );
+    }
+    canvas.clipPath(shape.body);
     final paint = Paint()..color = shape.pack.eyeColor;
     for (final ring in displayEyeRings(rings, gaze, blink)) {
       canvas.drawPath(Path()..addPolygon(ring, true), paint);
@@ -37,6 +49,7 @@ class AvatarPackPainter extends CustomPainter {
       oldDelegate.shape != shape ||
       oldDelegate.rings != rings ||
       oldDelegate.color != color ||
+      oldDelegate.outlineColor != outlineColor ||
       oldDelegate.blink != blink ||
       oldDelegate.gaze != gaze;
 }

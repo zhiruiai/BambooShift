@@ -49,7 +49,10 @@ class AvatarThemePicker extends StatelessWidget {
               spacing: gap,
               runSpacing: gap,
               children: [
-                for (final family in originalAvatarThemes)
+                for (final family in [
+                  defaultAvatarTheme,
+                  ...originalAvatarThemes,
+                ])
                   _option(
                     context,
                     width: optionWidth,

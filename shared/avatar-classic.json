@@ -1,0 +1,13 @@
+{
+  "id": "classic",
+  "label": { "en": "Classic black", "zh": "经典黑" },
+  "color": "#1c1c1c",
+  "shapes": {
+    "orb": "grokbot-blob",
+    "drop": "grokbot-teardrop",
+    "leaf": "grokbot-leaf",
+    "spark": "grokbot-pebble",
+    "gem": "grokbot-gem",
+    "arch": "grokbot-arch"
+  }
+}

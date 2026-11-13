@@ -1,17 +1,19 @@
 import { useId, useLayoutEffect, useMemo, useRef } from 'react';
-import type { AvatarShape, CommunityAvatarTheme } from '../avatarThemes';
+import type { AvatarShape, AvatarTheme, CommunityAvatarTheme } from '../avatarThemes';
 import type { AvatarFaceMotion } from './avatarFaceMotion';
 import { watchAvatarFace } from './avatarFaceFrames';
 import { communityAvatar, createCommunityMotion, ringPath } from './communityAvatarMotion';
 
 export function CommunityAvatarArtwork({
   theme,
+  displayTheme = theme,
   shape,
   color,
   size,
   motion = { state: 'idle', sustain: false, animate: false },
 }: {
   theme: CommunityAvatarTheme;
+  displayTheme?: AvatarTheme;
   shape: AvatarShape;
   color: string;
   size: number;
@@ -50,20 +52,22 @@ export function CommunityAvatarArtwork({
   useLayoutEffect(() => {
     control.current?.animation.set(motion);
     control.current?.request();
-  }, [motion.state, motion.sustain]);
+  }, [motion.state, motion.sustain, motion.blinkWhenIdle]);
   const rings = avatar.pose(animated ? initial.current : motion.state);
   return (
     <svg
       viewBox="0 0 100 100"
       width={size}
       height={size}
-      data-avatar-theme={theme}
+      data-avatar-theme={displayTheme}
+      data-avatar-source-theme={theme}
       data-avatar-shape={shape}
       data-avatar-pack={avatar.packId}
       aria-hidden="true"
       focusable="false"
     >
       <path
+        className={displayTheme === 'classic' ? 'avatar-classic-body' : undefined}
         d={avatar.shape.body.path}
         fill={color}
         fillRule={avatar.shape.body.fillRule as 'evenodd' | 'nonzero'}

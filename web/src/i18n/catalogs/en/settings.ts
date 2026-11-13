@@ -1,6 +1,6 @@
 import type zh from '../zh-CN/settings';
 export default {
-  avatarOriginalCollection: 'BambooShift originals',
+  avatarOriginalCollection: 'Built-in themes',
   avatarCollections: 'Avatar collections',
   avatarSelectedTheme: 'Selected: {{name}}',
   avatarCustomTheme: 'Custom theme',
@@ -42,7 +42,7 @@ export default {
   selected: 'Selected',
   chooseTheme: 'Choose theme',
   avatarHelp:
-    'Apply one style to all six Bot shapes. Each Bot keeps its own color; uploaded pictures take priority.',
+    'Apply one style to every Bot. Classic black uses black and white; other themes keep role colors. Uploaded pictures take priority.',
   theme: 'Theme',
   system: 'Use device setting',
   light: 'Light',

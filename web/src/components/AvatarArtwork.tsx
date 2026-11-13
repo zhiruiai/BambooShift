@@ -6,6 +6,9 @@ import {
   type AvatarTheme,
   type OriginalAvatarTheme,
   isOriginalAvatarTheme,
+  DEFAULT_AVATAR_THEME,
+  CLASSIC_AVATAR,
+  type CommunityAvatarTheme,
 } from '../avatarThemes';
 import { CommunityAvatarArtwork } from './CommunityAvatarArtwork';
 import { Chick, Elephant } from './AnimalAvatarArtwork';
@@ -190,7 +193,7 @@ export function AvatarSourceArtwork(props: AvatarArtworkProps) {
 }
 
 function renderArtwork({
-  theme = 'companions',
+  theme = DEFAULT_AVATAR_THEME,
   shape = 'orb',
   color,
   size = 38,
@@ -199,6 +202,17 @@ function renderArtwork({
   const selected = avatarTheme(theme),
     form = avatarShape(shape),
     fill = color;
+  if (selected === DEFAULT_AVATAR_THEME)
+    return (
+      <CommunityAvatarArtwork
+        theme={CLASSIC_AVATAR.shapes[form] as CommunityAvatarTheme}
+        displayTheme={selected}
+        shape={form}
+        color={CLASSIC_AVATAR.color}
+        size={size}
+        motion={faceMotion}
+      />
+    );
   if (!isOriginalAvatarTheme(selected))
     return (
       <CommunityAvatarArtwork

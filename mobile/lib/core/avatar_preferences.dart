@@ -1,14 +1,19 @@
+import 'classic_avatar.g.dart';
 import 'community_avatar_catalog.g.dart';
 
-const defaultAvatarTheme = 'companions';
+const defaultAvatarTheme = classicAvatarTheme;
 const originalAvatarThemes = [
-  defaultAvatarTheme,
+  'companions',
   'pandas',
   'dinosaurs',
   'chicks',
   'elephants',
 ];
-const avatarThemes = [...originalAvatarThemes, ...communityAvatarThemes];
+const avatarThemes = [
+  defaultAvatarTheme,
+  ...originalAvatarThemes,
+  ...communityAvatarThemes,
+];
 
 String validAvatarTheme(Object? value) =>
     value is String && avatarThemes.contains(value)

@@ -57,9 +57,9 @@ test('every original and community theme recolors vector fills while retaining s
     const props = { theme, color: '#9363ed', shape: 'orb', size: 512 };
     const derived = renderToStaticMarkup(React.createElement(AvatarArtwork, props));
     const source = renderToStaticMarkup(React.createElement(AvatarSourceArtwork, props));
-    assert.match(derived, /#1084FE/);
+    assert.match(derived, theme === 'classic' ? /#1c1c1c/ : /#1084FE/);
     assert.doesNotMatch(derived, /#9363ed/);
-    assert.match(source, /#9363ed/);
+    assert.match(source, theme === 'classic' ? /#1c1c1c/ : /#9363ed/);
     const paths = (svg: string) => [...svg.matchAll(/\bd="([^"]+)"/g)].map((match) => match[1]);
     assert.deepEqual(paths(derived), paths(source), theme);
     assert.match(derived, /width="512" height="512"/);

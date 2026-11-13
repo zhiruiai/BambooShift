@@ -1,4 +1,5 @@
 import catalog from '../../shared/avatar-packs/catalog.json';
+import classic from '../../shared/avatar-classic.json';
 import { AVATAR_ROLE_COLORS, displayAvatarColor } from '../../shared/avatar-palette';
 import { uiText, localizedData, currentLanguage } from './i18n';
 
@@ -11,13 +12,17 @@ export const ORIGINAL_AVATAR_THEMES = [
 ] as const;
 export type OriginalAvatarTheme = (typeof ORIGINAL_AVATAR_THEMES)[number];
 export type CommunityAvatarTheme = `open-avatar-${string}` | `grokbot-${string}`;
-export type AvatarTheme = OriginalAvatarTheme | CommunityAvatarTheme;
+export const DEFAULT_AVATAR_THEME = 'classic' as const;
+export const CLASSIC_AVATAR = classic;
+export type AvatarTheme = OriginalAvatarTheme | CommunityAvatarTheme | typeof DEFAULT_AVATAR_THEME;
+export const BUILTIN_AVATAR_THEMES = [DEFAULT_AVATAR_THEME, ...ORIGINAL_AVATAR_THEMES] as const;
 export const COMMUNITY_AVATAR_PACKS = catalog.packs;
 export const AVATAR_THEMES: readonly AvatarTheme[] = [
-  ...ORIGINAL_AVATAR_THEMES,
+  ...BUILTIN_AVATAR_THEMES,
   ...catalog.packs.flatMap((pack) => pack.themes.map((theme) => theme.id as CommunityAvatarTheme)),
 ];
 export const AVATAR_THEME_NAMES: Record<AvatarTheme, string> = localizedData(() => ({
+  classic: currentLanguage() === 'en' ? classic.label.en : classic.label.zh,
   companions: uiText('common:text_ae47ea41c651'),
   pandas: uiText('common:text_e9f782e9c2b6'),
   dinosaurs: uiText('common:text_a44f0b389a75'),
@@ -38,7 +43,9 @@ export function isOriginalAvatarTheme(value: AvatarTheme): value is OriginalAvat
   return (ORIGINAL_AVATAR_THEMES as readonly string[]).includes(value);
 }
 export function avatarTheme(value: unknown): AvatarTheme {
-  return AVATAR_THEMES.includes(value as AvatarTheme) ? (value as AvatarTheme) : 'companions';
+  return AVATAR_THEMES.includes(value as AvatarTheme)
+    ? (value as AvatarTheme)
+    : DEFAULT_AVATAR_THEME;
 }
 export function avatarShape(value: unknown): AvatarShape {
   return AVATAR_SHAPES.includes(value as AvatarShape) ? (value as AvatarShape) : 'orb';

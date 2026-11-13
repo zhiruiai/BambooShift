@@ -25,6 +25,7 @@ test('native appearance is bounded UTF-8, validates only non-credential fields a
     assert.equal(fs.statSync(join(dir, fileName)).mode & 0o777, 0o600);
   const max = value + ' '.repeat(2048 - Buffer.byteLength(value));
   assert.equal(validAppearance(max), true);
+  assert.equal(validAppearance(raw('classic')), true);
   for (const invalid of [
     max + ' ',
     max + '中',

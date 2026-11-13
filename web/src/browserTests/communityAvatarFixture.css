@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  background: #f7f8fb;
-  color: #292733;
+  background: var(--bg-canvas);
+  color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .community-fixture {
@@ -25,7 +25,7 @@ body {
 }
 .community-fixture header p {
   margin: 0;
-  color: #777285;
+  color: var(--text-secondary);
   font-size: 15px;
 }
 .community-layout {
@@ -35,8 +35,8 @@ body {
   align-items: start;
 }
 .community-layout aside {
-  border: 1px solid #e7e3ee;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--surface);
   border-radius: 20px;
   padding: 0 18px 18px;
 }
@@ -52,8 +52,8 @@ body {
 }
 .community-controls button,
 .community-test-controls button {
-  border: 1px solid #e0dbe8;
-  background: white;
+  border: 1px solid var(--border);
+  background: var(--surface);
   padding: 8px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -71,13 +71,13 @@ body {
 .community-caption {
   font-size: 13px;
   margin: 6px 0 18px;
-  color: #777285;
+  color: var(--text-secondary);
 }
 .community-pack {
   padding: 14px 18px;
   margin-bottom: 14px;
-  background: white;
-  border: 1px solid #e7e3ee;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 20px;
 }
 .community-pack h2 {
@@ -88,7 +88,7 @@ body {
   text-align: left;
 }
 .community-pack h2 span {
-  color: #898191;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 400;
 }
@@ -103,7 +103,7 @@ body {
   align-items: center;
   gap: 2px;
   font-size: 12px;
-  color: #78717f;
+  color: var(--text-secondary);
 }
 .community-pack-grid svg {
   max-width: 100%;

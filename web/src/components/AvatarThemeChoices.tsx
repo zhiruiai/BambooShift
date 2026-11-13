@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Check } from 'lucide-react';
 import {
   AVATAR_THEME_NAMES,
-  ORIGINAL_AVATAR_THEMES,
+  BUILTIN_AVATAR_THEMES,
   COMMUNITY_AVATAR_PACKS,
   type AvatarTheme,
 } from '../avatarThemes';
@@ -31,7 +31,7 @@ export function AvatarThemeChoices({
     {
       id: 'originals',
       name: uiText('settings:avatarOriginalCollection'),
-      count: ORIGINAL_AVATAR_THEMES.length,
+      count: BUILTIN_AVATAR_THEMES.length,
     },
     ...COMMUNITY_AVATAR_PACKS.map((pack) => ({
       id: pack.id,
@@ -41,7 +41,7 @@ export function AvatarThemeChoices({
   ];
   const themes =
     group === 'originals'
-      ? ORIGINAL_AVATAR_THEMES
+      ? BUILTIN_AVATAR_THEMES
       : COMMUNITY_AVATAR_PACKS.find((pack) => pack.id === group)!.themes.map(
           (item) => item.id as AvatarTheme,
         );
@@ -92,7 +92,17 @@ export function AvatarThemeChoices({
             onClick={() => onChange(theme)}
           >
             <span className="appearance-avatar-preview" aria-hidden="true">
-              <AvatarArtwork theme={theme} shape="orb" color={AVATAR_ROLE_COLORS.orb} size={46} />
+              <AvatarArtwork
+                theme={theme}
+                shape="orb"
+                color={AVATAR_ROLE_COLORS.orb}
+                size={46}
+                faceMotion={
+                  theme === 'classic' && !custom && value === theme
+                    ? { state: 'idle', sustain: true }
+                    : undefined
+                }
+              />
               {group === 'originals' && (
                 <>
                   <AvatarArtwork
@@ -117,11 +127,15 @@ export function AvatarThemeChoices({
           </button>
         ))}
       </div>
-      {group !== 'originals' && (
+      {(group !== 'originals' || value === 'classic') && (
         <p className="avatar-theme-collection-note">
           {uiText('settings:avatarCommunityNote')}
           {' · '}
-          <a href={`/licenses/${group}.html`} target="_blank" rel="noopener noreferrer">
+          <a
+            href={`/licenses/${group === 'originals' ? 'grokbot' : group}.html`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {uiText('settings:avatarCollectionLicense')}
           </a>
         </p>

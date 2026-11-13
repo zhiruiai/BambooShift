@@ -17,7 +17,7 @@ import {
 
 const states = ['idle', 'thinking', 'working', 'attention', 'done', 'error'] as const;
 test('all forty community characters retain their native paths and finite expression geometry', () => {
-  assert.equal(AVATAR_THEMES.length, 45);
+  assert.equal(AVATAR_THEMES.length, 46);
   assert.deepEqual(
     COMMUNITY_AVATAR_PACKS.map((pack) => pack.themes.length),
     [22, 18],
@@ -53,7 +53,7 @@ test('all forty community characters retain their native paths and finite expres
       }
     }
   assert.equal(bodies.size, 40);
-  assert.equal(avatarTheme('open-avatar-made-up'), 'companions');
+  assert.equal(avatarTheme('open-avatar-made-up'), 'classic');
 });
 test('native rings pass through intermediate geometry and settle exactly for task outcomes', () => {
   for (const theme of ['open-avatar-cat', 'grokbot-leaf'] as const)

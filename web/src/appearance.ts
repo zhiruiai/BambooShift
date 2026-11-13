@@ -1,4 +1,4 @@
-import { AVATAR_THEMES, avatarTheme, type AvatarTheme } from './avatarThemes';
+import { AVATAR_THEMES, DEFAULT_AVATAR_THEME, avatarTheme, type AvatarTheme } from './avatarThemes';
 import { generatedAvatarTheme, type GeneratedAvatarTheme } from './creationPreview';
 import { managedAppearanceStorage, type AppearanceStorage } from './managedAppearance';
 
@@ -21,7 +21,7 @@ const defaults: Readonly<AppearancePreferences> = Object.freeze({
   theme: 'system',
   accent: 'bot',
   spellCheck: true,
-  avatarTheme: 'companions',
+  avatarTheme: DEFAULT_AVATAR_THEME,
 });
 const serverSnapshot: AppearanceSnapshot = Object.freeze({
   ...defaults,

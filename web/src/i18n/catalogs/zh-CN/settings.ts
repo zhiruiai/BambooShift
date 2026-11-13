@@ -1,5 +1,5 @@
 export default {
-  avatarOriginalCollection: 'BambooShift 原创',
+  avatarOriginalCollection: '内置主题',
   avatarCollections: '头像系列',
   avatarSelectedTheme: '已选择：{{name}}',
   avatarCustomTheme: '自定义主题',
@@ -34,7 +34,8 @@ export default {
   avatarTheme: '头像主题',
   selected: '已选择',
   chooseTheme: '选择此主题',
-  avatarHelp: '为六种 Bot 形象换上同一套风格。每位 Bot 的颜色保持不变，上传图片优先显示。',
+  avatarHelp:
+    '为所有 Bot 换上同一套风格。经典黑采用黑白配色，其他主题保留角色颜色；上传图片优先显示。',
   theme: '外观',
   system: '跟随系统',
   light: '浅色',

@@ -43,6 +43,9 @@ export function Avatar({
 }) {
   const account = useAccount();
   const { avatarTheme, customAvatarTheme, useCustomAvatarTheme } = useAvatarAppearance();
+  const classic =
+    (useCustomAvatarTheme && customAvatarTheme ? customAvatarTheme.motif : avatarTheme) ===
+    'classic';
   const actor = userId || account?.session.user?.id;
   const sharedPath = isSharedBot(agent)
     ? sharedAvatarPath(agent?.sharedBot?.avatarPath)
@@ -131,11 +134,12 @@ export function Avatar({
       ? priorMotion
       : effect;
   const faceMotion: AvatarFaceMotion | undefined =
-    !uploaded && (sustain || expression) && expression !== 'preview'
+    !uploaded && (sustain || expression || classic) && expression !== 'preview'
       ? {
           state: expression ?? 'idle',
-          sustain: sustained,
+          sustain: sustained || (classic && sustain && (!expression || expression === 'idle')),
           animate: !terminalMotion(motion) || followsActiveTask || completion !== 'none',
+          blinkWhenIdle: classic && (!expression || expression === 'idle'),
         }
       : undefined;
   useEffect(() => {

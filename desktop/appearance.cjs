@@ -16,7 +16,7 @@ const fields = [
 ];
 const themeId = (value) =>
   typeof value === 'string' &&
-  (['companions', 'pandas', 'dinosaurs', 'chicks', 'elephants'].includes(value) ||
+  (['classic', 'companions', 'pandas', 'dinosaurs', 'chicks', 'elephants'].includes(value) ||
     /^(?:open-avatar|grokbot)-[a-z0-9-]{1,80}$/.test(value));
 function record(value) {
   return value && typeof value === 'object' && !Array.isArray(value);

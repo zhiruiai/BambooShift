@@ -128,7 +128,7 @@ export function AppearanceSettings({
             </button>
           )}
         </div>
-        <p className="field-help">{uiText('settings:text_65f33f62421f')}</p>
+        <p className="field-help">{uiText('settings:avatarHelp')}</p>
         {appearance.avatarSync && (
           <AvatarThemeSyncPanel sync={appearance.avatarSync} active={active} />
         )}

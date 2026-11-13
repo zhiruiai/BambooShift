@@ -121,7 +121,12 @@ export function createCommunityMotion(
     expression = 0;
   return {
     set(next: AvatarFaceMotion) {
-      if (next.state === motion.state && next.sustain === motion.sustain) return;
+      if (
+        next.state === motion.state &&
+        next.sustain === motion.sustain &&
+        next.blinkWhenIdle === motion.blinkWhenIdle
+      )
+        return;
       motion = next;
       // Retarget from the visible blink/gaze pose, not the unmodified eye rings.
       from = painted;
@@ -152,9 +157,10 @@ export function createCommunityMotion(
       transition = Math.min(avatar.transitionMs, transition + dt);
       base = mix(from, target, 1 - (1 - transition / avatar.transitionMs) ** 5);
       const blinkSlot = avatar.blinkSlot(motion.state);
+      const idleBlink = motion.blinkWhenIdle && motion.state === 'idle' && elapsed < blinkSlot;
       const blinkTime = elapsed % blinkSlot;
       const blink =
-        sustaining && blinkTime > blinkSlot - avatar.blinkDuration
+        (sustaining || idleBlink) && blinkTime > blinkSlot - avatar.blinkDuration
           ? 1 -
             0.96 *
               Math.sin(
@@ -174,7 +180,7 @@ export function createCommunityMotion(
               ]);
             });
       paint(painted);
-      return sustaining || transition < avatar.transitionMs;
+      return sustaining || !!idleBlink || transition < avatar.transitionMs;
     },
   };
 }

@@ -6,6 +6,7 @@ export type AvatarFaceMotion = {
   state: AvatarFaceState;
   sustain: boolean;
   animate?: boolean;
+  blinkWhenIdle?: boolean;
 };
 type EyePose = Omit<(typeof face.poses)['idle'], 'duration'>;
 

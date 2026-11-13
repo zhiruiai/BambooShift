@@ -8,6 +8,7 @@ import '../core/avatar_assets.dart';
 import '../core/avatar_palette.dart';
 import '../core/avatar_preferences.dart';
 import '../core/byte_read.dart';
+import '../core/classic_avatar.g.dart';
 import '../core/community_avatar_catalog.g.dart';
 import '../core/workspace_controller.dart';
 import 'avatar_appearance.dart';
@@ -74,14 +75,19 @@ class BotAvatar extends StatelessWidget {
             : null);
     final theme =
         generated?.motif ?? validAvatarTheme(appearance?.avatarTheme ?? family);
+    final classic = theme == classicAvatarTheme;
+    final renderedTheme = classic ? classicAvatarShapes[shape]! : theme;
     final base = _exportedColors[shape]!;
     final hex = generated?.colorFor(shape) ?? bot['color'];
-    final color = avatarColorValue(
-      displayAvatarColor(hex, fallback: avatarRoleColors[shape]!),
-    );
+    final color = classic
+        ? const Color(classicAvatarColor)
+        : avatarColorValue(
+            displayAvatarColor(hex, fallback: avatarRoleColors[shape]!),
+          );
     final workspace = scope;
     final path = workspace == null ? null : botAvatarPath(workspace, bot);
-    final community = communityAvatarThemes.contains(theme);
+    final community = communityAvatarThemes.contains(renderedTheme);
+    final animate = path == null && bot['avatarImageId'] == null;
     final asset = 'assets/avatars/$theme/$shape.svg';
     final mapper = AvatarColorMapper(color, baseColor: base);
     final original = SvgPicture.asset(
@@ -91,13 +97,17 @@ class BotAvatar extends StatelessWidget {
     );
     final glyph = community
         ? AvatarPackFace(
-            theme: theme,
+            theme: renderedTheme,
             color: color,
+            outlineColor:
+                classic && Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xff777777)
+                : null,
             state: motion?.name ?? 'idle',
-            sustain:
-                path == null && bot['avatarImageId'] == null && sustainMotion,
+            sustain: animate && sustainMotion,
             blinkWhenIdle:
-                path == null && bot['avatarImageId'] == null && blinkWhenIdle,
+                animate && (blinkWhenIdle || classic && motion == null),
+            repeatIdleBlink: animate && classic && blinkWhenIdle,
             label: bot['name'] as String?,
           )
         : path == null &&
