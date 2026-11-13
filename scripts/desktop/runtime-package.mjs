@@ -8,6 +8,7 @@ import { stageNodeRuntime } from './node-runtime.mjs';
 import { stageCuaDriver } from './cua-driver.mjs';
 import { collectRuntimeNotices } from './runtime-notices.mjs';
 import { validateNativeBinary } from './native-binary.mjs';
+import { prepareDesktopDependencies } from './runtime-dependencies.mjs';
 
 function run(command, args, cwd) {
   return new Promise((resolve, reject) => {
@@ -37,6 +38,7 @@ export async function stageDesktopRuntime({
   stageNode = stageNodeRuntime,
   stageDriver = stageCuaDriver,
   buildRuntimeNotices = collectRuntimeNotices,
+  prepareDependencies = prepareDesktopDependencies,
   nodeVersion = process.versions.node,
   sourceRoot = root,
 } = {}) {
@@ -74,10 +76,11 @@ export async function stageDesktopRuntime({
     ) + '\n',
   );
   const runtime = join(output, 'runtime');
+  await prepareDependencies(runtime, { platform, arch });
   // Install from the generated production lock, never copy the developer's node_modules.
   await command(
     'npm',
-    ['ci', '--omit=dev', '--ignore-scripts', '--no-audit', '--no-fund'],
+    ['ci', '--omit=dev', '--omit=optional', '--ignore-scripts', '--no-audit', '--no-fund'],
     runtime,
   );
   const node = await stageNode({ output, version: nodeVersion, platform, arch, command });

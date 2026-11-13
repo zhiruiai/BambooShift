@@ -57,7 +57,7 @@ export async function parsePdf(input: ParseInput): Promise<TextAttachment> {
             }
           }
           if (text.length >= ATTACHMENT_LIMITS.textCharacters) {
-            await reader.cancel();
+            await reader.cancel(new Error('PDF text character limit reached.'));
             break;
           }
         }

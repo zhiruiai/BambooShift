@@ -10,9 +10,14 @@ export function pdfFixture(text: string, pages = 1): Buffer {
     objects.push(
       `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents ${5 + i * 2} 0 R >>`,
     );
-    const stream = `BT /F1 12 Tf 50 740 Td (${text.replace(/[\\()]/g, '\\$&')} page ${i + 1}) Tj ET`;
+    const lines = `${text} page ${i + 1}`.match(/.{1,80}/gs) ?? [''];
+    const stream = `BT /F1 12 Tf 14 TL 50 740 Td ${lines.map((line) => `(${line.replace(/[\\()]/g, '\\$&')}) Tj T*`).join(' ')} ET`;
     objects.push(`<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`);
   }
+  return pdfObjectsFixture(objects);
+}
+
+export function pdfObjectsFixture(objects: string[]): Buffer {
   let content = '%PDF-1.4\n';
   const offsets = [0];
   for (let i = 0; i < objects.length; i++) {
@@ -28,6 +33,24 @@ export function pdfFixture(text: string, pages = 1): Buffer {
       .join('');
   content += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
   return Buffer.from(content);
+}
+
+// A real CID font/ToUnicode PDF, not UTF-8 inserted into a Latin-1 PDF string.
+export function unicodePdfFixture(text: string): Buffer {
+  const chars = [...new Set([...text])];
+  const code = (character: string) => (chars.indexOf(character) + 1).toString(16).padStart(4, '0');
+  const unicode = (character: string) => Buffer.from(character, 'utf16le').swap16().toString('hex');
+  const cmap = `/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /SyntheticCJK def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <ffff>\nendcodespacerange\n${chars.length} beginbfchar\n${chars.map((character) => `<${code(character)}> <${unicode(character)}>`).join('\n')}\nendbfchar\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend`;
+  const stream = `BT /F1 12 Tf 50 740 Td <${[...text].map(code).join('')}> Tj ET`;
+  return pdfObjectsFixture([
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 7 0 R >>',
+    '<< /Type /Font /Subtype /Type0 /BaseFont /SyntheticCJK /Encoding /Identity-H /DescendantFonts [5 0 R] /ToUnicode 6 0 R >>',
+    '<< /Type /Font /Subtype /CIDFontType2 /BaseFont /SyntheticCJK /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /DW 1000 >>',
+    `<< /Length ${Buffer.byteLength(cmap)} >>\nstream\n${cmap}\nendstream`,
+    `<< /Length ${Buffer.byteLength(stream)} >>\nstream\n${stream}\nendstream`,
+  ]);
 }
 
 function crc32(bytes: Buffer): number {

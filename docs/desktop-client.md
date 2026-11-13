@@ -74,4 +74,8 @@ npm run client:test
 
 本机运行环境包含 Rust 服务、Node.js、Pi Worker、电脑和文档 Worker、MCP Worker 以及网页产物。macOS 内置运行环境还包含固定版本的 MIT Cua Driver。打包以源码、锁定的生产依赖和经校验的公开上游二进制为输入。应用生成的本机个人空间、账号信息、模型密钥和浏览器资料位于客户端用户数据目录。 [架构](architecture.md#desktop-and-cloud-execution) · [运行时打包](../scripts/desktop/runtime-package.mjs) · [第三方许可](../THIRD_PARTY.md)
 
+桌面运行环境只从 PDF 提取文字，不包含 PDF.js 可选的原生 Canvas 光栅化依赖。安装时为目标系统和架构保留精确版本的 Sharp 与 libvips，PNG、JPEG、WebP 解码、方向校正和图片限额保持完整。依赖版本升级必须通过无原生 Canvas 的 PDF 验收；新出现的可选能力会阻止打包，直到完成审查。省略未使用的渲染依赖不替代其余原生库的许可检查，正式内置包仍须通过完整的分发验收。
+
+当前内置包仍有两项分发阻塞：`@img/sharp-libvips@1.3.4` 原生组件的完整许可及 LGPL 源码交付材料，以及 `proxy-agent-negotiate@1.1.0` 的确切上游 MIT 声明。发布工作流继续生成连接客户端；不能把源码运行或依赖测试通过视为内置包已经可发布。
+
 验证界面时可先用开发客户端连接测试服务，再用 `--with-runtime` 构建验证免登录、本机文件交付和退出清理。原生菜单 **帮助 → 键盘快捷键** 显示当前客户端快捷键。连接页和原生菜单支持简体中文及英文，网页工作空间语言由其自身设置管理。

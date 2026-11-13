@@ -47,8 +47,10 @@ export function productionLock(source, directNames) {
   };
   const pending = Object.keys(dependencies).map((name) => [`node_modules/${name}`, false]);
   while (pending.length) {
-    const [key] = pending.pop();
-    if (packages[key]) continue;
+    const [key, optionalPath] = pending.pop();
+    // A package first reached through an optional edge may later be required.
+    // Revisit its descendants as well; root-lock flags describe a different graph.
+    if (packages[key] && (!packages[key].optional || optionalPath)) continue;
     const sourceEntry = source.packages[key];
     if (!sourceEntry || sourceEntry.link || !sourceEntry.version || !sourceEntry.integrity)
       throw Error(`An unpinned runtime dependency cannot be published: ${key}`);
@@ -60,6 +62,8 @@ export function productionLock(source, directNames) {
     const entry = structuredClone(sourceEntry);
     delete entry.dev;
     delete entry.devOptional;
+    if (optionalPath) entry.optional = true;
+    else delete entry.optional;
     packages[key] = entry;
     for (const [name] of Object.entries({
       ...entry.dependencies,
@@ -70,7 +74,7 @@ export function productionLock(source, directNames) {
       const optional =
         Object.hasOwn(entry.optionalDependencies ?? {}, name) ||
         entry.peerDependenciesMeta?.[name]?.optional;
-      if (target) pending.push([target, optional]);
+      if (target) pending.push([target, optionalPath || optional]);
       else if (!optional) throw Error(`The root lock is missing ${name} required by ${key}`);
     }
   }

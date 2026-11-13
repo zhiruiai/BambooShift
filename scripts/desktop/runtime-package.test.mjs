@@ -82,6 +82,7 @@ test(
       const manifest = await stageDesktopRuntime({
         output,
         stageDriver: async () => ({ hostControl: false }),
+        prepareDependencies: async () => {},
         buildRuntimeNotices: async () => {},
         command: async (...args) => calls.push(args),
         buildBackend: fakeBackend,
@@ -94,6 +95,7 @@ test(
       assert.deepEqual(calls[1][1], [
         'ci',
         '--omit=dev',
+        '--omit=optional',
         '--ignore-scripts',
         '--no-audit',
         '--no-fund',
