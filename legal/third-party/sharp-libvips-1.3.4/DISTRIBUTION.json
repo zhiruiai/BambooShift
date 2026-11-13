@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "component": "sharp-libvips",
+  "version": "1.3.4",
+  "distributionStatus": "blocked",
+  "upstreamRepository": "https://github.com/lovell/sharp-libvips",
+  "upstreamRevision": "ebb95f8add54eee8bed840e3fb587e4cbec857d7",
+  "packages": [
+    {
+      "name": "@img/sharp-libvips-darwin-arm64",
+      "version": "1.3.4",
+      "integrity": "sha512-5R89nBYiRdUlSWJxPhO+GVtaXzXSxKnRu/xqMn3KTA3L9EB9Oy/P+Nn2f2vlhPuUdy/Zusb2DarbyTpGCfEDuw=="
+    },
+    {
+      "name": "@img/sharp-libvips-darwin-x64",
+      "version": "1.3.4",
+      "integrity": "sha512-iR2OKH80yi0U+dUplyh3/xdpFvps6YkCwsXenIJxqxR1v9o+xtKTGbS9H7cps+2Vxjc8B1j96p75NmTGjIhtpQ=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-arm",
+      "version": "1.3.4",
+      "integrity": "sha512-LmRtTsOHuvM2+wlO2Db37dx5MiZhB0FvSunciw48YjdOkZz9KAiRbm8ujeMOA1INqmei5NapFxYEK1D1ZSidmw=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-arm64",
+      "version": "1.3.4",
+      "integrity": "sha512-Y3dgX/6lE2QhQb+Gxy0WZxfg9MEm/JBjamZpS2IklP7xIQoKN4hzAm7KcMVGtaVDt3neE9OKBC7vAfonA/Lr1A=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-ppc64",
+      "version": "1.3.4",
+      "integrity": "sha512-Le6boB8Tai0Nis+gIxIpKx68UDVVIqdR8Tin5Yf1z2LJJQLDJvCDRqRu+jC2qCoD+eIomonmOwB4smBRxfVpYQ=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-riscv64",
+      "version": "1.3.4",
+      "integrity": "sha512-aHkkIEHPRdQEegJN20MLmGtxYD9R2wQr3Cwpddnu5+YKMt6Uzax7S9h5gpZTo8wyrGuZSlfQ63OevL5mTyOC7Q=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-s390x",
+      "version": "1.3.4",
+      "integrity": "sha512-ra/mB6MikESDUO7Yg+Mi95bFBb9GsObURuhnOv3OqknjGe9sZrG8tCe9q0xSIGrtLgvgw0gKnFWcK4blSgQOuQ=="
+    },
+    {
+      "name": "@img/sharp-libvips-linux-x64",
+      "version": "1.3.4",
+      "integrity": "sha512-GJ//SSXbnwSDes02umB3nDJLFcQzw8a18V8fyhqr6tV515tOEMdImjjxj1AoafMRz56F3PHgftnj1QEKSU1zkw=="
+    },
+    {
+      "name": "@img/sharp-libvips-linuxmusl-arm64",
+      "version": "1.3.4",
+      "integrity": "sha512-hvulFwtjUcagsis6BBxHwGFwWoNZjgYmULGVrZcyfNbjA8hKILbRxGg15/7w5HDyXHXUos/j6baAWqnCyQ2DWA=="
+    },
+    {
+      "name": "@img/sharp-libvips-linuxmusl-x64",
+      "version": "1.3.4",
+      "integrity": "sha512-6zXKeE/p39I1AmA3cJG35eyBGNqNddLnUXjhwBnsGjFPWqf5VKkDBEqaEkPDoTEtkxwi2vv8Tcr2mDyP4So7Fg=="
+    }
+  ],
+  "nativeSources": {
+    "archives": 28,
+    "patches": 5,
+    "originalNoticeFiles": 113,
+    "sourceCatalogSha256": "35d111021bd193942ffc2fc2f98a0afa7c9e95681ec68a8c422e8d7c5430a55d",
+    "recipeUrl": "https://github.com/lovell/sharp-libvips/blob/ebb95f8add54eee8bed840e3fb587e4cbec857d7/build/posix.sh",
+    "recipeSha256": "333031b3b49bf1a16d0b9d6812d98f67c404218932ef8c0b389388524a524b36"
+  },
+  "librsvgSources": {
+    "version": "2.63.2",
+    "archiveUrl": "https://download.gnome.org/sources/librsvg/2.63/librsvg-2.63.2.tar.xz",
+    "archiveSha256": "852b18e1a00b8605528825a27dc7748bff2a5dd254028f59dc22a34ea57e81b6",
+    "cargoLockSha256": "e79e2a2735a0b5b151bb4133becd3008223fabedd34a8b787a872edab9854941",
+    "registryPackages": 357,
+    "registrySourceBytes": 38675419,
+    "catalogSha256": "ac1c62c04fecd76c03f4b6eb39cca4115a0128f93a1787b34b524bd0890007a5",
+    "scope": "Original lockfile source superset, including optional, platform-specific and development packages; not a compiled SBOM."
+  },
+  "missingNotices": [
+    {
+      "name": "block",
+      "version": "0.1.6",
+      "declaredLicense": "MIT",
+      "crateUrl": "https://static.crates.io/crates/block/block-0.1.6.crate",
+      "crateSha256": "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a",
+      "releaseCommit": "47178790cfc9d4a8b092051d8b413b78bd31254a",
+      "releaseTreeUrl": "https://github.com/SSheldon/rust-block/tree/47178790cfc9d4a8b092051d8b413b78bd31254a",
+      "finding": "The only licensing marker in the published archive is license = MIT in Cargo.toml (and its original copy where present). No full permission/warranty text or copyright notice was found in any README or Rust source. Exact release tree contains no standalone license file. Preserve this gap; no notice synthesized."
+    },
+    {
+      "name": "malloc_buf",
+      "version": "0.0.6",
+      "declaredLicense": "MIT",
+      "crateUrl": "https://static.crates.io/crates/malloc_buf/malloc_buf-0.0.6.crate",
+      "crateSha256": "62bb907fe88d54d8d9ce32a3cceab4218ed2f6b7d35617cafe9adf84e43919cb",
+      "releaseCommit": "a7811e5f4c6f9685dd57ad9bfe34e9bf6b0ba4f9",
+      "releaseTreeUrl": "https://github.com/SSheldon/malloc_buf/tree/a7811e5f4c6f9685dd57ad9bfe34e9bf6b0ba4f9",
+      "finding": "The only licensing marker in the published archive is license = MIT in Cargo.toml (and its original copy where present). No full permission/warranty text or copyright notice was found in any README or Rust source. Exact release tree contains no standalone license file. Preserve this gap; no notice synthesized."
+    },
+    {
+      "name": "objc-foundation",
+      "version": "0.1.1",
+      "declaredLicense": "MIT",
+      "crateUrl": "https://static.crates.io/crates/objc-foundation/objc-foundation-0.1.1.crate",
+      "crateSha256": "1add1b659e36c9607c7aab864a76c7a4c2760cd0cd2e120f3fb8b952c7e22bf9",
+      "releaseCommit": "0c157a59b7931430ed5ac7839381470b0c516d3c",
+      "releaseTreeUrl": "https://github.com/SSheldon/rust-objc-foundation/tree/0c157a59b7931430ed5ac7839381470b0c516d3c",
+      "finding": "The only licensing marker in the published archive is license = MIT in Cargo.toml (and its original copy where present). No full permission/warranty text or copyright notice was found in any README or Rust source. Exact release tree contains no standalone license file. Preserve this gap; no notice synthesized."
+    },
+    {
+      "name": "objc_id",
+      "version": "0.1.1",
+      "declaredLicense": "MIT",
+      "crateUrl": "https://static.crates.io/crates/objc_id/objc_id-0.1.1.crate",
+      "crateSha256": "c92d4ddb4bd7b50d730c215ff871754d0da6b2178849f8a2a2ab69712d0c073b",
+      "releaseCommit": "6527cdf28fef2b155c67c1681f548ecfd794003c",
+      "releaseTreeUrl": "https://github.com/SSheldon/rust-objc-id/tree/6527cdf28fef2b155c67c1681f548ecfd794003c",
+      "finding": "The only licensing marker in the published archive is license = MIT in Cargo.toml (and its original copy where present). No full permission/warranty text or copyright notice was found in any README or Rust source. Exact release tree contains no standalone license file. Preserve this gap; no notice synthesized."
+    }
+  ],
+  "remainingReleaseRequirements": [
+    "Resolve each exact-version missing copyright and permission notice without borrowing another implementation's license.",
+    "Verify the active target/features and patched Cargo.lock against the upstream build recipe.",
+    "Ship complete corresponding sources, all applicable license texts, patches, rebuild and library replacement instructions with the distributed binary or its required source artifact.",
+    "Exercise an actual package and confirm native formats and resource limits before enabling managed-runtime releases."
+  ],
+  "packageScope": "Locked npm publication identities only; target-specific compiled graphs and redistribution acceptance have not been verified.",
+  "missingNoticesScope": "The four notices are missing from the original librsvg source superset and lie on the declared macOS locale_config dependency path. This is not evidence that they are linked on other platforms.",
+  "activeTargetGraphVerified": false
+}

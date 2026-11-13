@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "conclusion": "The complete distributed executable implementation and public types of proxy-agent-negotiate@1.1.0 derive from packages/http-proxy-agent/src/index.ts at the pre-extraction commit below. Preserve the actual source package MIT notice. This conclusion is based on verified code provenance and retained upstream license bytes, not a repository-wide or arbitrary sibling-license assumption.",
+  "package": {
+    "ecosystem": "npm",
+    "name": "proxy-agent-negotiate",
+    "version": "1.1.0",
+    "revision": "b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16",
+    "repository": "https://github.com/TooTallNate/proxy-agents",
+    "integrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+    "files": [
+      {
+        "path": "proxy-agent-negotiate-1.1.0/LICENSE",
+        "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+        "url": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/http-proxy-agent/LICENSE"
+      }
+    ]
+  },
+  "npmPublication": {
+    "tarballUrl": "https://registry.npmjs.org/proxy-agent-negotiate/-/proxy-agent-negotiate-1.1.0.tgz",
+    "tarballIntegrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+    "attestationUrl": "https://registry.npmjs.org/-/npm/v1/attestations/proxy-agent-negotiate@1.1.0",
+    "attestationStatement": {
+      "_type": "https://in-toto.io/Statement/v1",
+      "subject": [
+        {
+          "name": "pkg:npm/proxy-agent-negotiate@1.1.0",
+          "digest": {
+            "sha512": "37c20170cdd4802573cf62f62eabfc0d59ed0e79c2f3f8625789c40d43e4aaaef64cf5206168d073e6dd66504f64af4bccf02f398fff800b744b40c0a6839759"
+          }
+        }
+      ],
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "predicate": {
+        "buildDefinition": {
+          "buildType": "https://slsa-framework.github.io/github-actions-buildtypes/workflow/v1",
+          "externalParameters": {
+            "workflow": {
+              "ref": "refs/heads/main",
+              "repository": "https://github.com/TooTallNate/proxy-agents",
+              "path": ".github/workflows/release.yml"
+            }
+          },
+          "internalParameters": {
+            "github": {
+              "event_name": "push",
+              "repository_id": "11293703",
+              "repository_owner_id": "71256"
+            }
+          },
+          "resolvedDependencies": [
+            {
+              "uri": "git+https://github.com/TooTallNate/proxy-agents@refs/heads/main",
+              "digest": {
+                "gitCommit": "b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16"
+              }
+            }
+          ]
+        },
+        "runDetails": {
+          "builder": {
+            "id": "https://github.com/actions/runner/github-hosted"
+          },
+          "metadata": {
+            "invocationId": "https://github.com/TooTallNate/proxy-agents/actions/runs/26354995994/attempts/4"
+          }
+        }
+      }
+    },
+    "matchesLockedIntegrity": true,
+    "cryptographicAttestationSignatureSeparatelyVerified": false
+  },
+  "lineage": {
+    "preExtractionParentCommit": "2eaa14fccd3ffeb345674468f2d432d3426cca47",
+    "preExtractionSourceUrl": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/2eaa14fccd3ffeb345674468f2d432d3426cca47/packages/http-proxy-agent/src/index.ts",
+    "preExtractionSourceSha256": "06f23f902feec5c18c3a49c7bbf93684e8e6c03cc3c30dd8bfec64e289af6bfe",
+    "extractionCommit": "f6335213978d7b7da610cb8f768596bf40929605",
+    "extractionCommitUrl": "https://github.com/TooTallNate/proxy-agents/commit/f6335213978d7b7da610cb8f768596bf40929605",
+    "extractionCommitParentVerified": true,
+    "pullRequest": "https://github.com/TooTallNate/proxy-agents/pull/420",
+    "mergedCommit": "84e85ed393bc78fcad1d50cffc4e2640f3b933a0",
+    "releaseCommit": "b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16",
+    "releaseSourceUrl": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/negotiate/src/index.ts",
+    "releaseSourceSha256": "e236e82f1e25a1aa4177b9ef5f697044e9e8f843a3fc82b0e8a84011d0c0b475",
+    "releaseSourceGitBlobSha1": "502bac67155ebc9a79ffeadc0971f0173e3b5db1",
+    "releaseTreeBlobMatches": true,
+    "movedCodeCoverage": [
+      {
+        "oldLines": [16, 30],
+        "newLines": [3, 17],
+        "description": "All three public types copied; http.IncomingHttpHeaders changed to named IncomingHttpHeaders import."
+      },
+      {
+        "oldLines": [209, 249],
+        "newLines": [19, 59],
+        "description": "Complete createNegotiateAuth function copied byte-for-byte, adding only export."
+      },
+      {
+        "newLines": [1, 1],
+        "description": "Type-only import from Node http; reorganizes types already imported by origin file and adds no runtime code."
+      }
+    ],
+    "wholeSourceReconstructedFromOriginWithOnlyDescribedTransforms": true,
+    "extractionSourceExactlyMatchesReleaseSource": true,
+    "changedRuntimeLinesAfterExtraction": 0,
+    "publishedFileCoverage": {
+      "dist/index.js": "Exactly matches TypeScript 5.9.3 transpilation of verified source, after removing the generated sourceMappingURL comment only. Target ES2022 / module ES2022. Compiled payload SHA256 86ed460ae94967c7b151af5b2b7cea8274e0cf9b1d5578bfc12aa13182f6dd31.",
+      "dist/index.d.ts": "Generated type declarations for the three copied public types and copied function. No other declarations.",
+      "dist/index.js.map": "Generated location map referencing ../src/index.ts, no embedded additional source.",
+      "dist/index.d.ts.map": "Generated declaration location map referencing ../src/index.ts, no embedded additional source.",
+      "package.json": "Publication metadata; declares MIT and author Nathan Rajlich. No executable code."
+    }
+  },
+  "license": {
+    "copyright": "Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>",
+    "originalImmutableUrl": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/2eaa14fccd3ffeb345674468f2d432d3426cca47/packages/http-proxy-agent/LICENSE",
+    "releaseImmutableUrl": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/http-proxy-agent/LICENSE",
+    "originalSha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+    "releaseSha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+    "releaseNoticeEqualsOriginalExactBytes": true,
+    "byteLength": 1102,
+    "collectorCompatibleReleaseUrl": true,
+    "collectorConstraint": "scripts/dependency-notice-supplements.mjs requires raw.githubusercontent.com repository/revision prefix. Release URL uses the verified b7e5f7c revision and exact same notice bytes; retain original source URL in SOURCES.json for lineage."
+  },
+  "limitations": [
+    "The npm tarball itself and packages/negotiate release directory omit a standalone LICENSE.",
+    "Issue #479 has no maintainer notice confirmation in retrieved comments. Do not attribute an explicit package-specific confirmation to a maintainer."
+  ]
+}

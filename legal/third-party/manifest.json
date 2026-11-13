@@ -203,6 +203,21 @@
           "url": "https://raw.githubusercontent.com/earendil-works/pi/4a080252f06caf63a525d7873c5d94d3c23887e0/LICENSE"
         }
       ]
+    },
+    {
+      "ecosystem": "npm",
+      "name": "proxy-agent-negotiate",
+      "version": "1.1.0",
+      "revision": "b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16",
+      "repository": "https://github.com/TooTallNate/proxy-agents",
+      "integrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+      "files": [
+        {
+          "path": "proxy-agent-negotiate-1.1.0/LICENSE",
+          "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+          "url": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/http-proxy-agent/LICENSE"
+        }
+      ]
     }
   ]
 }
