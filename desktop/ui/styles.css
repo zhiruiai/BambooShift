@@ -72,8 +72,8 @@ input {
 .orb {
   display: block;
   flex-shrink: 0;
-  width: 128px;
-  height: 128px;
+  width: 144px;
+  height: 144px;
 }
 h1 {
   font-size: 28px;
@@ -363,8 +363,8 @@ h1 {
     margin-bottom: 15px;
   }
   .orb {
-    width: 96px;
-    height: 96px;
+    width: 112px;
+    height: 112px;
   }
   .intro {
     margin-bottom: 23px;

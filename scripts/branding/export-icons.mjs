@@ -21,12 +21,8 @@ await writeFile(join(root, 'desktop/ui/logo.svg'), master);
 await output('web/public/icon-192.png', 192);
 await output('web/public/icon-512.png', 512);
 await output('web/public/apple-touch-icon.png', 180, opaque);
-// Keep the entire mark inside the central 80% circle on any maskable launcher.
-const maskable = opaque.replace(
-  '<g id="mark">',
-  '<g id="mark" transform="translate(74.24 74.24) scale(.71)">',
-);
-await output('web/public/icon-maskable-512.png', 512, maskable);
+// The white mark fits the central 80% safe circle; extend its black backdrop to every edge.
+await output('web/public/icon-maskable-512.png', 512, opaque);
 const apple = 'mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset';
 const manifest = JSON.parse(await readFile(join(root, apple, 'Contents.json'), 'utf8'));
 for (const { filename, size, scale } of manifest.images) {
@@ -42,5 +38,6 @@ for (const [density, size] of Object.entries({
 }))
   await output(`mobile/android/app/src/main/res/mipmap-${density}/ic_launcher.png`, size, opaque);
 await mkdir(join(root, '.local/branding'), { recursive: true });
-for (const size of [1024, 2048, 4096]) await output(`.local/branding/icon-${size}.png`, size);
+for (const size of [16, 24, 32, 64, 1024, 2048, 4096])
+  await output(`.local/branding/icon-${size}.png`, size);
 console.log('Updated Web, iOS and Android icons from the shared SVG master.');
