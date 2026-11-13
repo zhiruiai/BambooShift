@@ -69,6 +69,13 @@ The [repeatable-check record](evidence/personal-package-check-20261113.json)
 identifies the retained macOS arm64 candidate that passed this command. It does
 not imply that the current source tree has been rebuilt or publicly released.
 
+The [complete-package record](evidence/desktop-complete-package-20261113.json)
+identifies the newer `d658952` build. It passed the same personal-workspace check,
+and its real Electron interface opened an empty personal space without login.
+A separate copy then accepted a recipient-modified library, a local ad-hoc
+re-signature and all 27 image checks. The record distinguishes that compatible
+Mach-O identity change from rebuilding or upgrading the codec implementation.
+
 The [macOS arm64 acceptance record](evidence/desktop-native-runtime-20261113.json)
 covers the complete isolated app: strict notice collection, source inclusion,
 ad-hoc signing, personal-space entry without account login, model configuration

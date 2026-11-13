@@ -42,6 +42,14 @@ system toolchain are supplied by Apple, not redistributed in the source archive.
 The deployment target is macOS 11.0. The isolated C++ wrapper selects the SDK's
 `usr/include/c++/v1`, addressing CLT installations without adjacent libc++ headers.
 
+The default `local-clt-21-sdk-26.5` profile pins that local toolchain and Node
+24.22.3. A separate `github-macos-15-xcode-26.3` profile uses Xcode 26.3 build
+17C529, SDK 26.2, Python 3.14.10, Node 24.22.3 and `pkg-config` 3.0.10. Both use
+the same checksum-pinned build-tool wheels. Unexpected tool versions stop the
+build. The [manual CI candidate workflow](../../../docs/native-codecs-ci.md)
+produces new candidate digests; a different toolchain is not expected to
+reproduce the previously reviewed local binary byte for byte.
+
 Create a build-only tool environment; do not install these into the application:
 
 ```sh
@@ -67,6 +75,9 @@ node scripts/desktop/native-codecs/build.mjs build \
   --cache ./source-cache \
   --tools /tmp/bambooshift-codec-tools --jobs 2
 ```
+
+On the specified GitHub CI host, add `--profile github-macos-15-xcode-26.3`
+to both the `build` and `package` commands. The default is the local profile.
 
 When starting from a repository checkout without the corresponding-source
 archive, `--fetch` explicitly permits downloading missing inputs from the pinned
@@ -98,10 +109,12 @@ Keep an independent copy of a managed runtime for testing. Stop that copy before
 replacing its library. Never overwrite the development checkout's Sharp package
 or a running application's files. With Sharp 0.35.5 for macOS arm64, the unchanged
 addon loads `@rpath/libvips-cpp.8.18.7.dylib` from its sibling library package.
-Replace only that library and its associated version/notice files inside the
-test runtime's `node_modules/@img/sharp-libvips-darwin-arm64/` directory. Preserve
-the custom artifact's identity and notices; do not describe the substituted
-bytes as the original npm package integrity.
+In a complete desktop package, the library-package entry is a relative link
+into `Contents/Resources/bambooshift-runtime/runtime/native-image-runtime/<build-id>/lib/`.
+Resolve that link and replace the actual library in the independent test copy;
+keep the package link intact. Update the corresponding version and notice files
+when your modified build changes them. Preserve the custom artifact's identity
+and notices; do not describe substituted bytes as the original npm integrity.
 
 Users can rebuild a modified libvips and replace this shared library using the
 same process. The application must not require a vendor-only signature or hide
@@ -109,6 +122,25 @@ the shared library inside an inaccessible executable. An ad-hoc signature can
 be regenerated locally after modification. Re-sign and validate the outer test
 application when changing files inside a signed app bundle. These instructions
 do not waive platform policy or imply a notarized distribution has been tested.
+
+For a copied macOS application, with a compatible rebuilt library at the path
+you selected, the local signing steps are:
+
+```sh
+test_app='/path/to/copied/BambooShift.app'
+test_runtime="$test_app/Contents/Resources/bambooshift-runtime"
+library_link="$test_runtime/runtime/node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.18.7.dylib"
+library_target="$("$test_runtime/bin/node" -p 'require("node:fs").realpathSync(process.argv[1])' "$library_link")"
+cp '/path/to/rebuilt/libvips-cpp.8.18.7.dylib' "$library_target"
+codesign --force --sign - "$library_target"
+codesign --force --sign - --preserve-metadata=entitlements,requirements,flags,runtime "$test_app"
+codesign --verify --deep --strict "$test_app"
+```
+
+Keep the modified library's required notices and corresponding source available.
+These commands use the recipient's local ad-hoc signature, not a BambooShift
+signing credential. Existing distribution checksums describe the original
+artifact and must not be presented as checksums of the modified copy.
 
 Verify the addon dependency with `otool -L`, inspect Node's
 `process.report.getReport().sharedObjects`, and compare the actual loaded file's
@@ -130,3 +162,9 @@ branding/avatar exports continue using the original complete Sharp build.
 
 Full desktop packaging, other platforms, public distribution approval, Developer
 ID signing and notarization remain separate acceptance steps.
+
+The [desktop replacement acceptance](../../../docs/evidence/desktop-complete-package-20261113.json)
+records a copied complete application with a changed Mach-O library identity,
+local re-signing, the actual loaded-library digest and all 27 image checks. It
+verifies the replacement path; it does not qualify a different codec ABI or a
+new upstream version.

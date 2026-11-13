@@ -276,7 +276,7 @@
   ],
   "remainingReleaseRequirements": [
     "Review and pin the custom distribution-manifest digest before changing any runtime dependency; the official npm binary audit remains separate.",
-    "Qualify the exact replacement in a full managed desktop package, including launch, cancellation, privacy, signing and all claimed target platforms. Only the macOS arm64 library and isolated image worker are accepted here.",
+    "Local complete-package and command approval/stop checks are recorded under followupAcceptance. Public release qualification must still bind the selected exact package; other target platforms and native keyboard/mouse/screen-capture acceptance remain separate.",
     "For each public binary release, deliver the verified corresponding-source archive, complete original notices and library-replacement instructions together. These candidate archives are currently local only.",
     "Complete the release-level review and signing/notarization requirements. Keep the managed-runtime release gate disabled until those acceptance steps are complete."
   ],
@@ -319,5 +319,10 @@
     "pluginDirectory": "/bambooshift-native-runtime/lib/libheif",
     "method": "Official CMake -DENABLE_PLUGIN_LOADING=0 -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif supplied before the clean libheif compilation; no post-build header edit.",
     "generatedHeaderVerified": true
+  },
+  "followupAcceptance": {
+    "completePackage": "docs/evidence/desktop-complete-package-20261113.json",
+    "commandApprovalAndStop": "docs/evidence/desktop-pi-shell-approval-stop-20261113.json",
+    "scope": "Later local macOS arm64 acceptance supplements this historical isolated-codec record; it does not authorize a public release or other target platforms."
   }
 }

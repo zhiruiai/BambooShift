@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "d65895263b26d68731eb5a8c25279b1396b0de87",
+  "target": {
+    "platform": "darwin",
+    "architecture": "arm64"
+  },
+  "releaseApproval": false,
+  "personalWorkspace": {
+    "schemaVersion": 1,
+    "passed": true,
+    "scope": "Packaged supervisor and real backend/Node/Pi; no Electron UI automation.",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "hostControl": false,
+    "externalModelUsed": false,
+    "checks": {
+      "normalWorkspaceAuthorization": true,
+      "hostControlDisabled": true,
+      "packagedSupervisorAndNode": true,
+      "noSignupFirstStart": true,
+      "realPiFileDelivery": true,
+      "firstStopRemovedProcesses": true,
+      "bootstrapProofRotated": true,
+      "sameWorkspaceAndFileRestored": true,
+      "savedModelReusedAfterRestart": true,
+      "finalStopRemovedProcesses": true
+    },
+    "files": [
+      {
+        "name": "first-acceptance.md",
+        "sha256": "2f00f022583219b98149f0ae4dc608f45d19b4dd85960fc3e39fcd49c2b4202f"
+      },
+      {
+        "name": "restart-acceptance.md",
+        "sha256": "af863bab217ff975227eefb71ebb2e1acc3d3baaeeca44e9195883433d7cad37"
+      }
+    ],
+    "notVerified": [
+      "Electron interface",
+      "screen capture",
+      "keyboard and mouse",
+      "external model quality",
+      "public release"
+    ],
+    "recordedAt": "2026-11-13T13:23:38.743Z",
+    "packageHashes": {
+      "asar": "00362d0801753ced14e21f4815f2b177350059ba080be3317f9e8b2f0efe7760",
+      "manifest": "6bba8d6564cd8a4cc313fccf4e1c9e0756a4c4c79532c250fd009830408d2080",
+      "backend": "cebb21c13031551716ff1c3a03b64331a3791a3b81e4d3bff18a9a891d75956b",
+      "node": "7cc55747bd13bc810570e6bd1243141bdbebfa4f2cf8de6441c0013b039bd762",
+      "pi": "5ee60207926ba6dc3bfa874b4be0448a5dfbfe126282e66f61ebabd812a8e119",
+      "supervisor": "1894c73d5ce85b7440bcebe4c83462584f5082e34847f399cecdaef996f82a3b"
+    },
+    "checkedInputHashesUnchanged": true,
+    "temporaryProfileRemoved": true
+  },
+  "libraryReplacement": {
+    "sourceRevision": "d65895263b26d68731eb5a8c25279b1396b0de87",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "beforeLibrarySha256": "1d403c235789f8582d2318ac6c7a68337bba144b7d7cd4cdd578321b54aebff5",
+    "replacedLibrarySha256": "3c42cc42d003a8f28bb5fd12e791b708079b35ca0efe0ab7d9b0fc17f6937946",
+    "loadedLibrarySha256": "3c42cc42d003a8f28bb5fd12e791b708079b35ca0efe0ab7d9b0fc17f6937946",
+    "unchangedNativeAddon": true,
+    "loadedReplacement": true,
+    "localAdHocResignAndStrictVerification": true,
+    "syntheticPngGenerated": true,
+    "svgInput": false,
+    "vips": "8.18.7",
+    "scope": "Compatible Mach-O library identity modification; not a rebuilt codec or ABI upgrade.",
+    "hostControlEnabled": false,
+    "releaseApproval": false,
+    "productionImageContract": {
+      "passed": 27,
+      "failed": 0
+    }
+  },
+  "interface": {
+    "realPackagedElectron": true,
+    "localStartEnabled": true,
+    "noLoginWorkspaceOpened": true,
+    "emptyPersonalSpaceShown": true,
+    "modelSetupOffered": true,
+    "hostControlEnabled": false
+  },
+  "limitations": [
+    "Synthetic model responses validate tool delivery and lifecycle, not external model quality.",
+    "The library modification changes its Mach-O identity; no codec ABI or upstream version change is qualified.",
+    "No keyboard, mouse, screen-capture or operating-system permission acceptance.",
+    "Local ad-hoc signature only; no notarization, public release or Windows local-runtime claim."
+  ]
+}
