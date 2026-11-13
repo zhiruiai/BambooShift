@@ -387,6 +387,7 @@ const assert = require('node:assert/strict');
 const socket = process.argv[5];
 assert.deepEqual(process.argv.slice(2, 5), ['serve', '--embedded', '--socket']);
 assert.equal(process.env.CUA_DRIVER_EMBEDDED, '1');
+assert.equal(process.env.CUA_DRIVER_HOST_BUNDLE_ID, undefined);
 assert.equal(process.env.CUA_DRIVER_PERMISSION_MODE, 'standard');
 writeFileSync(join(dirname(socket), 'driver.pid'), String(process.pid));
 const server = createServer();
@@ -409,11 +410,15 @@ process.once('SIGTERM', () => server.close());
     assert.equal(config().desktopDriver, undefined);
     await f.runtime.stop();
     process.env.BAMBOOSHIFT_FIXTURE_SECRET = 'synthetic';
+    const previousBundleId = process.env.CUA_DRIVER_HOST_BUNDLE_ID;
+    process.env.CUA_DRIVER_HOST_BUNDLE_ID = 'com.synthetic.unrelated-parent';
     let launched;
     try {
       launched = await start(true);
     } finally {
       delete process.env.BAMBOOSHIFT_FIXTURE_SECRET;
+      if (previousBundleId === undefined) delete process.env.CUA_DRIVER_HOST_BUNDLE_ID;
+      else process.env.CUA_DRIVER_HOST_BUNDLE_ID = previousBundleId;
     }
     const { leaked, hostIdentity, hostPath } = await fetch(launched.origin).then((res) => res.json());
     assert.equal(leaked, false);

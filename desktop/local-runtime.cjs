@@ -215,7 +215,7 @@ async function startCuaHost(executablePath, { signal, timeoutMs }) {
         env: {
           ...runtimeEnvironment(),
           CUA_DRIVER_EMBEDDED: '1',
-          CUA_DRIVER_HOST_BUNDLE_ID: 'com.openbot.client',
+          // Let macOS identify the actual host; do not presume a packaged application ID.
           CUA_DRIVER_PERMISSION_MODE: 'standard',
         },
         stdio: 'ignore',
