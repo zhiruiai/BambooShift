@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13T12:44:06.966Z",
+  "subject": "BambooShift full packaged local command approval and stop acceptance",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "result": "passed",
+  "syntheticOnly": true,
+  "releaseApproval": false,
+  "scope": "A deterministic synthetic model drives the actual packaged Pi computer_action tool, Rust approval APIs and packaged computer worker. Running commands are stopped through the normal conversation stop API.",
+  "desktopInputOrCaptureUsed": false,
+  "realUserFilesUsed": false,
+  "fixtureTestsPassed": 4,
+  "checks": {
+    "workspaceRuntimeReportsPi": true,
+    "actualHostShellCapability": true,
+    "pendingDoesNotExecute": true,
+    "rejectionPreventsExecutionAndReplay": true,
+    "approvedCommandReturnsActualOutputAndFile": true,
+    "actualPiConversationAndCommandActiveBeforeStop": true,
+    "termIgnoringParentAndChildGroupGoneAfterTaskDrain": true,
+    "noLateFileWrites": true,
+    "stoppedActionCannotBeReapproved": true,
+    "sameConversationAndExecutorReusableAfterStop": true,
+    "realPiIssuedEachExactSyntheticToolOnce": true
+  },
+  "observation": {
+    "stopDrainMilliseconds": 741,
+    "noLateWriteObservationMilliseconds": 6500,
+    "stoppedRustActionStatus": "error"
+  },
+  "integrityDuringProbe": {
+    "managedServiceConfigurationUnchangedBetweenProbeStartAndEnd": true,
+    "packagedRuntimeFilesUnchangedBetweenProbeStartAndEnd": true
+  },
+  "cleanup": {
+    "originalModelRestored": true,
+    "syntheticModelProfileRemoved": true,
+    "syntheticModelServerClosed": true,
+    "syntheticFixtureDirectoriesRemaining": 0,
+    "syntheticReceiptCardsRetainedInIsolatedProfile": true,
+    "emergencyProcessGroupKillUsed": false
+  },
+  "restorationAfterProbe": {
+    "isolatedClientExited": true,
+    "isolatedBackendExited": true,
+    "isolatedPiAndComputerWorkersExited": true,
+    "nextLaunchHostControlDisabled": true,
+    "savedServiceHostControlDisabled": true,
+    "savedDesktopDriverRemoved": true,
+    "onlyAcceptanceProfileChanged": true,
+    "noServiceStartedDuringRestoration": true
+  },
+  "restorationNote": "After the client exited, the existing selection persistence function disabled host control for the next launch. Only the isolated acceptance service configuration was then set to hostControl=false and its desktopDriver entry removed. The final configuration intentionally differs from the enabled configuration used during the probe.",
+  "packageSha256": {
+    "backend": "acbd6c11749297ad280d130eb43a54b84fe6cf11138638cf8709157be1ddb9bb",
+    "node": "7cc55747bd13bc810570e6bd1243141bdbebfa4f2cf8de6441c0013b039bd762",
+    "pi": "3c03de19a099bc68a1eaa7d2e9bd50344e87cb102e33203d2a4c7ab3510f8273",
+    "computer": "ed67313991c3c159cbfa86d1d827ec04bef96aa86f31ef8644c1dbc5db03045d"
+  },
+  "fixtureCodeSha256": {
+    "probe": "481bbb755735e8f381ad3b94175de357e41f5a82a128e5a60381152933634d43",
+    "model": "9cc674bebbc7c7850e70feb48018764d1a851b5188c7468f9ea0a97645206d8a",
+    "plans": "b46106d6a78798bb96dcdc5eed52a3f70f7636aedbc5b559fa6ca26a7ec2810f",
+    "fixtureTests": "2feea01a50105ade5f2584470c25d8f46b7c4eb7753a1a3daa7ae714dfb22746"
+  },
+  "exclusions": [
+    "Approval UI rendering",
+    "Native keyboard, mouse and screen recording",
+    "Live language-model reasoning quality",
+    "Windows and Linux packaged execution",
+    "Processes that detach from their original process group"
+  ]
+}
