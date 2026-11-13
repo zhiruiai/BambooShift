@@ -6,7 +6,7 @@ import { join } from 'node:path';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const master = await readFile(join(root, 'web/public/favicon.svg'), 'utf8');
 // Native mobile launchers apply their own corner mask. Keep their canvas opaque.
-const opaque = master.replace('<defs>', '<rect width="512" height="512" fill="#196D57"/><defs>');
+const opaque = master.replace('<defs/>', '<rect width="512" height="512" fill="#101010"/><defs/>');
 const render = (svg, size) => {
   const pipeline = sharp(Buffer.from(svg), { density: 576 }).resize(size, size);
   // iOS requires an RGB launcher asset, even when every RGBA pixel is opaque.
@@ -22,9 +22,10 @@ await output('web/public/icon-192.png', 192);
 await output('web/public/icon-512.png', 512);
 await output('web/public/apple-touch-icon.png', 180, opaque);
 // Keep the entire mark inside the central 80% circle on any maskable launcher.
-const maskable = opaque
-  .replace('  <path d="M148', '  <g transform="translate(38.4 38.4) scale(.85)"><path d="M148')
-  .replace('</svg>', '</g></svg>');
+const maskable = opaque.replace(
+  '<g id="mark">',
+  '<g id="mark" transform="translate(71.68 71.68) scale(.72)">',
+);
 await output('web/public/icon-maskable-512.png', 512, maskable);
 const apple = 'mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset';
 const manifest = JSON.parse(await readFile(join(root, apple, 'Contents.json'), 'utf8'));

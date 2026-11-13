@@ -1,30 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <defs>
-    <linearGradient id="jade" x1="96" y1="24" x2="410" y2="500" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#36A181"/>
-      <stop offset=".48" stop-color="#196D57"/>
-      <stop offset="1" stop-color="#0B3B33"/>
-    </linearGradient>
-    <linearGradient id="pearl" x1="210" y1="182" x2="324" y2="380" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFF5"/>
-      <stop offset="1" stop-color="#CDE9DF"/>
-    </linearGradient>
-    <linearGradient id="leaf" x1="293" y1="107" x2="257" y2="196" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#D9F5AF"/>
-      <stop offset="1" stop-color="#77CFAC"/>
-    </linearGradient>
-  </defs>
-  <rect x="8" y="8" width="496" height="496" rx="112" fill="url(#jade)"/>
-  <rect x="12" y="12" width="488" height="488" rx="108" stroke="#D2FFE7" stroke-opacity=".14" stroke-width="2"/>
-  <path d="M148 219c-28-29-35-67-21-96 38 1 70 26 80 61m99 0c14-31 46-50 81-45 9 31-3 63-32 87" fill="#0C4B3D"/>
-  <path d="M164 210c-15-17-22-38-19-56 22 7 39 20 46 39m133 1c9-15 25-24 42-26-2 18-11 33-25 45" fill="#7CD6B2"/>
-  <path d="M139 278c0-60 41-102 117-102s117 42 117 102v30c0 59-42 93-117 93s-117-34-117-93z" fill="#052E28" opacity=".25" transform="translate(0 9)"/>
-  <path d="M139 270c0-60 41-102 117-102s117 42 117 102v30c0 59-42 93-117 93s-117-34-117-93z" fill="url(#pearl)"/>
-  <path d="M253 186c-8-40 8-77 49-91 12 43-7 77-49 91z" fill="url(#leaf)"/>
-  <path d="m254 182 25-48" stroke="#267B5B" stroke-width="7" stroke-linecap="round"/>
-  <rect x="194" y="251" width="33" height="51" rx="16.5" fill="#123E34"/>
-  <rect x="285" y="251" width="33" height="51" rx="16.5" fill="#123E34"/>
-  <circle cx="205" cy="264" r="5" fill="#FFFFF5" opacity=".9"/>
-  <circle cx="296" cy="264" r="5" fill="#FFFFF5" opacity=".9"/>
-  <path d="M235 325c12 14 30 14 42 0" stroke="#28745B" stroke-width="10" stroke-linecap="round"/>
+  <defs/>
+  <g id="mark">
+    <path d="M162 24h188c86 0 138 52 138 138v188c0 86-52 138-138 138H162C76 488 24 436 24 350V162C24 76 76 24 162 24Z" fill="#101010"/>
+    <g transform="rotate(-16 268 244)" fill="#FFFFFF">
+      <rect x="196" y="194" width="42" height="100" rx="21"/>
+      <rect x="298" y="194" width="42" height="100" rx="21"/>
+    </g>
+  </g>
 </svg>
