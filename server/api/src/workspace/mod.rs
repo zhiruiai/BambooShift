@@ -10,6 +10,7 @@ mod creation;
 pub(crate) mod creation_preview;
 mod credentials;
 pub(crate) mod file_edits;
+pub(crate) mod file_registry;
 pub(crate) mod file_storage;
 mod files;
 pub(crate) mod groups;

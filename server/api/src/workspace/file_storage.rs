@@ -152,12 +152,15 @@ impl Directory {
     }
 }
 impl ReadFile {
-    pub(crate) fn stamp(&self) -> Result<String> {
+    pub(crate) fn snapshot(&self) -> Result<FileStamp> {
         let meta = regular(&self.file)?;
         if !same(&self.initial, &meta) {
             return Err(failure());
         }
-        Ok(meta.version_key())
+        Ok(meta)
+    }
+    pub(crate) fn stamp(&self) -> Result<String> {
+        Ok(self.snapshot()?.version_key())
     }
     pub fn len(&self) -> u64 {
         self.initial.len()

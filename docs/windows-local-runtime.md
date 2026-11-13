@@ -72,24 +72,27 @@ backup. Final hidden-file cleanup must not be mistaken for immediately freeing a
 visible destination name. Unix retains native no-replace rename and an identity
 check before unlink; that check and unlink are not an atomic conditional operation.
 
-Record-level protection against filesystem name aliases, including case folding
-and available short names, still needs separate acceptance. This is not solely a
-Windows concern: records must not treat two names for the same filesystem object
-as independently owned files.
+Workspace writes now match registered records to the retained file's actual
+identity, preserving the canonical record and spelling without global case folding.
+Every matching voice-memo record remains immutable; duplicate or unverifiable
+records cause a conflict before commit. A second identity check after publication
+also catches aliases of previously missing files and rolls back conflicting
+recreations. These checks read metadata, not file bodies. Real Pi regression tests
+use the current volume's actual case behavior; native Windows short-name and
+installed-package behavior still need separate runtime qualification.
 
 The foundation at `e50f4df` passed 24 release-mode checks on macOS, including
 real HTTP asset routes and cross-process deployment-lock contention and release.
-After the workspace migration, the complete library test target plus
+After the workspace and registry changes, the complete library test target plus
 `workspace_file_uploads`, `agent_workspace_tools`, `agent_file_delivery` and
-`workspace_read_contracts` passed in release mode on macOS: **127 passed, zero
-failed**. Three existing tests requiring live public services or installed system
+`agent_file_aliases` passed in release mode on macOS: **131 passed, zero failed**. Three existing tests requiring live public services or installed system
 voices were not run. Coverage includes database rollback, replacement-file
 canaries, staging-name collisions, retained readers, large generated downloads
 and real Pi file-tool delivery with synthetic model responses.
 
 Isolated offline Windows MSVC `cargo check --tests` also passed with Rust 1.85.1:
-first for the foundation, then for the 18 source/test files covering shared
-filesystem operations, workspace transactions and deployment ownership. The
+first for the foundation, then for the 19 source/test files covering shared
+filesystem operations, workspace transactions, registry matching and deployment ownership. The
 workspace check uses a narrow private `ApiError` adapter and excludes HTTP,
 authorization and database integration. This verifies Windows API types and test
 compilation, **not execution**. The full Windows backend, runtime tests and

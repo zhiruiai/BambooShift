@@ -141,6 +141,39 @@ impl Directory {
 }
 
 impl Edit {
+    /// The identity must come from the file this transaction already holds.
+    pub(crate) fn previous_snapshot(&self) -> Result<Option<FileStamp>> {
+        let Some(previous) = &self.previous else {
+            return Ok(None);
+        };
+        let current = regular(previous)?;
+        if !same(self.previous_stamp.as_ref().unwrap(), &current) {
+            return Err(failure());
+        }
+        Ok(Some(current))
+    }
+    pub(crate) fn published_snapshot(&self) -> Result<FileStamp> {
+        if !self.published {
+            return Err(failure());
+        }
+        regular(&self.file)
+    }
+    /// Retain the registered spelling while keeping the same pinned parent and
+    /// file object. Single-link identity matching rules out a different parent.
+    pub(crate) fn use_registered_name(&mut self, registered: &str) -> Result<()> {
+        let normalized = path(registered)?;
+        let name = normalized.rsplit('/').next().unwrap();
+        if name == self.name {
+            return Ok(());
+        }
+        let previous = self.previous_snapshot()?.ok_or_else(failure)?;
+        let selected = filesystem::open_file(&self.parent.0, name).map_err(io_failure)?;
+        if !same(&previous, &regular(&selected)?) {
+            return Err(failure());
+        }
+        self.name = name.to_owned();
+        Ok(())
+    }
     pub(crate) fn previous(&mut self) -> Result<Option<Vec<u8>>> {
         let Some(file) = self.previous.as_mut() else {
             return Ok(None);

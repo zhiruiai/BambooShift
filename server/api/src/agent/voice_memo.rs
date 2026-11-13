@@ -249,15 +249,11 @@ pub(super) async fn execute(
     .map_err(|_| ApiError::new(503, "语音便笺结果暂未确认，请查看聊天记录。"))?
 }
 
-pub(super) async fn ensure_file_editable(conn: &mut SqliteConnection, name: &str) -> Result<()> {
-    let protected: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM files WHERE json_extract(data,'$.name')=?
-         AND json_extract(data,'$.source.kind')='voice_memo')",
-    )
-    .bind(name)
-    .fetch_one(conn)
-    .await?;
-    if protected {
+pub(super) fn ensure_file_editable<'a>(files: impl IntoIterator<Item = &'a Value>) -> Result<()> {
+    if files
+        .into_iter()
+        .any(|file| file["source"]["kind"] == "voice_memo")
+    {
         return Err(ApiError::new(409, "语音便笺的原始音频不能由 Bot 修改。")
             .with_code("VOICE_MEMO_FILE_IMMUTABLE"));
     }

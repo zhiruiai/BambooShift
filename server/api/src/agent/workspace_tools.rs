@@ -4,7 +4,7 @@ use super::{
 use crate::{
     db::{State, iso, now},
     error::{ApiError, Result, only_fields},
-    workspace::{Table, WorkspaceStore, file_edits, file_storage::Directory},
+    workspace::{Table, WorkspaceStore, file_edits, file_registry, file_storage::Directory},
 };
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
@@ -219,7 +219,12 @@ async fn mutate(
         return Err(ApiError::bad("追加内容需要上次读写返回的 expectedSha256。"));
     }
     let mut tx = store.begin().await?;
-    super::voice_memo::ensure_file_editable(&mut tx, &name_path).await?;
+    let registered = WorkspaceStore::list_in(&mut tx, Table::Files).await?;
+    // Preserve the original exact-name denial even for missing or oversized
+    // memo files. Existing objects also require the identity check below.
+    super::voice_memo::ensure_file_editable(
+        registered.iter().filter(|file| file["name"] == name_path),
+    )?;
     let conversation = WorkspaceStore::get_in(
         &mut tx,
         Table::Conversations,
@@ -233,8 +238,24 @@ async fn mutate(
     {
         return Err(ApiError::new(409, "Bot 已离开原会话。"));
     }
-    let mut edit = Directory::open(&store.directory, true)?
-        .edit(&name_path, name == "workspace_write" && expected.is_none())?;
+    let directory = Directory::open(&store.directory, true)?;
+    let mut edit = directory.edit(&name_path, name == "workspace_write" && expected.is_none())?;
+    let previous_snapshot = edit.previous_snapshot()?;
+    let matching = file_registry::matching_records(
+        &directory,
+        &name_path,
+        previous_snapshot.as_ref(),
+        &registered,
+    )?;
+    super::voice_memo::ensure_file_editable(matching.iter())?;
+    let prior = file_registry::unique_record(matching)?;
+    let name_path = if let Some(file) = &prior {
+        let registered_name = file["name"].as_str().unwrap();
+        edit.use_registered_name(registered_name)?;
+        registered_name.to_owned()
+    } else {
+        name_path
+    };
     let previous = edit.previous()?;
     if expected
         .as_ref()
@@ -279,10 +300,6 @@ async fn mutate(
     let bytes = content.as_bytes();
     file_edits::decode(bytes, &name_path)?;
     edit.stage(bytes)?;
-    let prior = WorkspaceStore::list_in(&mut tx, Table::Files)
-        .await?
-        .into_iter()
-        .find(|f| f["name"] == name_path);
     let id = prior
         .as_ref()
         .and_then(|f| f["id"].as_str())
@@ -292,6 +309,21 @@ async fn mutate(
     WorkspaceStore::put_in(&mut tx, Table::Files, &file).await?;
     authorize().await?;
     edit.publish()?;
+    // A previously missing registered name can become an alias only after the
+    // new object exists. Recheck the held publication before committing either
+    // its registry record or bytes; a mismatch drops the transaction and edit.
+    let published = edit.published_snapshot()?;
+    let matching =
+        file_registry::matching_records(&directory, &name_path, Some(&published), &registered)?;
+    super::voice_memo::ensure_file_editable(matching.iter())?;
+    let published_prior = file_registry::unique_record(matching)?;
+    if prior.as_ref().map(|file| &file["id"]) != published_prior.as_ref().map(|file| &file["id"]) {
+        return Err(ApiError::new(
+            409,
+            "文件名称与已有资料重合，请使用资料库中的原始名称重试；本次未写入。",
+        )
+        .with_code("FILE_REGISTRY_CHANGED"));
+    }
     tx.commit().await?;
     edit.commit();
     store.emit("update", json!({}));
