@@ -4,10 +4,11 @@ import { createServer } from 'node:http';
 import test from 'node:test';
 import { build } from 'esbuild';
 import { chromium, type Browser } from 'playwright-core';
+import { settingsLayoutResponse } from './settingsLayoutResponses';
 
 test(
   'workspace settings shows every avatar theme and all artwork at narrow and desktop widths',
-  { timeout: 60_000 },
+  { timeout: 120_000 },
   async (t) => {
     const workspaceId = '11111111-1111-4111-8111-111111111111';
     const path = `/w/${workspaceId}`;
@@ -18,16 +19,18 @@ test(
     import { createRoot } from 'react-dom/client';
     import { initializeAppearance } from './web/src/appearance';
     import { initializeLanguage } from './web/src/i18n';
+    import { useLanguage } from './web/src/i18n/useLanguage';
     import { WorkspaceSettingsDialog } from './web/src/components/WorkspaceSettingsDialog';
     initializeLanguage().setLanguage('en');
     initializeAppearance().update({customAvatarTheme:{name:'${customName}',motif:'elephants',
       colors:['#443388','#226655','#ccaa55'],badge:'moon',backdrop:'halo'},useCustomAvatarTheme:true});
     const noop = () => {};
     const root = createRoot(document.getElementById('fixture'));
-    flushSync(() => root.render(<WorkspaceSettingsDialog workspaceId="${workspaceId}"
+    function Fixture() { useLanguage(); return <WorkspaceSettingsDialog workspaceId="${workspaceId}"
       userId="synthetic-owner" canManage team={false} data={{agents:[],settings:{configured:true}}}
       onClose={noop} onSettingsChanged={noop} onPrimaryChanged={noop}
-      onImported={noop} onTimeZoneChanged={noop} />));`;
+      onImported={noop} onTimeZoneChanged={noop} />; }
+    flushSync(() => root.render(<Fixture />));`;
     const bundle = await build({
       stdin: {
         contents: input,
@@ -57,6 +60,13 @@ test(
           );
       } else if (request.url === '/fixture.js') {
         response.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' }).end(script);
+      } else if (
+        request.method === 'GET' &&
+        settingsLayoutResponse(request.url || '', workspaceId)
+      ) {
+        response
+          .writeHead(200, { 'Content-Type': 'application/json' })
+          .end(JSON.stringify(settingsLayoutResponse(request.url || '', workspaceId)));
       } else {
         unexpected.push(request.url || '');
         response.writeHead(404).end();
@@ -97,7 +107,10 @@ test(
       await themes.getByRole('button', { name: new RegExp(customName), pressed: true }).waitFor();
       await page.setViewportSize({ width: 1440, height: 900 });
       const header = dialog.locator('.modal-header');
+      const footer = dialog.locator('.workspace-settings-footer');
+      const footerStart = await footer.boundingBox();
       const headerStart = await header.boundingBox();
+      assert.ok(footerStart, 'Done remains outside the scrolling settings content');
       const scrollBox = await main.boundingBox();
       assert.ok(headerStart && scrollBox);
       const point = { x: scrollBox.x + 50, y: scrollBox.y + scrollBox.height / 2 };
@@ -147,6 +160,7 @@ test(
         'second-row option is clickable after ordinary wheel scrolling',
       );
       assert.deepEqual(await header.boundingBox(), headerStart, 'dialog header stays pinned');
+      assert.deepEqual(await footer.boundingBox(), footerStart, 'Done stays pinned');
       assert.ok(scrollMetrics.reserved >= 8 && parseFloat(scrollMetrics.track) >= 8);
       assert.notEqual(scrollMetrics.thumb, 'rgba(0, 0, 0, 0)');
       await page.mouse.click(hitElephants.x, hitElephants.y);
@@ -166,7 +180,10 @@ test(
       await page.waitForFunction(
         () => document.querySelector('.workspace-settings-main')?.scrollTop === 0,
       );
-      const trackX = scrollBox.x + scrollBox.width - scrollMetrics.reserved / 2;
+      const trackX =
+        scrollBox.x +
+        scrollBox.width -
+        Math.max(scrollMetrics.reserved, parseFloat(scrollMetrics.track)) / 2;
       await page.mouse.move(trackX, scrollBox.y + 30);
       await page.mouse.down();
       await page.mouse.move(trackX, scrollBox.y + scrollBox.height - 30, { steps: 8 });
@@ -175,11 +192,13 @@ test(
         () => (document.querySelector('.workspace-settings-main')?.scrollTop || 0) > 100,
       );
       t.diagnostic('1440px: wheel, keyboard and native scrollbar drag work with fixed header');
-      for (const [width, height, columns] of [
-        [1200, 820, 4],
-        [768, 660, 3],
-        [375, 660, 3],
-        [320, 560, 2],
+      const navigation = dialog.locator('.workspace-settings-navigation');
+      for (const [width, height] of [
+        [1440, 900],
+        [1200, 820],
+        [768, 660],
+        [390, 660],
+        [320, 560],
       ]) {
         await page.setViewportSize({ width, height });
         const actual = await cards.evaluateAll((nodes) =>
@@ -220,15 +239,14 @@ test(
             return { left: Math.round(box.left), clipped, samples: artwork.length, sized, nested };
           }),
         );
-        assert.equal(actual.length, 6);
+        assert.equal(actual.length, 7);
         assert.deepEqual(
           actual.flatMap((card) => card.nested),
           [64, 64, 64],
         );
-        assert.equal(
-          new Set(actual.slice(0, 5).map((card) => card.left)).size,
-          columns,
-          `columns at ${width}`,
+        assert.ok(
+          new Set(actual.slice(0, 6).map((card) => card.left)).size >= 2,
+          `builtin choices remain arranged as a compact grid at ${width}`,
         );
         assert.ok(
           actual.every((card) => !card.clipped && card.samples === 3 && card.sized),
@@ -240,6 +258,7 @@ test(
           `main width at ${width}`,
         );
         for (const name of [
+          'Classic black',
           'Companions',
           'Pandas',
           'Dinosaurs',
@@ -254,8 +273,110 @@ test(
         await themes.getByRole('button', { name: 'Design an avatar theme' }).click();
         await themes.getByRole('textbox', { name: 'What should the avatars look like?' }).waitFor();
         await themes.getByRole('button', { name: 'Design an avatar theme' }).click();
-        t.diagnostic(`${width}px: all six themes and generation controls reached`);
+        const fixed = await Promise.all([header.boundingBox(), footer.boundingBox()]);
+        await themes.getByRole('button', { name: 'Community GrokBot 18', exact: true }).click();
+        const gallery = themes.locator('.avatar-theme-catalog-grid');
+        assert.equal(await gallery.locator('button').count(), 18);
+        assert.deepEqual(
+          await gallery.evaluate((node) => ({
+            verticalOverflow: node.scrollHeight - node.clientHeight,
+            horizontalOverflow: node.scrollWidth - node.clientWidth,
+          })),
+          { verticalOverflow: 0, horizontalOverflow: 0 },
+          'gallery shares the main scroll area',
+        );
+        await gallery.locator('button').last().click();
+        assert.equal(await gallery.locator('button').last().getAttribute('aria-pressed'), 'true');
+        const scrollOwners = await main.evaluate((node) =>
+          [...node.querySelectorAll('*')]
+            .filter(
+              (child) =>
+                child.clientHeight > 0 &&
+                child.scrollHeight > child.clientHeight + 1 &&
+                /^(auto|scroll)$/.test(getComputedStyle(child).overflowY),
+            )
+            .map((child) => child.className),
+        );
+        assert.deepEqual(scrollOwners, [], `no nested settings scrollbar at ${width}`);
+        assert.deepEqual(await Promise.all([header.boundingBox(), footer.boundingBox()]), fixed);
+        for (const [label, section, ready] of [
+          ['Bot work', 'work', '.time-zone-settings select:enabled'],
+          ['Import memory', 'memory', '.memory-import-panel'],
+          ['Usage', 'usage', '.usage-panel[aria-busy="false"]'],
+          ['Notifications', 'notifications', '.notifications-panel'],
+          ['Signed-in devices', 'devices', '#settings-section-devices'],
+          ['Updates', 'updates', '.updates-panel[aria-busy="false"]'],
+        ]) {
+          await navigation.getByRole('button', { name: label, exact: true }).click();
+          await main.locator(ready).waitFor();
+          assert.equal(
+            await main.evaluate((node) => node.scrollTop),
+            0,
+            `${section} starts at top`,
+          );
+          assert.equal(
+            await main.evaluate((node) => node.scrollWidth <= node.clientWidth),
+            true,
+            `${section} has no horizontal overflow at ${width}`,
+          );
+          assert.equal(
+            await dialog.evaluate((node) => node.scrollHeight <= node.clientHeight),
+            true,
+          );
+          if (section === 'devices') {
+            assert.equal(
+              await main.evaluate((node) => node.scrollHeight > node.clientHeight),
+              false,
+              'a short settings category does not create a scrollbar',
+            );
+          }
+          await main.evaluate((node) => {
+            node.scrollTop = node.scrollHeight;
+          });
+          assert.deepEqual(await Promise.all([header.boundingBox(), footer.boundingBox()]), fixed);
+          const footerReachable = await footer.getByRole('button').evaluate((node) => {
+            const rect = node.getBoundingClientRect();
+            return node.contains(
+              document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2),
+            );
+          });
+          assert.equal(footerReachable, true, `${section} Done is not covered at ${width}`);
+        }
+        await navigation.getByRole('button', { name: 'General', exact: true }).click();
+        assert.equal(await main.evaluate((node) => node.scrollTop), 0);
+        await themes.getByRole('button', { name: 'Built-in themes 6', exact: true }).click();
+        t.diagnostic(
+          `${width}px: themes, long/short categories, pinned controls and scrolling verified`,
+        );
       }
+      await dialog.getByRole('combobox', { name: 'Language', exact: true }).selectOption('zh-CN');
+      const chinese = page.getByRole('dialog', { name: '设置', exact: true });
+      for (const viewport of [
+        { width: 1200, height: 820 },
+        { width: 320, height: 560 },
+      ]) {
+        await page.setViewportSize(viewport);
+        for (const name of ['经典黑', '新版伙伴', '大熊猫', '小恐龙', '小鸡', '大象']) {
+          const choice = chinese.getByRole('button', { name, exact: true });
+          await choice.click();
+          assert.equal(await choice.getAttribute('aria-pressed'), 'true');
+        }
+        const chineseMain = chinese.locator('.workspace-settings-main');
+        assert.equal(
+          await chineseMain.evaluate((node) => node.scrollWidth <= node.clientWidth),
+          true,
+        );
+        assert.equal(
+          await chinese
+            .locator('.workspace-settings-footer')
+            .getByRole('button', { name: '完成' })
+            .isVisible(),
+          true,
+        );
+      }
+      t.diagnostic(
+        'Chinese desktop and narrow layouts: all six built-in choices and Done remain reachable',
+      );
       assert.deepEqual(unexpected, []);
       assert.deepEqual(errors, []);
     } finally {

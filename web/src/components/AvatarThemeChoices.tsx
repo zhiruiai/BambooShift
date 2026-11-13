@@ -78,7 +78,6 @@ export function AvatarThemeChoices({
         data-collection={group}
         role="group"
         aria-label={groups.find((item) => item.id === group)!.name}
-        tabIndex={0}
       >
         {themes.map((theme) => (
           <button

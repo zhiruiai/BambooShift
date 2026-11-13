@@ -22,6 +22,44 @@
   padding: 3px;
   margin: -3px;
 }
+:where(.modal-body, .apps-scroll, .workspace-settings-main, .workspace-settings-navigation) {
+  scrollbar-gutter: stable;
+}
+@supports not selector(::-webkit-scrollbar) {
+  :where(.modal-body, .apps-scroll, .workspace-settings-main, .workspace-settings-navigation) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-muted) transparent;
+  }
+}
+:where(
+  .modal-body,
+  .apps-scroll,
+  .workspace-settings-main,
+  .workspace-settings-navigation
+)::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+:where(
+  .modal-body,
+  .apps-scroll,
+  .workspace-settings-main,
+  .workspace-settings-navigation
+)::-webkit-scrollbar-track {
+  background: transparent;
+}
+:where(
+  .modal-body,
+  .apps-scroll,
+  .workspace-settings-main,
+  .workspace-settings-navigation
+)::-webkit-scrollbar-thumb {
+  min-height: 32px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--text-muted);
+  background-clip: padding-box;
+}
 .modal:is(
     .bot-settings,
     .group-settings-dialog,

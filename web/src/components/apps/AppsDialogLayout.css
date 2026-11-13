@@ -235,3 +235,32 @@
     display: none;
   }
 }
+@media (max-height: 440px) {
+  .apps-dialog > .modal-header {
+    padding-block: 10px 8px;
+  }
+  .apps-dialog > .modal-header p {
+    margin-top: 2px;
+  }
+  .apps-list-toolbar {
+    padding-block: 6px;
+    gap: 4px 8px;
+  }
+  .apps-environment {
+    padding-block: 5px;
+  }
+  .apps-environment h3,
+  .apps-environment-link small,
+  .apps-environment-link > svg {
+    display: none;
+  }
+  .apps-environment-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .apps-environment-link {
+    justify-content: center;
+    text-align: center;
+    min-height: 44px;
+    padding: 4px;
+  }
+}

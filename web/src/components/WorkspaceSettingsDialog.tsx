@@ -67,6 +67,10 @@ function WorkspaceSettingsContent(props: Props) {
   const [blocked, setBlocked] = useState(false);
   const [computerBusy, setComputerBusy] = useState(false);
   const [leave, setLeave] = useState<(() => void) | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [currentView]);
   useEffect(() => {
     scope.resume();
     return () => scope.suspend();
@@ -139,209 +143,218 @@ function WorkspaceSettingsContent(props: Props) {
             ]}
             onChange={selectSection}
           />
-          <div
-            className="workspace-settings-main"
-            role="region"
-            aria-labelledby={`settings-section-${shellActive ? currentView : returnView.current}`}
-            tabIndex={0}
-          >
-            {leave && (
-              <div className="bot-form-notice" role="alert">
-                <p>
-                  {activities.current.memory.pending
-                    ? uiText('settings:text_e3289dec02cd')
-                    : activities.current.timeZone.pending
-                      ? uiText('settings:text_2045de129cee')
-                      : activities.current.memory.dirty
-                        ? uiText('settings:text_c7f5ffb5b54f')
-                        : uiText('settings:text_15347acbcc34')}
-                </p>
-                <div>
-                  <button type="button" className="secondary-button" onClick={() => setLeave(null)}>
-                    {uiText('settings:text_fd4b9e3b6c68')}
-                  </button>
-                  <button
-                    type="button"
-                    className="secondary-button"
-                    onClick={() => {
-                      if (!current() || activity.current.busy) return;
-                      const work = leave;
-                      setLeave(null);
-                      work();
-                    }}
-                  >
-                    {uiText('settings:text_9b5166563f34')}
-                  </button>
-                </div>
-              </div>
-            )}
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'general'}
-              inert={currentView !== 'general'}
-              aria-labelledby="settings-section-general"
+          <div className="workspace-settings-content">
+            <div
+              ref={scrollRef}
+              className="workspace-settings-main"
+              role="region"
+              aria-labelledby={`settings-section-${shellActive ? currentView : returnView.current}`}
+              tabIndex={0}
             >
-              <h2 id="settings-section-general">{uiText('workspace:settingsGeneral')}</h2>
-              <SettingsAccountCard
-                userId={props.userId}
-                onAccount={() => navigate(() => window.location.assign('/account'))}
-              />
-              <AppearanceSettings
-                active={currentView === 'general'}
-                generation={
-                  props.canManage && props.workspaceId && props.userId
-                    ? {
-                        workspaceId: props.workspaceId,
-                        userId: props.userId,
-                        configured: !!props.data.settings.configured,
-                      }
-                    : undefined
-                }
-              />
-            </section>
-            {currentView === 'computer' && (
+              {leave && (
+                <div className="bot-form-notice" role="alert">
+                  <p>
+                    {activities.current.memory.pending
+                      ? uiText('settings:text_e3289dec02cd')
+                      : activities.current.timeZone.pending
+                        ? uiText('settings:text_2045de129cee')
+                        : activities.current.memory.dirty
+                          ? uiText('settings:text_c7f5ffb5b54f')
+                          : uiText('settings:text_15347acbcc34')}
+                  </p>
+                  <div>
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={() => setLeave(null)}
+                    >
+                      {uiText('settings:text_fd4b9e3b6c68')}
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary-button"
+                      onClick={() => {
+                        if (!current() || activity.current.busy) return;
+                        const work = leave;
+                        setLeave(null);
+                        work();
+                      }}
+                    >
+                      {uiText('settings:text_9b5166563f34')}
+                    </button>
+                  </div>
+                </div>
+              )}
               <section
                 className="workspace-settings-panel"
-                aria-labelledby="settings-section-computer"
+                hidden={currentView !== 'general'}
+                inert={currentView !== 'general'}
+                aria-labelledby="settings-section-general"
               >
-                <h2 id="settings-section-computer">{settingsSectionLabel('computer')}</h2>
-                {props.computerSettings?.(setComputerBusy, navigate)}
+                <h2 id="settings-section-general">{uiText('workspace:settingsGeneral')}</h2>
+                <SettingsAccountCard
+                  userId={props.userId}
+                  onAccount={() => navigate(() => window.location.assign('/account'))}
+                />
+                <AppearanceSettings
+                  active={currentView === 'general'}
+                  generation={
+                    props.canManage && props.workspaceId && props.userId
+                      ? {
+                          workspaceId: props.workspaceId,
+                          userId: props.userId,
+                          configured: !!props.data.settings.configured,
+                        }
+                      : undefined
+                  }
+                />
               </section>
-            )}
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'work'}
-              inert={currentView !== 'work'}
-              aria-labelledby="settings-section-work"
-            >
-              <h2 id="settings-section-work">{uiText('workspace:settingsBotWork')}</h2>
-              <div className="workspace-settings-section workspace-settings-card">
-                {props.team ? (
-                  <>
-                    <p className="field-help">{uiText('settings:text_2ed7a8ed1a3f')}</p>
-                    {props.personalHref && (
-                      <a
-                        className="secondary-button"
-                        href={props.personalHref}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          navigate(() => window.location.assign(props.personalHref!));
-                        }}
-                      >
-                        {uiText('settings:text_a88158b8268a')}
-                        <ArrowUpRight size={14} />
-                      </a>
-                    )}
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    className="workspace-settings-row"
-                    disabled={blocked || !props.canManage}
-                    onClick={() => configure('primary')}
-                  >
-                    <Bot size={17} />
-                    <span>
-                      {uiText('settings:text_33bc0375810d')}
-                      <small>
-                        {props.data.agents.find(
-                          (agent) => agent.id === props.data.primaryBot?.agentId,
-                        )?.name || uiText('settings:text_c5768ca9726c')}
-                      </small>
-                    </span>
-                    <ChevronRight size={15} />
-                  </button>
-                )}
-              </div>
-              <WorkspaceTimeZoneSettings
-                workspaceId={props.workspaceId}
-                userId={props.userId}
-                canManage={props.canManage}
-                active={currentView === 'work'}
-                initialState={props.data.workspaceTimeZone}
-                onActivity={(value) => setActivity('timeZone', value)}
-                onSaved={(state) => {
-                  if (current()) latest.current.onTimeZoneChanged(state);
-                }}
-              />
-            </section>
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'memory'}
-              inert={currentView !== 'memory'}
-              aria-labelledby="settings-section-memory"
-            >
-              <h2 id="settings-section-memory">{uiText('workspace:settingsMemory')}</h2>
-              <MemoryImportPanel
-                workspaceId={props.workspaceId}
-                userId={props.userId}
-                active={currentView === 'memory'}
-                personalHref={props.personalHref}
-                onConfigurePrimary={() => configure('primary')}
-                onConfigureModel={() => configure('models')}
-                onActivity={(value) => setActivity('memory', value)}
-                onImported={async (receipt) => {
-                  if (!current()) throw Error(uiText('settings:text_ade6249372fb'));
-                  const timeZone = activities.current.timeZone;
-                  if (timeZone.dirty || timeZone.busy || timeZone.pending)
-                    throw Error(uiText('settings:text_913d3cc79296'));
-                  await latest.current.onImported(receipt);
-                }}
-              />
-            </section>
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'devices'}
-              inert={currentView !== 'devices'}
-              aria-labelledby="settings-section-devices"
-            >
-              <h2 id="settings-section-devices">{uiText('workspace:settingsDevices')}</h2>
-              <DeviceSettings />
-            </section>
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'notifications'}
-              inert={currentView !== 'notifications'}
-              aria-labelledby="settings-section-notifications"
-            >
-              <h2 id="settings-section-notifications">{uiText('workspace:notificationsTitle')}</h2>
-              <NotificationsPanel
-                workspaceId={props.workspaceId}
-                userId={props.userId}
-                agents={props.data.agents}
-                active={currentView === 'notifications'}
-              />
-            </section>
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'usage'}
-              inert={currentView !== 'usage'}
-              aria-labelledby="settings-section-usage"
-            >
-              <h2 id="settings-section-usage">{uiText('workspace:usageTitle')}</h2>
-              <UsagePanel
-                workspaceId={props.workspaceId}
-                userId={props.userId}
-                active={currentView === 'usage'}
-              />
-            </section>
-            <section
-              className="workspace-settings-panel"
-              hidden={currentView !== 'updates'}
-              inert={currentView !== 'updates'}
-              aria-labelledby="settings-section-updates"
-            >
-              <h2 id="settings-section-updates">{uiText('workspace:updatesTitle')}</h2>
-              <UpdatesPanel
-                workspaceId={props.workspaceId}
-                userId={props.userId}
-                active={currentView === 'updates'}
-              />
-            </section>
-            {!props.canManage && (
-              <p className="model-settings-note">{uiText('settings:text_d718135ff3b9')}</p>
-            )}
-            <div className="dialog-actions">
+              {currentView === 'computer' && (
+                <section
+                  className="workspace-settings-panel"
+                  aria-labelledby="settings-section-computer"
+                >
+                  <h2 id="settings-section-computer">{settingsSectionLabel('computer')}</h2>
+                  {props.computerSettings?.(setComputerBusy, navigate)}
+                </section>
+              )}
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'work'}
+                inert={currentView !== 'work'}
+                aria-labelledby="settings-section-work"
+              >
+                <h2 id="settings-section-work">{uiText('workspace:settingsBotWork')}</h2>
+                <div className="workspace-settings-section workspace-settings-card">
+                  {props.team ? (
+                    <>
+                      <p className="field-help">{uiText('settings:text_2ed7a8ed1a3f')}</p>
+                      {props.personalHref && (
+                        <a
+                          className="secondary-button"
+                          href={props.personalHref}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            navigate(() => window.location.assign(props.personalHref!));
+                          }}
+                        >
+                          {uiText('settings:text_a88158b8268a')}
+                          <ArrowUpRight size={14} />
+                        </a>
+                      )}
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      className="workspace-settings-row"
+                      disabled={blocked || !props.canManage}
+                      onClick={() => configure('primary')}
+                    >
+                      <Bot size={17} />
+                      <span>
+                        {uiText('settings:text_33bc0375810d')}
+                        <small>
+                          {props.data.agents.find(
+                            (agent) => agent.id === props.data.primaryBot?.agentId,
+                          )?.name || uiText('settings:text_c5768ca9726c')}
+                        </small>
+                      </span>
+                      <ChevronRight size={15} />
+                    </button>
+                  )}
+                </div>
+                <WorkspaceTimeZoneSettings
+                  workspaceId={props.workspaceId}
+                  userId={props.userId}
+                  canManage={props.canManage}
+                  active={currentView === 'work'}
+                  initialState={props.data.workspaceTimeZone}
+                  onActivity={(value) => setActivity('timeZone', value)}
+                  onSaved={(state) => {
+                    if (current()) latest.current.onTimeZoneChanged(state);
+                  }}
+                />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'memory'}
+                inert={currentView !== 'memory'}
+                aria-labelledby="settings-section-memory"
+              >
+                <h2 id="settings-section-memory">{uiText('workspace:settingsMemory')}</h2>
+                <MemoryImportPanel
+                  workspaceId={props.workspaceId}
+                  userId={props.userId}
+                  active={currentView === 'memory'}
+                  personalHref={props.personalHref}
+                  onConfigurePrimary={() => configure('primary')}
+                  onConfigureModel={() => configure('models')}
+                  onActivity={(value) => setActivity('memory', value)}
+                  onImported={async (receipt) => {
+                    if (!current()) throw Error(uiText('settings:text_ade6249372fb'));
+                    const timeZone = activities.current.timeZone;
+                    if (timeZone.dirty || timeZone.busy || timeZone.pending)
+                      throw Error(uiText('settings:text_913d3cc79296'));
+                    await latest.current.onImported(receipt);
+                  }}
+                />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'devices'}
+                inert={currentView !== 'devices'}
+                aria-labelledby="settings-section-devices"
+              >
+                <h2 id="settings-section-devices">{uiText('workspace:settingsDevices')}</h2>
+                <DeviceSettings />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'notifications'}
+                inert={currentView !== 'notifications'}
+                aria-labelledby="settings-section-notifications"
+              >
+                <h2 id="settings-section-notifications">
+                  {uiText('workspace:notificationsTitle')}
+                </h2>
+                <NotificationsPanel
+                  workspaceId={props.workspaceId}
+                  userId={props.userId}
+                  agents={props.data.agents}
+                  active={currentView === 'notifications'}
+                />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'usage'}
+                inert={currentView !== 'usage'}
+                aria-labelledby="settings-section-usage"
+              >
+                <h2 id="settings-section-usage">{uiText('workspace:usageTitle')}</h2>
+                <UsagePanel
+                  workspaceId={props.workspaceId}
+                  userId={props.userId}
+                  active={currentView === 'usage'}
+                />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'updates'}
+                inert={currentView !== 'updates'}
+                aria-labelledby="settings-section-updates"
+              >
+                <h2 id="settings-section-updates">{uiText('workspace:updatesTitle')}</h2>
+                <UpdatesPanel
+                  workspaceId={props.workspaceId}
+                  userId={props.userId}
+                  active={currentView === 'updates'}
+                />
+              </section>
+              {!props.canManage && (
+                <p className="model-settings-note">{uiText('settings:text_d718135ff3b9')}</p>
+              )}
+            </div>
+            <div className="dialog-actions workspace-settings-footer">
               <button
                 type="button"
                 className="secondary-button"

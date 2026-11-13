@@ -35,6 +35,7 @@ class _AppTokenPromptState extends State<AppTokenPrompt> {
   @override
   Widget build(BuildContext context) => AlertDialog(
     title: Text(context.tr('mobileAppsReconnect')),
+    scrollable: true,
     content: TextField(
       controller: field,
       enabled: widget.controller.active && widget.controller.scope.owner,

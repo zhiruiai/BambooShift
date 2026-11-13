@@ -121,9 +121,11 @@ test(
       .getByRole('button', { name: /^Preview instructions for / })
       .last()
       .waitFor();
-    assert.equal(
-      await catalog.getByRole('button', { name: /^Preview instructions for / }).count(),
-      7,
+    assert.deepEqual(
+      await catalog
+        .getByRole('button', { name: /^Preview instructions for / })
+        .evaluateAll((buttons) => buttons.map((button) => button.getAttribute('aria-label'))),
+      skillWorkflowTemplates.en.map(({ name }) => `Preview instructions for ${name}`),
     );
     const search = catalog.getByRole('searchbox', { name: 'Search packaged skills' });
     await search.fill('nothing matches');

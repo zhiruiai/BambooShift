@@ -33,6 +33,7 @@ class _RosterNameDialogState extends State<_RosterNameDialog> {
         !RegExp(r'[\x00-\x1f\x7f\u2028\u2029]').hasMatch(text);
     return AlertDialog(
       title: Text(context.tr('mobileRosterSectionName')),
+      scrollable: true,
       content: TextField(
         controller: input,
         autofocus: true,

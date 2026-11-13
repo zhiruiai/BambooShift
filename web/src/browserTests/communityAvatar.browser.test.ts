@@ -156,7 +156,8 @@ test(
           (node) =>
             node.scrollHeight > node.clientHeight && getComputedStyle(node).overflowY === 'auto',
         ),
-      true,
+      false,
+      'the avatar catalog grows within its page instead of trapping the wheel in a nested scroller',
     );
     await page.getByRole('button', { name: 'Language', exact: true }).click();
     await page.locator('[data-theme-choice="open-avatar-witch-hat"]').scrollIntoViewIfNeeded();

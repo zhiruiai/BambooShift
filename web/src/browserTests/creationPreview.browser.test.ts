@@ -31,6 +31,31 @@ async function storedAppearance(page: Page) {
   );
 }
 
+async function advanceIntoCompletion(page: Page, outcome: 'done' | 'error') {
+  // Observe the short animation in the same browser turn that starts it. A later
+  // protocol round-trip can miss its 480/560 ms window on a busy CI machine.
+  return page.evaluate<string>(`(async (outcome) => {
+    const avatar = document.querySelector('#message-tail .avatar');
+    return new Promise((resolve) => {
+      const observer = new MutationObserver(() => {
+        if (avatar.getAttribute('data-avatar-motion') !== outcome) return;
+        const name = getComputedStyle(avatar.querySelector('svg')).animationName;
+        if (name !== 'none') finish(name);
+      });
+      const timeout = setTimeout(() => finish('none'), 2500);
+      function finish(name) {
+        clearTimeout(timeout);
+        observer.disconnect();
+        resolve(name);
+      }
+      observer.observe(avatar, { attributes: true, childList: true, subtree: true });
+      [...document.querySelectorAll('button')].find(
+        (button) => button.textContent === 'Advance synthetic run',
+      ).click();
+    });
+  })(${JSON.stringify(outcome)})`);
+}
+
 test(
   'synthetic browser reviews Bot and avatar drafts and keeps chat handoffs stable',
   { timeout: 105000 },
@@ -248,10 +273,8 @@ test(
       await worker.waitFor();
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'none');
       assert.equal(await activeHeader.evaluate(avatarAnimation), 'avatar-consider');
-      await advance.press('Enter');
       const completion = page.locator('#message-tail [data-avatar-motion="done"]');
-      await completion.waitFor();
-      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-settle');
+      assert.equal(await advanceIntoCompletion(page, 'done'), 'avatar-settle');
       assert.equal(await headerAvatar.evaluate(avatarAnimation), 'avatar-idle-blink');
       assert.equal(
         await headerAvatar.evaluate((eyes) => getComputedStyle(eyes).animationIterationCount),
@@ -307,10 +330,8 @@ test(
 
       await advance.press('Enter');
       await page.locator('#message-tail [data-avatar-motion="working"]').waitFor();
-      await advance.press('Enter');
       const failed = page.locator('#message-tail [data-avatar-motion="error"]');
-      await failed.waitFor();
-      assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-deflate');
+      assert.equal(await advanceIntoCompletion(page, 'error'), 'avatar-deflate');
       await failed.waitFor({ state: 'detached' });
       await activeAvatar.locator('[data-avatar-expression="error"]').waitFor();
       assert.equal(await activeAvatar.locator('[data-avatar-theme="chicks"]').count(), 1);

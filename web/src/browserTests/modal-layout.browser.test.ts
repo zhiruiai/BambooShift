@@ -113,15 +113,78 @@ test(
         })),
       );
       assert.ok(
-        desktop && desktop.width >= 800 && desktop.y >= 48 && desktop.height <= 724,
+        desktop && desktop.width >= 800 && desktop.y >= 24 && desktop.y + desktop.height <= 796,
         JSON.stringify({ desktop, desktopParts }),
       );
       assert.equal(await apps.locator('.provider-card').count(), appProviders.length);
-      const providerRows = await apps
-        .locator('.provider-card')
-        .evaluateAll((cards) => cards.map((card) => Math.round(card.getBoundingClientRect().top)));
-      assert.ok(new Set(providerRows).size <= 2);
-      assert.equal(await body.evaluate((el) => el.scrollHeight > el.clientHeight), false);
+      assert.equal(await apps.evaluate((el) => el.scrollWidth <= el.clientWidth), true);
+      const lastProvider = apps.locator('.provider-card').last();
+      await lastProvider.scrollIntoViewIfNeeded();
+      const providerBounds = await lastProvider.boundingBox();
+      const scrollBounds = await body.boundingBox();
+      assert.ok(
+        providerBounds &&
+          scrollBounds &&
+          providerBounds.y >= scrollBounds.y &&
+          providerBounds.y + providerBounds.height <= scrollBounds.y + scrollBounds.height + 1,
+        JSON.stringify({ providerBounds, scrollBounds }),
+      );
+
+      for (const viewport of [
+        { width: 740, height: 420 },
+        { width: 568, height: 320 },
+        { width: 320, height: 330 },
+      ]) {
+        await page.setViewportSize(viewport);
+        const parts = await apps.evaluate((modal) => {
+          const scroll = modal.querySelector<HTMLElement>('.apps-scroll')!;
+          const rects = [
+            modal,
+            modal.querySelector('.modal-header'),
+            modal.querySelector('input[type=search]'),
+            modal.querySelector('.apps-environment'),
+            scroll,
+          ].map((el) => {
+            const rect = el?.getBoundingClientRect();
+            return rect ? { top: rect.top, bottom: rect.bottom, height: rect.height } : null;
+          });
+          return {
+            modal: rects[0],
+            header: rects[1],
+            search: rects[2],
+            footer: rects[3],
+            scroll: rects[4],
+            outerOverflow: modal.scrollHeight - modal.clientHeight,
+            contentHeight: scroll.clientHeight,
+          };
+        });
+        assert.ok(parts.contentHeight >= 44, JSON.stringify({ viewport, parts }));
+        assert.ok(parts.outerOverflow <= 1, JSON.stringify({ viewport, parts }));
+        for (const name of ['modal', 'header', 'search', 'footer'] as const) {
+          const rect = parts[name];
+          assert.ok(
+            rect && rect.top >= 0 && rect.bottom <= viewport.height,
+            JSON.stringify({ viewport, name, parts }),
+          );
+        }
+        const anchors = await Promise.all([
+          apps.locator('.modal-header').boundingBox(),
+          apps.getByRole('searchbox').boundingBox(),
+          apps.locator('.apps-environment').boundingBox(),
+        ]);
+        await body.evaluate((el) => {
+          el.scrollTop = el.scrollHeight;
+        });
+        assert.ok(await body.evaluate((el) => el.scrollTop > 0));
+        assert.deepEqual(
+          await Promise.all([
+            apps.locator('.modal-header').boundingBox(),
+            apps.getByRole('searchbox').boundingBox(),
+            apps.locator('.apps-environment').boundingBox(),
+          ]),
+          anchors,
+        );
+      }
 
       appCount = 24;
       await page.setViewportSize({ width: 360, height: 550 });
@@ -158,7 +221,7 @@ test(
         appProviders.filter((provider) => provider.category === 'code').length,
       );
       await search.fill('GitHub');
-      assert.deepEqual(await apps.locator('.provider-title').allTextContents(), [
+      assert.deepEqual(await apps.locator('.provider-title strong').allTextContents(), [
         'GitHub',
         'DeepWiki',
       ]);

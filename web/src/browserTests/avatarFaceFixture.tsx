@@ -5,6 +5,7 @@ import { AvatarArtwork } from '../components/AvatarArtwork';
 import type { AvatarFaceState } from '../components/avatarFaceMotion';
 import { AVATAR_SHAPES, ORIGINAL_AVATAR_THEMES } from '../avatarThemes';
 import { AVATAR_ROLE_COLORS } from '../../../shared/avatar-palette';
+import { initializeAppearance } from '../appearance';
 import '../styles-sections/01-base.css';
 import './avatarFaceFixture.css';
 
@@ -29,6 +30,9 @@ const states = {
 
 const mount = document.getElementById('fixture')!;
 const previewOnly = mount.dataset.preview === 'true';
+// The geometry assertions below cover the five original themes. The classic
+// default and its community path animation are exercised in communityAvatar.
+initializeAppearance().update({ avatarTheme: 'companions', useCustomAvatarTheme: false });
 const sampleThemes: (keyof typeof themes)[] = previewOnly
   ? [...ORIGINAL_AVATAR_THEMES, 'open-avatar-cat', 'grokbot-blob']
   : [...ORIGINAL_AVATAR_THEMES];
