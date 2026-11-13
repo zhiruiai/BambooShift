@@ -45,6 +45,8 @@ A checkpoint records the project/version, accepted artifacts, current phase, unr
 | [Workspace tools](../server/api/src/agent/workspace_tools.rs)                                                                    | Reads/writes scoped files; edits may require the expected hash, and final file delivery requires the current hash.                                             | Code generation does not imply command execution. Local/remote computer actions need their existing capability and approval path. |
 | [Bot proposals](../server/api/src/agent/creation_proposals.rs) and [team proposals](../server/api/src/team_builder/proposals.rs) | Real review cards, bound to the requesting account and run, use the current creation flows.                                                                    | A delegated child cannot create colleagues on its own. A proposal is not a completed hire or permission grant.                    |
 
+The eight-child budget counts admitted child tasks. A busy target, rejected preflight or rolled-back creation does not consume a child slot permanently. Admission happens only after the child task transaction commits; a later model failure or cancellation still counts. Concurrent preflights reserve capacity temporarily, so refunds do not allow more than eight admitted children or two active child slots.
+
 The ordered workflow is implemented by the lead's tool calls and handoff review. It is **not** a server-enforced, persistent dependency graph. Permissions, membership, cancellation and mutation receipts are enforced by Rust; business acceptance is still a review step. See [team behavior and runtime guarantees](bot-settings-and-teams.md) for the existing collaboration model.
 
 ## Acceptance and verification

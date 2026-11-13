@@ -56,7 +56,7 @@ pub(crate) fn delegate<'a>(
             .snapshot(&parent.conversation_id)
             .ok_or_else(|| ApiError::new(409, "本次工作组快照不可用，请重新开始任务。"))?;
         let child_access = base_access(access)?;
-        let permit = parent.family.reserve()?;
+        let reservation = parent.family.reserve()?;
         if let Some(source) = access.shared() {
             parent.family.add_source(source.clone());
         }
@@ -140,7 +140,7 @@ pub(crate) fn delegate<'a>(
         } else {
             None
         };
-        let lease = parent.family.track(active.clone(), permit);
+        let mut lease = parent.family.track(active.clone(), reservation);
         state.teaching.interrupt_bot(access.workspace_id(), &target);
         let marker = json!({"parentRunId":parent.run_id,"rootRunId":parent.root_run_id,"sourceAgentId":parent.agent_id,"targetAgentId":target,"depth":active.depth,"toolCallId":context.call_id,"requesterMessageId":parent.requester_message_id,"sourceConversationId":parent.conversation_id,"targetConversationId":destination_id});
         let mut input = json!({"id":mid,"conversationId":destination_id,"agentId":target,"role":"system","kind":"activity","content":format!("委派给 {}：{}",bot["name"].as_str().unwrap_or("同事"),task),"executionPrompt":task,"createdAt":iso(now()),"delivery":{"state":"queued","mode":"followUp","agentId":target,"runId":active.run_id},"metadata":{"delegation":marker}});
@@ -167,6 +167,7 @@ pub(crate) fn delegate<'a>(
             grant.authorize(state).await?;
         }
         tx.commit().await?;
+        lease.admit();
         if let Some(grant) = direct_grant {
             parent.family.add_direct(grant);
         }

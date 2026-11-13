@@ -172,7 +172,7 @@ impl DelegationFamily {
     pub fn children(&self) -> Vec<Arc<ActiveRun>> {
         self.children.lock().unwrap().values().cloned().collect()
     }
-    pub fn reserve(&self) -> Result<OwnedSemaphorePermit> {
+    pub fn reserve(self: &Arc<Self>) -> Result<ChildReservation> {
         // Reject saturation instead of waiting while an ancestor holds the other slot.
         let permit =
             self.slots.clone().try_acquire_owned().map_err(|_| {
@@ -183,12 +183,16 @@ impl DelegationFamily {
                 (total < 8).then_some(total + 1)
             })
             .map_err(|_| ApiError::new(429, "本次任务最多委派八个子任务，请先总结已有结果。"))?;
-        Ok(permit)
+        Ok(ChildReservation {
+            family: self.clone(),
+            _permit: permit,
+            admitted: false,
+        })
     }
     pub fn track(
         self: &Arc<Self>,
         active: Arc<ActiveRun>,
-        permit: OwnedSemaphorePermit,
+        reservation: ChildReservation,
     ) -> ChildLease {
         self.children
             .lock()
@@ -197,7 +201,7 @@ impl DelegationFamily {
         ChildLease {
             family: self.clone(),
             active,
-            _permit: permit,
+            reservation,
         }
     }
     pub async fn wait(&self) {
@@ -210,10 +214,29 @@ impl DelegationFamily {
         }
     }
 }
+pub(crate) struct ChildReservation {
+    family: Arc<DelegationFamily>,
+    _permit: OwnedSemaphorePermit,
+    admitted: bool,
+}
+impl Drop for ChildReservation {
+    fn drop(&mut self) {
+        // Validation and transaction failures did not admit a child task.
+        if !self.admitted {
+            self.family.total.fetch_sub(1, Ordering::AcqRel);
+        }
+    }
+}
 pub(crate) struct ChildLease {
     family: Arc<DelegationFamily>,
     active: Arc<ActiveRun>,
-    _permit: OwnedSemaphorePermit,
+    reservation: ChildReservation,
+}
+impl ChildLease {
+    pub fn admit(&mut self) {
+        // Committed children spend the budget even if execution later fails or stops.
+        self.reservation.admitted = true;
+    }
 }
 impl Drop for ChildLease {
     fn drop(&mut self) {
@@ -225,5 +248,31 @@ impl Drop for ChildLease {
             .unwrap()
             .remove(&self.active.run_id);
         self.family.changed.notify_waiters();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn abandoned_reservations_refund_budget_without_relaxing_concurrency_or_total() {
+        let family = Arc::new(DelegationFamily::new("user"));
+        for _ in 0..12 {
+            let first = family.reserve().unwrap();
+            let second = family.reserve().unwrap();
+            assert!(family.reserve().is_err(), "Only two slots may be held");
+            drop(first);
+            drop(second);
+        }
+        for _ in 0..8 {
+            let mut reservation = family.reserve().unwrap();
+            reservation.admitted = true;
+        }
+        assert!(
+            family.reserve().is_err(),
+            "Eight admitted children exhaust the budget"
+        );
+        assert_eq!(family.slots.available_permits(), 2);
     }
 }
