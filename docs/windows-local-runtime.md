@@ -16,7 +16,8 @@ The Rust backend, TypeScript/Pi workers, and shared product API remain the archi
 
 | Boundary | Current implementation | Required change |
 | --- | --- | --- |
-| Backend filesystem | Static assets and deployment ownership now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). [Workspace storage](../server/api/src/workspace/file_storage.rs), [edits](../server/api/src/workspace/file_edits.rs), template storage and shared-Bot database inspection still have Unix-only code. | Finish the remaining adapters and validate the complete native Windows backend. |
+| Backend filesystem | Static assets, deployment ownership, [workspace storage](../server/api/src/workspace/file_storage.rs), [edits and directory listing](../server/api/src/workspace/file_edits.rs) now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). Template storage and shared-Bot database inspection still have Unix-only code. | Finish the remaining adapters and validate the complete native Windows backend. |
+| Private configuration | Windows files inherit the selected parent directory's ACL. An owner-only configuration/database policy has not been implemented or qualified. | Verify private configuration and database ownership without treating Unix mode bits as Windows access control. |
 | Runtime package | [Desktop options](../scripts/desktop/options.mjs), [runtime staging](../scripts/desktop/runtime-package.mjs), and [backend packaging](../scripts/package-backend.mjs) exclude Windows bundled services. | Support native Windows binaries, verified Node archives, and platform-specific native dependencies. |
 | Desktop launcher | [Local runtime](../desktop/local-runtime.cjs) assumes POSIX ownership, paths, and process groups. Host-command consent is coupled to the macOS Cua driver. | Separate runtime, shell, and desktop capabilities; implement Windows private storage and lifecycle handling. |
 | Command execution | [Host shell](../server/workers/computer-runtime/host-shell.ts) uses `/bin/sh` and POSIX process-group signals. | Add a Windows process supervisor with explicit shell semantics and bounded cancellation. |
@@ -47,16 +48,52 @@ their own complete Windows review.
 Handle metadata preserves Unix device/inode/change timestamps and Windows volume
 plus the full 128-bit file ID, link count and write/change timestamps. A metadata
 stamp detects changes; it is not a content digest or an atomic conditional delete.
-Workspace upload/edit rollback has not yet migrated to this boundary. Its exclusive
-rename behavior must be preserved; a check followed by an overwriting rename is not
-an equivalent implementation.
 
-The foundation passed 24 release-mode checks on macOS: five real HTTP route tests,
-eight file-handle/metadata tests, and eleven deployment-lock tests. These include
-cross-process contention, normal and forced shutdown, non-inheritance of lock
-handles, root-path aliases, link rejection and the static-file size boundary.
-These results do not establish Windows execution: the Windows-specific branches,
-full backend build and installed-package flow require separate qualification.
+Workspace upload, read, delete, text edit and directory listing now reuse this
+boundary. Mutation sources must be ordinary single-link files whose current name
+matches the retained handle's full identity. Listing excludes internal transaction
+files, links and other unsupported entries. The authorization and database
+transaction logic remain shared rather than introducing a Windows-specific backend.
+
+On Windows, mutation handles request DELETE access and omit FILE_SHARE_DELETE;
+ordinary readers do not request DELETE and retain compatible sharing. Retained
+directory handles also prevent directory replacement while an operation is active.
+The [mutation adapter](../server/api/src/filesystem/mutation_windows.rs) renames the
+held file with `SetFileInformationByHandle`, a relative target name and a retained
+target-directory handle. `ReplaceIfExists` remains false, so collisions cannot
+overwrite another file. It does not fall back to a path-based overwriting rename.
+
+Windows removal marks the held object for deletion and reports `DeleteOnClose`:
+the hidden name may remain until compatible readers close. Edit rollback therefore
+first moves the published new file to a fresh transaction name, then restores the
+old backup with no-replace semantics. If isolation fails, it preserves the new
+contents; if restoration collides, it preserves the other writer's file and the
+backup. Final hidden-file cleanup must not be mistaken for immediately freeing a
+visible destination name. Unix retains native no-replace rename and an identity
+check before unlink; that check and unlink are not an atomic conditional operation.
+
+Record-level protection against filesystem name aliases, including case folding
+and available short names, still needs separate acceptance. This is not solely a
+Windows concern: records must not treat two names for the same filesystem object
+as independently owned files.
+
+The foundation at `e50f4df` passed 24 release-mode checks on macOS, including
+real HTTP asset routes and cross-process deployment-lock contention and release.
+After the workspace migration, the complete library test target plus
+`workspace_file_uploads`, `agent_workspace_tools`, `agent_file_delivery` and
+`workspace_read_contracts` passed in release mode on macOS: **127 passed, zero
+failed**. Three existing tests requiring live public services or installed system
+voices were not run. Coverage includes database rollback, replacement-file
+canaries, staging-name collisions, retained readers, large generated downloads
+and real Pi file-tool delivery with synthetic model responses.
+
+Isolated offline Windows MSVC `cargo check --tests` also passed with Rust 1.85.1:
+first for the foundation, then for the 18 source/test files covering shared
+filesystem operations, workspace transactions and deployment ownership. The
+workspace check uses a narrow private `ApiError` adapter and excludes HTTP,
+authorization and database integration. This verifies Windows API types and test
+compilation, **not execution**. The full Windows backend, runtime tests and
+installed-package flow still require separate qualification.
 
 ## Minimal platform boundaries
 
@@ -65,7 +102,7 @@ tool adaptation, and bounded output handling in the existing TypeScript workers.
 Only operating-system mechanisms need platform implementations:
 
 - **Private filesystem:** directory handles, private configuration, deployment locks,
-  file identity, exclusive creation, and atomic replacement. Upload/edit transactions
+  file identity, exclusive creation, and no-replace publication and rollback. Upload/edit transactions
   remain shared. Do not replace handle-relative operations with a path check followed
   by an unrelated open; that introduces a race. Preserve rejection of redirected
   paths and unexpected hard links, including Windows reparse points.
@@ -110,7 +147,7 @@ qualify the remaining Windows runtime or its installer:
 
 ## Delivery sequence and acceptance
 
-1. **Native backend foundation.** Introduce the private filesystem boundary and run
+1. **Native backend foundation.** Complete the remaining filesystem adapters and run
    a native Windows MSVC build. With synthetic data, verify account-free personal
    workspace startup, model configuration, file create/edit/download, exclusive
    deployment ownership, restart persistence, and lock release after shutdown.

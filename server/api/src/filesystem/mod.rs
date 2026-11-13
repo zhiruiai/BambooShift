@@ -6,6 +6,12 @@
 
 mod metadata;
 pub use metadata::{FileStamp, inspect};
+mod entries;
+pub use entries::directory_entry;
+mod mutation;
+pub use mutation::{Removal, remove_matching, rename_unique};
+mod writable;
+pub use writable::{create_dir, create_file, open_for_change};
 
 use cap_fs_ext::{DirExt, FollowSymlinks, OpenOptionsFollowExt, OpenOptionsSyncExt};
 use cap_std::fs::{Dir, OpenOptions};

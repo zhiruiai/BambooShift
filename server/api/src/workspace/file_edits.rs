@@ -1,16 +1,14 @@
 use super::file_storage::{
-    Directory, c_name, failure, open_at, regular, rename_unique, same, unlink_matching,
+    Directory, failure, io_failure, regular, rename_unique, same, unlink_matching,
 };
-use crate::error::{ApiError, Result};
+use crate::{
+    error::{ApiError, Result},
+    filesystem::{self, FileStamp},
+};
 use serde_json::{Value, json};
 use std::{
-    ffi::CStr,
     fs::File,
     io::{Read, Seek, Write},
-    os::{
-        fd::{AsRawFd, IntoRawFd},
-        unix::fs::MetadataExt,
-    },
     path::{Component, Path},
 };
 
@@ -22,7 +20,7 @@ pub(crate) struct Edit {
     backup: String,
     file: File,
     previous: Option<File>,
-    previous_stamp: Option<std::fs::Metadata>,
+    previous_stamp: Option<FileStamp>,
     published: bool,
     committed: bool,
 }
@@ -76,58 +74,21 @@ impl Directory {
         } else {
             let normalized = path(requested)?;
             let (parent, name) = self.parent(&normalized)?;
-            Directory(open_at(
-                &parent.0,
-                &name,
-                libc::O_RDONLY | libc::O_DIRECTORY,
-            )?)
+            Directory(filesystem::open_dir(&parent.0, &name).map_err(io_failure)?)
         };
-        // fdopendir owns this duplicate and closedir releases it on every exit.
-        let fd = directory.0.try_clone()?.into_raw_fd();
-        let raw = unsafe { libc::fdopendir(fd) };
-        if raw.is_null() {
-            unsafe { libc::close(fd) };
-            return Err(failure());
-        }
-        struct Entries(*mut libc::DIR);
-        impl Drop for Entries {
-            fn drop(&mut self) {
-                unsafe {
-                    libc::closedir(self.0);
-                }
-            }
-        }
-        let entries = Entries(raw);
         let mut output = Vec::new();
-        loop {
-            let item = unsafe { libc::readdir(entries.0) };
-            if item.is_null() {
-                break;
-            }
-            let name = unsafe { CStr::from_ptr((*item).d_name.as_ptr()) }
-                .to_str()
-                .map_err(|_| failure())?;
-            if name == "." || name == ".." || name.starts_with(".openbot-") {
+        for item in directory.0.entries().map_err(io_failure)? {
+            let name = item.map_err(io_failure)?.file_name();
+            let name = name.to_str().ok_or_else(failure)?;
+            if name.starts_with(".openbot-") {
                 continue;
             }
-            let cname = c_name(name)?;
-            let mut stat: libc::stat = unsafe { std::mem::zeroed() };
-            if unsafe {
-                libc::fstatat(
-                    directory.0.as_raw_fd(),
-                    cname.as_ptr(),
-                    &mut stat,
-                    libc::AT_SYMLINK_NOFOLLOW,
-                )
-            } != 0
-            {
-                return Err(failure());
-            }
-            let kind = stat.st_mode & libc::S_IFMT;
-            if kind != libc::S_IFDIR && (kind != libc::S_IFREG || stat.st_nlink != 1) {
+            let Some(is_directory) =
+                filesystem::directory_entry(&directory.0, name).map_err(io_failure)?
+            else {
                 continue;
-            }
-            output.push(json!({"name":name,"directory":kind==libc::S_IFDIR}));
+            };
+            output.push(json!({"name":name,"directory":is_directory}));
             if output.len() > 1000 {
                 return Err(ApiError::new(
                     413,
@@ -143,23 +104,15 @@ impl Directory {
         let parts = normalized.split('/').collect::<Vec<_>>();
         let mut parent = Directory(self.0.try_clone()?);
         for part in &parts[..parts.len() - 1] {
-            if create_parents {
-                let name = c_name(part)?;
-                let result = unsafe { libc::mkdirat(parent.0.as_raw_fd(), name.as_ptr(), 0o700) };
-                if result != 0
-                    && std::io::Error::last_os_error().kind() != std::io::ErrorKind::AlreadyExists
-                {
-                    return Err(failure());
-                }
-            }
-            parent = Directory(open_at(
-                &parent.0,
-                part,
-                libc::O_RDONLY | libc::O_DIRECTORY,
-            )?);
+            let child = if create_parents {
+                filesystem::create_dir(&parent.0, part)
+            } else {
+                filesystem::open_dir(&parent.0, part)
+            };
+            parent = Directory(child.map_err(io_failure)?);
         }
         let name = parts.last().unwrap().to_string();
-        let previous = match open_at(&parent.0, &name, libc::O_RDONLY) {
+        let previous = match filesystem::open_for_change(&parent.0, &name).map_err(io_failure) {
             Ok(file) => Some(file),
             Err(e) if e.code == "FILE_NOT_FOUND" => None,
             Err(e) => return Err(e),
@@ -172,11 +125,7 @@ impl Directory {
             return Err(ApiError::new(413, "文本文件最多 4 MiB。"));
         }
         let temporary = format!(".openbot-edit-{}", uuid::Uuid::new_v4());
-        let file = open_at(
-            &parent.0,
-            &temporary,
-            libc::O_RDWR | libc::O_CREAT | libc::O_EXCL,
-        )?;
+        let file = filesystem::create_file(&parent.0, &temporary).map_err(io_failure)?;
         Ok(Edit {
             parent,
             name,
@@ -190,6 +139,7 @@ impl Directory {
         })
     }
 }
+
 impl Edit {
     pub(crate) fn previous(&mut self) -> Result<Option<Vec<u8>>> {
         let Some(file) = self.previous.as_mut() else {
@@ -216,21 +166,34 @@ impl Edit {
         Ok(())
     }
     pub(crate) fn publish(&mut self) -> Result<()> {
+        if self.published {
+            return Err(failure());
+        }
         if let Some(previous) = &self.previous {
-            let selected = open_at(&self.parent.0, &self.name, libc::O_RDONLY)?;
+            let selected = filesystem::open_file(&self.parent.0, &self.name).map_err(io_failure)?;
             let stamp = self.previous_stamp.as_ref().unwrap();
             if !same(stamp, &regular(previous)?) || !same(stamp, &regular(&selected)?) {
                 return Err(failure());
             }
-            rename_unique(&self.parent.0, &self.name, &self.parent.0, &self.backup)?;
-            let moved = open_at(&self.parent.0, &self.backup, libc::O_RDONLY)?;
-            let moved = regular(&moved)?;
-            if moved.dev() != stamp.dev() || moved.ino() != stamp.ino() {
-                let _ = rename_unique(&self.parent.0, &self.backup, &self.parent.0, &self.name);
+            rename_unique(
+                &self.parent.0,
+                &self.name,
+                previous,
+                &self.parent.0,
+                &self.backup,
+            )?;
+            let moved = filesystem::open_file(&self.parent.0, &self.backup).map_err(io_failure)?;
+            if !stamp.same_identity(&regular(&moved)?) {
                 return Err(failure());
             }
         }
-        rename_unique(&self.parent.0, &self.temporary, &self.parent.0, &self.name)?;
+        rename_unique(
+            &self.parent.0,
+            &self.temporary,
+            &self.file,
+            &self.parent.0,
+            &self.name,
+        )?;
         self.published = true;
         Ok(())
     }
@@ -246,21 +209,44 @@ impl Drop for Edit {
         if self.committed {
             return;
         }
-        if self.published {
-            unlink_matching(&self.parent.0, &self.name, &self.file);
-        }
-        let _ = self.file.set_len(0);
-        let _ = self.file.sync_all();
-        unlink_matching(&self.parent.0, &self.temporary, &self.file);
-        if let Some(previous) = &self.previous {
-            if let Ok(file) = open_at(&self.parent.0, &self.backup, libc::O_RDONLY) {
-                if let (Ok(a), Ok(b)) = (regular(previous), regular(&file)) {
-                    if a.dev() == b.dev() && a.ino() == b.ino() {
-                        let _ =
-                            rename_unique(&self.parent.0, &self.backup, &self.parent.0, &self.name);
-                    }
-                }
+        let can_clean = if self.published {
+            // Publication vacates the staging name, which another writer may
+            // now own. Use a fresh name, and never clear a visible file if the
+            // no-replace move fails. Windows deletion alone cannot free a name
+            // while compatible readers still hold the object.
+            let rollback = format!(".openbot-rollback-{}", uuid::Uuid::new_v4());
+            if rename_unique(
+                &self.parent.0,
+                &self.name,
+                &self.file,
+                &self.parent.0,
+                &rollback,
+            )
+            .is_ok()
+            {
+                self.temporary = rollback;
+                true
+            } else {
+                false
             }
+        } else {
+            true
+        };
+        if can_clean {
+            let _ = self.file.set_len(0);
+            let _ = self.file.sync_all();
+            unlink_matching(&self.parent.0, &self.temporary, &self.file);
+        }
+        if let Some(previous) = &self.previous {
+            // Identity verification and no-replace publication preserve files
+            // created by another writer while this transaction was in flight.
+            let _ = rename_unique(
+                &self.parent.0,
+                &self.backup,
+                previous,
+                &self.parent.0,
+                &self.name,
+            );
         }
     }
 }

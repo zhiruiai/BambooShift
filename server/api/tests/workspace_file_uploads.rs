@@ -168,8 +168,7 @@ async fn file_mutations_require_fixed_actor_and_do_not_create_on_invalid_chat_or
     f.close().await;
 }
 #[tokio::test]
-async fn download_rejects_symlinks_hardlinks_special_files_and_cross_workspace() {
-    use std::os::unix::fs::symlink;
+async fn download_and_delete_reject_unsafe_files_and_cross_workspace() {
     let f = Fixture::new().await;
     f.bootstrap().await;
     let store = f
@@ -182,12 +181,20 @@ async fn download_rejects_symlinks_hardlinks_special_files_and_cross_workspace()
     std::fs::create_dir(&directory).unwrap();
     let outside = f.directory.path().join("canary.txt");
     std::fs::write(&outside, b"private-canary").unwrap();
-    symlink(&outside, directory.join("link")).unwrap();
     std::fs::hard_link(&outside, directory.join("hard")).unwrap();
-    symlink(f.directory.path(), directory.join("parent")).unwrap();
-    let fifo = std::ffi::CString::new(directory.join("fifo").to_str().unwrap()).unwrap();
-    assert_eq!(unsafe { libc::mkfifo(fifo.as_ptr(), 0o600) }, 0);
-    for name in ["link", "hard", "parent/canary.txt", "fifo", "../canary.txt"] {
+    let names = vec!["hard", "../canary.txt"];
+    #[cfg(unix)]
+    let names = {
+        use std::os::unix::fs::symlink;
+        symlink(&outside, directory.join("link")).unwrap();
+        symlink(f.directory.path(), directory.join("parent")).unwrap();
+        let fifo = std::ffi::CString::new(directory.join("fifo").to_str().unwrap()).unwrap();
+        assert_eq!(unsafe { libc::mkfifo(fifo.as_ptr(), 0o600) }, 0);
+        let mut names = names;
+        names.extend(["link", "parent/canary.txt", "fifo"]);
+        names
+    };
+    for name in names {
         let id = uuid::Uuid::new_v4().to_string();
         store
             .put(

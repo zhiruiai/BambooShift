@@ -1,21 +1,20 @@
-use crate::error::{ApiError, Result};
+use crate::{
+    error::{ApiError, Result},
+    filesystem::{self, FileStamp},
+};
+use cap_std::fs::Dir;
 use std::{
-    ffi::CString,
     fs::File,
     io::{Read, Write},
-    os::{
-        fd::{AsRawFd, FromRawFd},
-        unix::{ffi::OsStrExt, fs::MetadataExt},
-    },
     path::{Component, Path},
 };
 const LIMIT: usize = 10 * 1024 * 1024;
 
-pub struct Directory(pub(super) File);
+pub struct Directory(pub(super) Dir);
 pub struct ReadFile {
     _parent: Directory,
     file: File,
-    initial: std::fs::Metadata,
+    initial: FileStamp,
     remaining: u64,
 }
 pub struct Uploaded {
@@ -35,74 +34,35 @@ pub struct Removed {
 pub(super) fn failure() -> ApiError {
     ApiError::new(409, "文件路径或内容已变化，请刷新后重试。")
 }
-pub(super) fn c_name(name: &str) -> Result<CString> {
-    CString::new(name).map_err(|_| failure())
+pub(super) fn io_failure(error: std::io::Error) -> ApiError {
+    if error.kind() == std::io::ErrorKind::NotFound {
+        ApiError::new(404, "文件不存在。").with_code("FILE_NOT_FOUND")
+    } else {
+        failure()
+    }
 }
-pub(super) fn regular(file: &File) -> Result<std::fs::Metadata> {
-    let info = file.metadata()?;
-    if !info.is_file() || info.nlink() != 1 {
+pub(super) fn regular(file: &File) -> Result<FileStamp> {
+    let info = filesystem::inspect(file).map_err(io_failure)?;
+    if !info.is_file() || !info.single_link() {
         return Err(failure());
     }
     Ok(info)
 }
-pub(super) fn same(a: &std::fs::Metadata, b: &std::fs::Metadata) -> bool {
-    a.dev() == b.dev()
-        && a.ino() == b.ino()
-        && a.len() == b.len()
-        && a.mtime() == b.mtime()
-        && a.mtime_nsec() == b.mtime_nsec()
-        && a.ctime() == b.ctime()
-        && a.ctime_nsec() == b.ctime_nsec()
-        && b.nlink() == 1
-}
-pub(super) fn open_at(parent: &File, name: &str, flags: i32) -> Result<File> {
-    let name = c_name(name)?;
-    let fd = unsafe {
-        libc::openat(
-            parent.as_raw_fd(),
-            name.as_ptr(),
-            flags | libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK,
-            0o600,
-        )
-    };
-    if fd < 0 {
-        if std::io::Error::last_os_error().kind() == std::io::ErrorKind::NotFound {
-            return Err(ApiError::new(404, "文件不存在。").with_code("FILE_NOT_FOUND"));
-        }
-        return Err(failure());
-    }
-    Ok(unsafe { File::from_raw_fd(fd) })
+pub(super) fn same(a: &FileStamp, b: &FileStamp) -> bool {
+    a == b && b.single_link()
 }
 impl Directory {
     pub fn open(directory: &Path, create: bool) -> Result<Self> {
-        let path = CString::new(directory.as_os_str().as_bytes()).map_err(|_| failure())?;
-        let fd = unsafe {
-            libc::open(
-                path.as_ptr(),
-                libc::O_RDONLY | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC,
-            )
+        let parent = filesystem::open_root(directory).map_err(|_| failure())?;
+        let workspace = if create {
+            filesystem::create_dir(&parent, "workspace")
+        } else {
+            filesystem::open_dir(&parent, "workspace")
         };
-        if fd < 0 {
-            return Err(failure());
-        }
-        let parent = unsafe { File::from_raw_fd(fd) };
-        if create {
-            let name = c_name("workspace")?;
-            let result = unsafe { libc::mkdirat(parent.as_raw_fd(), name.as_ptr(), 0o700) };
-            if result != 0
-                && std::io::Error::last_os_error().kind() != std::io::ErrorKind::AlreadyExists
-            {
-                return Err(failure());
-            }
-        }
-        Ok(Self(open_at(
-            &parent,
-            "workspace",
-            libc::O_RDONLY | libc::O_DIRECTORY,
-        )?))
+        Ok(Self(workspace.map_err(io_failure)?))
     }
     pub(super) fn parent(&self, name: &str) -> Result<(Directory, String)> {
-        if name.is_empty() || name.len() > 4096 || name.contains('\\') || name.contains('\0') {
+        if name.is_empty() || name.len() > 4096 || name.contains(['\\', '\0']) {
             return Err(failure());
         }
         let parts = Path::new(name)
@@ -117,11 +77,7 @@ impl Directory {
         }
         let mut parent = Directory(self.0.try_clone()?);
         for component in &parts[..parts.len() - 1] {
-            parent = Directory(open_at(
-                &parent.0,
-                component,
-                libc::O_RDONLY | libc::O_DIRECTORY,
-            )?);
+            parent = Directory(filesystem::open_dir(&parent.0, component).map_err(io_failure)?);
         }
         Ok((parent, parts.last().unwrap().clone()))
     }
@@ -135,45 +91,35 @@ impl Directory {
         {
             return Err(ApiError::bad("文件名称或大小无效。"));
         }
+        // Acquire rollback ownership before the first filesystem mutation.
+        let parent = Directory(self.0.try_clone()?);
         let mut selected = name.to_owned();
         for attempt in 0..2 {
-            let cname = c_name(&selected)?;
-            let fd = unsafe {
-                libc::openat(
-                    self.0.as_raw_fd(),
-                    cname.as_ptr(),
-                    libc::O_WRONLY
-                        | libc::O_CREAT
-                        | libc::O_EXCL
-                        | libc::O_NOFOLLOW
-                        | libc::O_CLOEXEC,
-                    0o600,
-                )
-            };
-            if fd >= 0 {
-                let mut upload = Uploaded {
-                    parent: Directory(self.0.try_clone()?),
-                    name: selected.clone(),
-                    file: unsafe { File::from_raw_fd(fd) },
-                    committed: false,
-                };
-                upload.file.write_all(bytes)?;
-                upload.file.sync_all()?;
-                regular(&upload.file)?;
-                return Ok((selected, upload));
+            match filesystem::create_file(&self.0, &selected) {
+                Ok(file) => {
+                    let mut upload = Uploaded {
+                        parent,
+                        name: selected.clone(),
+                        file,
+                        committed: false,
+                    };
+                    upload.file.write_all(bytes)?;
+                    upload.file.sync_all()?;
+                    regular(&upload.file)?;
+                    return Ok((selected, upload));
+                }
+                Err(error) if attempt == 0 && error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    let prefix = id.get(..8).ok_or_else(failure)?;
+                    selected = format!("{prefix}-{name}");
+                }
+                Err(error) => return Err(io_failure(error)),
             }
-            if attempt != 0
-                || std::io::Error::last_os_error().kind() != std::io::ErrorKind::AlreadyExists
-            {
-                return Err(failure());
-            }
-            selected = format!("{}-{name}", &id[..8]);
         }
         Err(failure())
     }
     pub fn reader(&self, name: &str) -> Result<ReadFile> {
         let (parent, name) = self.parent(name)?;
-        let file = open_at(&parent.0, &name, libc::O_RDONLY)?;
+        let file = filesystem::open_file(&parent.0, &name).map_err(io_failure)?;
         let initial = regular(&file)?;
         Ok(ReadFile {
             remaining: initial.len(),
@@ -184,21 +130,22 @@ impl Directory {
     }
     pub fn remove(&self, name: &str) -> Result<Removed> {
         let (parent, original) = self.parent(name)?;
-        let file = open_at(&parent.0, &original, libc::O_RDONLY)?;
+        let file = filesystem::open_for_change(&parent.0, &original).map_err(io_failure)?;
         let before = regular(&file)?;
         let temporary = format!(".openbot-delete-{}", uuid::Uuid::new_v4());
-        rename_unique(&parent.0, &original, &self.0, &temporary)?;
+        let root = Directory(self.0.try_clone()?);
+        rename_unique(&parent.0, &original, &file, &self.0, &temporary)?;
         let removed = Removed {
-            root: Directory(self.0.try_clone()?),
+            root,
             parent,
             original,
             temporary,
             file,
             committed: false,
         };
-        let staged = open_at(&removed.root.0, &removed.temporary, libc::O_RDONLY)?;
-        let info = regular(&staged)?;
-        if before.dev() != info.dev() || before.ino() != info.ino() {
+        let staged =
+            filesystem::open_file(&removed.root.0, &removed.temporary).map_err(io_failure)?;
+        if !before.same_identity(&regular(&staged)?) {
             return Err(failure());
         }
         Ok(removed)
@@ -210,18 +157,7 @@ impl ReadFile {
         if !same(&self.initial, &meta) {
             return Err(failure());
         }
-        Ok(format!(
-            "{}:{}:{}:{}:{}:{}:{}:{}:{}",
-            meta.dev(),
-            meta.ino(),
-            meta.mode(),
-            meta.nlink(),
-            meta.len(),
-            meta.mtime(),
-            meta.mtime_nsec(),
-            meta.ctime(),
-            meta.ctime_nsec()
-        ))
+        Ok(meta.version_key())
     }
     pub fn len(&self) -> u64 {
         self.initial.len()
@@ -271,60 +207,26 @@ impl Drop for Removed {
             let _ = rename_unique(
                 &self.root.0,
                 &self.temporary,
+                &self.file,
                 &self.parent.0,
                 &self.original,
             );
         }
     }
 }
-pub(super) fn unlink_matching(parent: &File, name: &str, file: &File) -> bool {
-    let Ok(name) = c_name(name) else {
-        return false;
-    };
-    let Ok(meta) = file.metadata() else {
-        return false;
-    };
-    let mut current: libc::stat = unsafe { std::mem::zeroed() };
-    let found = unsafe {
-        libc::fstatat(
-            parent.as_raw_fd(),
-            name.as_ptr(),
-            &mut current,
-            libc::AT_SYMLINK_NOFOLLOW,
-        )
-    };
-    if found != 0 || current.st_dev as u64 != meta.dev() || current.st_ino as u64 != meta.ino() {
-        return false;
-    }
-    unsafe { libc::unlinkat(parent.as_raw_fd(), name.as_ptr(), 0) == 0 }
+pub(super) fn unlink_matching(parent: &Dir, name: &str, file: &File) -> bool {
+    // Windows may defer removal until retained handles close. Callers only use
+    // this for final cleanup, never to make a rollback destination available.
+    filesystem::remove_matching(parent, name, file).is_ok()
 }
-pub(super) fn rename_unique(from: &File, name: &str, to: &File, target: &str) -> Result<()> {
-    let name = c_name(name)?;
-    let target = c_name(target)?;
-    #[cfg(target_os = "macos")]
-    let result = unsafe {
-        libc::renameatx_np(
-            from.as_raw_fd(),
-            name.as_ptr(),
-            to.as_raw_fd(),
-            target.as_ptr(),
-            libc::RENAME_EXCL,
-        )
-    };
-    #[cfg(target_os = "linux")]
-    let result = unsafe {
-        libc::renameat2(
-            from.as_raw_fd(),
-            name.as_ptr(),
-            to.as_raw_fd(),
-            target.as_ptr(),
-            libc::RENAME_NOREPLACE,
-        )
-    };
-    if result != 0 {
-        return Err(failure());
-    }
-    Ok(())
+pub(super) fn rename_unique(
+    from: &Dir,
+    name: &str,
+    file: &File,
+    to: &Dir,
+    target: &str,
+) -> Result<()> {
+    filesystem::rename_unique(from, name, file, to, target).map_err(io_failure)
 }
 
 #[cfg(test)]
