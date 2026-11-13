@@ -65,6 +65,7 @@ class _AddConnectionState extends State<AddConnection> {
         !scope.owner ||
         (widget.initialCustomMcp != null && !scope.personalOwner)) {
       token.clear();
+      shared = false;
     }
   }
 
@@ -205,6 +206,9 @@ class _AddConnectionState extends State<AddConnection> {
                     enabled: enabled,
                     readOnly: _catalogReview,
                     maxLength: 80,
+                    onChanged: enabled && widget.initialCustomMcp != null
+                        ? (_) => setState(() => shared = false)
+                        : null,
                     decoration: InputDecoration(
                       labelText: context.tr('mobileAppsName'),
                     ),
@@ -216,6 +220,12 @@ class _AddConnectionState extends State<AddConnection> {
                     maxLines: widget.initialCustomMcp == null ? 1 : 4,
                     keyboardType: TextInputType.url,
                     autocorrect: false,
+                    onChanged: enabled && !_review
+                        ? (_) => setState(() {
+                            token.clear();
+                            shared = false;
+                          })
+                        : null,
                     decoration: InputDecoration(
                       labelText: context.tr('mobileAppsUrl'),
                     ),
@@ -238,6 +248,7 @@ class _AddConnectionState extends State<AddConnection> {
                         ? (value) => setState(() {
                             auth = value!;
                             token.clear();
+                            if (widget.initialCustomMcp != null) shared = false;
                           })
                         : null,
                   ),
@@ -250,6 +261,9 @@ class _AddConnectionState extends State<AddConnection> {
                         obscureText: true,
                         enableSuggestions: false,
                         autocorrect: false,
+                        onChanged: enabled && widget.initialCustomMcp != null
+                            ? (_) => setState(() => shared = false)
+                            : null,
                         decoration: InputDecoration(
                           labelText: context.tr('mobileAppsToken'),
                         ),
