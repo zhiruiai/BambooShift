@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-13",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "syntheticOnly": true,
+  "desktopAccessUsed": false,
+  "modelUsed": false,
+  "runtime": "Packaged Node with production dependency installation; freshly bundled computer worker",
+  "workerSha256": "ed67313991c3c159cbfa86d1d827ec04bef96aa86f31ef8644c1dbc5db03045d",
+  "checks": {
+    "backgroundGroupStoppedBeforeResult": true,
+    "noLateFileWrite": true,
+    "cancelAcknowledgementConfirmed": true,
+    "executorReusableAfterCleanup": true,
+    "workerExitedCleanly": true
+  },
+  "exclusions": [
+    "Desktop screenshot or input",
+    "Rust approval UI",
+    "Linux package acceptance",
+    "Processes that detach from the original group"
+  ]
+}

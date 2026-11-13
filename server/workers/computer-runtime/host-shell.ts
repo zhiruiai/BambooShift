@@ -1,12 +1,41 @@
 import { spawn } from 'node:child_process';
 import { mkdir, realpath, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { setTimeout as pause } from 'node:timers/promises';
 import {
   REMOTE_SHELL_MAX_OUTPUT_BYTES,
   REMOTE_SHELL_TIMEOUT_MS,
   type RemoteShellResult,
 } from '../../../shared/isolated-shell.js';
 import { validateShellInput, validateShellResult } from './isolated-shell.js';
+
+/** A shell can exit before its background children. Only ESRCH proves its group is gone. */
+async function stopProcessGroup(pid: number | undefined) {
+  if (!pid) return true; // spawn failed before creating a process
+  const signal = (name: NodeJS.Signals | 0) => {
+    try {
+      process.kill(-pid, name);
+      return 'present';
+    } catch (error: any) {
+      return error.code === 'ESRCH' ? 'gone' : 'unknown';
+    }
+  };
+  const started = performance.now();
+  let forced = false;
+  const initial = signal('SIGTERM');
+  if (initial !== 'present') return initial === 'gone';
+  while (performance.now() - started < 1500) {
+    const state = signal(0);
+    if (state !== 'present') return state === 'gone';
+    if (!forced && performance.now() - started >= 500) {
+      forced = true;
+      const state = signal('SIGKILL');
+      if (state !== 'present') return state === 'gone';
+    }
+    await pause(25);
+  }
+  return signal(0) === 'gone';
+}
 
 /** Personal desktop only. This is a same-user shell, not an isolation boundary. */
 export class HostShellRunner {
@@ -76,32 +105,72 @@ export class HostShellRunner {
         cancelled = false;
       const stdout: Buffer[] = [],
         stderr: Buffer[] = [];
-      let escalation: ReturnType<typeof setTimeout> | undefined;
+      let settled = false,
+        failed = false,
+        outputClosed = false,
+        groupStopped = false;
+      let exitCode: number | null = null;
+      let exitSignal: NodeJS.Signals | null = null;
+      let cleanup: Promise<void> | undefined;
       let cutoff: ReturnType<typeof setTimeout> | undefined;
-      const kill = (name: NodeJS.Signals) => {
-        if (child.pid) {
-          try {
-            process.kill(-child.pid, name);
-          } catch (error: any) {
-            if (error.code !== 'ESRCH') child.kill(name);
-          }
+      const clear = () => {
+        clearTimeout(deadline);
+        if (cutoff) clearTimeout(cutoff);
+        signal.removeEventListener('abort', cancel);
+      };
+      const unknownCleanup = () => {
+        if (settled) return;
+        settled = true;
+        this.closed = true;
+        clear();
+        child.stdout.destroy();
+        child.stderr.destroy();
+        child.unref();
+        no(
+          Object.assign(Error('无法确认本机命令已停止，请检查电脑后重新连接。'), {
+            cleanupConfirmed: false,
+          }),
+        );
+      };
+      const finish = () => {
+        if (settled || !outputClosed || !groupStopped) return;
+        settled = true;
+        clear();
+        if (failed)
+          return no(Object.assign(Error('本机命令未能启动。'), { cleanupConfirmed: true }));
+        // Decode only complete UTF-8 output within the shared byte budget.
+        const decode = (parts: Buffer[]) =>
+          new TextDecoder('utf-8', { fatal: false })
+            .decode(Buffer.concat(parts))
+            .replace(/\uFFFD/g, '');
+        try {
+          yes(
+            validateShellResult({
+              stdout: decode(stdout),
+              stderr: decode(stderr),
+              exitCode,
+              ...(exitSignal ? { signal: exitSignal } : {}),
+              truncated,
+              timedOut,
+              cancelled,
+              durationMs: performance.now() - started,
+            }),
+          );
+        } catch {
+          no(Object.assign(Error('本机命令结果无效。'), { cleanupConfirmed: true }));
         }
       };
       const stop = () => {
-        kill('SIGTERM');
-        escalation ??= setTimeout(() => kill('SIGKILL'), 500);
-        cutoff ??= setTimeout(() => {
-          child.stdout.destroy();
-          child.stderr.destroy();
-          child.unref();
-          clearTimeout(deadline);
-          signal.removeEventListener('abort', cancel);
-          no(
-            Object.assign(Error('无法确认本机命令已停止，请检查电脑后重新连接。'), {
-              cleanupConfirmed: false,
-            }),
-          );
-        }, 1500);
+        if (settled || cleanup) return;
+        clearTimeout(deadline);
+        // Bound both group termination and pipe closure. A detached process can
+        // keep inherited pipes open; that is not evidence that it has stopped.
+        cutoff = setTimeout(unknownCleanup, 2000);
+        cleanup = stopProcessGroup(child.pid).then((confirmed) => {
+          if (!confirmed) return unknownCleanup();
+          groupStopped = true;
+          finish();
+        }, unknownCleanup);
       };
       const cancel = () => {
         cancelled = true;
@@ -126,39 +195,17 @@ export class HostShellRunner {
       };
       child.stdout.on('data', collect(stdout));
       child.stderr.on('data', collect(stderr));
-      let failed = false;
       child.once('error', () => {
         failed = true;
       });
-      child.once('close', (exitCode, exitSignal) => {
-        clearTimeout(deadline);
-        if (escalation) clearTimeout(escalation);
-        if (cutoff) clearTimeout(cutoff);
-        signal.removeEventListener('abort', cancel);
-        if (cancelled || timedOut || truncated) kill('SIGKILL');
-        if (failed)
-          return no(Object.assign(Error('本机命令未能启动。'), { cleanupConfirmed: true }));
-        // Decode only complete UTF-8 output within the shared byte budget.
-        const decode = (parts: Buffer[]) =>
-          new TextDecoder('utf-8', { fatal: false })
-            .decode(Buffer.concat(parts))
-            .replace(/\uFFFD/g, '');
-        try {
-          yes(
-            validateShellResult({
-              stdout: decode(stdout),
-              stderr: decode(stderr),
-              exitCode,
-              ...(exitSignal ? { signal: exitSignal } : {}),
-              truncated,
-              timedOut,
-              cancelled,
-              durationMs: performance.now() - started,
-            }),
-          );
-        } catch {
-          no(Error('本机命令结果无效。'));
-        }
+      // Do not wait for inherited stdout/stderr to close before stopping children.
+      child.once('exit', stop);
+      child.once('close', (code, name) => {
+        exitCode = code;
+        exitSignal = name;
+        outputClosed = true;
+        stop();
+        finish();
       });
       if (signal.aborted || this.closed) cancel();
     });

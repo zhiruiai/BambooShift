@@ -180,7 +180,9 @@ Worker 拒绝带 `Origin` 的浏览器直连请求。聊天服务默认只监听
 
 `remote_shell` 必须连接声明 `isolated-shell-v1` 的远程电脑，且每次批准后才运行。例如 `{"type":"remote_shell","command":"python3 -c 'print(6*7)'","path":"."}`。命令固定最长 30 秒、无网络、只在工作区持久读写；输出合计最多 256 KiB，结果包含真实退出码、取消、超时与资源限制状态。生成文件仍需用 `download_file` 取回聊天。命令 ID 通过 `X-OpenBot-Action-Id` 绑定，取消另走固定 `POST /shell/cancel`，停止清理无法确认时停用连接。部署和维护细节见 [远程代码执行](remote-shell.md)。
 
-`local_shell` 需要桌面应用的“允许整机操作”选项和执行器声明的 `local-shell-v1`，例如 `{"type":"local_shell","command":"printf hello","path":"."}`。Rust 在请求时检查目标能力，保存原命令并等待原发起人批准，执行时再次检查任务与审批权限。命令通过本机 `/bin/sh` 在当前系统用户身份下运行，可联网、访问用户文件和启动应用；相对 `path` 只决定初始目录，不限制命令随后访问的位置。每次命令的时间预算为 30 秒，stdout 与 stderr 合计最多 256 KiB，服务密钥不通过环境变量传入子进程。取消和人工接管会停止受跟踪的命令进程组；已发生的修改不会回滚，命令启动的独立应用也不保证同时停止。若清理状态无法确认，执行器停用连接并要求恢复，不能自动重试。`terminal_command` 仍仅支持原有的 `pwd`、`ls`、`date`、`uname`。
+`local_shell` 需要桌面应用的“允许整机操作”选项和执行器声明的 `local-shell-v1`，例如 `{"type":"local_shell","command":"printf hello","path":"."}`。Rust 在请求时检查目标能力，保存原命令并等待原发起人批准，执行时再次检查任务与审批权限。命令通过本机 `/bin/sh` 在当前系统用户身份下运行，可联网、访问用户文件和启动应用；相对 `path` 只决定初始目录，不限制命令随后访问的位置。每次命令的时间预算为 30 秒，stdout 与 stderr 合计最多 256 KiB，服务密钥不通过环境变量传入子进程。正常退出、取消、超时和输出超限都会收尾原命令进程组中的后台任务；只有确认进程组已消失、输出管道已关闭，才返回清理完成，人工接管也等待这一结果。已发生的修改不会回滚，脱离原进程组的独立应用不保证同时停止。若清理状态无法确认，执行器停用连接并要求恢复，不能自动重试。`terminal_command` 仍仅支持原有的 `pwd`、`ls`、`date`、`uname`。
+
+2026-11-13 的 [macOS ARM64 打包运行时验证](evidence/local-shell-process-cleanup-20261113.json) 使用合成命令确认同组后台进程退出后才返回结果、取消确认后没有延迟写入、执行器可继续运行下一条命令。它没有验证桌面键鼠、录屏、Rust 审批界面、Linux 安装包或脱离原进程组的进程。
 
 网站导出另使用 `browser_download`，必须指定待点击的 `selector` 与保存文件的相对 `path`，例如 `{"type":"browser_download","selector":"#export-csv","path":"reports/monthly.csv"}`。批准后才点击，最多等待 30 秒、接收最多 10 MiB，不覆盖已有文件。支持 HTTP(S) 附件响应、页面中明确带 `download` 属性的链接，以及当前页生成的 Blob/Data 下载；没有可识别下载意图的普通网页导航会失败，不会把 HTML 错当报表。下载结果先留在电脑工作区，随后可用 `download_file` 取回聊天。
 

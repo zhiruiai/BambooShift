@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createComputerWorker } from '../http/worker.js';
@@ -126,6 +126,59 @@ test('host shell cancellation waits for the tracked process and rejects delayed 
   assert.equal((await f.command('printf late > replayed', '.', beforeDispatch)).status, 400);
   assert.equal(await exists(join(f.workspace, 'replayed')), false);
   assert.equal((await f.command('printf safe')).status, 200);
+});
+
+test('cancel and takeover confirm cleanup after a shell exits with redirected background children', async (t) => {
+  const f = await fixture(t);
+  const groupFile = join(f.workspace, 'process-group');
+  try {
+    const id = randomUUID();
+    const response = await f.command(
+      [
+        'printf %s "$$" > process-group;',
+        '(trap "" TERM; printf ready > background-ready; sleep 1; printf unsafe > late)',
+        '</dev/null >/dev/null 2>&1 &',
+        'while [ ! -f background-ready ]; do sleep 0.01; done;',
+        'printf complete',
+      ].join(' '),
+      '.',
+      id,
+    );
+    assert.equal(response.status, 200);
+    const result = await response.json();
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.stdout, 'complete');
+    assert.equal(result.cancelled, false);
+    const cancelled = await f.post('/shell/cancel', { id });
+    assert.equal(cancelled.status, 200);
+    assert.equal((await cancelled.json()).stopped, true);
+    assert.equal((await f.post('/surface', { surface: 'desktop', confirm: true })).status, 200);
+    const takeover = await f.post('/takeover/start', {});
+    assert.equal(takeover.status, 200);
+    const lease = await takeover.json();
+    assert.equal(lease.active, true);
+    const group = Number(await readFile(groupFile, 'utf8'));
+    assert.ok(Number.isSafeInteger(group) && group > 1);
+    assert.throws(
+      () => process.kill(-group, 0),
+      { code: 'ESRCH' },
+      'Stopped and takeover acknowledgements require the original process group to be gone',
+    );
+    await delay(1100);
+    assert.equal(await exists(join(f.workspace, 'late')), false);
+    assert.equal((await f.post('/takeover/end', { leaseId: lease.leaseId })).status, 200);
+    assert.equal((await f.currentHealth()).status, 200);
+    assert.equal((await f.command('printf safe')).status, 200);
+  } finally {
+    const group = Number(await readFile(groupFile, 'utf8').catch(() => '0'));
+    if (Number.isSafeInteger(group) && group > 1) {
+      try {
+        process.kill(-group, 'SIGKILL');
+      } catch (error: any) {
+        if (error.code !== 'ESRCH') throw error;
+      }
+    }
+  }
 });
 
 test('host shell remains blocked during private human takeover and can resume after release', async (t) => {
