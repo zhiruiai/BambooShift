@@ -12,6 +12,7 @@ class Strings {
   static const supported = [Locale('zh'), Locale('en')];
   static const catalogs = [
     'app',
+    'avatars',
     'models',
     'apps',
     'workspace',

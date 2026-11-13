@@ -16,10 +16,13 @@ ${themes.map((theme) => `  ${quoted(theme.id)},`).join('\n')}
 const communityAvatarGroups = <String, String>{
 ${themes.map((theme) => `  ${quoted(theme.id)}: ${quoted(theme.pack)},`).join('\n')}
 };
-const communityAvatarLabels = <String, Map<String, String>>{
-${themes.map((theme) => `  ${quoted(theme.id)}: {'en': ${quoted(theme.label.en)}, 'zh': ${quoted(theme.label.zh)}},`).join('\n')}
-};
 `);
+for (const language of ['en', 'zh']) {
+  outputs.set(`mobile/assets/l10n/avatars_${language}.arb`, `${JSON.stringify({
+    '@@locale': language,
+    ...Object.fromEntries(themes.map((theme) => [theme.id, theme.label[language]])),
+  }, null, 2)}\n`);
+}
 outputs.set('mobile/assets/avatars/packs/catalog.json', await readFile(resolve(root, 'shared/avatar-packs/catalog.json')));
 for (const pack of catalog.packs) {
   for (const file of ['manifest.json', 'expressions.json']) {

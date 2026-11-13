@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:openbot_mobile/core/avatar_preferences.dart';
 import 'package:openbot_mobile/core/community_avatar_catalog.g.dart';
 import 'package:openbot_mobile/features/settings/avatar_theme_picker.dart';
+import 'package:openbot_mobile/l10n/strings.dart';
 import 'package:openbot_mobile/widgets/avatar_pack_face.dart';
 import 'package:openbot_mobile/widgets/avatar_pack_geometry.dart';
 import 'package:openbot_mobile/widgets/avatar_pack_painter.dart';
@@ -259,6 +260,9 @@ void main() {
   testWidgets(
     'all community artwork renders at small sizes without external assets',
     (tester) async {
+      final strings = await tester.runAsync(
+        () => Strings.delegate.load(const Locale('en')),
+      );
       tester.view
         ..devicePixelRatio = 1
         ..physicalSize = const Size(900, 1060);
@@ -284,7 +288,7 @@ void main() {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          communityAvatarLabels[theme]!['en']!,
+                          strings!.text(theme),
                           style: const TextStyle(fontSize: 13),
                         ),
                         const SizedBox(height: 8),

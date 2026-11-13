@@ -1,11 +1,38 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openbot_mobile/core/avatar_preferences.dart';
 import 'package:openbot_mobile/l10n/strings.dart';
 
 void main() {
+  for (final language in ['zh', 'en']) {
+    testWidgets(
+      'runtime $language translations include every community avatar',
+      (tester) async {
+        final catalog =
+            jsonDecode(
+                  File(
+                    '../shared/avatar-packs/catalog.json',
+                  ).readAsStringSync(),
+                )
+                as Map<String, dynamic>;
+        final strings = await tester.runAsync(
+          () => Strings.delegate.load(Locale(language)),
+        );
+        expect(strings, isNotNull);
+        for (final pack in catalog['packs'] as List) {
+          for (final theme in pack['themes'] as List) {
+            final id = theme['id'] as String;
+            expect(strings!.text(id), theme['label'][language], reason: id);
+            expect(strings.text(id), isNot(id), reason: id);
+          }
+        }
+      },
+    );
+  }
+
   test(
     'Chinese and English resources cover static and runtime label families',
     () {

@@ -125,7 +125,7 @@ class AvatarThemePicker extends StatelessWidget {
                     context,
                     width: width,
                     horizontal: columns == 1,
-                    name: communityAvatarLabels[theme]?[language] ?? theme,
+                    name: context.tr(theme),
                     selected: !generatedSelected && selected == theme,
                     preview: AvatarThemePreview(
                       family: theme,

@@ -491,7 +491,7 @@ test('managed preference saves only an explicit host choice and safely reads the
   assert.deepEqual(readLocalSelection(f.dataDir), { hostControl: false });
   saveLocalSelection(f.dataDir, { hostControl: true });
   assert.deepEqual(readLocalSelection(f.dataDir), { hostControl: true });
-  assert.equal(statSync(marker).mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal(statSync(marker).mode & 0o777, 0o600);
   saveLocalSelection(f.dataDir, { hostControl: false });
   assert.deepEqual(readLocalSelection(f.dataDir), { hostControl: false });
 });
