@@ -119,11 +119,14 @@
   ],
   "remainingReleaseRequirements": [
     "Resolve each exact-version missing copyright and permission notice without borrowing another implementation's license.",
-    "Verify the active target/features and patched Cargo.lock against the upstream build recipe.",
+    "Retain the checked target/features and patched Cargo.lock; obtain link/build evidence before excluding a selected source on the basis of dead stripping.",
     "Ship complete corresponding sources, all applicable license texts, patches, rebuild and library replacement instructions with the distributed binary or its required source artifact.",
     "Exercise an actual package and confirm native formats and resource limits before enabling managed-runtime releases."
   ],
-  "packageScope": "Locked npm publication identities only; target-specific compiled graphs and redistribution acceptance have not been verified.",
-  "missingNoticesScope": "The four notices are missing from the original librsvg source superset and lie on the declared macOS locale_config dependency path. This is not evidence that they are linked on other platforms.",
-  "activeTargetGraphVerified": false
+  "packageScope": "Locked npm publication identities. The resolved library target graphs are recorded separately; final linked code is not fully attributed and redistribution acceptance is incomplete.",
+  "missingNoticesScope": "All four are selected by the normal/build graph for macOS arm64 and x64; none are selected for the tested Linux x64 target. The macOS initializer route is unused by librsvg production code, but whole-crate absence from the combined binary has not been proven.",
+  "resolvedTargetGraphsVerified": true,
+  "retainedNativeCodeFullyAttributed": false,
+  "targetGraphReport": "TARGET-GRAPHS.json",
+  "binaryEvidenceReport": "BINARY-EVIDENCE.json"
 }

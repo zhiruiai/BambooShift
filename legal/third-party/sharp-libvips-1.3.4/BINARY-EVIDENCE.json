@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "scope": "One published darwin-arm64 library; not evidence for other platform binaries.",
+  "package": {
+    "name": "@img/sharp-libvips-darwin-arm64",
+    "version": "1.3.4"
+  },
+  "binaryPath": "node_modules/@img/sharp-libvips-darwin-arm64/lib/libvips-cpp.8.18.7.dylib",
+  "binarySha256": "c1a5b5633b21aeb8a229abf7d062e07e4d778c0b44ed43cd1f93362bda58c322",
+  "binaryBytes": 18231688,
+  "conclusions": [
+    "locale_config 0.3.0 parser/data is retained and runtime-used: exact source regex bytes, machine-code pointer+length, and semantic SVG probe agree.",
+    "librsvg 2.63.2 obtains names via glib::language_names(), then Locale::invariant(), LanguageRange::from_unix(), Locale::add(); no call to locale_config current/global/user-default initialization is in the production path.",
+    "cond.rs Locale::current() occurrence is a documentation comment, not executable code.",
+    "locale_config macOS system_locale uses NSLocale/currentLocale/localeIdentifier and objc class!/msg_send! macros; required objc_getClass/sel_registerName imports and fixups are absent. This gives source plus dynamic-linkage evidence that this specific initializer route is not retained as executable code.",
+    "No uniquely attributable retained objc-foundation, objc_id, malloc_buf or block implementation was demonstrated. Cargo-selected dependencies must not be equated with proven shipped executable code.",
+    "Absence of stripped symbols is not proof of crate absence. objc_id StrongPtr can call objc_retain/objc_release, both imported by this multi-library binary, so these imports cannot uniquely attribute or exclude objc_id. Generic malloc_buf/free code can inline. Whole-crate bitwise absence remains unproven without link map/build evidence."
+  ],
+  "positiveParserFingerprints": [
+    {
+      "name": "UNIX_TAG_REGEX",
+      "sourceLine": 172,
+      "byteLength": 220,
+      "sha256": "af6ded39a560397d135a098c571bb267b16431e85921db9c4b47bfb825b03c2e",
+      "binaryFileOffset": "0xd215dd"
+    },
+    {
+      "name": "UNIX_INVARIANT_REGEX",
+      "sourceLine": 168,
+      "byteLength": 80,
+      "sha256": "055c4b450ef6e1db4e0e1613c21c14cac7adae9b64c94c1ed2b5473323f25f07",
+      "binaryFileOffset": "0xd2158d"
+    }
+  ],
+  "absentDynamicImports": [
+    "objc_getClass",
+    "sel_registerName",
+    "_Block_copy",
+    "_Block_release",
+    "_NSConcreteStackBlock",
+    "objc_copyClassList",
+    "class_copyMethodList",
+    "class_copyProtocolList",
+    "class_copyIvarList",
+    "objc_copyProtocolList",
+    "protocol_copyProtocolList",
+    "method_copyReturnType",
+    "method_copyArgumentType"
+  ],
+  "syntheticSvgProbe": {
+    "node": "24.22.3",
+    "sharp": "0.35.5",
+    "librsvg": "2.63.2",
+    "description": "Fresh process for each locale, 1x1 SVG switch with a red rectangle for systemLanguage=ssy-ER and a blue fallback; no image files or fonts.",
+    "cases": [
+      {
+        "node": "v24.22.3",
+        "sharp": "0.35.5",
+        "rsvg": "2.63.2",
+        "locale": "aa_ER@saaho",
+        "pixel": [255, 0, 0, 255]
+      },
+      {
+        "node": "v24.22.3",
+        "sharp": "0.35.5",
+        "rsvg": "2.63.2",
+        "locale": "aa_ER",
+        "pixel": [0, 0, 255, 255]
+      },
+      {
+        "node": "v24.22.3",
+        "sharp": "0.35.5",
+        "rsvg": "2.63.2",
+        "locale": "en_US",
+        "pixel": [0, 0, 255, 255]
+      }
+    ]
+  }
+}
