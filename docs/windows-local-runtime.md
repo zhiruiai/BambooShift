@@ -18,6 +18,7 @@ The Rust backend, TypeScript/Pi workers, and shared product API remain the archi
 | --- | --- | --- |
 | Backend filesystem | Static assets, deployment ownership, [workspace storage](../server/api/src/workspace/file_storage.rs), [edits and directory listing](../server/api/src/workspace/file_edits.rs) now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). Template storage and shared-Bot database inspection now share directory and metadata adapters; private configuration and the complete runtime still need Windows qualification. | Finish the remaining adapters and validate the complete native Windows backend. |
 | Private configuration | Windows files inherit the selected parent directory's ACL. An owner-only configuration/database policy has not been implemented or qualified. | Verify private configuration and database ownership without treating Unix mode bits as Windows access control. |
+| Program lookup | [Native program resolution](../server/api/src/executable.rs) now supports Windows `.exe` names for Node and the image worker, anchors explicit relative paths before changing directories, and excludes empty/relative PATH entries and Windows shell extensions. Unix Node symlinks remain supported. | Verify actual worker startup from a native Windows package. |
 | Runtime package | [Desktop options](../scripts/desktop/options.mjs), [runtime staging](../scripts/desktop/runtime-package.mjs), and [backend packaging](../scripts/package-backend.mjs) exclude Windows bundled services. | Support native Windows binaries, verified Node archives, and platform-specific native dependencies. |
 | Desktop launcher | [Local runtime](../desktop/local-runtime.cjs) assumes POSIX ownership, paths, and process groups. Host-command consent is coupled to the macOS Cua driver. | Separate runtime, shell, and desktop capabilities; implement Windows private storage and lifecycle handling. |
 | Command execution | [Host shell](../server/workers/computer-runtime/host-shell.ts) uses `/bin/sh` and POSIX process-group signals. | Add a Windows process supervisor with explicit shell semantics and bounded cancellation. |
@@ -132,6 +133,17 @@ check covering 22 actual source/test files, including metadata entry queries and
 the shared database guard. The harness includes the production private-file helper
 and a narrow error adapter; it excludes SQLx, authorization, HTTP and native Windows
 execution. Database runtime behavior is validated separately on macOS.
+
+Program resolution and the portable [child-process test probe](../server/api/src/test_process.rs)
+passed the complete release-mode library target on macOS: **138 passed, zero failed**.
+Four tests were ignored in ordinary enumeration: three require external services or
+installed voices; the synthetic child is invoked explicitly by the lifecycle tests.
+Coverage includes [program selection](../server/api/src/executable_tests.rs), worker
+startup, avatar cancellation and revocation, document deadlines and process reaping.
+Only the program-resolution module and its tests passed isolated Windows MSVC type
+checking in this change. The process probe's Windows `Threading` branch was reviewed
+against the bindings but has not yet been cross-compiled or run; the existing
+filesystem harness does not include Tokio. This is not Windows runtime qualification.
 
 ## Minimal platform boundaries
 

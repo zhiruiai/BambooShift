@@ -41,20 +41,15 @@ fn node(config: &Config) -> Result<PathBuf> {
     } else {
         config.node_binary.clone()
     };
-    if selected.is_absolute() {
-        return if selected.is_file() {
-            Ok(selected)
-        } else {
-            Err(unavailable())
-        };
-    }
-    std::env::var_os("PATH")
-        .and_then(|paths| {
-            std::env::split_paths(&paths)
-                .map(|p| p.join(&selected))
-                .find(|p| p.is_file())
-        })
-        .ok_or_else(unavailable)
+    let paths = std::env::var_os("PATH").unwrap_or_default();
+    let base = std::env::current_dir().map_err(|_| unavailable())?;
+    crate::executable::resolve(
+        &selected,
+        std::env::split_paths(&paths),
+        &base,
+        std::env::consts::EXE_SUFFIX,
+    )
+    .ok_or_else(unavailable)
 }
 fn unavailable() -> ApiError {
     ApiError::new(503, "执行环境不完整，请检查 Node 与已发布的工作进程配置。")

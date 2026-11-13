@@ -1,5 +1,5 @@
 use super::*;
-use crate::{config::Config, workspace::access};
+use crate::{config::Config, test_process::spawn_waiting_child, workspace::access};
 use axum::http::HeaderMap;
 use sha2::{Digest, Sha256};
 static SERIAL: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
@@ -48,15 +48,7 @@ async fn cancelled_process_is_reaped_before_capacity_and_shutdown_finish() {
     let (_dir, state, grant) = fixture().await;
     let jobs = Arc::new(AvatarJobs::default());
     let lease = jobs.reserve().unwrap();
-    let child = tokio::process::Command::new("/bin/sleep")
-        .arg("60")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .kill_on_drop(true)
-        .spawn()
-        .unwrap();
-    let pid = child.id().unwrap();
+    let (child, probe) = spawn_waiting_child().await.unwrap();
     let (started, receive) = oneshot::channel();
     let task = {
         let state = state.clone();
@@ -70,18 +62,14 @@ async fn cancelled_process_is_reaped_before_capacity_and_shutdown_finish() {
         })
     };
     receive.await.unwrap();
-    assert!(unsafe { libc::kill(pid as i32, 0) } == 0);
+    assert!(probe.is_running().unwrap());
     task.abort();
     let _ = task.await;
     tokio::time::timeout(Duration::from_secs(2), jobs.close())
         .await
         .unwrap();
     assert!(jobs.active.lock().unwrap().is_empty());
-    assert_eq!(unsafe { libc::kill(pid as i32, 0) }, -1);
-    assert_eq!(
-        std::io::Error::last_os_error().raw_os_error(),
-        Some(libc::ESRCH)
-    );
+    assert!(!probe.is_running().unwrap());
     assert!(jobs.reserve().is_err());
     state.close().await;
 }
@@ -91,15 +79,7 @@ async fn revoked_identity_terminates_real_child_and_releases_slot_after_exit() {
     let (_dir, state, grant) = fixture().await;
     let jobs = Arc::new(AvatarJobs::default());
     let lease = jobs.reserve().unwrap();
-    let child = tokio::process::Command::new("/bin/sleep")
-        .arg("60")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .kill_on_drop(true)
-        .spawn()
-        .unwrap();
-    let pid = child.id().unwrap();
+    let (child, probe) = spawn_waiting_child().await.unwrap();
     let (started, receive) = oneshot::channel();
     let task = {
         let state = state.clone();
@@ -113,6 +93,7 @@ async fn revoked_identity_terminates_real_child_and_releases_slot_after_exit() {
         })
     };
     receive.await.unwrap();
+    assert!(probe.is_running().unwrap());
     sqlx::query("DELETE FROM account_sessions")
         .execute(&state.pool)
         .await
@@ -122,7 +103,7 @@ async fn revoked_identity_terminates_real_child_and_releases_slot_after_exit() {
         .unwrap()
         .unwrap();
     assert_eq!(result.unwrap_err().status.as_u16(), 403);
-    assert_eq!(unsafe { libc::kill(pid as i32, 0) }, -1);
+    assert!(!probe.is_running().unwrap());
     assert!(jobs.reserve().is_ok());
     jobs.close().await;
     state.close().await;

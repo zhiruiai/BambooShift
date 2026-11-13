@@ -8,6 +8,7 @@ pub mod config;
 pub mod db;
 pub mod error;
 mod error_locale;
+mod executable;
 pub mod filesystem;
 mod invitations;
 mod local_desktop;
@@ -25,6 +26,8 @@ pub mod shared_bots;
 pub mod speech;
 pub mod teaching;
 pub mod team_builder;
+#[cfg(test)]
+mod test_process;
 pub mod updates;
 mod web;
 pub mod workspace;

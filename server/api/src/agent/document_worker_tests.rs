@@ -1,5 +1,5 @@
 use super::*;
-use crate::config::Config;
+use crate::{config::Config, test_process::ProcessProbe};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 async fn fixture(script: &str) -> (tempfile::TempDir, State) {
@@ -22,11 +22,11 @@ async fn fixture(script: &str) -> (tempfile::TempDir, State) {
 fn allowed() -> Authority {
     Arc::new(|| Box::pin(async { Ok(()) }))
 }
-async fn pid(path: &std::path::Path) -> i32 {
-    tokio::time::timeout(Duration::from_secs(5), async {
+async fn running_process(path: &std::path::Path) -> ProcessProbe {
+    let pid = tokio::time::timeout(Duration::from_secs(5), async {
         loop {
             if let Ok(value) = tokio::fs::read_to_string(path).await {
-                if let Ok(pid) = value.parse() {
+                if let Ok(pid) = value.parse::<u32>() {
                     break pid;
                 }
             }
@@ -34,47 +34,47 @@ async fn pid(path: &std::path::Path) -> i32 {
         }
     })
     .await
-    .unwrap()
-}
-async fn gone(pid: i32) {
-    tokio::time::timeout(Duration::from_secs(5), async {
-        loop {
-            if unsafe { libc::kill(pid, 0) } != 0 {
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    })
-    .await
-    .expect("The parser process was not reaped");
+    .expect("The parser did not announce its PID");
+    ProcessProbe::attach(pid).expect("The parser must be alive before testing termination")
 }
 static SERIAL: tokio::sync::Mutex<()> = tokio::sync::Mutex::const_new(());
 
 #[tokio::test]
 async fn deadline_and_oversized_output_both_reap_the_actual_parser() {
     let _serial = SERIAL.lock().await;
-    let script = "import {writeFileSync} from 'node:fs';writeFileSync('pid.txt',String(process.pid));process.stdout.write('x'.repeat(13*1024*1024));setInterval(()=>{},1000);";
+    let script = r#"
+import {writeFileSync,existsSync} from 'node:fs';
+writeFileSync('pid.txt',String(process.pid));
+while(!existsSync('release.txt'))await new Promise(resolve=>setTimeout(resolve,10));
+process.stdout.write('x'.repeat(13*1024*1024));
+setInterval(()=>{},1000);
+"#;
     let (d, state) = fixture(script).await;
-    assert_eq!(
-        parse(&state, "large.txt".into(), b"fixture".to_vec(), allowed())
-            .await
-            .unwrap_err()
-            .status
-            .as_u16(),
-        422
-    );
-    gone(pid(&d.path().join("runtime/pid.txt")).await).await;
+    let task = tokio::spawn({
+        let state = state.clone();
+        async move { parse(&state, "large.txt".into(), b"fixture".to_vec(), allowed()).await }
+    });
+    // Attach before the parser can overflow: Windows retains the actual process handle.
+    let process = running_process(&d.path().join("runtime/pid.txt")).await;
+    tokio::fs::write(d.path().join("runtime/release.txt"), b"release")
+        .await
+        .unwrap();
+    assert_eq!(task.await.unwrap().unwrap_err().status.as_u16(), 422);
+    process.wait_for_exit(Duration::from_secs(5)).await.unwrap();
     state.close().await;
     let script = "import {writeFileSync} from 'node:fs';writeFileSync('pid.txt',String(process.pid));setInterval(()=>{},1000);";
     let (d, state) = fixture(script).await;
     let began = std::time::Instant::now();
-    let error = parse(&state, "timeout.txt".into(), b"fixture".to_vec(), allowed())
-        .await
-        .unwrap_err();
+    let task = tokio::spawn({
+        let state = state.clone();
+        async move { parse(&state, "timeout.txt".into(), b"fixture".to_vec(), allowed()).await }
+    });
+    let process = running_process(&d.path().join("runtime/pid.txt")).await;
+    let error = task.await.unwrap().unwrap_err();
     assert!(error.message.contains("超时"));
     assert!(began.elapsed() >= Duration::from_secs(19));
     assert!(began.elapsed() < Duration::from_secs(26));
-    gone(pid(&d.path().join("runtime/pid.txt")).await).await;
+    process.wait_for_exit(Duration::from_secs(5)).await.unwrap();
     assert_eq!(SLOTS.get().unwrap().available_permits(), 2);
     state.close().await;
 }
@@ -89,7 +89,7 @@ async fn dropped_caller_and_revoked_authority_reap_before_releasing_the_two_slot
         let state = state.clone();
         async move { parse(&state, "text.txt".into(), b"one".to_vec(), allowed()).await }
     });
-    let first = pid(&d.path().join("runtime/pid.txt")).await;
+    let first = running_process(&d.path().join("runtime/pid.txt")).await;
     let valid = Arc::new(AtomicBool::new(true));
     let auth: Authority = Arc::new({
         let valid = valid.clone();
@@ -108,7 +108,7 @@ async fn dropped_caller_and_revoked_authority_reap_before_releasing_the_two_slot
         let state = state2.clone();
         async move { parse(&state, "text.txt".into(), b"two".to_vec(), auth).await }
     });
-    let second_pid = pid(&d2.path().join("runtime/pid.txt")).await;
+    let second_process = running_process(&d2.path().join("runtime/pid.txt")).await;
     assert_eq!(
         parse(&state, "text.txt".into(), b"three".to_vec(), allowed())
             .await
@@ -119,10 +119,13 @@ async fn dropped_caller_and_revoked_authority_reap_before_releasing_the_two_slot
     );
     task.abort();
     let _ = task.await;
-    gone(first).await;
+    first.wait_for_exit(Duration::from_secs(5)).await.unwrap();
     valid.store(false, Ordering::Release);
     assert_eq!(second.await.unwrap().unwrap_err().status.as_u16(), 403);
-    gone(second_pid).await;
+    second_process
+        .wait_for_exit(Duration::from_secs(5))
+        .await
+        .unwrap();
     assert_eq!(SLOTS.get().unwrap().available_permits(), 2);
     state.close().await;
     state2.close().await;

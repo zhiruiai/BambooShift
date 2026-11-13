@@ -161,19 +161,12 @@ impl Cancellation {
 }
 fn executable() -> Result<PathBuf> {
     let current = std::env::current_exe()?;
-    let directory = current
-        .parent()
-        .ok_or_else(|| ApiError::new(503, "图片处理程序不可用。"))?;
-    let mut path = directory.join("openbot-image-worker");
-    if directory.file_name().is_some_and(|v| v == "deps") {
-        path = directory.parent().unwrap().join("openbot-image-worker");
-    }
-    let metadata =
-        std::fs::symlink_metadata(&path).map_err(|_| ApiError::new(503, "图片处理程序不可用。"))?;
-    if !metadata.is_file() || metadata.file_type().is_symlink() {
-        return Err(ApiError::new(503, "图片处理程序不可用。"));
-    }
-    Ok(path)
+    crate::executable::sibling(
+        &current,
+        "openbot-image-worker",
+        std::env::consts::EXE_SUFFIX,
+    )
+    .ok_or_else(|| ApiError::new(503, "图片处理程序不可用。"))
 }
 pub async fn process(
     job: &Cancellation,
