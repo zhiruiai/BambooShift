@@ -1,9 +1,9 @@
 use crate::error::{ApiError, Result};
 use serde_json::{Value, json};
-use std::{path::Path, process::Stdio, time::Duration};
+use std::{ffi::OsString, path::Path, process::Stdio, time::Duration};
 use tokio::{
     io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
-    process::Child,
+    process::{Child, Command},
     sync::watch,
 };
 
@@ -13,6 +13,34 @@ pub struct LocalExecutor {
     stop: watch::Sender<bool>,
     done: watch::Receiver<Option<bool>>,
 }
+
+fn worker_command(
+    config: &crate::config::Config,
+    environment: impl Fn(&str) -> Option<OsString>,
+) -> Result<Command> {
+    let mut command = crate::workers::command(config, crate::workers::Worker::Computer, &[])?;
+    command.env("PATH", environment("PATH").unwrap_or_default());
+    // Only deployment-owned browser options cross the clean worker boundary.
+    // In particular, do not inherit test network exceptions or unrelated secrets.
+    for name in ["OPENBOT_BROWSER_EXECUTABLE", "OPENBOT_BROWSER_HEADLESS"] {
+        if let Some(value) = environment(name) {
+            command.env(name, value);
+        }
+    }
+    if config
+        .local_desktop
+        .as_ref()
+        .is_some_and(|value| value.host_control)
+    {
+        for name in ["HOME", "USER", "LOGNAME", "TMPDIR", "LANG"] {
+            if let Some(value) = environment(name) {
+                command.env(name, value);
+            }
+        }
+    }
+    Ok(command)
+}
+
 impl LocalExecutor {
     pub async fn start(
         config: &crate::config::Config,
@@ -20,24 +48,12 @@ impl LocalExecutor {
         workspace: &str,
         origin: Option<&str>,
     ) -> Result<Self> {
-        let mut command = crate::workers::command(config, crate::workers::Worker::Computer, &[])?;
+        let mut command = worker_command(config, |name| std::env::var_os(name))?;
         command
-            .env("PATH", std::env::var_os("PATH").unwrap_or_default())
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
             .kill_on_drop(true);
-        if config
-            .local_desktop
-            .as_ref()
-            .is_some_and(|value| value.host_control)
-        {
-            for name in ["HOME", "USER", "LOGNAME", "TMPDIR", "LANG"] {
-                if let Some(value) = std::env::var_os(name) {
-                    command.env(name, value);
-                }
-            }
-        }
         #[cfg(unix)]
         command.process_group(0);
         let mut child = command.spawn().map_err(|_| unavailable())?;
@@ -154,4 +170,67 @@ async fn terminate(child: &mut Child) {
 }
 fn unavailable() -> ApiError {
     ApiError::new(503, "本机执行适配器暂不可用，需要 Node.js 22 或更新版本。")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::{Config, LocalDesktopConfig};
+    use std::collections::BTreeMap;
+
+    #[test]
+    fn local_worker_preserves_browser_options_without_inheriting_other_environment() {
+        let directory = tempfile::tempdir().unwrap();
+        let bundle = directory.path().join("packages/computer-worker");
+        std::fs::create_dir_all(&bundle).unwrap();
+        std::fs::write(bundle.join("index.mjs"), "").unwrap();
+        let mut config = Config::local(directory.path().join("data"));
+        config.runtime_dir = directory.path().to_owned();
+        config.node_binary = std::env::current_exe().unwrap();
+        let supplied = BTreeMap::from([
+            ("PATH", "/synthetic/bin"),
+            (
+                "OPENBOT_BROWSER_EXECUTABLE",
+                "/synthetic/Chromium.app/browser",
+            ),
+            ("OPENBOT_BROWSER_HEADLESS", "false"),
+            (
+                "OPENBOT_BROWSER_ALLOWED_ORIGINS",
+                "http://synthetic.invalid",
+            ),
+            ("SYNTHETIC_MODEL_SECRET", "must-not-inherit"),
+            ("HOME", "/synthetic/home"),
+            ("USER", "synthetic"),
+            ("LOGNAME", "synthetic"),
+            ("TMPDIR", "/synthetic/tmp"),
+            ("LANG", "en_US.UTF-8"),
+        ]);
+        for host_control in [false, true] {
+            config.local_desktop = Some(LocalDesktopConfig {
+                bootstrap_token: "a".repeat(64),
+                host_control,
+                desktop_driver: None,
+            });
+            let command =
+                worker_command(&config, |name| supplied.get(name).map(OsString::from)).unwrap();
+            let actual: BTreeMap<_, _> = command
+                .as_std()
+                .get_envs()
+                .map(|(key, value)| (key.to_str().unwrap(), value.unwrap().to_str().unwrap()))
+                .collect();
+            assert_eq!(
+                actual["OPENBOT_BROWSER_EXECUTABLE"],
+                supplied["OPENBOT_BROWSER_EXECUTABLE"]
+            );
+            assert_eq!(actual["OPENBOT_BROWSER_HEADLESS"], "false");
+            assert_eq!(actual["PATH"], "/synthetic/bin");
+            assert!(!actual.contains_key("OPENBOT_BROWSER_ALLOWED_ORIGINS"));
+            assert!(!actual.contains_key("SYNTHETIC_MODEL_SECRET"));
+            assert_eq!(actual.contains_key("HOME"), host_control);
+            assert_eq!(actual.len(), if host_control { 8 } else { 4 });
+        }
+        let defaults = worker_command(&config, |_| None).unwrap();
+        let names: Vec<_> = defaults.as_std().get_envs().map(|(key, _)| key).collect();
+        assert_eq!(names, ["LANG", "PATH"]);
+    }
 }

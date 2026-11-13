@@ -182,6 +182,14 @@ function runtimeEnvironment(hostControl = false) {
   };
 }
 
+function browserEnvironment() {
+  return Object.fromEntries(
+    ['OPENBOT_BROWSER_EXECUTABLE', 'OPENBOT_BROWSER_HEADLESS']
+      .filter((name) => process.env[name] !== undefined)
+      .map((name) => [name, process.env[name]]),
+  );
+}
+
 async function startCuaHost(executablePath, { signal, timeoutMs }) {
   signal.throwIfAborted();
   // Unix sockets have a short path limit on macOS. The random directory is owner-only.
@@ -308,7 +316,7 @@ function createLocalRuntime({
       child = spawn(bundle.server, ['--config', config], {
         cwd: bundle.root,
         detached: true,
-        env: runtimeEnvironment(Boolean(host)),
+        env: { ...runtimeEnvironment(Boolean(host)), ...browserEnvironment() },
         stdio: ['ignore', 'pipe', 'ignore'],
       });
     } catch (error) {

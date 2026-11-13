@@ -144,6 +144,49 @@ test(
 );
 
 test(
+  'forwards only the two browser launch options to the packaged service',
+  { skip: !platformSupported },
+  async (t) => {
+    const supplied = {
+      OPENBOT_BROWSER_EXECUTABLE: '/synthetic/Chromium.app/browser',
+      OPENBOT_BROWSER_HEADLESS: 'false',
+      OPENBOT_BROWSER_ALLOWED_ORIGINS: 'http://synthetic.invalid',
+      BAMBOOSHIFT_FIXTURE_SECRET: 'must-not-inherit',
+    };
+    const previous = Object.fromEntries(
+      Object.keys(supplied).map((name) => [name, process.env[name]]),
+    );
+    const f = bundleFixture(
+      t,
+      fixtureServer.replace(
+        'pid: process.pid,',
+        `pid: process.pid,
+      browser: [process.env.OPENBOT_BROWSER_EXECUTABLE, process.env.OPENBOT_BROWSER_HEADLESS],
+      networkException: process.env.OPENBOT_BROWSER_ALLOWED_ORIGINS,`,
+      ),
+    );
+    let launched;
+    try {
+      Object.assign(process.env, supplied);
+      launched = await f.runtime.start({
+        signal: new AbortController().signal,
+        onExit: () => assert.fail('unexpected exit'),
+      });
+    } finally {
+      for (const [name, value] of Object.entries(previous)) {
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      }
+    }
+    const result = await (await fetch(launched.origin)).json();
+    assert.deepEqual(result.browser, [supplied.OPENBOT_BROWSER_EXECUTABLE, 'false']);
+    assert.equal(result.networkException, undefined);
+    assert.equal(result.leaked, false);
+    assert.equal(result.hostIdentity, false);
+  },
+);
+
+test(
   'rejects foreign and oversized handshakes, missing bundles, and substituted executables',
   { skip: !platformSupported },
   async (t) => {
@@ -420,7 +463,9 @@ process.once('SIGTERM', () => server.close());
       if (previousBundleId === undefined) delete process.env.CUA_DRIVER_HOST_BUNDLE_ID;
       else process.env.CUA_DRIVER_HOST_BUNDLE_ID = previousBundleId;
     }
-    const { leaked, hostIdentity, hostPath } = await fetch(launched.origin).then((res) => res.json());
+    const { leaked, hostIdentity, hostPath } = await fetch(launched.origin).then((res) =>
+      res.json(),
+    );
     assert.equal(leaked, false);
     assert.equal(hostIdentity, true);
     assert.equal(hostPath, true);
