@@ -1,6 +1,7 @@
 import type { GeneratedAvatarTheme } from '../creationPreview';
 import { AvatarArtwork } from './AvatarArtwork';
 import type { AvatarFaceMotion } from './avatarFaceMotion';
+import { avatarColor } from '../avatarThemes';
 
 const badgePaths = {
   star: 'M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8Z',
@@ -25,7 +26,7 @@ export function GeneratedAvatarArtwork({
     : ['leaf', 'arch'].includes(shape || '')
       ? 2
       : 0;
-  const color = theme.colors[index];
+  const color = avatarColor(theme.colors[index], shape);
   return (
     <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true" focusable="false">
       {theme.backdrop !== 'plain' && (

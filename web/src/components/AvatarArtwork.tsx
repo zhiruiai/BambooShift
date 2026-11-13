@@ -167,23 +167,38 @@ function Dinosaur({ shape, color, faceMotion }: ArtworkProps) {
   );
 }
 
-/** The same original artwork renders in the product, chooser and exported assets. */
-export function AvatarArtwork({
-  theme = 'companions',
-  shape = 'orb',
-  color = '#8a61ee',
-  size = 38,
-  faceMotion,
-}: {
+type AvatarArtworkProps = {
   theme?: AvatarTheme;
   shape?: string;
   color?: string;
   size?: number;
   faceMotion?: AvatarFaceMotion;
-}) {
+};
+
+/** The same original artwork renders in the product, chooser and exported assets. */
+export function AvatarArtwork(props: AvatarArtworkProps) {
+  return renderArtwork({ ...props, color: avatarColor(props.color, props.shape) });
+}
+
+/** Offline source export retains the fills used by Flutter's vector color mapper. */
+export function AvatarSourceArtwork(props: AvatarArtworkProps) {
+  const color =
+    typeof props.color === 'string' && /^#[a-f\d]{6}$/i.test(props.color)
+      ? props.color
+      : avatarColor(undefined, props.shape);
+  return renderArtwork({ ...props, color });
+}
+
+function renderArtwork({
+  theme = 'companions',
+  shape = 'orb',
+  color,
+  size = 38,
+  faceMotion,
+}: AvatarArtworkProps & { color: string }) {
   const selected = avatarTheme(theme),
     form = avatarShape(shape),
-    fill = avatarColor(color);
+    fill = color;
   if (!isOriginalAvatarTheme(selected))
     return (
       <CommunityAvatarArtwork

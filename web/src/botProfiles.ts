@@ -1,11 +1,12 @@
 import { uiText, localizedData } from './i18n';
 import type { BotAgent } from '../../shared/types';
 import { validAvatarImageId } from './avatarImages';
+import { AVATAR_COLORS } from '../../shared/avatar-palette';
 export type BotProfileDraft = Pick<
   BotAgent,
   'name' | 'role' | 'description' | 'instructions' | 'color' | 'avatar' | 'avatarImageId'
 >;
-export const botColors = ['#9363ed', '#3294f9', '#0ac987', '#ff871f', '#f5b52e', '#e65e91'];
+export const botColors = AVATAR_COLORS;
 export const botShapes: BotAgent['avatar'][] = ['orb', 'drop', 'leaf', 'spark', 'gem', 'arch'];
 export const botShapeNames = localizedData(() => ({
   orb: uiText('bots:text_89ccaeea7d02'),

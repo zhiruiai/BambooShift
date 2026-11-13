@@ -14,7 +14,7 @@ body {
 }
 .community-fixture header > span {
   font-size: 13px;
-  color: #78629a;
+  color: #3f7f64;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
@@ -59,9 +59,9 @@ body {
   font-size: 12px;
 }
 .community-controls button[aria-pressed='true'] {
-  background: #7859cf;
+  background: #3f7f64;
   color: white;
-  border-color: #7859cf;
+  border-color: #3f7f64;
 }
 #selected-avatar {
   display: flex;

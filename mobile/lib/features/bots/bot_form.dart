@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api.dart';
+import '../../core/avatar_palette.dart';
 import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import '../../widgets/bot_avatar.dart';
@@ -39,7 +40,7 @@ class _BotFormState extends State<BotForm> {
       'description': '',
       'instructions': '',
       'avatar': 'orb',
-      'color': '#76568d',
+      'color': defaultAvatarColor,
       ...widget.initial,
     };
   }
@@ -166,32 +167,33 @@ class _BotFormState extends State<BotForm> {
       const SizedBox(height: 8),
       Wrap(
         spacing: 10,
-        children:
-            ['#76568d', '#5b7194', '#5f826b', '#b07a50', '#a75f73', '#71747c']
-                .map(
-                  (hex) => Semantics(
-                    button: true,
-                    selected: draft['color'] == hex,
-                    label: hex,
-                    child: InkWell(
-                      onTap: widget.enabled ? () => change('color', hex) : null,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Color(
-                            int.parse(hex.substring(1), radix: 16) | 0xff000000,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: draft['color'] == hex
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
-                      ),
+        children: avatarColors
+            .map(
+              (hex) => Semantics(
+                button: true,
+                selected:
+                    displayAvatarColor(draft['color']).toLowerCase() ==
+                    hex.toLowerCase(),
+                label: hex,
+                child: InkWell(
+                  onTap: widget.enabled ? () => change('color', hex) : null,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: avatarColorValue(hex),
+                      shape: BoxShape.circle,
                     ),
+                    child:
+                        displayAvatarColor(draft['color']).toLowerCase() ==
+                            hex.toLowerCase()
+                        ? const Icon(Icons.check, color: Colors.white)
+                        : null,
                   ),
-                )
-                .toList(),
+                ),
+              ),
+            )
+            .toList(),
       ),
     ],
   );

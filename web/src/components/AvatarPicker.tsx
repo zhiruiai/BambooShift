@@ -12,6 +12,7 @@ import {
   type AvatarEditorState,
 } from '../avatarImages';
 import { Avatar } from './Avatar';
+import { avatarColor } from '../avatarThemes';
 import './AvatarPicker.css';
 
 type Props = {
@@ -92,6 +93,7 @@ function AvatarPickerContent(props: Props) {
   }
   const source = state.source,
     ratio = source ? Math.min(source.width, source.height) : 1;
+  const selectedColor = avatarColor(props.draft.color, props.draft.avatar).toUpperCase();
   return (
     <div className="bot-avatar-picker">
       <div
@@ -135,12 +137,12 @@ function AvatarPickerContent(props: Props) {
                   type="button"
                   disabled={props.disabled}
                   aria-label={uiText('common:text_336fee5cdabd', { value0: color })}
-                  aria-pressed={props.draft.color === color}
-                  className={props.draft.color === color ? 'chosen' : ''}
+                  aria-pressed={selectedColor === color}
+                  className={selectedColor === color ? 'chosen' : ''}
                   onClick={() => props.onChange({ color, avatarImageId: null })}
                 >
                   <span style={{ background: color }}>
-                    {props.draft.color === color && <Check size={13} />}
+                    {selectedColor === color && <Check size={13} />}
                   </span>
                 </button>
               ))}

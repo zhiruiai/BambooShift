@@ -6,6 +6,7 @@ import { AppearanceSettings } from '../components/AppearanceSettings';
 import { COMMUNITY_AVATAR_PACKS, type CommunityAvatarTheme } from '../avatarThemes';
 import { initializeLanguage } from '../i18n';
 import type { AvatarFaceState } from '../components/avatarFaceMotion';
+import { AVATAR_COLORS, AVATAR_ROLE_COLORS } from '../../../shared/avatar-palette';
 import '../styles-sections/01-base.css';
 import '../theme.css';
 import './communityAvatarFixture.css';
@@ -47,7 +48,7 @@ function Fixture() {
           </div>
           <div id="selected-avatar">
             <Avatar
-              agent={{ avatar: 'orb', color: '#7859cf' }}
+              agent={{ avatar: 'orb', color: AVATAR_ROLE_COLORS.orb }}
               size={90}
               sustain
               motion={waiting ? undefined : state}
@@ -73,7 +74,7 @@ function Fixture() {
                     <div key={theme.id} data-community-sample={theme.id}>
                       <AvatarArtwork
                         theme={theme.id as CommunityAvatarTheme}
-                        color={['#815bd0', '#23a184', '#e59d3e', '#dc778e', '#528bc4'][index % 5]}
+                        color={AVATAR_COLORS[index % AVATAR_COLORS.length]}
                         size={62}
                         faceMotion={{ state, sustain: true }}
                       />

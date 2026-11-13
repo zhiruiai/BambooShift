@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/api.dart';
+import '../../core/avatar_palette.dart';
 import '../../core/bot_access.dart';
 import '../../core/creation_controller.dart';
 import '../../core/workspace_controller.dart';
@@ -38,7 +39,7 @@ class _CreateScreenState extends State<CreateScreen> {
     'description': '',
     'instructions': '',
     'avatar': 'orb',
-    'color': '#76568d',
+    'color': defaultAvatarColor,
   };
   final List<String> selected = [];
   int profileRevision = 0;

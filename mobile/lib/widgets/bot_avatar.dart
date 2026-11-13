@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../core/api.dart';
 import '../core/avatar_assets.dart';
+import '../core/avatar_palette.dart';
 import '../core/avatar_preferences.dart';
 import '../core/byte_read.dart';
 import '../core/community_avatar_catalog.g.dart';
@@ -75,9 +76,9 @@ class BotAvatar extends StatelessWidget {
         generated?.motif ?? validAvatarTheme(appearance?.avatarTheme ?? family);
     final base = _exportedColors[shape]!;
     final hex = generated?.colorFor(shape) ?? bot['color'];
-    final color = hex is String && RegExp(r'^#[0-9a-fA-F]{6}$').hasMatch(hex)
-        ? Color(int.parse(hex.substring(1), radix: 16) | 0xff000000)
-        : base;
+    final color = avatarColorValue(
+      displayAvatarColor(hex, fallback: avatarRoleColors[shape]!),
+    );
     final workspace = scope;
     final path = workspace == null ? null : botAvatarPath(workspace, bot);
     final community = communityAvatarThemes.contains(theme);

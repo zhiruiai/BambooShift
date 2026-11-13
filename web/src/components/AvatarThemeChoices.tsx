@@ -8,6 +8,7 @@ import {
 } from '../avatarThemes';
 import { uiText } from '../i18n';
 import { AvatarArtwork } from './AvatarArtwork';
+import { AVATAR_ROLE_COLORS } from '../../../shared/avatar-palette';
 
 const family = (theme: AvatarTheme) =>
   COMMUNITY_AVATAR_PACKS.find((pack) => pack.themes.some((item) => item.id === theme))?.id ??
@@ -91,11 +92,21 @@ export function AvatarThemeChoices({
             onClick={() => onChange(theme)}
           >
             <span className="appearance-avatar-preview" aria-hidden="true">
-              <AvatarArtwork theme={theme} shape="orb" color="#8b5cf6" size={46} />
+              <AvatarArtwork theme={theme} shape="orb" color={AVATAR_ROLE_COLORS.orb} size={46} />
               {group === 'originals' && (
                 <>
-                  <AvatarArtwork theme={theme} shape="leaf" color="#24b78c" size={36} />
-                  <AvatarArtwork theme={theme} shape="arch" color="#fb8742" size={36} />
+                  <AvatarArtwork
+                    theme={theme}
+                    shape="leaf"
+                    color={AVATAR_ROLE_COLORS.leaf}
+                    size={36}
+                  />
+                  <AvatarArtwork
+                    theme={theme}
+                    shape="arch"
+                    color={AVATAR_ROLE_COLORS.arch}
+                    size={36}
+                  />
                 </>
               )}
             </span>

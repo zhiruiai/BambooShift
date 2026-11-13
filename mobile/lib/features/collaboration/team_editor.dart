@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/api.dart';
+import '../../core/avatar_palette.dart';
 import '../../core/bot_access.dart';
 import '../../core/request_ids.dart';
 import '../../l10n/strings.dart';
@@ -31,7 +32,7 @@ class TeamEditor extends StatelessWidget {
         'role': '',
         'description': '',
         'instructions': '',
-        'color': '#76568d',
+        'color': defaultAvatarColor,
         'avatar': 'orb',
       },
     };

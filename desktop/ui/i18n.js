@@ -52,7 +52,7 @@
       'Computer control could not start. Retry, or turn off computer control and open the local workspace.',
     ],
     cancelLocal: ['取消启动', 'Cancel startup'],
-    mascot: ['BambooShift 紫色小伙伴', 'BambooShift purple companion'],
+    mascot: ['BambooShift 吉祥物', 'BambooShift mascot'],
     address: ['工作空间地址', 'Workspace address'],
     addressPlaceholder: ['https://你的工作空间地址', 'https://your-workspace.example'],
     secureAddress: [

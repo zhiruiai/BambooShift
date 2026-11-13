@@ -3,17 +3,20 @@ import { createRoot } from 'react-dom/client';
 import { Avatar } from '../components/Avatar';
 import { AvatarArtwork } from '../components/AvatarArtwork';
 import type { AvatarFaceState } from '../components/avatarFaceMotion';
-import { AVATAR_SHAPES, ORIGINAL_AVATAR_THEMES, type OriginalAvatarTheme } from '../avatarThemes';
+import { AVATAR_SHAPES, ORIGINAL_AVATAR_THEMES } from '../avatarThemes';
+import { AVATAR_ROLE_COLORS } from '../../../shared/avatar-palette';
 import '../styles-sections/01-base.css';
 import './avatarFaceFixture.css';
 
 const themes = {
-  companions: { label: 'Companions', color: '#8651d8' },
-  pandas: { label: 'Pandas', color: '#7051ca' },
-  dinosaurs: { label: 'Dinosaurs', color: '#169771' },
-  chicks: { label: 'Chicks', color: '#dda02e' },
-  elephants: { label: 'Elephants', color: '#5085c8' },
-} satisfies Record<OriginalAvatarTheme, { label: string; color: string }>;
+  companions: { label: 'Companions', color: AVATAR_ROLE_COLORS.orb },
+  pandas: { label: 'Pandas', color: AVATAR_ROLE_COLORS.arch },
+  dinosaurs: { label: 'Dinosaurs', color: AVATAR_ROLE_COLORS.leaf },
+  chicks: { label: 'Chicks', color: AVATAR_ROLE_COLORS.spark },
+  elephants: { label: 'Elephants', color: AVATAR_ROLE_COLORS.drop },
+  'open-avatar-cat': { label: 'Open Bot Avatar', color: AVATAR_ROLE_COLORS.gem },
+  'grokbot-blob': { label: 'Community GrokBot', color: AVATAR_ROLE_COLORS.orb },
+};
 
 const states = {
   idle: 'Idle',
@@ -26,6 +29,9 @@ const states = {
 
 const mount = document.getElementById('fixture')!;
 const previewOnly = mount.dataset.preview === 'true';
+const sampleThemes: (keyof typeof themes)[] = previewOnly
+  ? [...ORIGINAL_AVATAR_THEMES, 'open-avatar-cat', 'grokbot-blob']
+  : [...ORIGINAL_AVATAR_THEMES];
 
 function Fixture() {
   const [state, setState] = useState<AvatarFaceState>('idle');
@@ -33,7 +39,7 @@ function Fixture() {
   const [awaitingCompletion, setAwaitingCompletion] = useState(false);
   const motion = { state, sustain: true };
   return (
-    <main className="face-fixture" data-scene={state}>
+    <main className="face-fixture" data-scene={state} data-preview={previewOnly || undefined}>
       <header>
         <span className="fixture-brand">BambooShift</span>
         <h1>Every Bot has a face</h1>
@@ -41,11 +47,15 @@ function Fixture() {
           <span className="fixture-state" aria-live="polite">
             {states[state]}
           </span>
-          <span>Task expressions across five avatar themes</span>
+          <span>
+            {previewOnly
+              ? 'Natural colors. Original and community characters.'
+              : 'Task expressions across five avatar themes'}
+          </span>
         </p>
       </header>
       <div className="fixture-grid" id="faces">
-        {ORIGINAL_AVATAR_THEMES.map((theme) => (
+        {sampleThemes.map((theme) => (
           <article key={theme} data-face-sample={theme}>
             <h2>{themes[theme].label}</h2>
             <div className="fixture-hero">

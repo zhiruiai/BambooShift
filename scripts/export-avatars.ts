@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
-import { AvatarArtwork } from '../web/src/components/AvatarArtwork';
+import { AvatarArtwork, AvatarSourceArtwork } from '../web/src/components/AvatarArtwork';
 import { AVATAR_THEMES, AVATAR_THEME_NAMES } from '../web/src/avatarThemes';
 import './avatars/sync-community-packs.mjs';
 import type { BotAgent } from '../shared/types';
@@ -20,7 +20,9 @@ const directory = resolve('web/public/avatars');
 await mkdir(directory, { recursive: true });
 await copyFile('shared/avatar-face-motion.json', 'mobile/assets/avatars/avatar-face-motion.json');
 const rows: string[] = [];
-for (const theme of AVATAR_THEMES.filter((theme) => !theme.startsWith('open-avatar-') && !theme.startsWith('grokbot-'))) {
+for (const theme of AVATAR_THEMES.filter(
+  (theme) => !theme.startsWith('open-avatar-') && !theme.startsWith('grokbot-'),
+)) {
   const target = resolve(directory, theme);
   const mobile = resolve('mobile/assets/avatars', theme);
   await Promise.all([mkdir(target, { recursive: true }), mkdir(mobile, { recursive: true })]);
@@ -30,7 +32,15 @@ for (const theme of AVATAR_THEMES.filter((theme) => !theme.startsWith('open-avat
       createElement(AvatarArtwork, { theme, shape: agent.avatar, color: agent.color, size: 512 }),
     ).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
     drawings.push(svg.replace(/<svg[^>]*>/, '').replace('</svg>', ''));
-    await writeFile(resolve(mobile, `${name}.svg`), svg + '\n');
+    const source = renderToStaticMarkup(
+      createElement(AvatarSourceArtwork, {
+        theme,
+        shape: agent.avatar,
+        color: agent.color,
+        size: 512,
+      }),
+    ).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+    await writeFile(resolve(mobile, `${name}.svg`), source + '\n');
     for (const output of theme === 'companions' ? [target, directory] : [target]) {
       await writeFile(resolve(output, `${name}.svg`), svg + '\n');
       await sharp(Buffer.from(svg))

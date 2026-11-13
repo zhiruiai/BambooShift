@@ -17,6 +17,7 @@ import {
 } from './avatarThemes';
 import { APPEARANCE_STORAGE_KEY, createAppearanceStore } from './appearance';
 import { AvatarArtwork } from './components/AvatarArtwork';
+import { displayAvatarColor } from '../../shared/avatar-palette';
 
 test('existing device preferences preserve page appearance and default only the new avatar theme', () => {
   let raw = JSON.stringify({ version: 1, theme: 'dark', accent: 'neutral', spellCheck: false });
@@ -80,13 +81,17 @@ test('the original SVG families contain six distinct forms and safe Bot colors w
       assert.equal(png.height, 512);
       const exported = await readFile(`web/public/avatars/${theme}/${shape}.svg`, 'utf8');
       assert.match(exported, new RegExp(`data-avatar-theme="${theme}"`));
-      assert.equal(await readFile(`mobile/assets/avatars/${theme}/${shape}.svg`, 'utf8'), exported);
+      const source = await readFile(`mobile/assets/avatars/${theme}/${shape}.svg`, 'utf8');
+      assert.equal(
+        source.replace(/#[a-f\d]{6}/gi, (color) => displayAvatarColor(color)),
+        exported,
+      );
     }
   assert.equal(images.size, 30);
   assert.equal(avatarTheme(undefined), 'companions');
   assert.equal(avatarTheme({ toString: () => 'pandas' }), 'companions');
   assert.equal(avatarShape('https://untrusted.test'), 'orb');
-  assert.equal(avatarColor('url(https://untrusted.test)'), '#8a61ee');
+  assert.equal(avatarColor('url(https://untrusted.test)'), '#3F7F64');
   assert.equal(avatarColor('#A1B2C3'), '#A1B2C3');
 });
 

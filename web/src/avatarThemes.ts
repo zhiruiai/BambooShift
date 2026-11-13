@@ -1,4 +1,5 @@
 import catalog from '../../shared/avatar-packs/catalog.json';
+import { AVATAR_ROLE_COLORS, displayAvatarColor } from '../../shared/avatar-palette';
 import { uiText, localizedData, currentLanguage } from './i18n';
 
 export const ORIGINAL_AVATAR_THEMES = [
@@ -42,6 +43,6 @@ export function avatarTheme(value: unknown): AvatarTheme {
 export function avatarShape(value: unknown): AvatarShape {
   return AVATAR_SHAPES.includes(value as AvatarShape) ? (value as AvatarShape) : 'orb';
 }
-export function avatarColor(value: unknown): string {
-  return typeof value === 'string' && /^#[a-f\d]{6}$/i.test(value) ? value : '#8a61ee';
+export function avatarColor(value: unknown, shape?: string): string {
+  return displayAvatarColor(value, AVATAR_ROLE_COLORS[avatarShape(shape)]);
 }
