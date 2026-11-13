@@ -1,0 +1,35 @@
+{
+  "recordedAt": "2026-11-13T06:42:01.970Z",
+  "subject": "Existing independently packaged BambooShift Acceptance desktop service",
+  "route": "Normal local-session and workspace computer action request/approve APIs",
+  "scope": "Synthetic shell commands only; no model, UI, keyboard, screenshot or OS permission operations",
+  "checks": [
+    {
+      "case": "approved execution",
+      "status": "passed",
+      "pendingDidNotExecute": true,
+      "stdout": "synthetic stdout",
+      "stderr": "synthetic stderr",
+      "exitCode": 0,
+      "fileBytesMatched": true
+    },
+    {
+      "case": "rejected approval",
+      "status": "passed",
+      "fileCreated": false
+    },
+    {
+      "case": "nonzero exit receipt",
+      "status": "passed",
+      "exitCode": 7,
+      "stderr": "synthetic nonzero"
+    }
+  ],
+  "limitation": "This installed runtime predates host-shell stop fix 3bf4f08. This result verifies ordinary shell execution, not the newer process-group cancellation fix.",
+  "localShellAvailable": true,
+  "targetMode": "local",
+  "installedWorkerSha256": "23369fa2a172a743fbd00b17d56b65749955bffce2060e4fd8c064a0b40cbb82",
+  "result": "passed",
+  "syntheticDirectoryRemoved": true,
+  "testSessionClosed": true
+}
