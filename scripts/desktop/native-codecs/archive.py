@@ -18,7 +18,9 @@ def create_archive(root, output, names):
     entries = []
     private = [str(root).encode(), str(Path.home()).encode()]
     account = os.environ.get("USER", "")
-    if account and len(account) >= 4:
+    # Generic system/CI account words are not personal identifiers. Their full
+    # home and build paths remain forbidden, as do other local account names.
+    if account and len(account) >= 4 and account not in {"runner", "ubuntu", "root"}:
         private.append(account.encode())
     for name in names:
         path = root / name

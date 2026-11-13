@@ -16,6 +16,7 @@ import { basename, dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifiedArchive } from '../archive-cache.mjs';
 import { copyDesktopRuntime } from '../runtime-copy.mjs';
+import { defaultProfile, inspectToolchain, readToolchainReport } from './toolchain.mjs';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const legal = join(root, 'legal/third-party/sharp-libvips-1.3.4');
@@ -126,7 +127,7 @@ export async function prepareCandidate({ output, cache, fetchMissing = false }) 
   );
   await writeFile(
     join(output, 'bin/clang++'),
-    '#!/usr/bin/env bash\nset -e\nexec /usr/bin/clang++ -isystem "$SDKROOT/usr/include/c++/v1" "$@"\n',
+    '#!/usr/bin/env bash\nset -e\nexec "$BAMBOOSHIFT_NATIVE_CXX" -isystem "$SDKROOT/usr/include/c++/v1" "$@"\n',
     { mode: 0o755 },
   );
   await writeFile(
@@ -174,25 +175,20 @@ function buildEnvironment(output, cache, tools, jobs) {
   };
 }
 
-async function build({ output, cache, tools, jobs, fetchMissing }) {
+async function build({ output, cache, tools, jobs, fetchMissing, profile = defaultProfile }) {
   if (process.platform !== 'darwin' || process.arch !== 'arm64')
     throw Error('This candidate is qualified only for native macOS arm64 builds.');
   tools = resolve(tools);
   output = resolve(output);
   cache = resolve(cache);
-  const env = buildEnvironment(output, cache, tools, jobs);
-  for (const [tool, version] of Object.entries({
-    meson: '1.12.1',
-    ninja: '1.13.2.git.kitware.jobserver-pipe-1',
-    cmake: '4.4.4',
-  })) {
-    const actual = execFileSync(join(tools, 'bin', tool), ['--version'], {
-      encoding: 'utf8',
-    }).trim();
-    if (!actual.split('\n')[0].endsWith(version))
-      throw Error(`Unexpected build-tool version: ${tool}.`);
-  }
+  const toolchain = inspectToolchain({ profile, tools });
+  const env = { ...buildEnvironment(output, cache, tools, jobs), ...toolchain.environment };
   await prepareCandidate({ output, cache, fetchMissing });
+  await writeFile(
+    join(output, 'TOOLCHAIN.json'),
+    JSON.stringify(toolchain.report, null, 2) + '\n',
+    { flag: 'wx' },
+  );
   const log = createWriteStream(join(output, 'logs/build.log'), { flags: 'wx', mode: 0o600 });
   const child = spawn('/bin/bash', [join(dirname(script), 'run.sh')], {
     cwd: output,
@@ -239,10 +235,13 @@ export async function sourceInventory(directory) {
   return { version: 1, files };
 }
 
-async function packageCandidate({ output, cache, tools }) {
+async function packageCandidate({ output, cache, tools, profile = defaultProfile }) {
   output = resolve(output);
   cache = resolve(cache);
   tools = resolve(tools);
+  const toolchain = readToolchainReport(await json(join(output, 'TOOLCHAIN.json')));
+  if (JSON.stringify(inspectToolchain({ profile, tools }).report) !== JSON.stringify(toolchain))
+    throw Error('Packaging must use the same checked toolchain as compilation.');
   const catalogBytes = await readFile(join(legal, 'SOURCE-INPUTS-CANDIDATE.json'));
   const catalog = JSON.parse(catalogBytes);
   const built = await json(join(output, 'inputs.json'));
@@ -289,6 +288,7 @@ async function packageCandidate({ output, cache, tools }) {
     identity: 'bambooshift-native-image-codecs',
     status: 'candidate-only',
     target: { platform: 'darwin', arch: 'arm64' },
+    toolchain,
     upstreamRevision: catalog.upstreamRevision,
     buildRecipeSha256: recipeHash,
     recipePatchSha256: catalog.recipePatchSha256,
@@ -302,6 +302,8 @@ async function packageCandidate({ output, cache, tools }) {
   const sourceFiles = [
     'LICENSE',
     'scripts/desktop/native-codecs/build.mjs',
+    'scripts/desktop/native-codecs/toolchain.mjs',
+    'docs/native-codecs-ci.md',
     'scripts/desktop/native-codecs/run.sh',
     'scripts/desktop/native-codecs/archive.py',
     'scripts/desktop/archive-cache.mjs',
@@ -356,6 +358,7 @@ async function packageCandidate({ output, cache, tools }) {
     schemaVersion: 1,
     identity: buildInfo.identity,
     target: buildInfo.target,
+    toolchain,
     upstreamRevision: catalog.upstreamRevision,
     buildRecipeSha256: recipeHash,
     recipePatchSha256: catalog.recipePatchSha256,
@@ -391,14 +394,14 @@ async function main() {
   for (let index = 0; index < args.length; index++) {
     const arg = args[index];
     if (arg === '--fetch') options.fetchMissing = true;
-    else if (['--output', '--cache', '--tools', '--jobs'].includes(arg)) {
+    else if (['--output', '--cache', '--tools', '--jobs', '--profile'].includes(arg)) {
       if (!args[index + 1]) throw Error('Missing option value.');
       options[arg.slice(2)] = arg === '--jobs' ? Number(args[++index]) : args[++index];
     } else throw Error('Unknown build option.');
   }
   if (!options.output || !options.cache || (['build', 'package'].includes(mode) && !options.tools))
     throw Error(
-      'Use prepare|build|package --output <build-path> --cache <verified-cache> [--tools <isolated-tools>] [--jobs 1|2] [--fetch].',
+      'Use prepare|build|package --output <build-path> --cache <verified-cache> [--tools <isolated-tools>] [--jobs 1|2] [--profile <reviewed-profile>] [--fetch].',
     );
   if (mode === 'prepare') return prepareCandidate(options);
   if (mode === 'build') return build(options);

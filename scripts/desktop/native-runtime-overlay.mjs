@@ -30,6 +30,7 @@ import {
 const execute = promisify(execFile);
 const overlayPath = 'runtime/native-image-runtime/overlay.json';
 const json = (value) => Buffer.from(JSON.stringify(value, null, 2) + '\n');
+export { member as readNativeArchiveMember, snapshotArtifacts as snapshotNativeArtifacts };
 const safe = (value) =>
   typeof value === 'string' &&
   value
@@ -140,6 +141,7 @@ export async function stageNativeRuntimeOverlay({
       manifestPath: join(distribution, 'distribution.json'),
       artifactsDirectory: distribution,
       expectedManifestSha256: pin,
+      reviewedSourceSupport: reviewed.sourceSupport,
     });
     const archive = join(distribution, manifest.binary.filename);
     const index = JSON.parse(await member(archive, manifest.notices.path));
@@ -275,6 +277,7 @@ export async function verifyStagedNativeRuntimeOverlay({ sourceRoot, output } = 
     manifestPath: join(distribution, 'distribution.json'),
     artifactsDirectory: distribution,
     expectedManifestSha256: pin,
+    reviewedSourceSupport: reviewed.sourceSupport,
   });
   const manifest = await readJson(output, record.distribution.path);
   for (const [key, value] of [

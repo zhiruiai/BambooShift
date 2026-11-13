@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
+import { readToolchainReport } from './native-codecs/toolchain.mjs';
 import { lstat, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -10,6 +11,44 @@ import { boundedBytes, realDirectory } from '../dependency-notice-files.mjs';
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const legal = 'legal/third-party/sharp-libvips-1.3.4';
+export const nativeSourceSupportPaths = Object.freeze([
+  'LICENSE',
+  'scripts/desktop/native-codecs/build.mjs',
+  'scripts/desktop/native-codecs/run.sh',
+  'scripts/desktop/native-codecs/archive.py',
+  'scripts/desktop/archive-cache.mjs',
+  'scripts/desktop/native-runtime-distribution.mjs',
+  'scripts/dependency-notice-files.mjs',
+  ...[
+    'SOURCE-INPUTS-CANDIDATE.json',
+    'NATIVE-NOTICES.json',
+    'candidate-recipe.patch',
+    'REBUILD.md',
+    'BUILD-TOOLS.txt',
+    'DISTRIBUTING-CUSTOM.md',
+  ].map((name) => `${legal}/${name}`),
+]);
+
+export function validateReviewedSourceSupport(value, { manifestSha256, sourceArchiveSha256 }) {
+  if (value === undefined) return undefined;
+  if (
+    value?.schemaVersion !== 1 ||
+    value.distributionManifestSha256 !== manifestSha256 ||
+    value.sourceArchiveSha256 !== sourceArchiveSha256 ||
+    !/^[a-f0-9]{40}$/.test(value.sourceCommit) ||
+    !Array.isArray(value.files) ||
+    value.files.length !== nativeSourceSupportPaths.length ||
+    new Set(value.files.map((file) => file.path)).size !== nativeSourceSupportPaths.length ||
+    value.files.some(
+      (file) =>
+        !nativeSourceSupportPaths.includes(file.path) || !/^[a-f0-9]{64}$/.test(file.sha256),
+    )
+  )
+    throw Error(
+      'Reviewed source support must bind this exact distribution and complete support inventory.',
+    );
+  return new Map(value.files.map((file) => [file.path, file.sha256]));
+}
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const safePath = (value) =>
   typeof value === 'string' &&
@@ -225,6 +264,7 @@ export async function verifyNativeDistribution({
   manifestPath,
   artifactsDirectory = dirname(manifestPath),
   expectedManifestSha256,
+  reviewedSourceSupport,
   sourceRoot = root,
 } = {}) {
   sourceRoot = await realDirectory(resolve(sourceRoot));
@@ -332,25 +372,16 @@ export async function verifyNativeDistribution({
       requireSource(`source-cache/${item.filename}`, item.sha256, item.bytes);
     for (const item of inputs.additionalLocalPatches ?? [])
       requireSource(`${legal}/${item.file}`, item.sha256);
-    const support = [
-      'LICENSE',
-      'scripts/desktop/native-codecs/build.mjs',
-      'scripts/desktop/native-codecs/run.sh',
-      'scripts/desktop/native-codecs/archive.py',
-      'scripts/desktop/archive-cache.mjs',
-      'scripts/desktop/native-runtime-distribution.mjs',
-      'scripts/dependency-notice-files.mjs',
-      ...[
-        'SOURCE-INPUTS-CANDIDATE.json',
-        'NATIVE-NOTICES.json',
-        'candidate-recipe.patch',
-        'REBUILD.md',
-        'BUILD-TOOLS.txt',
-        'DISTRIBUTING-CUSTOM.md',
-      ].map((name) => `${legal}/${name}`),
-    ];
-    for (const path of support)
-      requireSource(path, digest(await boundedBytes(sourceRoot, join(sourceRoot, path))));
+    const reviewedSupport = validateReviewedSourceSupport(reviewedSourceSupport, {
+      manifestSha256: expectedManifestSha256,
+      sourceArchiveSha256: manifest.source.sha256,
+    });
+    for (const path of nativeSourceSupportPaths)
+      requireSource(
+        path,
+        reviewedSupport?.get(path) ??
+          digest(await boundedBytes(sourceRoot, join(sourceRoot, path))),
+      );
     const binaryMembers = await tarListing(archives.binary);
     for (const item of [manifest.binary.library, manifest.binary.versions]) {
       if (
@@ -374,6 +405,13 @@ export async function verifyNativeDistribution({
       buildInfo.originalNpmArtifact !== false
     )
       throw Error('Native build provenance differs from the custom distribution.');
+    if (manifest.toolchain !== undefined || buildInfo.toolchain !== undefined) {
+      const toolchain = readToolchainReport(manifest.toolchain);
+      if (JSON.stringify(toolchain) !== JSON.stringify(readToolchainReport(buildInfo.toolchain)))
+        throw Error('Build and distribution toolchain provenance differs.');
+      const helper = 'scripts/desktop/native-codecs/toolchain.mjs';
+      requireSource(helper, digest(await boundedBytes(sourceRoot, join(sourceRoot, helper))));
+    }
     const legalBytes = await tarMember(archives.binary, manifest.notices.path);
     if (digest(legalBytes) !== manifest.notices.sha256)
       throw Error('Native notice index checksum differs.');

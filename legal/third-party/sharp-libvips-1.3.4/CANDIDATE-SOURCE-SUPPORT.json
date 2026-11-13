@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "distributionManifestSha256": "e5b8f98121555a3d706e30dd95d9220fff8c80bd2cc76d510aca3e8edcb246fd",
+  "sourceArchiveSha256": "625344c534c8fad74df3b61ecca8904c56dda425e88d39bd5407b9d445ae39d3",
+  "sourceCommit": "d65895263b26d68731eb5a8c25279b1396b0de87",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "7cf382e080f2112af4a7d3958f65df654a47cca4d13192a2a03163f04183b93b"
+    },
+    {
+      "path": "scripts/desktop/native-codecs/build.mjs",
+      "sha256": "0cad16b563cb4797382c93caab05f1165ddc7b18b9703750e3237f5b9b92713d"
+    },
+    {
+      "path": "scripts/desktop/native-codecs/run.sh",
+      "sha256": "cb7012b4a57553a9aceb2e94c3b15ecc289decc562b0aa02b8c9b731204d90b4"
+    },
+    {
+      "path": "scripts/desktop/native-codecs/archive.py",
+      "sha256": "01ac112a1dd2407e61fc2c2a35d3cbe8c4bf803376aab6f7d19c5ad306656534"
+    },
+    {
+      "path": "scripts/desktop/archive-cache.mjs",
+      "sha256": "682942fb6123136336ab0638af5ebb8d4e3e2b40969ff62bcac7d9411b7d233d"
+    },
+    {
+      "path": "scripts/desktop/native-runtime-distribution.mjs",
+      "sha256": "b389b590b213a2a344bb7ad79360e69830a91baea755d4e56511999c65a51eb9"
+    },
+    {
+      "path": "scripts/dependency-notice-files.mjs",
+      "sha256": "017f6c1a0630e3db3bdd151f43841fb3f81309714fa38ccfe7c5f566fff5a010"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/SOURCE-INPUTS-CANDIDATE.json",
+      "sha256": "44ea24ef5fed55f50a22391228ef4bb5c086682ec89773eccd9c5962159a51f0"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/NATIVE-NOTICES.json",
+      "sha256": "414fea5a1d93b888aff8cbff50a4432d743d1bc9d3eae17a10bc2daedaadd886"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/candidate-recipe.patch",
+      "sha256": "8a9ced35580ae8a1764f5e26ad8ee128940dd26b8d9397f6fde7d616ae509635"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/REBUILD.md",
+      "sha256": "17dbabd10a359301e1034207413047c6e8b7e5b1cb8b0c83fc4a47866218c0a7"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/BUILD-TOOLS.txt",
+      "sha256": "ddb82c2b4381501b91be85c51918c4ad61d35a7f555008b2f846adad6917f731"
+    },
+    {
+      "path": "legal/third-party/sharp-libvips-1.3.4/DISTRIBUTING-CUSTOM.md",
+      "sha256": "8cdf0cd3d0be6a152ce9e67e1c71205c71671f2552a989ce5e2a54cf75c68f2a"
+    }
+  ]
+}

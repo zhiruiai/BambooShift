@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { lstat, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { boundedBytes, guardedPath } from '../dependency-notice-files.mjs';
+import { validateReviewedSourceSupport } from './native-runtime-distribution.mjs';
 
 const legal = 'legal/third-party/sharp-libvips-1.3.4';
 export const packageName = '@img/sharp-libvips-darwin-arm64';
@@ -21,6 +22,24 @@ export const digest = (bytes) => createHash('sha256').update(bytes).digest('hex'
 export const sha = (value) => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 export const readJson = async (root, path) =>
   JSON.parse(await boundedBytes(root, join(root, path)));
+
+async function sourceSupport(sourceRoot, candidate) {
+  let value;
+  try {
+    value = await readJson(sourceRoot, `${legal}/CANDIDATE-SOURCE-SUPPORT.json`);
+  } catch (error) {
+    if (error.code === 'ENOENT') return undefined;
+    throw error;
+  }
+  const sourceArchiveSha256 = candidate.candidate.correspondingSource?.sha256;
+  if (!sha(sourceArchiveSha256))
+    throw Error('Reviewed source support requires a pinned source archive.');
+  validateReviewedSourceSupport(value, {
+    manifestSha256: candidate.candidate.distributionManifestSha256,
+    sourceArchiveSha256,
+  });
+  return value;
+}
 
 export async function review(sourceRoot) {
   const candidate = await readJson(sourceRoot, `${legal}/CANDIDATE-DARWIN-ARM64.json`);
@@ -50,7 +69,14 @@ export async function review(sourceRoot) {
     Object.values(retained).some((hash) => !sha(hash))
   )
     throw Error('Reviewed retained native input inventory is incomplete.');
-  return { candidate, original, npm, license, retained };
+  return {
+    candidate,
+    original,
+    npm,
+    license,
+    retained,
+    sourceSupport: await sourceSupport(sourceRoot, candidate),
+  };
 }
 
 export async function packageFiles(output, replacementLinks = new Set()) {

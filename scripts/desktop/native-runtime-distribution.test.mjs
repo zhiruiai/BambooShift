@@ -1,9 +1,14 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import test from 'node:test';
 import { nativeNoticeFixture, nativeDistributionFixture } from './fixtures/native-runtime.mjs';
+import {
+  nativeSourceSupportPaths,
+  verifyNativeDistribution,
+} from './native-runtime-distribution.mjs';
+import { hostedProfile, validateToolchain } from './native-codecs/toolchain.mjs';
 
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const legal = 'legal/third-party/sharp-libvips-1.3.4';
@@ -120,4 +125,93 @@ test('source symlinks and stale official feature metadata cannot masquerade as a
   );
   await stale.seal();
   await assert.rejects(stale.verify(), /no-rsvg build/);
+});
+
+test('reviewed source support preserves one exact old candidate without trusting current or archive-provided replacements', async (t) => {
+  const f = await nativeDistributionFixture(t);
+  const manifestPath = join(f.artifacts, 'distribution.json');
+  const manifest = JSON.parse(await readFile(manifestPath));
+  const reviewedSourceSupport = {
+    schemaVersion: 1,
+    sourceCommit: 'a'.repeat(40),
+    distributionManifestSha256: f.pin(),
+    sourceArchiveSha256: manifest.source.sha256,
+    files: await Promise.all(
+      nativeSourceSupportPaths.map(async (path) => ({
+        path,
+        sha256: digest(await readFile(join(f.source, path))),
+      })),
+    ),
+  };
+  await writeFile(
+    join(f.root, 'scripts/desktop/native-codecs/build.mjs'),
+    'New reviewed implementation',
+  );
+  await assert.rejects(f.verify(), /missing or changed/);
+  const verify = (support) =>
+    verifyNativeDistribution({
+      sourceRoot: f.root,
+      manifestPath,
+      artifactsDirectory: f.artifacts,
+      expectedManifestSha256: f.pin(),
+      reviewedSourceSupport: support,
+    });
+  assert.equal((await verify(reviewedSourceSupport)).releaseApproval, false);
+  for (const changes of [
+    { distributionManifestSha256: '0'.repeat(64) },
+    { sourceArchiveSha256: '0'.repeat(64) },
+    { files: reviewedSourceSupport.files.slice(1) },
+    {
+      files: reviewedSourceSupport.files.map((file, index) =>
+        index === 1 ? reviewedSourceSupport.files[0] : file,
+      ),
+    },
+    { sourceCommit: 'unverified' },
+  ])
+    await assert.rejects(verify({ ...reviewedSourceSupport, ...changes }), /exact distribution/);
+  const changed = structuredClone(reviewedSourceSupport);
+  changed.files[0].sha256 = '0'.repeat(64);
+  await assert.rejects(verify(changed), /missing or changed/);
+});
+
+test('new toolchain provenance must match both binary and manifest and include its rebuilding helper', async (t) => {
+  const f = await nativeDistributionFixture(t);
+  const toolchain = validateToolchain(hostedProfile, {
+    platform: 'darwin',
+    arch: 'arm64',
+    node: '24.22.3',
+    pythonArch: 'arm64',
+    python: '3.14.10',
+    pkgConfig: '3.0.10',
+    sdk: '26.2',
+    xcode: 'Xcode 26.3\nBuild version 17C529',
+    clang: 'Apple clang version 17.0.0 (clang-1700.0.0.1)',
+    clangxx: 'Apple clang version 17.0.0 (clang-1700.0.0.1)',
+    meson: '1.12.1',
+    ninja: '1.13.2.git.kitware.jobserver-pipe-1',
+    cmake: 'cmake version 4.4.4',
+  });
+  const helper = 'scripts/desktop/native-codecs/toolchain.mjs';
+  for (const base of [f.root, f.source]) {
+    await mkdir(join(base, helper, '..'), { recursive: true });
+    await writeFile(join(base, helper), 'Synthetic public toolchain helper');
+  }
+  const infoPath = join(f.binary, 'BUILD-INFO.json');
+  await writeFile(infoPath, JSON.stringify({ ...JSON.parse(await readFile(infoPath)), toolchain }));
+  await f.seal();
+  const manifestPath = join(f.artifacts, 'distribution.json');
+  const manifest = { ...JSON.parse(await readFile(manifestPath)), toolchain };
+  const verify = async (value) => {
+    const bytes = JSON.stringify(value);
+    await writeFile(manifestPath, bytes);
+    return f.verify(digest(bytes));
+  };
+  assert.equal((await verify(manifest)).releaseApproval, false);
+  await assert.rejects(verify({ ...manifest, toolchain: undefined }), /Missing native toolchain/);
+  await assert.rejects(
+    verify({ ...manifest, toolchain: { ...toolchain, sdk: '26.5' } }),
+    /Unexpected native toolchain/,
+  );
+  await writeFile(join(f.root, helper), 'Changed rebuilding helper');
+  await assert.rejects(verify(manifest), /missing or changed/);
 });

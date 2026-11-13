@@ -10,6 +10,28 @@ from archive import create_archive
 
 
 class CandidateArchiveTest(unittest.TestCase):
+    def test_generic_system_account_words_are_public_but_full_home_paths_are_private(self):
+        for account in ["runner", "ubuntu", "root"]:
+            with self.subTest(account=account), tempfile.TemporaryDirectory(prefix="codec-ci-") as folder:
+                root = Path(folder) / "stage"
+                root.mkdir()
+                (root / "README.md").write_text("The GitHub runner builds the Ubuntu root filesystem.")
+                with patch.dict(os.environ, {"USER": account}):
+                    create_archive(root, Path(folder) / "public.tgz", ["README.md"])
+                    (root / "README.md").write_text(str(Path.home()) + "/private-project")
+                    with self.assertRaisesRegex(ValueError, "private"):
+                        create_archive(root, Path(folder) / "private.tgz", ["README.md"])
+
+    def test_personal_home_path_and_non_generic_username_remain_forbidden(self):
+        with tempfile.TemporaryDirectory(prefix="codec-account-") as folder:
+            root = Path(folder) / "stage"
+            root.mkdir()
+            with patch.dict(os.environ, {"USER": "private-user"}), patch.object(Path, "home", return_value=Path("/Users/private-user")):
+                for content in ["/Users/private-user/Documents", "Copyright private-user"]:
+                    (root / "data").write_text(content)
+                    with self.assertRaisesRegex(ValueError, "private"):
+                        create_archive(root, Path(folder) / "forbidden.tgz", ["data"])
+
     def test_neutral_reproducible_archive_and_relative_internal_link(self):
         with tempfile.TemporaryDirectory(prefix="codec-archive-test-") as folder:
             root = Path(folder) / "stage"

@@ -14,6 +14,7 @@ import {
 import { join } from 'node:path';
 import test from 'node:test';
 import { nativeDistributionFixture } from './fixtures/native-runtime.mjs';
+import { nativeSourceSupportPaths } from './native-runtime-distribution.mjs';
 import {
   stageNativeRuntimeOverlay,
   verifyStagedNativeRuntimeOverlay,
@@ -94,6 +95,77 @@ async function overlayFixture(t) {
     check: () => verifyStagedNativeRuntimeOverlay({ sourceRoot: f.root, output }),
   };
 }
+
+async function reviewedSupport(f) {
+  const manifest = JSON.parse(await readFile(join(f.artifacts, 'distribution.json')));
+  const path = join(f.root, legal, 'CANDIDATE-DARWIN-ARM64.json');
+  const candidate = JSON.parse(await readFile(path));
+  candidate.candidate.correspondingSource = { sha256: manifest.source.sha256 };
+  await writeFile(path, JSON.stringify(candidate));
+  return {
+    schemaVersion: 1,
+    distributionManifestSha256: f.pin(),
+    sourceArchiveSha256: manifest.source.sha256,
+    sourceCommit: 'e'.repeat(40),
+    files: await Promise.all(
+      nativeSourceSupportPaths.map(async (path) => ({
+        path,
+        sha256: digest(await readFile(join(f.source, path))),
+      })),
+    ),
+  };
+}
+
+test('a repository-reviewed support inventory preserves the exact older candidate after builder changes', async (t) => {
+  const f = await overlayFixture(t);
+  const support = await reviewedSupport(f);
+  await writeFile(join(f.root, legal, 'CANDIDATE-SOURCE-SUPPORT.json'), JSON.stringify(support));
+  await writeFile(
+    join(f.root, 'scripts/desktop/native-codecs/build.mjs'),
+    'New reviewed build implementation',
+  );
+  await assert.rejects(f.verify(), /missing or changed a required build input/);
+  const result = await f.stage();
+  assert.equal(result.releaseApproval, false);
+  assert.equal((await f.check()).releaseApproval, false);
+});
+
+test('candidate artifacts cannot supply their own source support exemption', async (t) => {
+  const f = await overlayFixture(t);
+  await writeFile(
+    join(f.artifacts, 'CANDIDATE-SOURCE-SUPPORT.json'),
+    JSON.stringify(await reviewedSupport(f)),
+  );
+  await writeFile(
+    join(f.root, 'scripts/desktop/native-codecs/build.mjs'),
+    'Different checkout support',
+  );
+  await assert.rejects(f.stage(), /missing or changed a required build input/);
+  assert.deepEqual(
+    await readFile(join(f.output, f.pkg, 'lib/libvips-cpp.8.18.7.dylib')),
+    f.original,
+  );
+});
+
+test('reviewed source support cannot cover another distribution, source archive or changed source file', async (t) => {
+  for (const mutation of ['distribution', 'archive', 'member', 'missing']) {
+    const f = await overlayFixture(t);
+    const support = await reviewedSupport(f);
+    if (mutation === 'distribution') support.distributionManifestSha256 = '0'.repeat(64);
+    if (mutation === 'archive') support.sourceArchiveSha256 = '0'.repeat(64);
+    if (mutation === 'member') support.files[0].sha256 = '0'.repeat(64);
+    if (mutation === 'missing') support.files.pop();
+    await writeFile(join(f.root, legal, 'CANDIDATE-SOURCE-SUPPORT.json'), JSON.stringify(support));
+    await assert.rejects(
+      f.stage(),
+      /Reviewed source support|missing or changed a required build input/,
+    );
+    assert.deepEqual(
+      await readFile(join(f.output, f.pkg, 'lib/libvips-cpp.8.18.7.dylib')),
+      f.original,
+    );
+  }
+});
 
 test('candidate overlay keeps source and notices, replaces only library/versions and preserves addon', async (t) => {
   const f = await overlayFixture(t);
