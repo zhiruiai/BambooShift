@@ -148,7 +148,9 @@ class _BotFormState extends State<BotForm> {
                       border: Border.all(
                         width: 2,
                         color: draft['avatar'] == shape
-                            ? Theme.of(context).colorScheme.primary
+                            ? avatarColorValue(
+                                displayAvatarColor(draft['color']),
+                              )
                             : Colors.transparent,
                       ),
                     ),
@@ -187,7 +189,7 @@ class _BotFormState extends State<BotForm> {
                     child:
                         displayAvatarColor(draft['color']).toLowerCase() ==
                             hex.toLowerCase()
-                        ? const Icon(Icons.check, color: Colors.white)
+                        ? const Icon(Icons.check, color: Color(0xff182d3d))
                         : null,
                   ),
                 ),

@@ -2,6 +2,9 @@
    Component light-dark() values retain their original light appearance. */
 :root {
   color-scheme: light;
+  --avatar-selection-ink: light-dark(#1868c6, #81b7ff);
+  --avatar-selection-soft: light-dark(#eff6ff, #172c45);
+  --avatar-selection-border: light-dark(#9fcaff, #416c9f);
   --bg-canvas: #f4f5f6;
   --surface: #ffffff;
   --surface-subtle: #f8f7f9;

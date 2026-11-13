@@ -49,7 +49,7 @@ function Fixture() {
           </span>
           <span>
             {previewOnly
-              ? 'Natural colors. Original and community characters.'
+              ? 'Vivid colors. Original and community characters.'
               : 'Task expressions across five avatar themes'}
           </span>
         </p>

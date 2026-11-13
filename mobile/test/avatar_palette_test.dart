@@ -24,6 +24,16 @@ void main() {
     expect(avatarRoleColors, shared['roles']);
     expect(legacyAvatarColors, shared['legacy']);
     expect(avatarPurpleRange, shared['purple']);
+    const previous = [
+      '#3f7f64',
+      '#4d7f9a',
+      '#879348',
+      '#c27c50',
+      '#c39a43',
+      '#b86f74',
+    ];
+    expect(previous.map(displayAvatarColor).toList(), avatarColors);
+    expect(avatarColors.map(displayAvatarColor).toList(), avatarColors);
     for (final entry in legacyAvatarColors.entries) {
       expect(displayAvatarColor(entry.key.toUpperCase()), entry.value);
     }
@@ -33,13 +43,13 @@ void main() {
     }
     expect(
       displayAvatarColor(null, fallback: avatarRoleColors['drop']!),
-      '#4D7F9A',
+      '#FF263C',
     );
     expect(displayAvatarColor('not-a-color'), defaultAvatarColor);
   });
 
   testWidgets(
-    'legacy purple reaches the same natural fill in still and animated renderers',
+    'legacy purple reaches the same reference fill in still and animated renderers',
     (tester) async {
       const profile = {'avatar': 'orb', 'color': '#76568d'};
       final theme = GeneratedAvatarTheme.parse({
@@ -72,25 +82,25 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final bamboo = avatarColorValue(defaultAvatarColor);
+      final blue = avatarColorValue(defaultAvatarColor);
       for (final svg in tester.widgetList<SvgPicture>(
         find.byType(SvgPicture),
       )) {
         final mapper =
             (svg.bytesLoader as SvgAssetLoader).colorMapper!
                 as AvatarColorMapper;
-        expect(mapper.color, bamboo);
+        expect(mapper.color, blue);
         expect(mapper.baseColor, const Color(0xff8b5cf6));
       }
       expect(
         (tester.widget<AvatarFace>(find.byType(AvatarFace)).colorMapper
                 as AvatarColorMapper)
             .color,
-        bamboo,
+        blue,
       );
       expect(
         tester.widget<AvatarPackFace>(find.byType(AvatarPackFace)).color,
-        bamboo,
+        blue,
       );
       expect(
         tester
@@ -98,7 +108,7 @@ void main() {
               find.byType(GeneratedAvatarDecoration),
             )
             .color,
-        bamboo,
+        blue,
       );
       expect(profile['color'], '#76568d');
       expect(theme.colors.first, '#9c42d4');
@@ -107,7 +117,7 @@ void main() {
   );
 
   testWidgets(
-    'editing legacy profiles shows the natural swatch without saving until selection',
+    'editing legacy profiles shows the reference swatch without saving until selection',
     (tester) async {
       tester.view
         ..devicePixelRatio = 1
@@ -142,10 +152,10 @@ void main() {
         true,
       );
       expect(changes, isEmpty);
-      await tester.ensureVisible(swatch('#C39A43'));
-      await tester.tap(swatch('#C39A43'));
+      await tester.ensureVisible(swatch('#FF9800'));
+      await tester.tap(swatch('#FF9800'));
       await tester.pumpAndSettle();
-      expect(changes.single['color'], '#C39A43');
+      expect(changes.single['color'], '#FF9800');
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
     },

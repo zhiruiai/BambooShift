@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/avatar_preferences.dart';
+import '../../core/avatar_palette.dart';
 import '../../core/community_avatar_catalog.g.dart';
 import '../../l10n/strings.dart';
 import 'avatar_theme_preview.dart';
@@ -151,6 +152,10 @@ class AvatarThemePicker extends StatelessWidget {
     required VoidCallback? onTap,
   }) {
     final colors = Theme.of(context).colorScheme;
+    final selection = ColorScheme.fromSeed(
+      seedColor: avatarColorValue(defaultAvatarColor),
+      brightness: Theme.of(context).brightness,
+    );
     final caption = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -159,7 +164,7 @@ class AvatarThemePicker extends StatelessWidget {
             name,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: selected ? colors.onSecondaryContainer : colors.onSurface,
+              color: selected ? selection.onPrimaryContainer : colors.onSurface,
               fontWeight: selected ? FontWeight.w600 : null,
             ),
           ),
@@ -167,7 +172,7 @@ class AvatarThemePicker extends StatelessWidget {
         if (selected)
           Padding(
             padding: const EdgeInsetsDirectional.only(start: 4),
-            child: Icon(Icons.check, size: 15, color: colors.primary),
+            child: Icon(Icons.check, size: 15, color: selection.primary),
           ),
       ],
     );
@@ -177,11 +182,11 @@ class AvatarThemePicker extends StatelessWidget {
         selected: selected,
         button: true,
         child: Material(
-          color: selected ? colors.secondaryContainer : colors.surface,
+          color: selected ? selection.primaryContainer : colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: BorderSide(
-              color: selected ? colors.primary : colors.outlineVariant,
+              color: selected ? selection.primary : colors.outlineVariant,
             ),
           ),
           clipBehavior: Clip.antiAlias,

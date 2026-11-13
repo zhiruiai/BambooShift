@@ -1,3 +1,4 @@
+import { displayAvatarColor } from '../../shared/avatar-palette';
 import {
   workspaceSource,
   runInWorkspaceContext as runInNewContext,
@@ -53,7 +54,12 @@ async function bindings() {
     const code = ts.transpileModule(`exports.result = (${expressions[name]});`, {
       compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
     }).outputText;
-    const scope = { ...context, props: context, exports: {} as { result?: unknown } };
+    const scope = {
+      displayAvatarColor,
+      ...context,
+      props: context,
+      exports: {} as { result?: unknown },
+    };
     runInNewContext(code, scope);
     return scope.exports.result;
   };

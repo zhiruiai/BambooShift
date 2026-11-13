@@ -1,3 +1,4 @@
+import { displayAvatarColor } from '../../../shared/avatar-palette';
 import { uiText } from '../i18n';
 import { ChatMentionStatus } from '../components/ChatMentionStatus';
 import { Check, Info, MessageSquare } from 'lucide-react';
@@ -23,11 +24,11 @@ import { chatTimeline } from '../chatTimeline';
 import { historicalAuthor, removedAuthor } from '../messageAuthors';
 import type { WorkspaceModel } from './types';
 import { ChatMessageBody } from './ChatMessageBody';
+import { ChatMessageAuthorView } from './ChatMessageAuthorView';
 import { ChatStarter } from './ChatStarter';
 import { WebResearchCard } from '../components/WebResearchCard';
 import { VoiceCallCard } from '../components/VoiceCallControls';
 import './ChatMessages.css';
-
 export function ChatMessages({
   scrollRef,
   nearBottom,
@@ -385,7 +386,9 @@ export function ChatMessages({
                           !conversation.isGroup &&
                           conversation.agentIds.length === 1 &&
                           /^#[\da-f]{6}$/i.test(agent?.color || '')
-                            ? ({ '--message-bot-color': agent!.color } as CSSProperties)
+                            ? ({
+                                '--message-bot-color': displayAvatarColor(agent!.color),
+                              } as CSSProperties)
                             : undefined
                         }
                       >
@@ -395,14 +398,11 @@ export function ChatMessages({
                         {!groupedWithPrevious &&
                           m.role === 'assistant' &&
                           conversation?.isGroup && (
-                            <div className="message-author" style={{ color: agent?.color }}>
-                              {agent?.name}
-                              {m.agentId && !liveAgent && (
-                                <span className="removed-author">
-                                  {uiText('workspace:text_174688c755b9')}
-                                </span>
-                              )}
-                            </div>
+                            <ChatMessageAuthorView
+                              name={agent?.name}
+                              color={agent?.color}
+                              removed={!!m.agentId && !liveAgent}
+                            />
                           )}
                         {m.role === 'assistant' &&
                           !!m.metadata?.primaryCheckIn &&

@@ -92,11 +92,12 @@
   overflow-wrap: anywhere;
 }
 .appearance-avatar-option:focus-visible {
+  outline-color: var(--avatar-selection-ink);
   outline-offset: -3px;
 }
 .appearance-avatar-option[aria-pressed='true'] {
-  border-color: var(--accent-border);
-  background: var(--accent-soft);
+  border-color: var(--avatar-selection-border);
+  background: var(--avatar-selection-soft);
 }
 .appearance-avatar-preview {
   display: grid;
@@ -121,7 +122,7 @@
   color: var(--text-muted);
 }
 .appearance-avatar-option[aria-pressed='true'] small {
-  color: var(--accent);
+  color: var(--avatar-selection-ink);
 }
 .appearance-avatar-themes > p {
   margin-top: 10px;
@@ -230,9 +231,9 @@
   font-size: 12px;
 }
 .avatar-theme-families button[aria-pressed='true'] {
-  color: var(--accent);
-  border-color: var(--accent-border);
-  background: var(--accent-soft);
+  color: var(--avatar-selection-ink);
+  border-color: var(--avatar-selection-border);
+  background: var(--avatar-selection-soft);
 }
 .avatar-theme-families button span {
   font-variant-numeric: tabular-nums;
@@ -277,7 +278,7 @@
   position: absolute;
   right: 5px;
   top: 5px;
-  color: var(--accent);
+  color: var(--avatar-selection-ink);
 }
 .avatar-theme-collection-note {
   margin: 7px 0 0;

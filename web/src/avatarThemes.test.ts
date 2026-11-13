@@ -91,7 +91,7 @@ test('the original SVG families contain six distinct forms and safe Bot colors w
   assert.equal(avatarTheme(undefined), 'companions');
   assert.equal(avatarTheme({ toString: () => 'pandas' }), 'companions');
   assert.equal(avatarShape('https://untrusted.test'), 'orb');
-  assert.equal(avatarColor('url(https://untrusted.test)'), '#3F7F64');
+  assert.equal(avatarColor('url(https://untrusted.test)'), '#1084FE');
   assert.equal(avatarColor('#A1B2C3'), '#A1B2C3');
 });
 
