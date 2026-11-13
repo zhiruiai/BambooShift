@@ -144,6 +144,7 @@
     dictateInComposer: ['在输入框中听写', 'Dictate in the composer'],
     changeZoom: ['放大、缩小或重置缩放', 'Zoom in, zoom out, or reset zoom'],
     reconnect: ['重新连接', 'Reconnect'],
+    reload: ['刷新页面', 'Reload page'],
     switchWorkspace: ['更换空间…', 'Change workspace…'],
     undo: ['撤销', 'Undo'],
     redo: ['重做', 'Redo'],

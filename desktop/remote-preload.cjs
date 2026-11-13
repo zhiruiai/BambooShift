@@ -2,6 +2,16 @@
 const { contextBridge, ipcRenderer } = require('electron');
 // Only the current remote main frame receives this narrowly scoped capability.
 if (process.isMainFrame && /^https?:$/.test(globalThis.location.protocol)) {
+  // This is only a routing hint. Main validates the current managed view and frame again.
+  if (process.argv?.includes('--openbot-managed-appearance')) {
+    contextBridge.exposeInMainWorld(
+      'openbotAppearance',
+      Object.freeze({
+        read: () => ipcRenderer.sendSync('openbot-appearance:read'),
+        write: (value) => ipcRenderer.sendSync('openbot-appearance:write', value),
+      }),
+    );
+  }
   contextBridge.exposeInMainWorld(
     'openbotVersion',
     Object.freeze({

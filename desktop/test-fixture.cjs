@@ -230,7 +230,10 @@ function fakeElectron() {
     BrowserWindow: Window,
     WebContentsView: View,
     session: { fromPartition: getSession },
-    ipcMain: { handle: (channel, fn) => ipc.set(channel, fn) },
+    ipcMain: {
+      handle: (channel, fn) => ipc.set(channel, fn),
+      on: (channel, fn) => ipc.set(channel, fn),
+    },
     Menu: {
       buildFromTemplate: (items) => ({
         items,

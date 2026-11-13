@@ -36,6 +36,7 @@ const entryFiles = [
   'notifications.cjs',
   'menus.cjs',
   'language.cjs',
+  'appearance.cjs',
   'local-runtime.cjs',
   'product-view.cjs',
 ];

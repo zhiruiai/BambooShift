@@ -17,6 +17,7 @@ const { createSharedDownloadHandler } = require('./shared-download.cjs');
 const { createNotifications } = require('./notifications.cjs');
 const { createMenus } = require('./menus.cjs');
 const { createClientLanguage } = require('./language.cjs');
+const { installManagedAppearance } = require('./appearance.cjs');
 const { createProductView, closeProductView, createSetupWindow } = require('./product-view.cjs');
 const {
   createLocalRuntime,
@@ -94,6 +95,7 @@ function createController(
   let startupAttempted = false;
   let reopenOrigin, reopenLocal;
   const getConnection = () => connection;
+  installManagedAppearance({ ipcMain, getConnection, machine, dataDir });
   const getWindow = () => window;
   const { foregroundFrame, consumeClipboardWrite, consumeMicrophone, bindNativeInput } =
     createInputPermissions({ getConnection, getWindow, machine, now });

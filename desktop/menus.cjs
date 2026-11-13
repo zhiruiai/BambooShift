@@ -1,6 +1,6 @@
 'use strict';
 const { productName } = require('./package.json');
-const { webUrl } = require('./security.cjs');
+const { webUrl, trustedProductSender } = require('./security.cjs');
 function createMenus({
   getConnection,
   getWindow,
@@ -19,6 +19,38 @@ function createMenus({
     noticeOpen = false,
     shortcutsOpen = false,
     localWorkspaceOpen = false;
+  function reloadTarget() {
+    try {
+      const current = getConnection();
+      const contents = current?.view.webContents;
+      if (!contents || contents.isDestroyed()) return;
+      if (
+        machine.snapshot().status === 'connected' &&
+        trustedProductSender(
+          {
+            sender: contents,
+            senderFrame: contents.mainFrame,
+          },
+          current,
+        )
+      )
+        return contents;
+    } catch {
+      /* A renderer can disappear while the native menu is open. */
+    }
+  }
+  function reloadOrReconnect() {
+    const contents = reloadTarget();
+    if (contents) {
+      try {
+        contents.reload();
+        return;
+      } catch {
+        /* Retry a renderer that has just exited. */
+      }
+    }
+    void reconnect();
+  }
   async function showShortcuts() {
     const window = getWindow();
     if (!window || window.isDestroyed() || !window.isVisible() || shortcutsOpen) return;
@@ -41,7 +73,7 @@ function createMenus({
     groups.push(
       section('window', [
         shortcut('/', 'keyboardShortcuts'),
-        shortcut('R', 'reconnect'),
+        shortcut('R', reloadTarget() ? 'reload' : 'reconnect'),
         shortcut(`${shift}O`, 'switchWorkspace'),
         `${['+', '-', '0'].map((key) => modifier + key).join(' / ')}    ${t('changeZoom')}`,
       ]),
@@ -245,10 +277,10 @@ function createMenus({
         submenu: [
           { label: t('localWorkspaceMenu'), click: () => void showLocalWorkspace() },
           {
-            label: t('reconnect'),
+            label: t(reloadTarget() ? 'reload' : 'reconnect'),
             accelerator: 'CmdOrCtrl+R',
             enabled: Boolean(getConnection()?.managed || machine.lastAttempt),
-            click: () => void reconnect(),
+            click: reloadOrReconnect,
           },
           { label: t('switchWorkspace'), accelerator: 'CmdOrCtrl+Shift+O', click: showSetup },
           { type: 'separator' },

@@ -22,6 +22,7 @@ function createProductView({
       // Keep the setup renderer and the shared security defaults disabled.
       spellcheck: true,
       session: ses,
+      ...(attempt.managed ? { additionalArguments: ['--openbot-managed-appearance'] } : {}),
     },
   });
   const current = {

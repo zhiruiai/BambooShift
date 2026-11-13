@@ -1,5 +1,6 @@
 import { AVATAR_THEMES, avatarTheme, type AvatarTheme } from './avatarThemes';
 import { generatedAvatarTheme, type GeneratedAvatarTheme } from './creationPreview';
+import { managedAppearanceStorage, type AppearanceStorage } from './managedAppearance';
 
 export type AppearancePreferences = {
   theme: 'system' | 'light' | 'dark';
@@ -27,7 +28,7 @@ const serverSnapshot: AppearanceSnapshot = Object.freeze({
   resolvedTheme: 'light',
   storageAvailable: false,
 });
-type StorageAccess = Pick<Storage, 'getItem' | 'setItem'>;
+type StorageAccess = AppearanceStorage;
 type AppearanceMedia = {
   readonly matches: boolean;
   addEventListener(type: 'change', listener: () => void): void;
@@ -78,6 +79,31 @@ function parseStored(raw: string | null): AppearancePreferences {
     return { ...defaults };
   }
 }
+function validStored(raw: string): boolean {
+  try {
+    const value = JSON.parse(raw);
+    return (
+      value?.version === 1 &&
+      Object.keys(value).every((key) =>
+        [
+          'version',
+          'theme',
+          'accent',
+          'spellCheck',
+          'avatarTheme',
+          'customAvatarTheme',
+          'useCustomAvatarTheme',
+        ].includes(key),
+      ) &&
+      (value.customAvatarTheme === undefined || !!generatedAvatarTheme(value.customAvatarTheme)) &&
+      (value.useCustomAvatarTheme === undefined ||
+        typeof value.useCustomAvatarTheme === 'boolean') &&
+      !!preferences(value)
+    );
+  } catch {
+    return false;
+  }
+}
 
 /** One device-wide store; callers own disposal when creating a non-singleton instance. */
 export function createAppearanceStore(environment: AppearanceEnvironment = {}) {
@@ -87,10 +113,12 @@ export function createAppearanceStore(environment: AppearanceEnvironment = {}) {
     storageAvailable = false;
   try {
     storage =
-      environment.storage ?? (typeof window === 'undefined' ? undefined : window.localStorage);
+      environment.storage ??
+      managedAppearanceStorage(APPEARANCE_STORAGE_KEY, validStored) ??
+      (typeof window === 'undefined' ? undefined : window.localStorage);
     if (storage) {
       initial = parseStored(storage.getItem(APPEARANCE_STORAGE_KEY));
-      storageAvailable = true;
+      storageAvailable = storage.available !== false;
     }
   } catch {
     /* Storage can be denied while this page remains fully usable. */
@@ -172,7 +200,7 @@ export function createAppearanceStore(environment: AppearanceEnvironment = {}) {
       publish(snapshot, false);
       return;
     }
-    publish(latest, true);
+    publish(latest, storage.available !== false);
   };
   apply();
   media?.addEventListener('change', onMedia);
