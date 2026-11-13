@@ -226,7 +226,7 @@ export function ModelSettingsDialogView(model: ModelSettingsDialogModel) {
                 type="url"
                 value={draft.baseUrl}
                 disabled={locked}
-                onChange={(event) => edit({ baseUrl: event.target.value })}
+                onChange={(event) => edit({ baseUrl: event.target.value, apiKey: '' })}
                 placeholder={uiText('settings:text_75f9d0fc8366')}
               />
               <small>{uiText('settings:text_71c716b74f60')}</small>
