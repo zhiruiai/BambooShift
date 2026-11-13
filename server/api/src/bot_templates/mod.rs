@@ -6,6 +6,8 @@ mod projection;
 mod public_routes;
 mod published;
 mod routes;
+#[cfg(test)]
+mod storage_tests;
 mod store;
 pub use store::BotTemplates;
 

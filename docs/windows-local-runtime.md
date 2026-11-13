@@ -16,7 +16,7 @@ The Rust backend, TypeScript/Pi workers, and shared product API remain the archi
 
 | Boundary | Current implementation | Required change |
 | --- | --- | --- |
-| Backend filesystem | Static assets, deployment ownership, [workspace storage](../server/api/src/workspace/file_storage.rs), [edits and directory listing](../server/api/src/workspace/file_edits.rs) now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). Template storage and shared-Bot database inspection still have Unix-only code. | Finish the remaining adapters and validate the complete native Windows backend. |
+| Backend filesystem | Static assets, deployment ownership, [workspace storage](../server/api/src/workspace/file_storage.rs), [edits and directory listing](../server/api/src/workspace/file_edits.rs) now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). Template storage and shared-Bot database inspection now share directory and metadata adapters; private configuration and the complete runtime still need Windows qualification. | Finish the remaining adapters and validate the complete native Windows backend. |
 | Private configuration | Windows files inherit the selected parent directory's ACL. An owner-only configuration/database policy has not been implemented or qualified. | Verify private configuration and database ownership without treating Unix mode bits as Windows access control. |
 | Runtime package | [Desktop options](../scripts/desktop/options.mjs), [runtime staging](../scripts/desktop/runtime-package.mjs), and [backend packaging](../scripts/package-backend.mjs) exclude Windows bundled services. | Support native Windows binaries, verified Node archives, and platform-specific native dependencies. |
 | Desktop launcher | [Local runtime](../desktop/local-runtime.cjs) assumes POSIX ownership, paths, and process groups. Host-command consent is coupled to the macOS Cua driver. | Separate runtime, shell, and desktop capabilities; implement Windows private storage and lifecycle handling. |
@@ -81,6 +81,25 @@ recreations. These checks read metadata, not file bodies. Real Pi regression tes
 use the current volume's actual case behavior; native Windows short-name and
 installed-package behavior still need separate runtime qualification.
 
+Template and shared-Bot database initialization now reuse one
+[database-storage boundary](../server/api/src/db/storage.rs). It checks the main
+file and SQLite sidecars, permits exclusive creation only for writable stores, and
+retains the source directory chain. Global template and sharing stores hold this
+chain during initialization; shared-source connections hold it for their lifetime.
+Source checks re-walk currently named
+directories and compare main-file identity without treating ordinary writes or
+sidecar creation and removal as replacement. A missing shared source remains
+unavailable; reading it never creates a database.
+
+Database metadata inspection is deliberately separate from file-content access.
+Unix queries directory entries without opening and closing the database, which
+would otherwise risk [releasing SQLite's process-wide advisory locks](https://www.sqlite.org/howtocorrupt.html#posix_advisory_locks_canceled_by_a_separate_thread_doing_close).
+Windows queries attributes with a short-lived handle that permits read, write and
+delete sharing, without requesting DELETE access. SQLx still opens SQLite by
+pathname: these checks do **not** replace its VFS or eliminate all path-replacement
+races. Account and workspace database initialization still have separate pathname checks.
+Private configuration and Windows ACL qualification remain separate work.
+
 The foundation at `e50f4df` passed 24 release-mode checks on macOS, including
 real HTTP asset routes and cross-process deployment-lock contention and release.
 After the workspace and registry changes, the complete library test target plus
@@ -97,6 +116,22 @@ workspace check uses a narrow private `ApiError` adapter and excludes HTTP,
 authorization and database integration. This verifies Windows API types and test
 compilation, **not execution**. The full Windows backend, runtime tests and
 installed-package flow still require separate qualification.
+
+The database change passed the complete library target and eight template,
+shared-Bot and cross-process lock integration targets in release mode on macOS:
+**159 passed, zero failed**. Three environment-dependent library tests remained
+ignored. The lock helper is excluded from ordinary test enumeration and was invoked
+by the two parent tests in ten separate child processes. Both rollback-journal and
+WAL locks remained effective during repeated entry queries; after rollback the
+same child probe successfully committed a real write. Source reads also survived
+WAL updates and truncate checkpoints, while missing or replaced sources returned
+403 without creating storage. These checks use synthetic temporary data only.
+
+The database adapter additionally passed an isolated Windows MSVC compilation
+check covering 22 actual source/test files, including metadata entry queries and
+the shared database guard. The harness includes the production private-file helper
+and a narrow error adapter; it excludes SQLx, authorization, HTTP and native Windows
+execution. Database runtime behavior is validated separately on macOS.
 
 ## Minimal platform boundaries
 

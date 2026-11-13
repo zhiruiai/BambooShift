@@ -1,12 +1,12 @@
 use super::store::{opaque, sha, unavailable, uuid};
-use crate::{db::State, error::Result, workspace::profiles};
+use crate::{
+    db::{State, storage::DatabaseFiles},
+    error::Result,
+    workspace::profiles,
+};
 use serde_json::{Value, json};
 use sqlx::{Connection, Row, SqliteConnection, sqlite::SqliteConnectOptions};
-use std::{
-    os::unix::fs::MetadataExt,
-    path::{Path, PathBuf},
-    time::Duration,
-};
+use std::{path::PathBuf, time::Duration};
 
 #[derive(Clone)]
 pub(crate) struct Workspace {
@@ -18,20 +18,13 @@ pub(crate) struct Workspace {
 pub(crate) struct SourceDatabase {
     pub conn: SqliteConnection,
     pub directory: PathBuf,
-    paths: Vec<(PathBuf, std::fs::Metadata)>,
+    files: DatabaseFiles,
 }
 pub(crate) struct Source {
     pub profile: Value,
     pub skills: Vec<Value>,
     pub revision: String,
     pub avatar: Option<Vec<u8>>,
-}
-pub(crate) fn safe_file(path: &Path, missing: bool) -> Result<()> {
-    match std::fs::symlink_metadata(path) {
-        Ok(meta) if meta.is_file() && !meta.file_type().is_symlink() && meta.nlink() == 1 => Ok(()),
-        Err(e) if missing && e.kind() == std::io::ErrorKind::NotFound => Ok(()),
-        _ => Err(unavailable()),
-    }
 }
 pub(crate) async fn workspace(state: &State, wid: &str) -> Result<Workspace> {
     if !uuid(wid) {
@@ -64,34 +57,17 @@ pub(crate) async fn member(state: &State, user: &str, wid: &str, owner: bool) ->
 }
 impl SourceDatabase {
     pub async fn open(state: &State, workspace: &Workspace) -> Result<Self> {
-        let root = &state.config.data_dir;
         let parents = if workspace.key == "legacy" {
-            vec![root.clone()]
+            vec![]
         } else {
-            vec![
-                root.clone(),
-                root.join("spaces"),
-                root.join("spaces").join(&workspace.id),
-            ]
+            vec!["spaces", workspace.id.as_str()]
         };
-        let mut paths = Vec::new();
-        for path in &parents {
-            let metadata = std::fs::symlink_metadata(path).map_err(|_| unavailable())?;
-            if !metadata.is_dir() || metadata.file_type().is_symlink() {
-                return Err(unavailable());
-            }
-            paths.push((path.clone(), metadata));
-        }
-        let directory = parents.last().unwrap().clone();
-        let path = directory.join("openbot.sqlite");
-        safe_file(&path, false)?;
-        paths.push((path.clone(), std::fs::symlink_metadata(&path)?));
-        for suffix in ["-wal", "-shm", "-journal"] {
-            safe_file(&directory.join(format!("openbot.sqlite{suffix}")), true)?;
-        }
+        let files = DatabaseFiles::open(&state.config.data_dir, &parents, "openbot.sqlite")
+            .map_err(|_| unavailable())?;
+        let directory = files.directory().to_owned();
         let mut conn = SqliteConnection::connect_with(
             &SqliteConnectOptions::new()
-                .filename(path)
+                .filename(files.path())
                 .read_only(true)
                 .create_if_missing(false)
                 .busy_timeout(Duration::from_secs(1)),
@@ -104,30 +80,13 @@ impl SourceDatabase {
         let result = Self {
             conn,
             directory,
-            paths,
+            files,
         };
         result.check()?;
         Ok(result)
     }
     pub fn check(&self) -> Result<()> {
-        for (path, before) in &self.paths {
-            let after = std::fs::symlink_metadata(path).map_err(|_| unavailable())?;
-            if before.dev() != after.dev()
-                || before.ino() != after.ino()
-                || before.is_dir() != after.is_dir()
-                || after.file_type().is_symlink()
-                || (after.is_file() && after.nlink() != 1)
-            {
-                return Err(unavailable());
-            }
-        }
-        for suffix in ["-wal", "-shm", "-journal"] {
-            safe_file(
-                &self.directory.join(format!("openbot.sqlite{suffix}")),
-                true,
-            )?;
-        }
-        Ok(())
+        self.files.check().map_err(|_| unavailable())
     }
     pub async fn exists(&mut self, table: &str) -> Result<bool> {
         Ok(sqlx::query_scalar::<_, i64>(
@@ -242,3 +201,7 @@ fn text(value: &Value, max: usize, empty: bool) -> bool {
         s.encode_utf16().count() <= max && !s.contains('\0') && (empty || !s.trim().is_empty())
     })
 }
+
+#[cfg(test)]
+#[path = "source_tests.rs"]
+mod tests;

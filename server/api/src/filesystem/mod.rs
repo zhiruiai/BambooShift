@@ -5,7 +5,7 @@
 //! must be ordinary objects, never symbolic links or Windows reparse points.
 
 mod metadata;
-pub use metadata::{FileStamp, inspect};
+pub use metadata::{FileStamp, inspect, inspect_entry};
 mod entries;
 pub use entries::directory_entry;
 mod mutation;

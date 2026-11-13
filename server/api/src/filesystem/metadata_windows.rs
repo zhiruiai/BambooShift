@@ -1,10 +1,27 @@
 use super::{FileStamp, Identity, Kind, Version};
+use cap_fs_ext::{FollowSymlinks, OpenOptionsFollowExt};
+use cap_std::fs::{Dir, OpenOptions, OpenOptionsExt};
 use std::{fs::File, io, mem::MaybeUninit, os::windows::io::AsRawHandle};
 use windows_sys::Win32::Storage::FileSystem::{
-    FILE_ATTRIBUTE_REPARSE_POINT, FILE_BASIC_INFO, FILE_ID_INFO, FILE_INFO_BY_HANDLE_CLASS,
-    FILE_STANDARD_INFO, FILE_TYPE_DISK, FileBasicInfo, FileIdInfo, FileStandardInfo,
-    GetFileInformationByHandleEx, GetFileType,
+    FILE_ATTRIBUTE_REPARSE_POINT, FILE_BASIC_INFO, FILE_FLAG_BACKUP_SEMANTICS,
+    FILE_FLAG_OPEN_REPARSE_POINT, FILE_ID_INFO, FILE_INFO_BY_HANDLE_CLASS, FILE_READ_ATTRIBUTES,
+    FILE_SHARE_DELETE, FILE_SHARE_READ, FILE_SHARE_WRITE, FILE_STANDARD_INFO, FILE_TYPE_DISK,
+    FileBasicInfo, FileIdInfo, FileStandardInfo, GetFileInformationByHandleEx, GetFileType,
 };
+
+pub(super) fn inspect_entry(parent: &Dir, name: &str) -> io::Result<FileStamp> {
+    let mut options = OpenOptions::new();
+    options
+        .read(true)
+        .follow(FollowSymlinks::No)
+        .access_mode(FILE_READ_ATTRIBUTES)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        // Allow both file and directory attributes, opening a reparse object
+        // itself so inspect can reject every reparse tag before using identity.
+        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS);
+    let file = parent.open_with(name, &options)?.into_std();
+    inspect(&file)
+}
 
 // Each call below pairs one Windows information class with its documented POD
 // result structure. A failed query never exposes an uninitialized result.

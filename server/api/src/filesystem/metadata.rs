@@ -1,8 +1,9 @@
-//! Identity and change information obtained from an already-open file handle.
+//! Identity and change information from handles or non-following entry queries.
 //!
 //! A stamp is a change detector, not a content digest. Callers still check it
 //! before and after I/O and must open paths through the filesystem boundary.
 
+use cap_std::fs::Dir;
 use std::{fs::File, io};
 
 #[cfg(unix)]
@@ -124,6 +125,23 @@ pub fn inspect(file: &File) -> io::Result<FileStamp> {
     platform::inspect(file)
 }
 
+/// Inspect one child without following links or acquiring mutation authority.
+///
+/// Unix uses a metadata query without opening or closing the target file: an
+/// unrelated close of a live SQLite file can release this process's POSIX locks.
+/// Windows uses a short-lived attribute handle with read/write/delete sharing.
+/// The result is a snapshot, not a retained entry or a replacement for SQLite's
+/// own locking. Callers decide whether files, directories or multiple links are
+/// permitted, and must recheck identity around their own operations.
+pub fn inspect_entry(parent: &Dir, name: &str) -> io::Result<FileStamp> {
+    super::component(name)?;
+    platform::inspect_entry(parent, name)
+}
+
 #[cfg(test)]
 #[path = "metadata_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "metadata_entry_tests.rs"]
+mod entry_tests;

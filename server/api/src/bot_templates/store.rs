@@ -1,6 +1,6 @@
 use super::blueprint;
 use crate::{
-    db::State,
+    db::{State, storage::DatabaseFiles},
     error::{ApiError, Result},
     workspace::WorkspaceAccess,
 };
@@ -10,7 +10,6 @@ use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions},
 };
 use std::{
-    os::unix::fs::{MetadataExt, OpenOptionsExt},
     path::Path,
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
@@ -35,43 +34,22 @@ pub(super) struct Template {
 }
 impl BotTemplates {
     pub async fn open(data: &Path) -> Result<Self> {
-        let directory = data.join("platform");
-        let meta = std::fs::symlink_metadata(&directory)?;
-        if !meta.is_dir() || meta.file_type().is_symlink() {
-            return Err(ApiError::new(503, "模板存储不可用。"));
-        }
-        let path = directory.join("bot-templates.sqlite");
-        for suffix in ["", "-wal", "-shm", "-journal"] {
-            let file = directory.join(format!("bot-templates.sqlite{suffix}"));
-            match std::fs::symlink_metadata(file) {
-                Ok(m) if !m.is_file() || m.file_type().is_symlink() || m.nlink() != 1 => {
-                    return Err(ApiError::new(503, "模板存储不可用。"));
-                }
-                Err(e) if e.kind() != std::io::ErrorKind::NotFound => return Err(e.into()),
-                _ => {}
-            }
-        }
-        match std::fs::OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .mode(0o600)
-            .open(&path)
-        {
-            Ok(_) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(e) => return Err(e.into()),
-        }
-        crate::db::private_file(&path)?;
+        let files = DatabaseFiles::prepare(data, &["platform"], "bot-templates.sqlite")
+            .map_err(|_| ApiError::new(503, "模板存储不可用。"))?;
         let pool = SqlitePoolOptions::new()
             .max_connections(4)
             .connect_with(
                 SqliteConnectOptions::new()
-                    .filename(path)
+                    .filename(files.path())
                     .create_if_missing(false)
                     .journal_mode(SqliteJournalMode::Wal)
                     .busy_timeout(Duration::from_secs(5)),
             )
             .await?;
+        if files.check().is_err() {
+            pool.close().await;
+            return Err(ApiError::new(503, "模板存储不可用。"));
+        }
         for sql in [
             "CREATE TABLE IF NOT EXISTS sharing_policies(workspace_id TEXT PRIMARY KEY,data TEXT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS templates(id TEXT PRIMARY KEY,workspace_id TEXT NOT NULL,data TEXT NOT NULL,avatar BLOB)",

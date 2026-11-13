@@ -1,4 +1,7 @@
-use crate::error::{ApiError, Result};
+use crate::{
+    db::storage::DatabaseFiles,
+    error::{ApiError, Result},
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{Row, SqliteConnection, SqlitePool, sqlite::SqliteConnectOptions};
@@ -52,36 +55,22 @@ pub fn sha(value: impl AsRef<[u8]>) -> String {
 }
 impl SharedBots {
     pub async fn open(root: &Path) -> Result<Self> {
-        let path = root.join("platform/shared-bots.sqlite");
-        for suffix in ["", "-wal", "-shm", "-journal"] {
-            super::source::safe_file(
-                &path.with_file_name(format!("shared-bots.sqlite{suffix}")),
-                true,
-            )?;
-        }
-        let mut open = std::fs::OpenOptions::new();
-        open.write(true).create_new(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            open.mode(0o600);
-        }
-        match open.open(&path) {
-            Ok(_) => {}
-            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
-            Err(e) => return Err(e.into()),
-        }
-        crate::db::private_file(&path)?;
+        let files = DatabaseFiles::prepare(root, &["platform"], "shared-bots.sqlite")
+            .map_err(|_| unavailable())?;
         let pool = sqlx::sqlite::SqlitePoolOptions::new()
             .max_connections(4)
             .connect_with(
                 SqliteConnectOptions::new()
-                    .filename(path)
+                    .filename(files.path())
                     .create_if_missing(false)
                     .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
                     .busy_timeout(Duration::from_secs(5)),
             )
             .await?;
+        if files.check().is_err() {
+            pool.close().await;
+            return Err(unavailable());
+        }
         sqlx::query("CREATE TABLE IF NOT EXISTS shared_bots(id TEXT PRIMARY KEY,source_workspace_id TEXT NOT NULL,source_agent_id TEXT NOT NULL,data TEXT NOT NULL,UNIQUE(source_workspace_id,source_agent_id))").execute(&pool).await?;
         sqlx::query("CREATE TABLE IF NOT EXISTS shared_bot_mutations(actor_id TEXT NOT NULL,request_id TEXT NOT NULL,digest TEXT NOT NULL,share_id TEXT NOT NULL,PRIMARY KEY(actor_id,request_id))").execute(&pool).await?;
         Ok(Self {
