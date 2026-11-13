@@ -11,7 +11,8 @@ const render = (svg, size) => {
   const pipeline = sharp(Buffer.from(svg), { density: 576 }).resize(size, size);
   // iOS requires an RGB launcher asset, even when every RGBA pixel is opaque.
   return (svg === master ? pipeline : pipeline.removeAlpha())
-    .png({ compressionLevel: 9 }).toBuffer();
+    .png({ compressionLevel: 9 })
+    .toBuffer();
 };
 const output = async (path, size, svg = master) =>
   writeFile(join(root, path), await render(svg, size));
@@ -40,5 +41,5 @@ for (const [density, size] of Object.entries({
 }))
   await output(`mobile/android/app/src/main/res/mipmap-${density}/ic_launcher.png`, size, opaque);
 await mkdir(join(root, '.local/branding'), { recursive: true });
-await output('.local/branding/icon-1024.png', 1024);
+for (const size of [1024, 2048, 4096]) await output(`.local/branding/icon-${size}.png`, size);
 console.log('Updated Web, iOS and Android icons from the shared SVG master.');

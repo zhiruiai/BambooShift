@@ -41,6 +41,20 @@ The product maps task states to native expressions separately from upstream
 data: approval is `alerting` / `thinking`, success is `celebrate` / `happy`, and
 failure is `sad` / `thinking` (GrokBot / Open Bot Avatar respectively).
 
+## Resolution and export
+
+The 100-unit viewBox is a coordinate system, not a 100-pixel image. Web clients
+draw inline SVG and Flutter draws paths at the current display density. Keep
+that vector path through theme selection, conversation avatars and enlarged
+previews; do not replace it with a thumbnail enlarged by CSS or a bitmap widget.
+The original upstream definitions remain in `upstream.json`.
+
+When a platform or export format requires a bitmap, render from the vector
+source at the requested physical pixel size. Keep the vector master and export
+1×, 2× and 3× assets independently as required; never generate a larger asset
+from a smaller PNG. Application launcher icons have their own platform size
+sets and are generated separately from the product's SVG master.
+
 ## Attribution and limits
 
 Open Bot Avatar is by Dominik Scholz, distributed under MIT. Its repository
