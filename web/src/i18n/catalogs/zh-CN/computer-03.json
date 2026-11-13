@@ -100,7 +100,7 @@
   "text_e19c3b9e266c": "浏览器",
   "text_e32ecc52b381": "当前 Bot 画面",
   "text_e3576b511c1d": "采集于 ",
-  "text_e47b9af3aa30": "若列表里没有辅助程序，可用“＋”选择项目 data/native 下的辅助程序。",
+  "text_e47b9af3aa30": "若列表中没有安装的客户端，可在系统提供“＋”时选择你安装的 BambooShift.app。独立启动执行机时，请选择实际使用的启动应用或桌面控制助手；名称以 macOS 显示为准。",
   "text_e4bd715be09c": "尚未取得画面",
   "text_e53f35dc006b": "运行命令",
   "text_e6b02a08e69a": "正在",

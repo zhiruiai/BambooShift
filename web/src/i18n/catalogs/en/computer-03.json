@@ -100,7 +100,7 @@
   "text_e19c3b9e266c": "Browser",
   "text_e32ecc52b381": "Current Bot screen",
   "text_e3576b511c1d": "Captured at ",
-  "text_e47b9af3aa30": "If the helper is missing, use “+” to select the helper application in the project's data/native folder.",
+  "text_e47b9af3aa30": "If the installed client is missing from the list, use “+” when macOS provides it to select your installed BambooShift.app. For a separately launched execution host, select its actual launching app or desktop control helper; use the name shown by macOS.",
   "text_e4bd715be09c": "No screen captured yet",
   "text_e53f35dc006b": "Run command",
   "text_e6b02a08e69a": "Currently",

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-13",
+  "platform": "macOS arm64",
+  "distributionReady": false,
+  "model": "synthetic controlled OpenAI-compatible endpoint; actual bundled Pi and workspace tools",
+  "checks": {
+    "strictAdHocSignature": true,
+    "noSignupFirstStart": true,
+    "modelSavedThroughUI": true,
+    "realFileReceiptAndMarkdownPreview": true,
+    "modelAndWorkspaceRestoredAfterQuit": true,
+    "secondTaskAfterRestart": true,
+    "runtimeExitedWithClient": true,
+    "runtimeLinksRelative": 10,
+    "bundledPiRunsWithBuildSourceRenamed": true
+  },
+  "files": [
+    {
+      "name": "acceptance-notes.md",
+      "sha256": "b5edc46aff884ab1b67edfdd6eba35d645d77f8dd3d6bd5d6774cf32a588b569"
+    },
+    {
+      "name": "restart-check.md",
+      "sha256": "b5edc46aff884ab1b67edfdd6eba35d645d77f8dd3d6bd5d6774cf32a588b569"
+    }
+  ],
+  "excluded": [
+    "screen capture and keyboard/mouse permission acceptance",
+    "real external model quality",
+    "Windows and Linux runtime packages",
+    "native redistribution approval"
+  ],
+  "sourceBaseline": "2d542c2",
+  "sourceChanges": [
+    "scripts/package-client.mjs",
+    "scripts/desktop/runtime-copy.mjs",
+    "desktop/ui/i18n.js",
+    "desktop/ui/index.html",
+    "web/src/i18n/catalogs/en/computer-01.json",
+    "web/src/i18n/catalogs/en/computer-03.json",
+    "web/src/i18n/catalogs/zh-CN/computer-01.json",
+    "web/src/i18n/catalogs/zh-CN/computer-03.json"
+  ],
+  "packagingScope": "Production backend, workers, dependencies, Electron and signing; isolated local harness kept an explicitly incomplete native notice inventory. This candidate is not a release and does not bypass the production notice collector.",
+  "regressionTests": {
+    "command": "node --import tsx --test desktop/language-ui.test.cjs desktop/language.test.cjs scripts/desktop/runtime-copy.test.mjs scripts/desktop/runtime-package.test.mjs web/src/linux-desktop-ui.test.ts",
+    "passed": 31,
+    "failed": 0
+  }
+}

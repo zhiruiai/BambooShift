@@ -122,6 +122,12 @@ test('host desktop retains existing Mac permissions and explicit selection bound
   assert.match(html, /macOS/);
   assert.match(html, /屏幕录制/);
   assert.match(html, /辅助功能/);
+  assert.match(html, /安装 BambooShift 的这台 Mac/);
+  assert.match(html, /安装的 BambooShift.app/);
+  assert.match(html, /名称以 macOS 显示为准/);
+  assert.match(html, /重新检查权限/);
+  assert.match(html, /不会自动弹出授权或打开系统设置/);
+  assert.doesNotMatch(html, /data\/native|Codex/);
   assert.doesNotMatch(html, /Linux 桌面|仅支持离线应用/);
 });
 

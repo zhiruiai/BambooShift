@@ -218,3 +218,47 @@ test('full computer control is offered only for an eligible local package and st
   assert.deepEqual(JSON.parse(JSON.stringify(fixture.calls)), [{ hostControl: true }]);
   page.hide();
 });
+
+test('failed computer-control startup can retry without control while preserving the remote draft', async () => {
+  const fixture = bridgeFixture();
+  fixture.publish({ localAvailable: true, localHostControlAvailable: true });
+  fixture.bridge.startLocal = async (choice) => {
+    fixture.calls.push(choice);
+    return {
+      status: choice.hostControl ? 'setup' : 'connected',
+      language: 'en',
+      localAvailable: true,
+      localHostControlAvailable: true,
+      localError: choice.hostControl
+        ? '整机操作组件未能启动。请重试，或取消勾选后打开本机工作空间。'
+        : '',
+    };
+  };
+  const page = setupDom(fixture.bridge);
+  await settle();
+  assert.match(page.byId('local-description').textContent, /No account or sign-in needed/);
+  assert.match(page.byId('local-description').textContent, /Configure your own model/);
+  page.byId('workspace-url').value = 'https://draft.example.test';
+  page.byId('workspace-url').emit('input');
+  page.byId('host-control').checked = true;
+  page.byId('host-control').emit('change');
+  page.byId('start-local').emit('click');
+  await settle();
+  assert.equal(page.byId('local-error').hidden, false);
+  assert.match(page.byId('local-error').textContent, /turn off computer control/);
+  assert.equal(page.byId('start-local').disabled, false);
+  assert.equal(page.byId('host-control').disabled, false);
+  assert.equal(page.byId('host-control').checked, true);
+  assert.equal(page.byId('workspace-url').value, 'https://draft.example.test');
+  page.byId('host-control').checked = false;
+  page.byId('host-control').emit('change');
+  page.byId('start-local').emit('click');
+  await settle();
+  assert.deepEqual(JSON.parse(JSON.stringify(fixture.calls)), [
+    { hostControl: true },
+    { hostControl: false },
+  ]);
+  assert.equal(page.byId('local-error').hidden, true);
+  assert.equal(page.document.body.hidden, true);
+  page.hide();
+});

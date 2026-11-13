@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { writeMacLocalizations } from './client-localizations.mjs';
 import { parseClientArguments } from './desktop/options.mjs';
 import { stageDesktopRuntime } from './desktop/runtime-package.mjs';
+import { copyDesktopRuntime } from './desktop/runtime-copy.mjs';
 export { parseClientArguments } from './desktop/options.mjs';
 import { desktopProductName, readDesktopProductName } from './publishing/package-names.mjs';
 
@@ -268,7 +269,10 @@ export async function publishClientPackage(
 export async function packageClient(options) {
   assertNodeVersion();
   const target = parseClientArguments([
-    '--platform', options.platform, '--arch', options.arch,
+    '--platform',
+    options.platform,
+    '--arch',
+    options.arch,
     ...(options.withRuntime ? ['--with-runtime'] : []),
   ]);
   const source = join(projectRoot, 'desktop');
@@ -307,9 +311,13 @@ export async function packageClient(options) {
     }
     for (const file of licenseFiles) await copyFile(join(projectRoot, file), join(stage, file));
     const runtimePath = target.withRuntime ? join(working, 'bambooshift-runtime') : undefined;
-    const bundledRuntime = runtimePath ? await stageDesktopRuntime({
-      output: runtimePath, platform: target.platform, arch: target.arch,
-    }) : undefined;
+    const bundledRuntime = runtimePath
+      ? await stageDesktopRuntime({
+          output: runtimePath,
+          platform: target.platform,
+          arch: target.arch,
+        })
+      : undefined;
     const icon = await makeIcon(target.platform, working);
     const cache = join(output, '.electron-cache');
     try {
@@ -348,18 +356,19 @@ export async function packageClient(options) {
         },
       },
       asar: true,
-      ...(runtimePath ? { extraResource: [runtimePath] } : {}),
       prune: false,
       derefSymlinks: false,
       overwrite: true,
       ...(icon ? { icon } : {}),
-      ...(target.platform === 'win32' ? {
-        win32metadata: {
-          CompanyName: manifest.productName,
-          FileDescription: manifest.productName,
-          ProductName: manifest.productName,
-        },
-      } : {}),
+      ...(target.platform === 'win32'
+        ? {
+            win32metadata: {
+              CompanyName: manifest.productName,
+              FileDescription: manifest.productName,
+              ProductName: manifest.productName,
+            },
+          }
+        : {}),
       appCategoryType: 'public.app-category.productivity',
       darwinDarkModeSupport: true,
       extendInfo: {
@@ -376,6 +385,15 @@ export async function packageClient(options) {
     }
     if (paths.length !== 1 || resolve(paths[0]) !== join(stagedOutput, bundle))
       throw new Error('打包器未返回预期的单一客户端产物。');
+    if (runtimePath) {
+      for (const path of paths) {
+        const resources =
+          target.platform === 'darwin'
+            ? join(path, name + '.app', 'Contents', 'Resources')
+            : join(path, 'resources');
+        await copyDesktopRuntime(runtimePath, join(resources, 'bambooshift-runtime'));
+      }
+    }
     if (target.platform === 'darwin') {
       for (const path of paths) {
         const app = join(path, name + '.app');

@@ -18,8 +18,8 @@
     startLocal: ['在这台电脑开始', 'Start on this computer'],
     existingWorkspace: ['连接已有工作空间', 'Connect to an existing workspace'],
     localWorkspaceNote: [
-      '对话和文件保存在这台电脑。退出应用会停止本机任务。',
-      'Chats and files stay on this computer. Quitting the app stops local tasks.',
+      '无需注册或登录，配置自己的模型后即可使用。对话和文件保存在这台电脑，退出应用会停止本机任务。',
+      'No account or sign-in needed. Configure your own model to get started. Chats and files stay on this computer; quitting the app stops local tasks.',
     ],
     localRuntimeUnavailable: [
       '此安装包未提供可用的本地运行环境。你仍可以连接已有工作空间。',
@@ -78,8 +78,8 @@
       'Tasks run on your workspace server and can continue after this app closes.',
     ],
     accountLogin: [
-      '连接后使用 BambooShift 账户登录；首次使用可在登录页注册个人或团队账户。',
-      'After connecting, sign in with your BambooShift account. New users can register a personal or team account on the sign-in page.',
+      '连接已有服务时，使用该服务的 BambooShift 账户登录；首次使用可在登录页注册。',
+      'When connecting to an existing service, sign in with your BambooShift account for that service. New users can register on its sign-in page.',
     ],
     language: ['客户端语言', 'Client language'],
     languageHelp: [
