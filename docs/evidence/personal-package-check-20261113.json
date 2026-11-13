@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "passed": true,
+  "scope": "Packaged supervisor and real backend/Node/Pi; no Electron UI automation.",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "hostControl": false,
+  "externalModelUsed": false,
+  "checks": {
+    "normalWorkspaceAuthorization": true,
+    "hostControlDisabled": true,
+    "packagedSupervisorAndNode": true,
+    "noSignupFirstStart": true,
+    "realPiFileDelivery": true,
+    "firstStopRemovedProcesses": true,
+    "bootstrapProofRotated": true,
+    "sameWorkspaceAndFileRestored": true,
+    "savedModelReusedAfterRestart": true,
+    "finalStopRemovedProcesses": true
+  },
+  "files": [
+    {
+      "name": "first-acceptance.md",
+      "sha256": "2f00f022583219b98149f0ae4dc608f45d19b4dd85960fc3e39fcd49c2b4202f"
+    },
+    {
+      "name": "restart-acceptance.md",
+      "sha256": "af863bab217ff975227eefb71ebb2e1acc3d3baaeeca44e9195883433d7cad37"
+    }
+  ],
+  "notVerified": [
+    "Electron interface",
+    "screen capture",
+    "keyboard and mouse",
+    "external model quality",
+    "public release"
+  ],
+  "recordedAt": "2026-11-13T12:12:13.993Z",
+  "packageHashes": {
+    "asar": "edbc3b483a8f0a7b9bda5fddd2ee415d928898fbc77ed674f63aa0504a42f855",
+    "manifest": "6bba8d6564cd8a4cc313fccf4e1c9e0756a4c4c79532c250fd009830408d2080",
+    "backend": "acbd6c11749297ad280d130eb43a54b84fe6cf11138638cf8709157be1ddb9bb",
+    "node": "7cc55747bd13bc810570e6bd1243141bdbebfa4f2cf8de6441c0013b039bd762",
+    "pi": "3c03de19a099bc68a1eaa7d2e9bd50344e87cb102e33203d2a4c7ab3510f8273",
+    "supervisor": "1894c73d5ce85b7440bcebe4c83462584f5082e34847f399cecdaef996f82a3b"
+  },
+  "checkedInputHashesUnchanged": true,
+  "temporaryProfileRemoved": true,
+  "probeSourceBaseline": "786513c",
+  "packageScope": "Existing independently packaged macOS arm64 candidate identified by the key-file hashes in this record; not a rebuild of the probe source baseline.",
+  "probeRegressionTests": {
+    "passed": 10,
+    "failed": 0
+  },
+  "privacy": "Synthetic files and model only; report excludes accounts, endpoints, host paths, credentials, process identifiers and screenshots."
+}

@@ -33,6 +33,7 @@
     "desktop:check": "node scripts/check-desktop.mjs",
     "client:dev": "node scripts/run.mjs scripts/run-client.mjs",
     "client:package": "node scripts/run.mjs scripts/package-client.mjs",
+    "client:check": "node scripts/run.mjs scripts/desktop/check-personal-package.mjs",
     "client:test": "node scripts/run.mjs --test desktop/*.test.cjs",
     "format": "prettier --write web operations shared scripts server/workers desktop",
     "sync:app-catalog": "node scripts/sync-app-catalog.mjs",

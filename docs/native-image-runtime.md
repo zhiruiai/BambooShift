@@ -50,6 +50,25 @@ see the [source and replacement instructions](../legal/third-party/sharp-libvips
 
 ## Verified scope
 
+After packaging, run the repository's repeatable personal-workspace check against
+the unpacked application:
+
+```sh
+npm run client:check -- --resources '/path/to/BambooShift.app/Contents/Resources'
+```
+
+The check extracts the actual packaged supervisor and runs it with the packaged
+Node, backend and Pi. It creates its own temporary profile, keeps host control off,
+and uses a loopback synthetic model to exercise real file writes and delivery.
+It checks process shutdown, restored data and a second task after restart. The
+JSON report identifies the checked package by key-file hashes, without recording
+local addresses, profile paths or session credentials. It does not automate the
+Electron interface or qualify an untested newer package for release.
+
+The [repeatable-check record](evidence/personal-package-check-20261113.json)
+identifies the retained macOS arm64 candidate that passed this command. It does
+not imply that the current source tree has been rebuilt or publicly released.
+
 The [macOS arm64 acceptance record](evidence/desktop-native-runtime-20261113.json)
 covers the complete isolated app: strict notice collection, source inclusion,
 ad-hoc signing, personal-space entry without account login, model configuration
