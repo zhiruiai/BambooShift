@@ -8,6 +8,7 @@ pub mod config;
 pub mod db;
 pub mod error;
 mod error_locale;
+pub mod filesystem;
 mod invitations;
 mod local_desktop;
 pub mod memory_imports;

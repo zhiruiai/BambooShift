@@ -8,16 +8,7 @@ use axum::{
     http::{Method, header},
     response::{IntoResponse, Response},
 };
-use std::{
-    ffi::CString,
-    fs::File,
-    io::Read,
-    os::{
-        fd::{AsRawFd, FromRawFd},
-        unix::ffi::OsStrExt,
-    },
-    path::Path,
-};
+use std::{io::Read, path::Path};
 
 fn missing() -> ApiError {
     ApiError::new(404, "页面或资源不存在。")
@@ -39,35 +30,13 @@ fn mime(path: &str) -> Option<&'static str> {
     })
 }
 fn read(root: &Path, name: &str) -> Result<Vec<u8>> {
-    let root = CString::new(root.as_os_str().as_bytes()).map_err(|_| missing())?;
-    let raw = unsafe {
-        libc::open(
-            root.as_ptr(),
-            libc::O_RDONLY | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC,
-        )
-    };
-    if raw < 0 {
-        return Err(missing());
-    }
-    let mut file = unsafe { File::from_raw_fd(raw) };
     let parts = name.split('/').collect::<Vec<_>>();
-    for (index, component) in parts.iter().enumerate() {
-        let name = CString::new(*component).map_err(|_| missing())?;
-        let flags = libc::O_RDONLY
-            | libc::O_CLOEXEC
-            | libc::O_NOFOLLOW
-            | libc::O_NONBLOCK
-            | if index + 1 < parts.len() {
-                libc::O_DIRECTORY
-            } else {
-                0
-            };
-        let raw = unsafe { libc::openat(file.as_raw_fd(), name.as_ptr(), flags) };
-        if raw < 0 {
-            return Err(missing());
-        }
-        file = unsafe { File::from_raw_fd(raw) };
+    let (file_name, directories) = parts.split_last().ok_or_else(missing)?;
+    let mut directory = crate::filesystem::open_root(root)?;
+    for component in directories {
+        directory = crate::filesystem::open_dir(&directory, component)?;
     }
+    let file = crate::filesystem::open_file(&directory, file_name)?;
     let metadata = file.metadata()?;
     if !metadata.is_file() || metadata.len() > 10 * 1024 * 1024 {
         return Err(missing());
@@ -79,6 +48,7 @@ fn read(root: &Path, name: &str) -> Result<Vec<u8>> {
     }
     Ok(bytes)
 }
+
 pub async fn fallback(Extract(state): Extract<State>, request: Request) -> Response {
     serve(state, request, "dist", false).await
 }
@@ -168,3 +138,7 @@ async fn serve(state: State, request: Request, directory: &str, operations: bool
         _ => missing().into_response(),
     }
 }
+
+#[cfg(test)]
+#[path = "web_tests.rs"]
+mod tests;

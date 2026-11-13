@@ -8,14 +8,15 @@ execute commands on the client computer, or provide native screen and input cont
 See [Windows setup](desktop-client.md#windows-x64) for the supported installation flow.
 
 This document records the implementation boundaries required for a native Windows
-personal workspace. The stages below are proposed work, not shipped capabilities.
+personal workspace. Partial source adaptations below do not constitute a shipped
+Windows personal workspace.
 The Rust backend, TypeScript/Pi workers, and shared product API remain the architecture.
 
 ## Concrete blockers
 
 | Boundary | Current implementation | Required change |
 | --- | --- | --- |
-| Backend filesystem | [Static files](../server/api/src/web.rs), [deployment lock](../server/api/src/deployment_lock.rs), [workspace storage](../server/api/src/workspace/file_storage.rs), and [edits](../server/api/src/workspace/file_edits.rs) unconditionally use Unix file descriptors and system calls. | Make these backend modules compile and preserve their security guarantees on Windows. |
+| Backend filesystem | Static assets and deployment ownership now use the [shared filesystem boundary](../server/api/src/filesystem/mod.rs). [Workspace storage](../server/api/src/workspace/file_storage.rs), [edits](../server/api/src/workspace/file_edits.rs), template storage and shared-Bot database inspection still have Unix-only code. | Finish the remaining adapters and validate the complete native Windows backend. |
 | Runtime package | [Desktop options](../scripts/desktop/options.mjs), [runtime staging](../scripts/desktop/runtime-package.mjs), and [backend packaging](../scripts/package-backend.mjs) exclude Windows bundled services. | Support native Windows binaries, verified Node archives, and platform-specific native dependencies. |
 | Desktop launcher | [Local runtime](../desktop/local-runtime.cjs) assumes POSIX ownership, paths, and process groups. Host-command consent is coupled to the macOS Cua driver. | Separate runtime, shell, and desktop capabilities; implement Windows private storage and lifecycle handling. |
 | Command execution | [Host shell](../server/workers/computer-runtime/host-shell.ts) uses `/bin/sh` and POSIX process-group signals. | Add a Windows process supervisor with explicit shell semantics and bounded cancellation. |
@@ -26,6 +27,36 @@ The [native dependency selector](../scripts/desktop/runtime-dependencies.mjs) al
 assumes separate Sharp and libvips packages. Windows package contents must be
 inventoried independently, including DLLs and redistribution notices. Existing
 macOS candidate evidence does not qualify Windows artifacts.
+
+## Implemented foundation
+
+Static assets open each directory component relative to a retained directory
+handle, reject links and Windows reparse points, and retain their 10 MiB read limit.
+The configured root's ancestors remain an operator-selected trust boundary; the
+root's final component is opened without following links, including paths ending
+in a slash or dot. Child names reject traversal, alternate data streams and Windows
+device aliases consistently across platforms.
+
+Deployment ownership uses a retained file lock through fs4, with contention
+reported separately from other I/O errors. It never deletes or truncates the lock
+file. Unix creation retains 0700 directories and a 0600 lock. Windows creation
+inherits the parent directory's ACL; this is **not** an implementation of a new
+owner-only Windows ACL policy. Private configuration and database access still need
+their own complete Windows review.
+
+Handle metadata preserves Unix device/inode/change timestamps and Windows volume
+plus the full 128-bit file ID, link count and write/change timestamps. A metadata
+stamp detects changes; it is not a content digest or an atomic conditional delete.
+Workspace upload/edit rollback has not yet migrated to this boundary. Its exclusive
+rename behavior must be preserved; a check followed by an overwriting rename is not
+an equivalent implementation.
+
+The foundation passed 24 release-mode checks on macOS: five real HTTP route tests,
+eight file-handle/metadata tests, and eleven deployment-lock tests. These include
+cross-process contention, normal and forced shutdown, non-inheritance of lock
+handles, root-path aliases, link rejection and the static-file size boundary.
+These results do not establish Windows execution: the Windows-specific branches,
+full backend build and installed-package flow require separate qualification.
 
 ## Minimal platform boundaries
 
@@ -53,17 +84,19 @@ system. Existing Cordis engine interfaces and scoped worker protocols remain sha
 
 ## Reuse candidates
 
-These components are implementation candidates; listing them does not mean they
-have been integrated or qualified:
+The first three components now support the foundation above. Their use does not
+qualify the remaining Windows runtime or its installer:
 
-- [Bytecode Alliance cap-std](https://github.com/bytecodealliance/cap-std) provides
+- [Bytecode Alliance cap-std](https://github.com/bytecodealliance/cap-std) and cap-fs-ext,
+  both pinned to 4.0.3, provide
   cross-platform directory-relative filesystem operations and an
   [MIT license option](https://github.com/bytecodealliance/cap-std/blob/main/LICENSE-MIT).
   Its default handling permits contained symlinks. The
   [cap-fs-ext no-follow option](https://github.com/bytecodealliance/cap-std/blob/main/cap-fs-ext/src/open_options_follow_ext.rs)
   applies to the final path component; preserving BambooShift's stricter policy
   requires checking each directory component and file identity.
-- [fs4](https://github.com/al8n/fs4) offers cross-platform file locks under MIT or
+- [fs4](https://github.com/al8n/fs4), pinned to 1.1.0 with only its sync feature,
+  offers cross-platform file locks under MIT or
   Apache-2.0, including [Windows LockFileEx](https://github.com/al8n/fs4/blob/main/src/windows.rs).
   It does not replace private-file permissions or path validation.
 - [Microsoft windows-rs/windows-sys](https://github.com/microsoft/windows-rs) provides
