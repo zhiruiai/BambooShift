@@ -32,6 +32,17 @@ class ComputerServer {
   bool privateCapable = true;
   Duration leaseLifetime = const Duration(minutes: 5);
   Json? workspaceTarget;
+  Json? desktop;
+  String surface = 'browser';
+  int connections = 0, disconnections = 0, reconnections = 0;
+  Json get machine =>
+      workspaceTarget ??
+      {
+        'connected': false,
+        'mode': 'remote',
+        'surface': surface,
+        'executionLocation': 'none',
+      };
   bool loseStart = false, loseInput = false, loseEnd = false;
   int starts = 0, ends = 0, preparations = 0;
   int configuredScreens = 1;
@@ -66,14 +77,17 @@ class ComputerServer {
   Json get status => {
     'botScreen': binding,
     'connected': available && assigned,
-    'surface': 'browser',
+    'surface': surface,
+    'mode': machine['mode'],
+    'executionLocation': machine['executionLocation'],
+    if (desktop != null) 'desktop': desktop,
     'capabilities': [if (privateCapable) 'private-takeover-frames-v1'],
   };
   Json get takeover => {
     'active': active,
     'width': 800,
     'height': 400,
-    'surface': 'browser',
+    'surface': surface,
     'expiresAt': DateTime.now().add(leaseLifetime).toUtc().toIso8601String(),
   };
   Json get data => {
@@ -97,6 +111,43 @@ class ComputerServer {
 
   Future<http.Response> respond(http.Request request) async {
     final path = request.url.path;
+    if (path.endsWith('/computer/status')) return jsonResponse(machine);
+    if (path.endsWith('/computer/connect') ||
+        path.endsWith('/computer/reconnect')) {
+      final reconnect = path.endsWith('/reconnect');
+      final body = jsonDecode(request.body) as Json;
+      if (reconnect) {
+        reconnections++;
+      } else {
+        connections++;
+      }
+      final mode = reconnect ? 'remote' : body['mode'];
+      workspaceTarget = {
+        'connected': true,
+        'mode': mode,
+        'surface': surface,
+        'executionLocation': mode == 'local' ? 'server' : 'remote',
+        'targetRevision': 'target-$connections-$reconnections',
+        if (mode == 'remote') 'savedRemote': {'name': 'Synthetic computer'},
+      };
+      available = true;
+      return jsonResponse(machine);
+    }
+    if (path.endsWith('/computer/disconnect')) {
+      disconnections++;
+      workspaceTarget = {
+        ...machine,
+        'connected': false,
+        'executionLocation': 'none',
+      };
+      available = false;
+      return jsonResponse(machine);
+    }
+    if (path.endsWith('/surface')) {
+      surface = (jsonDecode(request.body) as Json)['surface'] as String;
+      workspaceTarget = {...machine, 'surface': surface};
+      return jsonResponse(status);
+    }
     if (path.endsWith('/cloud-computer')) return jsonResponse(cloud);
     if (path.endsWith('/cloud-computer/start')) {
       cloudStarts++;
@@ -152,7 +203,7 @@ class ComputerServer {
           if (private) 'x-openbot-frame-visibility': 'takeover',
           'x-frame-width': '800',
           'x-frame-height': '400',
-          'x-computer-surface': 'browser',
+          'x-computer-surface': surface,
         },
       );
     }

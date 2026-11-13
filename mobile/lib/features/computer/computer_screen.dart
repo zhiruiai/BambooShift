@@ -8,6 +8,8 @@ import '../../widgets/common.dart';
 import '../teaching/teaching_controller.dart';
 import '../teaching/teaching_panel.dart';
 import 'computer_controller.dart';
+import 'computer_connection_controller.dart';
+import 'computer_connection_card.dart';
 import 'computer_data.dart';
 import 'computer_controls.dart';
 import 'cloud_computer_controller.dart';
@@ -27,6 +29,7 @@ class ComputerScreen extends StatefulWidget {
 class _ComputerScreenState extends State<ComputerScreen>
     with WidgetsBindingObserver {
   late ComputerController controller;
+  late ComputerConnectionController connection;
   late TeachingController teaching;
   late CloudComputerController cloud;
   late ScreenPreparationController preparation;
@@ -40,10 +43,12 @@ class _ComputerScreenState extends State<ComputerScreen>
 
   void openComputer(String id) {
     controller = ComputerController(widget.scope, id);
+    connection = ComputerConnectionController(controller);
     teaching = TeachingController(controller);
     cloud = CloudComputerController(controller);
     preparation = ScreenPreparationController(controller);
     unawaited(cloud.refresh());
+    unawaited(connection.refresh(acknowledge: false));
     unawaited(teaching.initialize());
     unawaited(controller.refresh());
   }
@@ -52,6 +57,7 @@ class _ComputerScreenState extends State<ComputerScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       controller.resume();
+      unawaited(connection.refresh(acknowledge: false));
       unawaited(cloud.refresh());
       if (!teaching.ready) {
         unawaited(teaching.initialize());
@@ -63,6 +69,7 @@ class _ComputerScreenState extends State<ComputerScreen>
 
   void closeComputer() {
     preparation.dispose();
+    connection.dispose();
     cloud.dispose();
     teaching.dispose();
     controller.dispose();
@@ -176,12 +183,9 @@ class _ComputerScreenState extends State<ComputerScreen>
               Notice(
                 'mobileComputerLocation${c.status?.executionLocation ?? computerExecutionLocation(widget.scope.data?['computer'])}',
               ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.computer_outlined),
-                  title: Text(context.tr('mobileComputerLocalTitle')),
-                  subtitle: Text(context.tr('mobileComputerLocalHelp')),
-                ),
+              ComputerConnectionCard(
+                key: ObjectKey(connection),
+                controller: connection,
               ),
               CloudComputerCard(controller: cloud),
               const Notice('mobileComputerPassive'),

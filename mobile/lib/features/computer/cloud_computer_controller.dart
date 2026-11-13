@@ -77,6 +77,7 @@ class CloudComputerController extends ChangeNotifier {
           result.state != 'unknown' &&
           result.value['operation'] == null) {
         unknown = false;
+        computer.setConnectionUnknown(false, source: 'cloud');
       }
     } catch (cause) {
       if (active && read == _read) {
@@ -111,6 +112,7 @@ class CloudComputerController extends ChangeNotifier {
                 cause.status >= 400 &&
                 cause.status < 500 &&
                 cause.status != 408);
+        computer.setConnectionUnknown(unknown, source: 'cloud');
       }
     } finally {
       starting = false;

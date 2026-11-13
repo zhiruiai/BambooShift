@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openbot_mobile/features/chat/chat_screen.dart';
 import 'package:openbot_mobile/features/computer/cloud_computer_card.dart';
+import 'package:openbot_mobile/features/computer/computer_connection_card.dart';
 import 'package:openbot_mobile/features/computer/cloud_computer_controller.dart';
 import 'package:openbot_mobile/features/computer/computer_controller.dart';
+import 'package:openbot_mobile/features/computer/computer_screen.dart';
 import 'computer_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp, waitFor;
@@ -36,19 +38,36 @@ void main() {
             ? 'No managed cloud computer is configured'
             : '尚未配置托管云电脑',
       );
-      for (
-        var attempt = 0;
-        attempt < 100 && setup.evaluate().isEmpty;
-        attempt++
-      ) {
+      for (var attempt = 0; attempt < 100; attempt++) {
         await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 5)),
         );
         await tester.pump();
+        final card = find.byType(ComputerConnectionCard);
+        if (card.evaluate().isNotEmpty) {
+          final c = tester.widget<ComputerConnectionCard>(card).controller;
+          if (!c.loading && !c.computer.busy) break;
+        }
       }
-      expect(setup, findsOneWidget);
       await tester.pump(const Duration(milliseconds: 400));
       expect(local.hitTestable(), findsOneWidget);
+      await tester.scrollUntilVisible(
+        cloud,
+        200,
+        scrollable: find
+            .descendant(
+              of: find.byType(ComputerScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      );
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(setup, findsOneWidget);
+      await Scrollable.ensureVisible(tester.element(cloud), alignment: .3);
+      await tester.pump(const Duration(milliseconds: 400));
       expect(cloud.hitTestable(), findsOneWidget);
       expect(
         find.widgetWithText(

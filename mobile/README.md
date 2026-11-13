@@ -78,6 +78,11 @@ an installed native build.
 - Computer previews support pinch zoom and show capture time. Returning to the
   foreground refreshes the screen after releasing prior control. Server, cloud
   and remote locations are identified without exposing connection credentials.
+  Owners can connect the service computer, pair another worker over HTTPS,
+  reconnect a saved worker, or disconnect from the phone. Commands run on that
+  computer, not the phone. Pairing credentials are masked, never saved on the
+  phone, and cleared when backgrounded or when account access changes. Browser
+  and desktop selection uses the connected worker's existing permissions.
   Owners can explicitly start/resume a configured cloud computer and connect it
   for at least two hours; reads never start or renew it. They can then confirm
   screen preparation for a Bot when a free slot is available. Unknown outcomes
@@ -122,7 +127,7 @@ text starts masked and can be revealed on this device. Ending takeover or leavin
 the screen clears the private frame and any unsent text. The computer worker
 must report support for private takeover.
 
-Advanced document rendering, manual computer connection, screen reset/release,
+Advanced document rendering, screen reset/release,
 and reliable background push still differ from Web. The offscreen tests do not
 validate real system pickers, keychains, voices or notifications.
 

@@ -24,6 +24,17 @@ class ComputerController extends ChangeNotifier {
   String? inventoryReason;
   bool _busy = false, _releasing = false, occupied = false, uncertain = false;
   bool _connectionChanging = false, _resumeRequested = false;
+  final _unknownConnections = <String>{};
+  bool get connectionUnknown => _unknownConnections.isNotEmpty;
+  bool connectionUnknownFor(String source) =>
+      _unknownConnections.contains(source);
+  void setConnectionUnknown(bool value, {String source = 'manual'}) {
+    final changed = value
+        ? _unknownConnections.add(source)
+        : _unknownConnections.remove(source);
+    if (changed) _publish();
+  }
+
   bool get busy => _busy || _releasing || _connectionChanging;
   bool get canChangeConnection =>
       visible &&
@@ -31,6 +42,7 @@ class ComputerController extends ChangeNotifier {
       lease == null &&
       !occupied &&
       !unknownStart &&
+      !connectionUnknown &&
       !uncertain &&
       !teachingBlocked;
   bool beginConnectionChange() {
@@ -75,12 +87,14 @@ class ComputerController extends ChangeNotifier {
       lease == null &&
       !occupied &&
       !unknownStart &&
+      !connectionUnknown &&
       !uncertain;
   bool get canInput =>
       !teachingBlocked &&
       visible &&
       !busy &&
       !uncertain &&
+      !connectionUnknown &&
       !releaseUnknown &&
       lease != null &&
       !lease!.expired &&
