@@ -1,5 +1,6 @@
 import type { GeneratedAvatarTheme } from '../creationPreview';
 import { AvatarArtwork } from './AvatarArtwork';
+import type { AvatarFaceMotion } from './avatarFaceMotion';
 
 const badgePaths = {
   star: 'M12 2L15 8L22 9L17 14L18 21L12 18L6 21L7 14L2 9L9 8Z',
@@ -12,10 +13,12 @@ export function GeneratedAvatarArtwork({
   theme,
   shape,
   size = 38,
+  faceMotion,
 }: {
   theme: GeneratedAvatarTheme;
   shape?: string;
   size?: number;
+  faceMotion?: AvatarFaceMotion;
 }) {
   const index = ['drop', 'gem'].includes(shape || '')
     ? 1
@@ -38,7 +41,13 @@ export function GeneratedAvatarArtwork({
         />
       )}
       <g transform={theme.backdrop === 'plain' ? undefined : 'translate(4 4) scale(.875)'}>
-        <AvatarArtwork theme={theme.motif} shape={shape} size={64} color={color} />
+        <AvatarArtwork
+          theme={theme.motif}
+          shape={shape}
+          size={64}
+          color={color}
+          faceMotion={faceMotion}
+        />
       </g>
       {theme.badge !== 'none' && (
         <g transform="translate(43 42) scale(.75)">

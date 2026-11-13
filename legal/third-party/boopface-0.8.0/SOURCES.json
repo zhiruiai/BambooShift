@@ -1,0 +1,52 @@
+{
+  "name": "BoopFace",
+  "version": "0.8.0",
+  "revision": "24ee5f698e58fa4f131b5ae7827373814e191f4c",
+  "repository": "https://github.com/CX-ArtLab/BoopFace",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 CX ART Lab",
+  "kind": "reviewed-source-adaptation",
+  "sources": [
+    {
+      "path": "LICENSE",
+      "sha256": "c75d419e34846601f7ca691b346497f3ddcd51dfa7e249e243cc1c0fbfc75c36",
+      "url": "https://raw.githubusercontent.com/CX-ArtLab/BoopFace/24ee5f698e58fa4f131b5ae7827373814e191f4c/LICENSE"
+    },
+    {
+      "path": "src/boopface-core.js",
+      "sha256": "cfd1b81374863983e26dee9cf77b658f307aaedfc5266b5dbbe35fb1f16b703e",
+      "url": "https://raw.githubusercontent.com/CX-ArtLab/BoopFace/24ee5f698e58fa4f131b5ae7827373814e191f4c/src/boopface-core.js"
+    },
+    {
+      "path": "embedded/lib/BoopFace/LICENSE",
+      "sha256": "b553b813d3b1ea3f7dcd40dcfe231964dbc704f1bf5d4cbbcb8403cf02ecd9dd",
+      "url": "https://raw.githubusercontent.com/CX-ArtLab/BoopFace/24ee5f698e58fa4f131b5ae7827373814e191f4c/embedded/lib/BoopFace/LICENSE"
+    },
+    {
+      "path": "embedded/lib/BoopFace/src/BoopFaceGaze.h",
+      "sha256": "dd0288e5094faa72546eb1be98ac99e279125a2004dcfd0565a3bad0bd5e746b",
+      "url": "https://raw.githubusercontent.com/CX-ArtLab/BoopFace/24ee5f698e58fa4f131b5ae7827373814e191f4c/embedded/lib/BoopFace/src/BoopFaceGaze.h"
+    }
+  ],
+  "adaptedConcepts": [
+    "Selected eye pose dimensions and upper/lower eyelid parameters from boopface-core.js",
+    "outQuint easing and per-field linear pose interpolation from boopface-core.js",
+    "Time-weighted gaze smoothing dt / (responseMs + dt), with responseMs=140, from BoopFaceGaze.h"
+  ],
+  "integration": [
+    "shared/avatar-face-motion.json",
+    "web/src/components/avatarFaceMotion.ts",
+    "mobile/lib/widgets/avatar_face_geometry.dart"
+  ],
+  "excluded": [
+    "Upstream robot body artwork and skin catalog",
+    "Upstream Web Component and global input/gesture runtime",
+    "Embedded device drivers, sensor examples and preview dependencies"
+  ],
+  "distribution": {
+    "source": "legal/third-party/boopface-0.8.0/LICENSE",
+    "serviceAndDesktop": "THIRD_PARTY.md (complete MIT notice)",
+    "web": "web/public/licenses/boopface.html",
+    "flutter": "mobile/assets/licenses/boopface-LICENSE.txt"
+  }
+}

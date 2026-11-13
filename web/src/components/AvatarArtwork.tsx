@@ -6,6 +6,10 @@ import {
   type AvatarTheme,
 } from '../avatarThemes';
 import { Chick, Elephant } from './AnimalAvatarArtwork';
+import { AvatarFaceEyes } from './AvatarFaceEyes';
+import { avatarEyeTilt, type AvatarFaceMotion } from './avatarFaceMotion';
+
+type ArtworkProps = { shape: AvatarShape; color: string; faceMotion?: AvatarFaceMotion };
 
 const ink = '#292733';
 const paper = '#fffdf7';
@@ -17,22 +21,32 @@ const silhouettes: Record<AvatarShape, string> = {
   gem: 'M18 8Q21 4 27 7L49 18Q55 21 56 28L51 46Q49 54 40 57L18 53Q9 51 7 42L8 22Q8 15 18 8Z',
   arch: 'M13 17L12 7Q18 4 24 12Q32 9 40 12Q47 4 52 8L51 19Q58 27 58 40L56 50Q54 57 45 57H19Q8 57 7 49V35Q7 23 13 17Z',
 };
-function Eyes({ shape, panda = false }: { shape: AvatarShape; panda?: boolean }) {
-  const tilt = shape === 'leaf' ? -8 : shape === 'gem' ? 7 : 0;
+function Eyes({
+  shape,
+  theme,
+  faceMotion,
+}: Pick<ArtworkProps, 'shape' | 'faceMotion'> & { theme: AvatarTheme }) {
+  const panda = theme === 'pandas';
   return (
-    <g className="avatar-eyes" transform={`rotate(${tilt} 32 31)`}>
+    <g className="avatar-eyes" transform={avatarEyeTilt(theme, shape)}>
       {panda && (
         <g fill={ink}>
           <ellipse cx="23" cy="31" rx="8" ry="10" transform="rotate(22 23 31)" />
           <ellipse cx="43" cy="31" rx="8" ry="10" transform="rotate(-22 43 31)" />
         </g>
       )}
-      <rect x="18" y="23" width="10" height="15" rx="5" fill={paper} />
-      <rect x="37" y="23" width="10" height="15" rx="5" fill={paper} />
-      <g fill={ink}>
-        <rect x={shape === 'drop' ? 22 : 23} y="28" width="4" height="7" rx="2" />
-        <rect x={shape === 'drop' ? 41 : 42} y="28" width="4" height="7" rx="2" />
-      </g>
+      {faceMotion ? (
+        <AvatarFaceEyes theme={theme} shape={shape} motion={faceMotion} />
+      ) : (
+        <>
+          <rect x="18" y="23" width="10" height="15" rx="5" fill={paper} />
+          <rect x="37" y="23" width="10" height="15" rx="5" fill={paper} />
+          <g fill={ink}>
+            <rect x={shape === 'drop' ? 22 : 23} y="28" width="4" height="7" rx="2" />
+            <rect x={shape === 'drop' ? 41 : 42} y="28" width="4" height="7" rx="2" />
+          </g>
+        </>
+      )}
       {shape === 'arch' && (
         <path d="M17 25H29M36 25H48" stroke={panda ? ink : paper} strokeWidth="3" />
       )}
@@ -46,7 +60,7 @@ function Smile({ shape }: { shape: AvatarShape }) {
     <path d="M30 43Q34 46 38 42" fill="none" stroke={ink} strokeWidth="2" strokeLinecap="round" />
   );
 }
-function Companion({ shape, color }: { shape: AvatarShape; color: string }) {
+function Companion({ shape, color, faceMotion }: ArtworkProps) {
   return (
     <>
       <path d={silhouettes[shape]} fill={color} />
@@ -59,14 +73,14 @@ function Companion({ shape, color }: { shape: AvatarShape; color: string }) {
         strokeWidth="3"
         strokeLinecap="round"
       />
-      <Eyes shape={shape} />
+      <Eyes shape={shape} theme="companions" faceMotion={faceMotion} />
       <Smile shape={shape} />
       <ellipse cx="16" cy="39" rx="3.5" ry="2" fill={paper} opacity=".23" />
       <ellipse cx="49" cy="39" rx="3.5" ry="2" fill={paper} opacity=".23" />
     </>
   );
 }
-function Panda({ shape, color }: { shape: AvatarShape; color: string }) {
+function Panda({ shape, color, faceMotion }: ArtworkProps) {
   const ears: Record<AvatarShape, [number, number, number]> = {
     orb: [15, 49, 11],
     drop: [17, 47, 9],
@@ -84,7 +98,7 @@ function Panda({ shape, color }: { shape: AvatarShape; color: string }) {
       <circle cx={left} cy={top + 5} r="4" fill={color} />
       <circle cx={right} cy={top + 5} r="4" fill={color} />
       <path d="M10 30Q11 13 31 13Q52 12 55 30Q60 48 46 53Q32 59 18 53Q5 49 10 30Z" fill={paper} />
-      <Eyes shape={shape} panda />
+      <Eyes shape={shape} theme="pandas" faceMotion={faceMotion} />
       <path d="M29 40Q33 37 37 40Q36 44 33 44Q30 44 29 40Z" fill={ink} />
       <path
         d="M33 44V46M29 46Q33 49 37 46"
@@ -103,7 +117,7 @@ function Panda({ shape, color }: { shape: AvatarShape; color: string }) {
     </>
   );
 }
-function Dinosaur({ shape, color }: { shape: AvatarShape; color: string }) {
+function Dinosaur({ shape, color, faceMotion }: ArtworkProps) {
   return (
     <>
       <path d="M13 43Q3 43 3 31Q10 37 19 31" fill={color} />
@@ -126,7 +140,7 @@ function Dinosaur({ shape, color }: { shape: AvatarShape; color: string }) {
       />
       {shape === 'drop' && <path d="M25 16Q23 4 32 2Q39 7 35 15" fill={color} />}
       {shape === 'leaf' && <path d="M10 33L2 25Q2 43 14 45M54 33L62 25Q63 43 52 45" fill={color} />}
-      <Eyes shape={shape} />
+      <Eyes shape={shape} theme="dinosaurs" faceMotion={faceMotion} />
       <path d="M19 39Q34 33 50 39Q56 44 50 50Q36 57 21 51Q13 46 19 39Z" fill={paper} />
       <g fill={ink}>
         <circle cx="28" cy="41" r="1.4" />
@@ -156,11 +170,13 @@ export function AvatarArtwork({
   shape = 'orb',
   color = '#8a61ee',
   size = 38,
+  faceMotion,
 }: {
   theme?: AvatarTheme;
   shape?: string;
   color?: string;
   size?: number;
+  faceMotion?: AvatarFaceMotion;
 }) {
   const selected = avatarTheme(theme),
     form = avatarShape(shape),
@@ -182,7 +198,7 @@ export function AvatarArtwork({
       aria-hidden="true"
       focusable="false"
     >
-      <Artwork shape={form} color={fill} />
+      <Artwork shape={form} color={fill} faceMotion={faceMotion} />
     </svg>
   );
 }

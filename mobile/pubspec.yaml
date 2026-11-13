@@ -40,6 +40,8 @@ flutter:
     - assets/skills/
     - assets/templates/
     - assets/website_preview/
+    - assets/licenses/
+    - assets/avatars/avatar-face-motion.json
     - assets/avatars/companions/
     - assets/avatars/pandas/
     - assets/avatars/dinosaurs/

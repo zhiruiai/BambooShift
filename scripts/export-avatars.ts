@@ -1,6 +1,6 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 import { AvatarArtwork } from '../web/src/components/AvatarArtwork';
@@ -17,6 +17,7 @@ const family: { name: string; agent: Partial<BotAgent> }[] = [
 ];
 const directory = resolve('web/public/avatars');
 await mkdir(directory, { recursive: true });
+await copyFile('shared/avatar-face-motion.json', 'mobile/assets/avatars/avatar-face-motion.json');
 const rows: string[] = [];
 for (const theme of AVATAR_THEMES) {
   const target = resolve(directory, theme);

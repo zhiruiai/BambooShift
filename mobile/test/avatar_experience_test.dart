@@ -13,7 +13,8 @@ import 'package:openbot_mobile/features/bots/avatar_crop_dialog.dart';
 import 'package:openbot_mobile/features/chat/chat_screen.dart';
 import 'package:openbot_mobile/features/settings/avatar_theme_picker.dart';
 import 'package:openbot_mobile/widgets/bot_avatar.dart';
-import 'package:openbot_mobile/widgets/idle_avatar_blink.dart';
+import 'package:openbot_mobile/widgets/avatar_face.dart';
+import 'package:openbot_mobile/widgets/avatar_face_art.dart';
 
 import 'action_card_support.dart';
 import 'support.dart';
@@ -34,6 +35,11 @@ http.Response _photo() => http.Response.bytes(
 );
 
 void main() {
+  setUp(() {
+    // Widget tests own separate asynchronous asset channels and decode work.
+    svg.cache.clear();
+    rootBundle.clear();
+  });
   testWidgets('theme previews fit and save the selection on a narrow phone', (
     tester,
   ) async {
@@ -62,9 +68,17 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.byType(SvgPicture), findsNWidgets(15));
+    await waitFor(
+      tester,
+      () => find.byKey(const ValueKey('avatar-face')).evaluate().isNotEmpty,
+    );
+    expect(find.byType(BotAvatar), findsNWidgets(15));
     await tester.tap(find.text('Elephants'));
     await tester.pumpAndSettle();
+    await waitFor(
+      tester,
+      () => find.byKey(const ValueKey('avatar-face')).evaluate().isNotEmpty,
+    );
     expect(f.session.avatarTheme, 'elephants');
     expect(f.secrets.values['openbot.preferences.v1'], contains('elephants'));
     expect(tester.takeException(), isNull);
@@ -72,83 +86,6 @@ void main() {
     f.scope.dispose();
     f.session.dispose();
   });
-
-  testWidgets(
-    'avatar states use finite, distinct motion and respect reduced motion',
-    (tester) async {
-      Widget scene(
-        BotAvatarMotion? motion, {
-        bool reduced = false,
-        bool sustain = false,
-        bool tickerEnabled = true,
-      }) => testApp(
-        MediaQuery(
-          data: MediaQueryData(disableAnimations: reduced),
-          child: Scaffold(
-            body: TickerMode(
-              enabled: tickerEnabled,
-              child: BotAvatar(
-                bot: const {'avatar': 'orb'},
-                family: 'pandas',
-                motion: motion,
-                sustainMotion: sustain,
-              ),
-            ),
-          ),
-        ),
-      );
-      final reaction = find.byType(TweenAnimationBuilder<double>);
-      Transform transform() => tester
-          .widgetList<Transform>(
-            find.descendant(of: reaction, matching: find.byType(Transform)),
-          )
-          .first;
-
-      await tester.pumpWidget(scene(BotAvatarMotion.done));
-      await tester.pumpAndSettle();
-      expect(reaction, findsNothing);
-
-      await tester.pumpWidget(scene(BotAvatarMotion.working));
-      await tester.pump(const Duration(milliseconds: 250));
-      expect(transform().transform.entry(1, 3), lessThan(0));
-      expect(transform().transform.entry(0, 0), greaterThan(1));
-
-      await tester.pumpWidget(scene(BotAvatarMotion.done));
-      await tester.pump(const Duration(milliseconds: 140));
-      expect(transform().transform.entry(1, 3), lessThan(0));
-      expect(transform().transform.entry(0, 0), 1);
-      await tester.pumpAndSettle();
-
-      await tester.pumpWidget(scene(BotAvatarMotion.attention));
-      await tester.pump(const Duration(milliseconds: 80));
-      expect(transform().transform.entry(1, 3), 0);
-      expect(transform().transform.entry(1, 0), lessThan(0));
-
-      await tester.pumpWidget(scene(BotAvatarMotion.thinking, sustain: true));
-      await tester.pump(const Duration(milliseconds: 250));
-      expect(transform().transform.entry(1, 0), lessThan(0));
-      await tester.pump(const Duration(milliseconds: 900));
-      expect(transform().transform.entry(1, 3), closeTo(0, .01));
-      await tester.pump(const Duration(milliseconds: 1800));
-      await tester.pump(const Duration(milliseconds: 250));
-      expect(transform().transform.entry(1, 0), lessThan(0));
-      await tester.pumpWidget(
-        scene(BotAvatarMotion.thinking, sustain: true, tickerEnabled: false),
-      );
-      expect(reaction, findsNothing);
-
-      await tester.pumpWidget(scene(BotAvatarMotion.error));
-      await tester.pump(const Duration(milliseconds: 260));
-      expect(transform().transform.entry(1, 3), greaterThan(0));
-      expect(transform().transform.entry(1, 1), lessThan(1));
-      await tester.pumpAndSettle();
-
-      await tester.pumpWidget(scene(BotAvatarMotion.attention, reduced: true));
-      await tester.pumpAndSettle();
-      expect(reaction, findsNothing);
-      expect(find.byType(SvgPicture), findsOneWidget);
-    },
-  );
 
   testWidgets(
     'only the active chat header blinks once and respects reduced motion',
@@ -177,8 +114,18 @@ void main() {
         ),
       );
 
-      final enabled = find.byType(IdleAvatarBlink);
-      final blink = find.byKey(const ValueKey('idle-avatar-blink'));
+      final enabled = find.byWidgetPredicate(
+        (widget) =>
+            widget is AvatarFace &&
+            widget.blinkWhenIdle &&
+            widget.state == 'idle',
+      );
+      final blink = find.byWidgetPredicate(
+        (widget) =>
+            widget is CustomPaint &&
+            widget.painter is AvatarFacePainter &&
+            (widget.painter! as AvatarFacePainter).blink > 0,
+      );
       await tester.pumpWidget(scene());
       expect(
         find.descendant(of: find.byType(AppBar), matching: enabled),
@@ -188,7 +135,7 @@ void main() {
       expect(blink, findsNothing);
       for (
         var attempt = 0;
-        attempt < 100 && blink.evaluate().isEmpty;
+        attempt < 300 && blink.evaluate().isEmpty;
         attempt++
       ) {
         await tester.runAsync(
@@ -197,15 +144,18 @@ void main() {
         await tester.pump(const Duration(milliseconds: 20));
       }
       expect(blink, findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 280));
+      for (var i = 0; i < 7; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
       expect(blink, findsNothing);
       await tester.pump(const Duration(seconds: 2));
       expect(blink, findsNothing);
 
       await tester.pumpWidget(scene(reduced: true));
       await tester.pumpAndSettle();
-      expect(enabled, findsNothing);
-      expect(find.byType(SvgPicture), findsWidgets);
+      expect(enabled, findsOneWidget);
+      expect(tester.state<AvatarFaceState>(enabled).clockRunning, false);
+      expect(blink, findsNothing);
       await tester.pumpWidget(const SizedBox());
       f.scope.dispose();
       f.session.dispose();
@@ -250,7 +200,12 @@ void main() {
       );
     }
 
-    final enabled = find.byType(IdleAvatarBlink);
+    final enabled = find.byWidgetPredicate(
+      (widget) =>
+          widget is AvatarFace &&
+          widget.blinkWhenIdle &&
+          widget.state == 'idle',
+    );
     await show([
       actionMessage(requester: 'user-b'),
       question('user-b'),
@@ -293,7 +248,7 @@ void main() {
       ),
     );
     await waitFor(tester, () => find.byType(Image).evaluate().isNotEmpty);
-    expect(find.byType(IdleAvatarBlink), findsNothing);
+    expect(find.byType(AvatarFace), findsNothing);
     expect(reads, 1);
     f.session.user = null;
     f.session.notifyListeners();

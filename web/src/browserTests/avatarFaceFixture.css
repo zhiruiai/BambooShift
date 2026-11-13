@@ -1,0 +1,142 @@
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  background: #eaf2ec;
+  color: #172a24;
+}
+
+.face-fixture {
+  max-width: 1100px;
+  margin: auto;
+  padding: 34px 26px;
+}
+
+.face-fixture header {
+  display: block;
+  margin: 0 0 24px;
+}
+
+.fixture-brand {
+  color: #0e6850;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.face-fixture h1 {
+  margin: 5px 0 10px;
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.046em;
+  line-height: 1.1;
+}
+
+.face-fixture header p,
+.fixture-controls,
+.fixture-sizes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.face-fixture header p {
+  color: #496357;
+  flex-wrap: wrap;
+  font-size: 14px;
+  margin: 0;
+}
+
+.fixture-state {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #d3e9dc;
+  color: #124f3e;
+  font-weight: 700;
+}
+
+.fixture-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.fixture-grid article {
+  border: 1px solid #d9e6dd;
+  background: #f9fcfa;
+  border-radius: 18px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.fixture-grid h2 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.fixture-hero {
+  display: grid;
+  place-items: center;
+  min-height: 161px;
+}
+
+.fixture-hero > svg {
+  width: min(100%, 132px);
+  height: auto;
+}
+
+.fixture-sizes {
+  gap: 5px;
+  border-top: 1px solid #d9e6dd;
+  padding-top: 10px;
+  color: #496357;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.fixture-controls {
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.fixture-controls button {
+  border: 1px solid #cedfd3;
+  background: #f5faf6;
+  border-radius: 999px;
+  padding: 9px 14px;
+  color: #172a24;
+}
+
+.fixture-controls button[aria-pressed='true'] {
+  background: #0e6850;
+  border-color: #0e6850;
+  color: white;
+}
+
+.fixture-test-extras {
+  margin-top: 550px;
+}
+
+#stress {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 48px;
+}
+
+@media (max-width: 780px) {
+  .fixture-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .face-fixture {
+    padding: 22px 12px;
+  }
+
+  .fixture-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .fixture-hero {
+    min-height: 112px;
+  }
+}

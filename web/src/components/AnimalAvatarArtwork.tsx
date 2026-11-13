@@ -1,6 +1,8 @@
 import type { AvatarShape } from '../avatarThemes';
+import { AvatarFaceEyes } from './AvatarFaceEyes';
+import type { AvatarFaceMotion } from './avatarFaceMotion';
 
-type ArtworkProps = { shape: AvatarShape; color: string };
+type ArtworkProps = { shape: AvatarShape; color: string; faceMotion?: AvatarFaceMotion };
 
 const ink = '#292733';
 const paper = '#fffdf7';
@@ -16,7 +18,7 @@ const chickCrests: Record<AvatarShape, string> = {
   arch: 'M21 15Q20 7 25 7Q29 7 32 12Q38 4 43 8Q47 12 43 17Z',
 };
 
-export function Chick({ shape, color }: ArtworkProps) {
+export function Chick({ shape, color, faceMotion }: ArtworkProps) {
   return (
     <>
       <path d="M22 52L18 59H27L31 54M34 54L37 59H46L42 52" fill={beak} />
@@ -37,8 +39,14 @@ export function Chick({ shape, color }: ArtworkProps) {
         strokeLinecap="round"
       />
       <g className="avatar-eyes" fill={ink}>
-        <rect x="21" y="28" width="5" height="8" rx="2.5" />
-        <rect x="38" y="28" width="5" height="8" rx="2.5" />
+        {faceMotion ? (
+          <AvatarFaceEyes theme="chicks" shape={shape} motion={faceMotion} />
+        ) : (
+          <>
+            <rect x="21" y="28" width="5" height="8" rx="2.5" />
+            <rect x="38" y="28" width="5" height="8" rx="2.5" />
+          </>
+        )}
       </g>
       <g fill="#eea37f">
         <ellipse cx="18" cy="38" rx="3.5" ry="1.7" />
@@ -60,7 +68,7 @@ const elephantEars: Record<AvatarShape, string> = {
   arch: 'M21 19Q9 11 5 18Q0 30 6 40Q12 47 22 42M43 19Q55 11 59 18Q64 30 58 40Q52 47 42 42',
 };
 
-export function Elephant({ shape, color }: ArtworkProps) {
+export function Elephant({ shape, color, faceMotion }: ArtworkProps) {
   return (
     <>
       <path d={elephantEars[shape]} fill={color} />
@@ -82,10 +90,16 @@ export function Elephant({ shape, color }: ArtworkProps) {
         strokeLinecap="round"
       />
       <g className="avatar-eyes" fill={paper}>
-        <rect x="20" y="25" width="10" height="13" rx="5" />
-        <rect x="34" y="25" width="10" height="13" rx="5" />
-        <rect x="24" y="29" width="4" height="6" rx="2" fill={ink} />
-        <rect x="37" y="29" width="4" height="6" rx="2" fill={ink} />
+        {faceMotion ? (
+          <AvatarFaceEyes theme="elephants" shape={shape} motion={faceMotion} />
+        ) : (
+          <>
+            <rect x="20" y="25" width="10" height="13" rx="5" />
+            <rect x="34" y="25" width="10" height="13" rx="5" />
+            <rect x="24" y="29" width="4" height="6" rx="2" fill={ink} />
+            <rect x="37" y="29" width="4" height="6" rx="2" fill={ink} />
+          </>
+        )}
       </g>
       <path
         d="M24 41Q27 45 29 44M39 43Q42 44 45 40"

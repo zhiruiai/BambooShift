@@ -8,11 +8,13 @@ import 'app.dart';
 import 'core/api.dart';
 import 'core/app_session.dart';
 import 'core/secure_store.dart';
+import 'core/third_party_licenses.dart';
 import 'features/bots/avatar_camera.dart';
 import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  registerBundledLicenses();
   unawaited(discardAbandonedAvatarPhotos());
   if (kIsWeb) {
     try {

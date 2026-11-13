@@ -209,6 +209,8 @@ test(
       const avatarAnimation = (element: Element) => getComputedStyle(element).animationName;
       const avatarPlayState = (element: Element) => getComputedStyle(element).animationPlayState;
       await worker.waitFor();
+      await worker.locator('[data-avatar-expression="thinking"]').waitFor();
+      await activeHeader.locator('[data-avatar-expression="thinking"]').waitFor();
       assert.equal(await worker.evaluate(avatarAnimation), 'none');
       assert.equal(await activeHeader.evaluate(avatarAnimation), 'none');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -233,6 +235,8 @@ test(
       await page.locator('#message-tail .typing-cursor').waitFor();
       assert.equal(await page.locator('.typing-cursor').count(), 1);
       const activeAvatar = page.locator('#message-tail .avatar > svg');
+      await activeAvatar.locator('[data-avatar-expression="working"]').waitFor();
+      await activeHeader.locator('[data-avatar-expression="working"]').waitFor();
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-breathe');
       assert.equal(await activeHeader.evaluate(avatarAnimation), 'avatar-work-cycle');
       assert.equal(
@@ -255,6 +259,7 @@ test(
       );
       await completion.waitFor({ state: 'detached' });
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'none');
+      await activeAvatar.locator('[data-avatar-expression="done"]').waitFor();
       await page.waitForFunction(
         () =>
           document
@@ -272,6 +277,7 @@ test(
       await advance.press('Enter');
       const questionAvatar = page.locator('#message-follow-up-question .avatar > svg');
       await questionAvatar.waitFor();
+      await questionAvatar.locator('[data-avatar-expression="attention"]').waitFor();
       assert.equal(await questionAvatar.evaluate(avatarAnimation), 'avatar-attention');
       assert.equal(
         await page
@@ -284,6 +290,7 @@ test(
 
       await page.getByRole('button', { name: 'View as member' }).press('Enter');
       assert.equal(await questionAvatar.evaluate(avatarAnimation), 'none');
+      assert.equal(await questionAvatar.locator('[data-avatar-expression="attention"]').count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Review and edit Bot' }).count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Apply on this device' }).count(), 0);
       await page.getByRole('button', { name: 'View as owner' }).press('Enter');
@@ -305,6 +312,8 @@ test(
       await failed.waitFor();
       assert.equal(await activeAvatar.evaluate(avatarAnimation), 'avatar-deflate');
       await failed.waitFor({ state: 'detached' });
+      await activeAvatar.locator('[data-avatar-expression="error"]').waitFor();
+      assert.equal(await activeAvatar.locator('[data-avatar-theme="chicks"]').count(), 1);
 
       assert.deepEqual(requested, [
         {

@@ -10,6 +10,7 @@ import './AvatarPicker.css';
 import { useAvatarAppearance } from '../avatarAppearance';
 import { AvatarArtwork } from './AvatarArtwork';
 import { GeneratedAvatarArtwork } from './GeneratedAvatarArtwork';
+import type { AvatarFaceMotion } from './avatarFaceMotion';
 
 export type AvatarMotion =
   'idle' | 'thinking' | 'working' | 'attention' | 'done' | 'error' | 'preview';
@@ -19,6 +20,9 @@ const runningMotion = (motion: AvatarMotion | undefined) =>
 
 const terminalMotion = (motion: AvatarMotion | undefined) =>
   motion === 'done' || motion === 'error';
+
+const taskInProgress = (motion: AvatarMotion | undefined) =>
+  runningMotion(motion) || motion === 'attention';
 
 export function Avatar({
   agent,
@@ -89,32 +93,51 @@ export function Avatar({
   const image = url && failed !== url;
   const shape = agent?.avatar || 'orb';
   const previousMotion = useRef(motion);
-  const [justFinished, setJustFinished] = useState(false);
+  const [completion, setCompletion] = useState<'none' | 'fresh' | 'settled'>('none');
   useEffect(() => {
     const previous = previousMotion.current;
     // Text can stop streaming before the same message becomes terminal.
     if (previous === motion || (awaitingCompletion && motion === undefined)) return;
     previousMotion.current = motion;
-    if (
-      terminalMotion(motion) &&
-      (runningMotion(previous) || previous === 'attention') &&
-      !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    ) {
-      setJustFinished(true);
-    } else if (terminalMotion(previous)) {
-      setJustFinished(false);
+    if (terminalMotion(motion) && taskInProgress(previous)) {
+      setCompletion(
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'settled' : 'fresh',
+      );
+    } else {
+      setCompletion('none');
     }
   }, [motion, awaitingCompletion]);
-  const effect =
-    image || sharedPath || agent?.avatarImageId
-      ? undefined
-      : terminalMotion(motion)
-        ? justFinished
-          ? motion
-          : undefined
-        : motion;
+  useEffect(() => {
+    if (completion !== 'fresh') return;
+    const timeout = setTimeout(() => setCompletion('settled'), 700);
+    return () => clearTimeout(timeout);
+  }, [completion]);
+  const uploaded = image || sharedPath || agent?.avatarImageId;
+  const effect = uploaded
+    ? undefined
+    : terminalMotion(motion)
+      ? completion === 'fresh'
+        ? motion
+        : undefined
+      : motion;
   const element = useRef<HTMLSpanElement>(null);
   const sustained = sustain && runningMotion(effect);
+  const priorMotion = previousMotion.current;
+  const followsActiveTask = taskInProgress(priorMotion);
+  // Keep the eye layer mounted during the gap before a streamed result is finalized.
+  const expression = terminalMotion(motion)
+    ? motion
+    : awaitingCompletion && !motion && followsActiveTask
+      ? priorMotion
+      : effect;
+  const faceMotion: AvatarFaceMotion | undefined =
+    !uploaded && (sustain || expression) && expression !== 'preview'
+      ? {
+          state: expression ?? 'idle',
+          sustain: sustained,
+          animate: !terminalMotion(motion) || followsActiveTask || completion !== 'none',
+        }
+      : undefined;
   useEffect(() => {
     const target = element.current;
     if (!sustained || !target) return;
@@ -147,7 +170,7 @@ export function Avatar({
       className={`avatar ${className}`}
       data-avatar-motion={effect}
       data-avatar-sustained={sustained ? '' : undefined}
-      onAnimationEnd={terminalMotion(effect) ? () => setJustFinished(false) : undefined}
+      onAnimationEnd={terminalMotion(effect) ? () => setCompletion('settled') : undefined}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
@@ -164,9 +187,20 @@ export function Avatar({
           onError={() => setFailed(url)}
         />
       ) : useCustomAvatarTheme && customAvatarTheme ? (
-        <GeneratedAvatarArtwork theme={customAvatarTheme} shape={shape} size={size} />
+        <GeneratedAvatarArtwork
+          theme={customAvatarTheme}
+          shape={shape}
+          size={size}
+          faceMotion={faceMotion}
+        />
       ) : (
-        <AvatarArtwork theme={avatarTheme} shape={shape} color={agent?.color} size={size} />
+        <AvatarArtwork
+          theme={avatarTheme}
+          shape={shape}
+          color={agent?.color}
+          size={size}
+          faceMotion={faceMotion}
+        />
       )}
     </span>
   );

@@ -1,0 +1,141 @@
+{
+  "motion": {
+    "blinkDelayMs": 360,
+    "blinkDurationMs": 260,
+    "workingPeriodMs": 3200,
+    "workingGazeAmplitude": 0.75,
+    "easingPower": 5,
+    "gazeSmoothingMs": 140,
+    "maxFrameDeltaMs": 50
+  },
+  "themes": {
+    "companions": {
+      "eyes": [
+        [23, 30.5, 10, 15],
+        [42, 30.5, 10, 15]
+      ],
+      "pupil": [4, 7],
+      "pupilOffsetX": [2, 2],
+      "pupilOffsetY": 1,
+      "shapeTilt": true,
+      "paper": "#fffdf7",
+      "ink": "#292733"
+    },
+    "pandas": {
+      "eyes": [
+        [23, 30.5, 10, 15],
+        [42, 30.5, 10, 15]
+      ],
+      "pupil": [4, 7],
+      "pupilOffsetX": [2, 2],
+      "pupilOffsetY": 1,
+      "shapeTilt": true,
+      "paper": "#fffdf7",
+      "ink": "#292733"
+    },
+    "dinosaurs": {
+      "eyes": [
+        [23, 30.5, 10, 15],
+        [42, 30.5, 10, 15]
+      ],
+      "pupil": [4, 7],
+      "pupilOffsetX": [2, 2],
+      "pupilOffsetY": 1,
+      "shapeTilt": true,
+      "paper": "#fffdf7",
+      "ink": "#292733"
+    },
+    "chicks": {
+      "eyes": [
+        [23.5, 32, 5, 8],
+        [40.5, 32, 5, 8]
+      ],
+      "pupil": null,
+      "pupilOffsetX": [0, 0],
+      "pupilOffsetY": 0,
+      "shapeTilt": false,
+      "paper": "#292733",
+      "ink": "#292733"
+    },
+    "elephants": {
+      "eyes": [
+        [25, 31.5, 10, 13],
+        [39, 31.5, 10, 13]
+      ],
+      "pupil": [4, 6],
+      "pupilOffsetX": [1, 0],
+      "pupilOffsetY": 0.5,
+      "shapeTilt": false,
+      "paper": "#fffdf7",
+      "ink": "#292733"
+    }
+  },
+  "poses": {
+    "idle": {
+      "width": 1,
+      "top": -1.33,
+      "bottom": 1.33,
+      "side": 0,
+      "tilt": 0,
+      "gazeX": 0,
+      "gazeY": 0,
+      "pupilOpacity": 1,
+      "duration": 300
+    },
+    "thinking": {
+      "width": 0.97,
+      "top": -0.6,
+      "bottom": 1.1,
+      "side": 0.12,
+      "tilt": 0,
+      "gazeX": -2.5,
+      "gazeY": -1.3,
+      "pupilOpacity": 1,
+      "duration": 380
+    },
+    "working": {
+      "width": 0.98,
+      "top": -1.18,
+      "bottom": 1.15,
+      "side": -0.03,
+      "tilt": 0,
+      "gazeX": -0.2,
+      "gazeY": 0.6,
+      "pupilOpacity": 1,
+      "duration": 320
+    },
+    "attention": {
+      "width": 1.13,
+      "top": -1.48,
+      "bottom": 1.4,
+      "side": -0.05,
+      "tilt": 0,
+      "gazeX": -0.7,
+      "gazeY": -1.4,
+      "pupilOpacity": 1,
+      "duration": 260
+    },
+    "done": {
+      "width": 1.03,
+      "top": -1.1,
+      "bottom": -0.24,
+      "side": 0.14,
+      "tilt": 0,
+      "gazeX": -0.5,
+      "gazeY": -1.2,
+      "pupilOpacity": 0,
+      "duration": 360
+    },
+    "error": {
+      "width": 0.96,
+      "top": -0.33,
+      "bottom": 1.22,
+      "side": 0.2,
+      "tilt": -0.23,
+      "gazeX": -0.8,
+      "gazeY": 1.6,
+      "pupilOpacity": 1,
+      "duration": 380
+    }
+  }
+}
