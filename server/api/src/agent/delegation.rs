@@ -238,10 +238,18 @@ pub(crate) fn delegate<'a>(
         }
         store.emit("update", json!({}));
         authorized?;
+        let deliveries =
+            super::delegation_receipts::collect(store, &active.run_id, &destination_id, &target)
+                .await?;
+        access.authorize(state).await?;
+        parent.family.authorize(state).await?;
+        tools::check_fence(parent, generation)?;
         let content = result["content"].as_str().unwrap_or("");
         let excerpt = content.chars().take(16000).collect::<String>();
-        let details = json!({"agentId":target,"conversationId":destination_id,"resultMessageId":result["id"],"status":if result["status"]=="done" {"completed"} else {"error"},"content":excerpt,"truncated":content.chars().count()>16000});
-        Ok(json!({"content":[{"type":"text","text":details.to_string()}],"details":details,"isError":result["status"]!="done"}))
+        let details = json!({"agentId":target,"conversationId":destination_id,"resultMessageId":result["id"],"status":if result["status"]=="done" {"completed"} else {"error"},"content":excerpt,"truncated":content.chars().count()>16000,"deliveries":deliveries,"acceptance":"requires_review"});
+        Ok(
+            json!({"content":[{"type":"text","text":details.to_string()}],"details":details,"isError":result["status"]!="done"}),
+        )
     })
 }
 fn member(conversation: &Value, id: &str) -> bool {

@@ -91,6 +91,8 @@ async fn delegated_outcome(failed: bool) {
                 if failed { "error" } else { "completed" }
             );
             assert!(details["resultMessageId"].is_string());
+            assert_eq!(details["acceptance"], "requires_review");
+            assert_eq!(details["deliveries"]["items"], json!([]));
             finish(if failed {
                 "The specialist failed; delivery remains blocked."
             } else {

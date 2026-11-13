@@ -132,6 +132,8 @@ impl WorkspaceStore {
                 .execute(&pool)
                 .await?;
             }
+            sqlx::query("CREATE INDEX IF NOT EXISTS messages_agent_run ON messages(json_extract(data,'$.metadata.runId'),json_extract(data,'$.conversationId'),json_extract(data,'$.agentId'))")
+                .execute(&pool).await?;
         } else {
             let present: Option<i64> = sqlx::query_scalar(
                 "SELECT 1 FROM sqlite_master WHERE type='table' AND name='app_connections'",
