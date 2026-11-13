@@ -3,8 +3,8 @@
   <g id="mark">
     <path d="M158 16h196c90 0 142 52 142 142v196c0 90-52 142-142 142H158C68 496 16 444 16 354V158C16 68 68 16 158 16Z" fill="#101010"/>
     <g transform="rotate(-16 268 244)" fill="#FFFFFF">
-      <rect x="174.4" y="179" width="54.6" height="130" rx="27.3"/>
-      <rect x="307" y="179" width="54.6" height="130" rx="27.3"/>
+      <rect x="168.94" y="166" width="65.52" height="156" rx="32.76"/>
+      <rect x="301.54" y="166" width="65.52" height="156" rx="32.76"/>
     </g>
   </g>
 </svg>
