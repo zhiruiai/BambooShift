@@ -35,7 +35,7 @@ flowchart LR
 - The supervised [agent worker](../server/workers/pi-worker/) owns the framed protocol, cancellation, task budget and terminal receipt. MIT [Cordis core](../server/workers/plugin-runtime/) supplies reviewed engine providers and the Rust tool bridge. The [Pi provider](../server/workers/engines/pi/) is the only bundled production engine; SDK loading, model configuration, event adaptation and session cleanup are private to it. An alternative provider must implement the same tested contract. Historical worker entry paths remain compatible with existing deployments.
 - [Computer runtime](../server/workers/computer-runtime/) uses Playwright for isolated browser work. In the opted-in macOS personal workspace, Electron supervises the MIT [Cua Driver](../legal/third-party/cua-driver-0.47.8/) and the computer worker connects to it through a private socket. System permission and chat approval apply to native input. Remote and cloud execution use their configured worker connection.
 
-[Desktop setup](desktop-client.md) · [Computer configuration](computer.md)
+[Desktop setup](desktop-client.md) · [Computer configuration](computer.md) · [Windows local-runtime boundaries](windows-local-runtime.md)
 
 ## Business backend
 
