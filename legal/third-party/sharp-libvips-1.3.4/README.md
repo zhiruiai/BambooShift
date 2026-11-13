@@ -130,9 +130,17 @@ The candidate's library and archive passed the recorded path, account-value and
 archive-metadata checks. [SOURCE-INPUTS-CANDIDATE.json](SOURCE-INPUTS-CANDIDATE.json)
 lists the fixed source inputs; [candidate-patches](candidate-patches/) contains
 the small source changes that remove build-machine fallback directories. The
-record distinguishes the completed local build from an unpublished full rebuild
-entry point and an undelivered corresponding-source artifact.
+record now includes a fresh build with no reused native objects or installation
+prefix, a complete [rebuild entry point](REBUILD.md), and separate binary and
+corresponding-source archives. The source archive contains all 37 fixed inputs,
+the complete recipe and patches, build tools instructions, and 123 original
+legal files from 27 components. Its 179 regular members were independently
+verified. The actual source tarball was unpacked, then its own preparation and
+artifact-verification commands passed without repository-only dependencies.
+The earlier incremental candidate's hashes remain in the evidence as history.
 
 This candidate does not replace the locked npm binaries, clear their existing
-notice gaps, or enable a release. Full license materials, source delivery,
-replacement instructions and managed desktop package acceptance remain required.
+notice gaps, or enable a release. The complete source and binary artifacts are
+still local candidates. Public source delivery, release review and full managed
+desktop package acceptance remain required; only macOS arm64 is qualified by
+these native-library checks.

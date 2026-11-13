@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "scope": "Fixed source archives and upstream patches used by the local macOS arm64 no-rsvg candidate. Not a complete binary SBOM or corresponding-source delivery.",
+  "scope": "Checksum-bound source archives, upstream build inputs, patches and tool recipe for the macOS arm64 no-rsvg candidate. Actual corresponding-source delivery is bound separately by the distribution artifact manifest.",
   "upstreamRevision": "ebb95f8add54eee8bed840e3fb587e4cbec857d7",
   "archives": 27,
   "upstreamPatches": 4,
@@ -245,5 +245,57 @@
     "repeatedComponent": "freetype",
     "additionalNetworkDownloadsObserved": false,
     "scope": "Recipe fetches were served from a checksum-verified local allowlist. Meson cross-file wrap_mode remained nofallback; reviewed build logs showed no additional source download. This is not a network packet trace."
-  }
+  },
+  "buildInputs": [
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/build/posix.sh",
+      "filename": "sharp-posix.sh",
+      "bytes": 23877,
+      "sha256": "333031b3b49bf1a16d0b9d6812d98f67c404218932ef8c0b389388524a524b36",
+      "output": "build/posix.sh"
+    },
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/versions.properties",
+      "filename": "sharp-versions.properties",
+      "bytes": 594,
+      "sha256": "c0ad634f7c2ac8994f831dd0bcb5c60043db7ba4ddd9cc2dbc3703b15f4ec7e5",
+      "output": "versions.properties"
+    },
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/platforms/darwin-arm64v8/Toolchain.cmake",
+      "filename": "platforms-darwin-arm64v8-Toolchain.cmake",
+      "bytes": 390,
+      "sha256": "752c37ab0b1b9401ec9cad4ef0d6588511b6a1011fe8789acba4066f65cccf99",
+      "output": "platforms/darwin-arm64v8/Toolchain.cmake"
+    },
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/platforms/darwin-arm64v8/meson.ini",
+      "filename": "platforms-darwin-arm64v8-meson.ini",
+      "bytes": 210,
+      "sha256": "d9143811fe878743bc874d92de848a87a2c9a334b0d39e34d49b56c0a025a5ee",
+      "output": "platforms/darwin-arm64v8/meson.ini"
+    },
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/THIRD-PARTY-NOTICES.md",
+      "filename": "sharp-libvips-NOTICES.md",
+      "bytes": 4230,
+      "sha256": "6f0d5086e3bcbee12bcdacf5878b31d1104002aeecaeb241d3fff466108082fe",
+      "output": "UPSTREAM-THIRD-PARTY-NOTICES.md"
+    },
+    {
+      "component": "sharp-libvips-build",
+      "url": "https://raw.githubusercontent.com/lovell/sharp-libvips/ebb95f8add54eee8bed840e3fb587e4cbec857d7/LICENSE",
+      "filename": "sharp-libvips-LICENSE",
+      "bytes": 11357,
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "output": "UPSTREAM-LICENSE"
+    }
+  ],
+  "recipePatchSha256": "8a9ced35580ae8a1764f5e26ad8ee128940dd26b8d9397f6fde7d616ae509635",
+  "buildInputBytes": 40658
 }

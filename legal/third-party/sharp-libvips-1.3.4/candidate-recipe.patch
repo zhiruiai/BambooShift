@@ -1,0 +1,160 @@
+--- a/build/posix.sh
++++ b/build/posix.sh
+@@ -1,5 +1,6 @@
+ #!/usr/bin/env bash
+ set -e
++set -o pipefail
+ 
+ ## Copyright 2017 Lovell Fuller and others.
+ ## SPDX-License-Identifier: Apache-2.0
+@@ -71,51 +72,26 @@
+ if [ "$DARWIN" = true ]; then
+   # Let macOS linker remove unused code
+   export LDFLAGS+=" -Wl,-dead_strip"
+-  # Local rust installation
+-  export CARGO_HOME="${DEPS}/cargo"
+-  export RUSTUP_HOME="${DEPS}/rustup"
+-  mkdir -p $CARGO_HOME
+-  mkdir -p $RUSTUP_HOME
+-  export PATH="${CARGO_HOME}/bin:${PATH}"
+ fi
+ 
+ # Run as many parallel jobs as there are available CPU cores
+ if [ "$LINUX" = true ]; then
+   export MAKEFLAGS="-j$(nproc)"
+ elif [ "$DARWIN" = true ]; then
+-  export MAKEFLAGS="-j$(sysctl -n hw.logicalcpu)"
++  export MAKEFLAGS="-j${BAMBOOSHIFT_BUILD_JOBS:-2}"
+ fi
+ 
+ # Expose target sysroot to CMake
+ export TARGET_SYSROOT="${TARGET}"
+-
+-# Optimise Rust code for binary size
+-export CARGO_PROFILE_RELEASE_DEBUG=false
+-export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+-export CARGO_PROFILE_RELEASE_INCREMENTAL=false
+-export CARGO_PROFILE_RELEASE_LTO=true
+-export CARGO_PROFILE_RELEASE_OPT_LEVEL=z
+-export CARGO_PROFILE_RELEASE_PANIC=abort
+-
+-# Ensure Cargo build path prefixes are removed from the resulting binaries
+-# https://reproducible-builds.org/docs/build-path/
+-export RUSTFLAGS+=" --remap-path-prefix=$CARGO_HOME/registry/="
+ 
+ # We don't want to use any native libraries, so unset PKG_CONFIG_PATH
+ unset PKG_CONFIG_PATH
+ 
+ # Common options for curl
+-CURL="curl --silent --location --retry 3 --retry-max-time 30"
++CURL="${PACKAGE}/bin/pinned-fetch"
+ 
+ # Download and build dependencies from source
+ 
+-if [ "$DARWIN" = true ]; then
+-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+-    | sh -s -- -y --no-modify-path --profile minimal --default-toolchain nightly
+-  export RUSTFLAGS+=" -Zlocation-detail=none -Zfmt-debug=none"
+-  CFLAGS= cargo install cargo-c --locked
+-fi
+-
+ if [ "${PLATFORM%-*}" == "linuxmusl" ] || [ "$DARWIN" = true ]; then
+   # musl and macOS requires the standalone intl support library of gettext, since it's not provided by libc (like GNU).
+   # We use a stub version of gettext instead, since we don't need any of the i18n features.
+@@ -144,6 +120,7 @@
+ mkdir ${DEPS}/glib
+ $CURL https://download.gnome.org/sources/glib/$(without_patch $VERSION_GLIB)/glib-${VERSION_GLIB}.tar.xz | tar xJC ${DEPS}/glib --strip-components=1
+ cd ${DEPS}/glib
++patch -p1 < "${PACKAGE}/patches/glib-runtime-defaults.patch"
+ $CURL https://gist.github.com/kleisauke/284d685efa00908da99ea6afbaaf39ae/raw/bdad5489a61c217850631571caf57f5db6ea8b2c/glib-without-gregex.patch | patch -p1
+ meson setup _build --default-library=static --buildtype=release --strip --prefix=${TARGET} --datadir=${TARGET}/share ${MESON} \
+   --force-fallback-for=gvdb -Dintrospection=disabled -Dnls=disabled -Dlibmount=disabled -Dsysprof=disabled -Dlibelf=disabled \
+@@ -191,7 +168,7 @@
+ cd ${DEPS}/heif
+ CFLAGS="${CFLAGS} -O3" CXXFLAGS="${CXXFLAGS} -O3" cmake -G"Unix Makefiles" \
+   -DCMAKE_TOOLCHAIN_FILE=${ROOT}/Toolchain.cmake -DCMAKE_INSTALL_PREFIX=${TARGET} -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_BUILD_TYPE=Release \
+-  -DBUILD_SHARED_LIBS=FALSE -DBUILD_DOCUMENTATION=0 -DBUILD_TESTING=0 -DENABLE_PLUGIN_LOADING=0 -DWITH_EXAMPLES=0 -DWITH_LIBDE265=0 -DWITH_X265=0
++  -DBUILD_SHARED_LIBS=FALSE -DBUILD_DOCUMENTATION=0 -DBUILD_TESTING=0 -DENABLE_PLUGIN_LOADING=0 -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif -DWITH_EXAMPLES=0 -DWITH_LIBDE265=0 -DWITH_X265=0
+ make install/strip
+ 
+ mkdir ${DEPS}/jpeg
+@@ -324,31 +301,14 @@
+ mkdir ${DEPS}/pango
+ $CURL https://download.gnome.org/sources/pango/$(without_patch $VERSION_PANGO)/pango-${VERSION_PANGO}.tar.xz | tar xJC ${DEPS}/pango --strip-components=1
+ cd ${DEPS}/pango
++patch -p1 < "${PACKAGE}/patches/pango-runtime-defaults.patch"
+ # Disable utils and tools
+ sed -i'.bak' "/subdir('utils')/{N;d;}" meson.build
+ meson setup _build --default-library=static --buildtype=release --strip --prefix=${TARGET} ${MESON} \
+   -Ddocumentation=false -Dbuild-testsuite=false -Dbuild-examples=false -Dintrospection=disabled -Dfontconfig=enabled
+ meson install -C _build --tag devel
+ 
+-mkdir ${DEPS}/rsvg
+-$CURL https://download.gnome.org/sources/librsvg/$(without_patch $VERSION_RSVG)/librsvg-${VERSION_RSVG}.tar.xz | tar xJC ${DEPS}/rsvg --strip-components=1
+-cd ${DEPS}/rsvg
+-# Disallow GIF and WebP embedded in SVG images
+-sed -i'.bak' "/image = /s/, \"gif\", \"webp\"//" rsvg/Cargo.toml
+-# We build Cairo with `-Dzlib=disabled`, which implicitly disables the PDF/PostScript surface backends
+-sed -i'.bak' "/cairo-rs = /s/, \"pdf\", \"ps\"//" {librsvg-c,rsvg}/Cargo.toml
+-# https://gitlab.gnome.org/GNOME/librsvg/-/merge_requests/1066#note_2356762
+-sed -i'.bak' "/^if host_system in \['windows'/s/, 'linux'//" meson.build
+-# Regenerate the lockfile after making the above changes
+-cargo update --workspace
+-# [PATCH] Ensure embedded image memory limits are enforced
+-$CURL https://github.com/GNOME/librsvg/commit/9106011db93d701728ac2c9da50c9ab2c1bb5dc6.patch | patch -p1
+-# Remove the --static flag from the PKG_CONFIG env since Rust does not
+-# parse that correctly.
+-PKG_CONFIG=${PKG_CONFIG/ --static/} meson setup _build --default-library=static --buildtype=plain --strip --prefix=${TARGET} ${MESON} \
+-  -Dintrospection=disabled -Dpixbuf{,-loader}=disabled -Drsvg-convert=disabled -Ddocs=disabled -Dvala=disabled -Dtests=false \
+-  ${RUST_TARGET:+-Dtriplet=$RUST_TARGET}
+-meson install -C _build --tag devel
++# Candidate: SVG loading is explicitly disabled; librsvg and its Rust graph are not built.
+ 
+ mkdir ${DEPS}/cgif
+ $CURL https://github.com/dloebl/cgif/archive/v${VERSION_CGIF}.tar.gz | tar xzC ${DEPS}/cgif --strip-components=1
+@@ -372,6 +332,7 @@
+ mkdir ${DEPS}/vips
+ $CURL https://github.com/libvips/libvips/releases/download/v${VERSION_VIPS}/vips-$(without_prerelease $VERSION_VIPS).tar.xz | tar xJC ${DEPS}/vips --strip-components=1
+ cd ${DEPS}/vips
++patch -p1 < "${PACKAGE}/patches/vips-runtime-defaults.patch"
+ # Use version number in SONAME
+ $CURL https://gist.githubusercontent.com/lovell/313a6901e9db1bf285f2a1f1180499e4/raw/3988223c7dfa4d22745d9392034b0117abef1446/libvips-cpp-soversion.patch | patch -p1
+ # Link libvips.so statically into libvips-cpp.so
+@@ -393,7 +354,7 @@
+   -Ddeprecated=false -Dexamples=false -Dauto_features=enabled -Dintrospection=disabled -Dmodules=disabled -Dcfitsio=disabled -Dfftw=disabled \
+   -Djpeg-xl=disabled ${WITHOUT_HIGHWAY:+-Dhighway=disabled} -Dorc=disabled -Dmagick=disabled -Dmatio=disabled -Dnifti=disabled -Dopenexr=disabled \
+   -Dopenjpeg=disabled -Dopenslide=disabled -Dpdfium=disabled -Dpoppler=disabled -Dquantizr=disabled -Draw=disabled -Dspng=disabled \
+-  -Dppm=false -Danalyze=false -Dradiance=false \
++  -Dppm=false -Danalyze=false -Dradiance=false -Drsvg=disabled \
+   ${LINUX:+-Dcpp_link_args="$LDFLAGS -Wl,-Bsymbolic-functions -Wl,--version-script=$DEPS/vips/vips.map $EXCLUDE_LIBS"}
+ meson install -C _build --tag runtime,devel
+ 
+@@ -471,7 +432,6 @@
+   \"pixman\": \"${VERSION_PIXMAN}\",\n\
+   \"png\": \"${VERSION_PNG}\",\n\
+   \"proxy-libintl\": \"${VERSION_PROXY_LIBINTL}\",\n\
+-  \"rsvg\": \"${VERSION_RSVG}\",\n\
+   \"tiff\": \"${VERSION_TIFF}\",\n\
+   \"uhdr\": \"${VERSION_UHDR}\",\n\
+   \"vips\": \"${VERSION_VIPS}\",\n\
+@@ -481,17 +441,13 @@
+ }" >versions.json
+ 
+ # Add third-party notices
+-$CURL -O https://raw.githubusercontent.com/lovell/sharp-libvips/main/THIRD-PARTY-NOTICES.md
++cp "${PACKAGE}/UPSTREAM-THIRD-PARTY-NOTICES.md" THIRD-PARTY-NOTICES.md
+ 
+ # Create the tarball
+ ls -al lib
+ rm -rf lib
+ mv lib-filtered lib
+-tar chzf ${PACKAGE}/sharp-libvips-${PLATFORM}.tar.gz \
+-  include \
+-  lib \
+-  *.json \
+-  THIRD-PARTY-NOTICES.md
++python3 "${BAMBOOSHIFT_ARCHIVER}" "${TARGET}" "${PACKAGE}/bambooshift-native-image-codecs-darwin-arm64-norsvg-candidate.tar.gz" include lib versions.json THIRD-PARTY-NOTICES.md
+ 
+ # Allow tarballs to be read outside container
+-chmod 644 ${PACKAGE}/sharp-libvips-${PLATFORM}.tar.*
++chmod 644 ${PACKAGE}/bambooshift-native-image-codecs-darwin-arm64-norsvg-candidate.tar.gz

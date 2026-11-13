@@ -16,7 +16,11 @@
     "arm64MesonCrossFileSha256": "d9143811fe878743bc874d92de848a87a2c9a334b0d39e34d49b56c0a025a5ee"
   },
   "productionContract": {
-    "imageInputs": ["PNG", "JPEG", "WebP"],
+    "imageInputs": [
+      "PNG",
+      "JPEG",
+      "WebP"
+    ],
     "output": "PNG after orientation correction, bounded resize and metadata removal",
     "svg": "UTF-8 text attachment; no production Sharp rasterization",
     "gif": "Rejected as an unsupported attachment; not a first-frame product feature",
@@ -47,19 +51,33 @@
         "meson==1.12.1": "930bc7542cbd9f57009e182fd014eba48cf1a0180a7b9006d2d32d8f168d8b02",
         "ninja==1.13.2": "fd82e26c0706ad4ab88e5fdd26f3fab0a987a90f810160f6c322e752c6af298b",
         "cmake==4.4.4": "883962a72b1b3a16ff445427f24c8caca9797dd9e563bbe208cbcd89e877f9d3"
-      }
+      },
+      "sdk": "macOS 26.5",
+      "pkgConfig": "2.5.1",
+      "ninjaExecutableVersion": "1.13.2.git.kitware.jobserver-pipe-1"
     }
   },
   "candidate": {
     "library": "libvips-cpp.8.18.7.dylib",
-    "librarySha256": "79743693b1a3bfa5e3190c8515efad66b7906cb41229050b5230817a45519e0d",
+    "librarySha256": "ab50639d9c992a0d44b9e758589ebcef31b42003b1a8b947c1e5975094d2a23f",
     "archive": {
       "artifact": "bambooshift-native-image-codecs-darwin-arm64-norsvg-candidate.tar.gz",
-      "sha256": "69c97d9092dd65b5c28a38b5cdcbed58d330c379a23ec71780af69b5c5734c70",
-      "bytes": 8586886,
-      "entries": 730
+      "sha256": "35617936c1afdb4cd052ba3e79dcc4363dce4acfe084626dbe338f971e4a4519",
+      "bytes": 8964000,
+      "entries": 958
     },
-    "identity": "Custom local build; not the original @img/sharp-libvips npm publication and not an official upstream binary"
+    "identity": "Custom local build; not the original @img/sharp-libvips npm publication and not an official upstream binary",
+    "correspondingSource": {
+      "artifact": "bambooshift-native-image-codecs-corresponding-source.tar.gz",
+      "sha256": "625344c534c8fad74df3b61ecca8904c56dda425e88d39bd5407b9d445ae39d3",
+      "bytes": 156196307,
+      "entries": 291,
+      "inventorySha256": "40d7a75dd57f4d48908a303c35361c7fd50c0a43f20b7264b05700c9848c7eda",
+      "regularFilesVerified": 179
+    },
+    "distributionManifestSha256": "e5b8f98121555a3d706e30dd95d9220fff8c80bd2cc76d510aca3e8edcb246fd",
+    "buildRecipeSha256": "2c7b45faeadb05629e0e69120c28a8c94baa950fd57d23e717d4e774b2790e98",
+    "recipePatchSha256": "8a9ced35580ae8a1764f5e26ad8ee128940dd26b8d9397f6fde7d616ae509635"
   },
   "abi": {
     "sharp": "0.35.5",
@@ -100,54 +118,42 @@
     "archivePrivateContentHits": 0,
     "archiveNonNeutralOwnerOrTimestampEntries": 0,
     "archiveUnsafePathsOrExternalLinks": 0,
-    "scannedEntries": 730,
-    "scope": "Exact local build prefix, home-directory prefixes and known local account value; all archived regular-file contents and ownership/timestamp/link metadata were checked. Original third-party author attribution remains intact."
-  },
-  "heifHeaderRegeneration": {
-    "pluginLoadingEnabled": false,
-    "pluginLoadingMacro": "undefined, false in #if",
-    "onlyConsumer": "libheif/init.cc, inside #if ENABLE_PLUGIN_LOADING",
-    "preprocessedTranslationUnitBeforeSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
-    "preprocessedTranslationUnitAfterSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
-    "identicalPreprocessedTranslationUnit": true,
-    "headerBeforeSha256": "958566b20f8dffdce22025fde18dd529d4ba8dc24fba705d5b0ea78a4bb24ae2",
-    "headerAfterSha256": "ffc22608355e731a101c320290c6bf3af16cbb5ba52b8e78a44cdae682043061",
-    "mechanism": "Official CMake configure_file from exact upstream heif_version.h.in; PLUGIN_DIRECTORY supplied via supported option in full build recipe."
+    "scannedEntries": 958,
+    "scope": "The native library, all selected binary/source artifact regular-file contents, member/link names, owners, timestamps and link boundaries were checked against the build prefix, home path and account value. Upstream compressed archives are retained unchanged and bound to public source checksums. No private build logs/toolchain captures are shipped.",
+    "sourceArchiveEntries": 291,
+    "sourceRegularFilesVerified": 179,
+    "archivePrivateMemberOrLinkNameHits": 0
   },
   "reproduction": {
-    "completePublicOneCommandRebuildAvailable": false,
-    "localBuildCompleted": true,
-    "method": "Full pinned POSIX recipe built the candidate. GLib/Pango/libvips were then clean-rebuilt with the published default-directory patches and relinked. The disabled libheif plugin header default was regenerated with upstream CMake configure_file; its only consumer preprocessed identically before/after, so library bytes were unchanged.",
+    "completeRebuildEntryPointAvailable": true,
+    "localCleanBuildCompleted": true,
+    "sourceArtifactPublished": false,
+    "entryPoint": "scripts/desktop/native-codecs/build.mjs",
+    "buildInstructions": "REBUILD.md",
     "sourceCatalog": "SOURCE-INPUTS-CANDIDATE.json",
     "sourcePatches": "candidate-patches/",
-    "localRecipeEvidenceSha256": "55a56c11c2b5eab7d7034544d99cbe75157f5c6c85684ee7ed3463c999e388ac",
+    "recipePatch": "candidate-recipe.patch",
+    "method": "The pinned POSIX recipe and all 27 component source archives were built into a new controlled deps/target directory. No prior compiled object or installed native dependency prefix was reused. All three directory patches and the official libheif setting were applied before compilation. The actual corresponding-source tarball was then unpacked into another fresh directory; its own build entry point successfully prepared all inputs, and its own verifier validated both artifacts without repository-only imports.",
+    "unpackedSourcePrepare": "passed",
+    "unpackedSourceVerifier": "passed",
+    "secondFullCompilationFromExtractedArtifact": false,
     "commands": [
       {
-        "purpose": "Local full build (entry point is retained locally, not yet published)",
-        "command": "BAMBOOSHIFT_BUILD_TOOLS=<isolated-build-tools> BAMBOOSHIFT_BUILD_JOBS=2 bash <candidate-build>/run.sh"
+        "purpose": "Clean native build",
+        "command": "node scripts/desktop/native-codecs/build.mjs build --output <new-build-output> --cache <verified-cache> --tools <isolated-build-tools> --jobs 2"
       },
       {
-        "purpose": "Feature selection on the pinned libvips recipe",
-        "parameters": [
-          "-Drsvg=disabled",
-          "-Dmodules=disabled",
-          "-Dauto_features=enabled",
-          "-Ddeprecated=false",
-          "-Dintrospection=disabled"
-        ]
+        "purpose": "Complete binary and source artifacts",
+        "command": "node scripts/desktop/native-codecs/build.mjs package --output <completed-build-output> --cache <verified-cache> --tools <isolated-build-tools>"
       },
       {
-        "purpose": "Check original addon dependency",
-        "command": "otool -L <isolated-runtime>/node_modules/@img/sharp-darwin-arm64/lib/sharp-darwin-arm64-0.35.5.node"
+        "purpose": "Check extracted source is self-contained",
+        "command": "node <extracted-source>/scripts/desktop/native-codecs/build.mjs prepare --output <new-prepare-output> --cache <extracted-source>/source-cache"
       },
       {
-        "purpose": "Local signature verification",
-        "command": "codesign --verify --strict <candidate>/lib/libvips-cpp.8.18.7.dylib"
-      },
-      {
-        "purpose": "Header regeneration",
-        "command": "cmake -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif -DENABLE_PLUGIN_LOADING=0 <pinned-libheif-source>",
-        "note": "This is the supported parameter selection for a clean build. The observed incremental header-only regeneration used the same template and project version via CMake configure_file; preprocessor hashes are recorded separately."
+        "purpose": "Independent artifact verification",
+        "command": "verifyNativeDistribution({ manifestPath, artifactsDirectory, expectedManifestSha256, sourceRoot: extractedSource })",
+        "expectedManifestSha256": "e5b8f98121555a3d706e30dd95d9220fff8c80bd2cc76d510aca3e8edcb246fd"
       }
     ]
   },
@@ -269,10 +275,49 @@
     }
   ],
   "remainingReleaseRequirements": [
-    "Publish and exercise a complete clean rebuild entry point with toolchain inputs, every patch, library-replacement instructions and the corresponding-source artifact. A source URL catalog is not source delivery.",
-    "Complete legal review and include all applicable original license/copyright texts for the custom native artifact. Removing librsvg does not make libvips or libheif MIT-licensed.",
-    "Qualify the exact replacement in a full managed desktop package, including launch, cancellation, privacy, signing and supported target platforms.",
-    "Give the custom artifact an explicit provenance/integrity identity before any runtime dependency change. Keep the existing managed-runtime release gate disabled until acceptance is complete."
+    "Review and pin the custom distribution-manifest digest before changing any runtime dependency; the official npm binary audit remains separate.",
+    "Qualify the exact replacement in a full managed desktop package, including launch, cancellation, privacy, signing and all claimed target platforms. Only the macOS arm64 library and isolated image worker are accepted here.",
+    "For each public binary release, deliver the verified corresponding-source archive, complete original notices and library-replacement instructions together. These candidate archives are currently local only.",
+    "Complete the release-level review and signing/notarization requirements. Keep the managed-runtime release gate disabled until those acceptance steps are complete."
   ],
-  "legacyAudit": "DISTRIBUTION.json remains the audit of the locked official npm binaries. Its macOS librsvg notice gaps are not waived by this separate candidate."
+  "legacyAudit": "DISTRIBUTION.json remains the audit of the locked official npm binaries. Its macOS librsvg notice gaps are not waived by this separate candidate.",
+  "previousCandidate": {
+    "recordedAt": "2026-11-13",
+    "librarySha256": "79743693b1a3bfa5e3190c8515efad66b7906cb41229050b5230817a45519e0d",
+    "archive": {
+      "artifact": "bambooshift-native-image-codecs-darwin-arm64-norsvg-candidate.tar.gz",
+      "sha256": "69c97d9092dd65b5c28a38b5cdcbed58d330c379a23ec71780af69b5c5734c70",
+      "bytes": 8586886,
+      "entries": 730
+    },
+    "scope": "Earlier incremental local candidate; superseded by the clean build below. Not released."
+  },
+  "correspondingSourceArtifactBuilt": true,
+  "deliveryStatus": "Both archives are built and verified locally. They have not been published in a Release; formal redistribution must ship the corresponding source with the binary.",
+  "notices": {
+    "components": 27,
+    "originalFiles": 123,
+    "bytes": 1033088,
+    "indexSha256": "1c4073c1a04f632ce47e98257c134077e2e841382c5fb72ed177a78a8a741aaf",
+    "sourceCatalogSha256": "44ea24ef5fed55f50a22391228ef4bb5c086682ec89773eccd9c5962159a51f0",
+    "noticeCatalogSha256": "414fea5a1d93b888aff8cbff50a4432d743d1bc9d3eae17a10bc2daedaadd886",
+    "verification": "Exact reviewed members were extracted from checksum-bound original archives. Both distributed copies and all corresponding-source regular members were verified. Third-party author attributions are retained."
+  },
+  "previousHeifHeaderInvestigation": {
+    "pluginLoadingEnabled": false,
+    "pluginLoadingMacro": "undefined, false in #if",
+    "onlyConsumer": "libheif/init.cc, inside #if ENABLE_PLUGIN_LOADING",
+    "preprocessedTranslationUnitBeforeSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
+    "preprocessedTranslationUnitAfterSha256": "b116e68e9fb7bb20aa82bdeedb24d35d74c85f167505759dfb8db17252501cd7",
+    "identicalPreprocessedTranslationUnit": true,
+    "headerBeforeSha256": "958566b20f8dffdce22025fde18dd529d4ba8dc24fba705d5b0ea78a4bb24ae2",
+    "headerAfterSha256": "ffc22608355e731a101c320290c6bf3af16cbb5ba52b8e78a44cdae682043061",
+    "mechanism": "Official CMake configure_file from exact upstream heif_version.h.in; PLUGIN_DIRECTORY supplied via supported option in full build recipe."
+  },
+  "heifCleanBuild": {
+    "pluginLoadingEnabled": false,
+    "pluginDirectory": "/bambooshift-native-runtime/lib/libheif",
+    "method": "Official CMake -DENABLE_PLUGIN_LOADING=0 -DPLUGIN_DIRECTORY=/bambooshift-native-runtime/lib/libheif supplied before the clean libheif compilation; no post-build header edit.",
+    "generatedHeaderVerified": true
+  }
 }
