@@ -9,6 +9,7 @@ import { stageCuaDriver } from './cua-driver.mjs';
 import { collectRuntimeNotices } from './runtime-notices.mjs';
 import { validateNativeBinary } from './native-binary.mjs';
 import { prepareDesktopDependencies } from './runtime-dependencies.mjs';
+import { stageNativeRuntimeOverlay } from './native-runtime-overlay.mjs';
 
 function run(command, args, cwd) {
   return new Promise((resolve, reject) => {
@@ -39,6 +40,8 @@ export async function stageDesktopRuntime({
   stageDriver = stageCuaDriver,
   buildRuntimeNotices = collectRuntimeNotices,
   prepareDependencies = prepareDesktopDependencies,
+  nativeImageArtifactsDirectory,
+  stageNativeImage = stageNativeRuntimeOverlay,
   nodeVersion = process.versions.node,
   sourceRoot = root,
 } = {}) {
@@ -48,6 +51,8 @@ export async function stageDesktopRuntime({
     arch !== process.arch
   )
     throw Error('Build the bundled runtime on its target macOS or Linux architecture.');
+  if (nativeImageArtifactsDirectory && (platform !== 'darwin' || arch !== 'arm64'))
+    throw Error('The native image candidate is currently qualified only for macOS arm64.');
   await command('npm', ['run', 'build:web'], sourceRoot);
   await buildBackend({ output, release: true, sourceRoot });
   for (const name of ['openbot-backend', 'openbot-image-worker'])
@@ -83,9 +88,14 @@ export async function stageDesktopRuntime({
     ['ci', '--omit=dev', '--omit=optional', '--ignore-scripts', '--no-audit', '--no-fund'],
     runtime,
   );
+  const nativeImage = nativeImageArtifactsDirectory
+    ? await stageNativeImage({
+        sourceRoot, output, artifactsDirectory: nativeImageArtifactsDirectory, platform, arch,
+      })
+    : undefined;
   const node = await stageNode({ output, version: nodeVersion, platform, arch, command });
   const driver = await stageDriver({ output, platform, sourceRoot, command });
-  await buildRuntimeNotices({ sourceRoot, output });
+  await buildRuntimeNotices({ sourceRoot, output, nativeImage });
   await command(join(output, 'bin/node'), ['--version'], output);
   const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
   const manifest = {
@@ -97,6 +107,7 @@ export async function stageDesktopRuntime({
     runtime: 'runtime',
     ...node,
     ...driver,
+    ...(nativeImage ? { nativeImage, releaseApproval: false } : {}),
     dependencyLockSha256: sha256(await readFile(join(runtime, 'package-lock.json'))),
   };
   await writeFile(join(output, 'desktop-runtime.json'), JSON.stringify(manifest, null, 2) + '\n');

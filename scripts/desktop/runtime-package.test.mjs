@@ -124,6 +124,61 @@ test(
   },
 );
 
+test('candidate staging precedes strict notices and carries only relocatable provenance', {
+  skip: process.platform !== 'darwin' || process.arch !== 'arm64',
+}, async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-candidate-test-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = join(directory, 'service');
+  const nativeImage = {
+    manifestPath: 'runtime/native-image-runtime/overlay.json',
+    manifestSha256: 'a'.repeat(64),
+    releaseApproval: false,
+  };
+  const events = [];
+  const manifest = await stageDesktopRuntime({
+    output,
+    nativeImageArtifactsDirectory: join(directory, 'private-build-input'),
+    prepareDependencies: async () => {},
+    command: async () => {},
+    buildBackend: fakeBackend,
+    stageNativeImage: async (options) => {
+      assert.equal(options.output, output);
+      assert.equal(options.platform, 'darwin');
+      assert.equal(options.arch, 'arm64');
+      assert.equal(options.artifactsDirectory, join(directory, 'private-build-input'));
+      events.push('overlay');
+      return nativeImage;
+    },
+    stageNode: async () => ({}),
+    stageDriver: async () => ({ hostControl: false }),
+    buildRuntimeNotices: async (options) => {
+      assert.equal(options.nativeImage, nativeImage);
+      events.push('strict-notices');
+    },
+  });
+  assert.deepEqual(events, ['overlay', 'strict-notices']);
+  assert.deepEqual(manifest.nativeImage, nativeImage);
+  assert.equal(manifest.releaseApproval, false);
+  assert.equal(JSON.stringify(manifest).includes(directory), false);
+});
+
+test('rejected candidate prevents notices, runtime download and completion manifest', {
+  skip: process.platform !== 'darwin' || process.arch !== 'arm64',
+}, async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-rejected-candidate-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = join(directory, 'service');
+  await assert.rejects(stageDesktopRuntime({
+    output, nativeImageArtifactsDirectory: directory,
+    prepareDependencies: async () => {}, command: async () => {}, buildBackend: fakeBackend,
+    stageNativeImage: async () => { throw Error('Candidate digest mismatch'); },
+    stageNode: async () => assert.fail('must not stage Node'),
+    buildRuntimeNotices: async () => assert.fail('must not claim notice coverage'),
+  }), /Candidate digest mismatch/);
+  await assert.rejects(readFile(join(output, 'desktop-runtime.json')), { code: 'ENOENT' });
+});
+
 test(
   'bundled runtime rejects missing inventories and foreign Rust executables before installing dependencies',
   { skip: process.platform === 'win32' },

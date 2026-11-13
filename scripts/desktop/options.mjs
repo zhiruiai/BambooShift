@@ -18,10 +18,11 @@ export function parseClientArguments(
       if (rest.length) throw new Error(`${flag} 不接受参数值。`);
       const key = flag === '--dry-run' ? 'dryRun' : flag === '--with-runtime' ? 'withRuntime' : 'help';
       options[key] = true;
-    } else if (flag === '--platform' || flag === '--arch') {
+    } else if (['--platform', '--arch', '--native-image-candidate'].includes(flag)) {
       const value = rest.length ? rest.join('=') : argv[++index];
       if (!value || value.startsWith('-')) throw new Error(`${flag} 缺少参数值。`);
-      options[flag.slice(2)] = value;
+      if (/[\x00-\x1f\x7f]/.test(value)) throw new Error(`${flag} 不能包含控制字符。`);
+      options[flag === '--native-image-candidate' ? 'nativeImageArtifactsDirectory' : flag.slice(2)] = value;
     } else throw new Error(`未知参数：${argv[index]}。运行 --help 查看用法。`);
   }
   if (!options.help && !['darwin', 'win32', 'linux'].includes(options.platform))
@@ -31,5 +32,9 @@ export function parseClientArguments(
   if (!options.help && options.withRuntime && (
     options.platform === 'win32' || options.platform !== host.platform || options.arch !== host.arch
   )) throw new Error('内置服务必须在目标 macOS 或 Linux 系统及相同架构上构建。');
+  if (!options.help && options.nativeImageArtifactsDirectory && (
+    !options.withRuntime || options.platform !== 'darwin' || options.arch !== 'arm64' ||
+    host.platform !== 'darwin' || host.arch !== 'arm64'
+  )) throw new Error('原生图像候选包仅支持本机 macOS arm64 的 --with-runtime 验收构建。');
   return options;
 }

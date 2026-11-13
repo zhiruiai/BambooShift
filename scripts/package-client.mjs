@@ -274,6 +274,7 @@ export async function packageClient(options) {
     '--arch',
     options.arch,
     ...(options.withRuntime ? ['--with-runtime'] : []),
+    ...(options.nativeImageArtifactsDirectory ? ['--native-image-candidate', options.nativeImageArtifactsDirectory] : []),
   ]);
   const source = join(projectRoot, 'desktop');
   const { files, manifest } = await collectClientFiles(source);
@@ -316,6 +317,7 @@ export async function packageClient(options) {
           output: runtimePath,
           platform: target.platform,
           arch: target.arch,
+          nativeImageArtifactsDirectory: target.nativeImageArtifactsDirectory,
         })
       : undefined;
     const icon = await makeIcon(target.platform, working);
@@ -423,6 +425,7 @@ export async function packageClient(options) {
           localSignature: target.platform === 'darwin' ? 'ad-hoc' : null,
           signedForDistribution: false,
           serviceIncluded: Boolean(bundledRuntime),
+          ...(target.nativeImageArtifactsDirectory ? { nativeImageCandidate: true, releaseApproval: false } : {}),
           ...(bundledRuntime ? { runtime: bundledRuntime } : {}),
         },
         null,
@@ -454,7 +457,7 @@ async function main() {
   const options = parseClientArguments(process.argv.slice(2));
   if (options.help) {
     console.log(
-      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--with-runtime] [--dry-run]\n默认当前系统/架构，输出到 release/client。默认打包连接客户端；--with-runtime 内置本机服务（同架构 macOS/Linux）。会替换同目标的旧产物。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
+      '用法：npm run client:package -- [--platform darwin|win32|linux] [--arch arm64|x64] [--with-runtime] [--native-image-candidate directory] [--dry-run]\n默认当前系统/架构，输出到 release/client。默认打包连接客户端；--with-runtime 内置本机服务（同架构 macOS/Linux）。会替换同目标的旧产物。\n--native-image-candidate 指定已核验的 macOS arm64 原生图像候选产物目录，仅用于内置运行环境验收，不表示可发布。\n--dry-run 仅显示计划，不创建文件、不下载或启动客户端。',
     );
     return;
   }
@@ -468,6 +471,7 @@ async function main() {
           source: 'desktop/',
           output: `release/client/${name}-${options.platform}-${options.arch}`,
           includesService: options.withRuntime,
+          ...(options.nativeImageArtifactsDirectory ? { nativeImageCandidate: true, releaseApproval: false } : {}),
           startsClient: false,
         },
         null,

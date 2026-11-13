@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-13",
+  "platform": "macOS arm64",
+  "status": "local-complete-package-candidate",
+  "releaseApproval": false,
+  "sourceBaseline": "91fdbf6",
+  "implementation": "Native overlay staging and strict separate notice coverage in this change. Runtime workers built from the source baseline.",
+  "model": "Synthetic controlled OpenAI-compatible endpoint; real bundled Pi and workspace tools.",
+  "nativeImage": {
+    "actualLoadedContained": true,
+    "actualLoadedLibrarySha256": "1d403c235789f8582d2318ac6c7a68337bba144b7d7cd4cdd578321b54aebff5",
+    "preSignLibrarySha256": "ab50639d9c992a0d44b9e758589ebcef31b42003b1a8b947c1e5975094d2a23f",
+    "svgInput": false,
+    "vips": "8.18.7",
+    "unchangedSourceArchiveSha256": "625344c534c8fad74df3b61ecca8904c56dda425e88d39bd5407b9d445ae39d3"
+  },
+  "distributionManifestSha256": "e5b8f98121555a3d706e30dd95d9220fff8c80bd2cc76d510aca3e8edcb246fd",
+  "noticeCoverage": {
+    "ordinaryPackages": 433,
+    "missing": 0,
+    "separatelyCoveredNpmPackage": "@img/sharp-libvips-darwin-arm64",
+    "originalNativeLegalFiles": 123,
+    "originalWrapperLicenseIncluded": true,
+    "completeSourceArchiveIncluded": true
+  },
+  "checks": {
+    "strictAdHocSignatureBeforeAndAfterExecution": true,
+    "personalEntryWithoutSignupOrLogin": true,
+    "modelSavedThroughUI": true,
+    "realFileDeliveryAndFormattedPreview": true,
+    "quitStoppedPackagedProcesses": true,
+    "samePersonalWorkspaceRestoredAfterRestart": true,
+    "secondFileDeliveredWithoutReconfiguringModel": true,
+    "packagedImageContract": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "deliveredFiles": [
+    {
+      "name": "acceptance-notes.md",
+      "sha256": "b5edc46aff884ab1b67edfdd6eba35d645d77f8dd3d6bd5d6774cf32a588b569"
+    },
+    {
+      "name": "restart-check.md",
+      "sha256": "b5edc46aff884ab1b67edfdd6eba35d645d77f8dd3d6bd5d6774cf32a588b569"
+    }
+  ],
+  "packagedWorkerCancellation": {
+    "workerSha256": "ed67313991c3c159cbfa86d1d827ec04bef96aa86f31ef8644c1dbc5db03045d",
+    "nodeSha256": "7cc55747bd13bc810570e6bd1243141bdbebfa4f2cf8de6441c0013b039bd762",
+    "activeCancellationMs": 554,
+    "active": {
+      "executionActiveBeforeCancellation": true,
+      "termIgnoringParentAndChildStopped": true,
+      "stopAcknowledgementConfirmed": true,
+      "executionReceiptCancelled": true,
+      "processGroupGoneWhenAcknowledged": true,
+      "noLateFileWrite": true,
+      "sameActionReplayRejected": true,
+      "executorReusableAfterCancellation": true,
+      "workerExitedCleanly": true,
+      "packagedFilesUnchanged": true
+    },
+    "background": {
+      "backgroundGroupStoppedBeforeResult": true,
+      "noLateFileWrite": true,
+      "cancelAcknowledgementConfirmed": true,
+      "executorReusableAfterCleanup": true,
+      "workerExitedCleanly": true
+    },
+    "scope": "Separate process using the exact signed package Node and computer worker with fresh synthetic files; no package files changed."
+  },
+  "notVerified": [
+    "Fresh-profile first-screen selection: the initial candidate screen was changed before observation; personal entry itself was exercised without account login.",
+    "Current package Rust approval UI for host commands",
+    "Actual desktop screenshot and keyboard/mouse operations",
+    "External model reasoning quality",
+    "Other OS/CPU full managed packages",
+    "Public artifact delivery, Developer ID signing and notarization"
+  ],
+  "privacy": "No real account, contact details, model key, host path, local endpoint, workspace identifier, screenshot or process identifier is included in this record.",
+  "validation": {
+    "desktopAndPackagingTests": {
+      "passed": 128,
+      "failed": 0,
+      "skipped": 0
+    },
+    "sourcePolicy": {
+      "files": 1913,
+      "violations": 0
+    },
+    "privacySourceScan": {
+      "files": 2318,
+      "findings": 0
+    },
+    "packagedFilesScan": {
+      "files": 20171,
+      "personalBuildPathOrAccountFindings": 0,
+      "scope": "Regular packaged files scanned for this build machine home/root path and configured account value; native source archives separately verified against reviewed public hashes."
+    },
+    "latestOverlayVerifierAcceptedStagedCandidate": true,
+    "finalTestProcessesStopped": true
+  }
+}
