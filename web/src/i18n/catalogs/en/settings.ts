@@ -1,5 +1,12 @@
 import type zh from '../zh-CN/settings';
 export default {
+  avatarOriginalCollection: 'BambooShift originals',
+  avatarCollections: 'Avatar collections',
+  avatarSelectedTheme: 'Selected: {{name}}',
+  avatarCustomTheme: 'Custom theme',
+  avatarCommunityNote: 'Community artwork · Native expressions · Works offline',
+  avatarCollectionLicense: 'License',
+
   language: 'Language',
   languageHelp:
     'Interface language is saved in this browser or client. Messages, memories and Bot instructions keep their original language.',

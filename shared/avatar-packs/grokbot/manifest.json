@@ -1,0 +1,1050 @@
+{
+  "schemaVersion": 1,
+  "id": "grokbot",
+  "name": "Community GrokBot",
+  "viewBox": [
+    0,
+    0,
+    100,
+    100
+  ],
+  "repository": "https://github.com/nasawz/GrokBot",
+  "revision": "bb7b634b029a6c99121cb74954020ddfc8c07acf",
+  "license": "BSD-3-Clause",
+  "copyright": "Copyright (c) 2026, nasawz",
+  "eyeColor": "#fffdf7",
+  "expressionFormat": "closed-eye-rings-48",
+  "expressionsFile": "expressions.json",
+  "states": {
+    "sleeping": {
+      "expressions": [
+        "expression13",
+        "expression22",
+        "expression04"
+      ],
+      "expressionCadenceMs": [
+        6000,
+        10000
+      ],
+      "blinkCadenceMs": null
+    },
+    "waking": {
+      "expressions": [
+        "expression13"
+      ],
+      "expressionCadenceMs": [
+        800,
+        800
+      ],
+      "blinkCadenceMs": null
+    },
+    "idle": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        9000,
+        16000
+      ],
+      "blinkCadenceMs": [
+        6000,
+        14000
+      ]
+    },
+    "listening": {
+      "expressions": [
+        "expression10",
+        "expression01",
+        "expression19"
+      ],
+      "expressionCadenceMs": [
+        2800,
+        5000
+      ],
+      "blinkCadenceMs": [
+        3000,
+        7000
+      ]
+    },
+    "thinking": {
+      "expressions": [
+        "expression08",
+        "expression16",
+        "expression14",
+        "expression17",
+        "expression05"
+      ],
+      "expressionCadenceMs": [
+        2000,
+        3600
+      ],
+      "blinkCadenceMs": [
+        3500,
+        7000
+      ]
+    },
+    "searching": {
+      "expressions": [
+        "expression15",
+        "expression09",
+        "expression03",
+        "expression20",
+        "expression12",
+        "expression18"
+      ],
+      "expressionCadenceMs": [
+        1000,
+        1800
+      ],
+      "blinkCadenceMs": [
+        1600,
+        4000
+      ]
+    },
+    "working": {
+      "expressions": [
+        "expression07",
+        "expression16",
+        "expression11",
+        "expression10"
+      ],
+      "expressionCadenceMs": [
+        1800,
+        3200
+      ],
+      "blinkCadenceMs": [
+        2800,
+        5500
+      ]
+    },
+    "excited": {
+      "expressions": [
+        "expression02",
+        "expression17",
+        "expression21",
+        "expression03",
+        "expression11"
+      ],
+      "expressionCadenceMs": [
+        1100,
+        2000
+      ],
+      "blinkCadenceMs": [
+        2000,
+        4000
+      ]
+    },
+    "surprised": {
+      "expressions": [
+        "expression03",
+        "expression21"
+      ],
+      "expressionCadenceMs": [
+        2500,
+        4000
+      ],
+      "blinkCadenceMs": [
+        1800,
+        3500
+      ]
+    },
+    "suspicious": {
+      "expressions": [
+        "expression14",
+        "expression05",
+        "expression23"
+      ],
+      "expressionCadenceMs": [
+        2600,
+        4500
+      ],
+      "blinkCadenceMs": [
+        4500,
+        8000
+      ]
+    },
+    "angry": {
+      "expressions": [
+        "expression07",
+        "expression16"
+      ],
+      "expressionCadenceMs": [
+        2200,
+        3800
+      ],
+      "blinkCadenceMs": [
+        3500,
+        7000
+      ]
+    },
+    "drowsy": {
+      "expressions": [
+        "expression04",
+        "expression22",
+        "expression13"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "happy": {
+      "expressions": [
+        "expression02",
+        "expression11",
+        "expression17",
+        "expression19"
+      ],
+      "expressionCadenceMs": [
+        2500,
+        4500
+      ],
+      "blinkCadenceMs": [
+        2500,
+        5000
+      ]
+    },
+    "curious": {
+      "expressions": [
+        "expression03",
+        "expression21",
+        "expression00",
+        "expression15"
+      ],
+      "expressionCadenceMs": [
+        1800,
+        3200
+      ],
+      "blinkCadenceMs": [
+        2500,
+        5500
+      ]
+    },
+    "confused": {
+      "expressions": [
+        "expression14",
+        "expression05",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        2200,
+        3800
+      ],
+      "blinkCadenceMs": [
+        2800,
+        5500
+      ]
+    },
+    "bored": {
+      "expressions": [
+        "expression04",
+        "expression22",
+        "expression00"
+      ],
+      "expressionCadenceMs": [
+        3500,
+        6000
+      ],
+      "blinkCadenceMs": [
+        4000,
+        8000
+      ]
+    },
+    "proud": {
+      "expressions": [
+        "expression15",
+        "expression08",
+        "expression02"
+      ],
+      "expressionCadenceMs": [
+        3500,
+        6000
+      ],
+      "blinkCadenceMs": [
+        3500,
+        7000
+      ]
+    },
+    "shy": {
+      "expressions": [
+        "expression00",
+        "expression24",
+        "expression13"
+      ],
+      "expressionCadenceMs": [
+        3000,
+        5500
+      ],
+      "blinkCadenceMs": [
+        3000,
+        6000
+      ]
+    },
+    "sad": {
+      "expressions": [
+        "expression04",
+        "expression13",
+        "expression22"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        7000
+      ],
+      "blinkCadenceMs": [
+        4000,
+        8000
+      ]
+    },
+    "laughing": {
+      "expressions": [
+        "expression02",
+        "expression11",
+        "expression17"
+      ],
+      "expressionCadenceMs": [
+        1200,
+        2400
+      ],
+      "blinkCadenceMs": [
+        2500,
+        5000
+      ]
+    },
+    "scared": {
+      "expressions": [
+        "expression03",
+        "expression21"
+      ],
+      "expressionCadenceMs": [
+        900,
+        1800
+      ],
+      "blinkCadenceMs": [
+        1200,
+        3000
+      ]
+    },
+    "playful": {
+      "expressions": [
+        "expression02",
+        "expression17",
+        "expression11",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        1500,
+        3000
+      ],
+      "blinkCadenceMs": [
+        2000,
+        4500
+      ]
+    },
+    "celebrate": {
+      "expressions": [
+        "expression02",
+        "expression08",
+        "expression17"
+      ],
+      "expressionCadenceMs": [
+        1400,
+        2600
+      ],
+      "blinkCadenceMs": [
+        2200,
+        4500
+      ]
+    },
+    "orbit": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "radar": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "progress": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "spawning": {
+      "expressions": [
+        "expression03",
+        "expression00"
+      ],
+      "expressionCadenceMs": [
+        1200,
+        1200
+      ],
+      "blinkCadenceMs": null
+    },
+    "humming": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        5000,
+        9000
+      ],
+      "blinkCadenceMs": [
+        4000,
+        8000
+      ]
+    },
+    "loading": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        6000,
+        10000
+      ],
+      "blinkCadenceMs": null
+    },
+    "dictating": {
+      "expressions": [
+        "expression10",
+        "expression01",
+        "expression19"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "writing": {
+      "expressions": [
+        "expression15",
+        "expression09"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "sending": {
+      "expressions": [
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "receiving": {
+      "expressions": [
+        "expression19",
+        "expression00",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "uploading": {
+      "expressions": [
+        "expression15",
+        "expression09",
+        "expression08"
+      ],
+      "expressionCadenceMs": [
+        4000,
+        8000
+      ],
+      "blinkCadenceMs": null
+    },
+    "notifying": {
+      "expressions": [
+        "expression03",
+        "expression21",
+        "expression00"
+      ],
+      "expressionCadenceMs": [
+        1500,
+        2600
+      ],
+      "blinkCadenceMs": [
+        2000,
+        4000
+      ]
+    },
+    "alerting": {
+      "expressions": [
+        "expression03",
+        "expression21"
+      ],
+      "expressionCadenceMs": [
+        2000,
+        3600
+      ],
+      "blinkCadenceMs": null
+    },
+    "dragging": {
+      "expressions": [
+        "expression03",
+        "expression15",
+        "expression00"
+      ],
+      "expressionCadenceMs": [
+        1600,
+        3000
+      ],
+      "blinkCadenceMs": [
+        2200,
+        4500
+      ]
+    },
+    "bouncing": {
+      "expressions": [
+        "expression02",
+        "expression17"
+      ],
+      "expressionCadenceMs": [
+        3000,
+        6000
+      ],
+      "blinkCadenceMs": null
+    },
+    "powering-down": {
+      "expressions": [
+        "expression13",
+        "expression22"
+      ],
+      "expressionCadenceMs": [
+        6000,
+        9000
+      ],
+      "blinkCadenceMs": null
+    }
+  },
+  "motion": {
+    "blinkDurationMs": 320,
+    "blinkCloseFraction": 0.42,
+    "minimumBlinkScale": 0.04,
+    "springFrequency": 7,
+    "springDampingRatio": 1,
+    "gazeMax": [
+      5.096525,
+      3.243243
+    ]
+  },
+  "shapes": {
+    "blob": {
+      "sourceName": "blob",
+      "label": {
+        "en": "Blob",
+        "zh": "圆团"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 9.370849H49.91139A40.540541 40.540541 0 0 1 90.451931 49.91139V49.91139A40.540541 40.540541 0 0 1 49.91139 90.451931H49.91139A40.540541 40.540541 0 0 1 9.370849 49.91139V49.91139A40.540541 40.540541 0 0 1 49.91139 9.370849Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "eyeScale": 1,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 40.540541
+    },
+    "pebble": {
+      "sourceName": "pebble",
+      "label": {
+        "en": "Pebble",
+        "zh": "鹅卵石"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M44.122201 11.803282H44.122201A47.140541 41.374517 0 0 1 91.262741 53.177799V53.177799A39.697297 34.841699 0 0 1 51.565444 88.019498H51.565444A43.005405 39.632432 0 0 1 8.560039 48.387066V44.576255A35.562162 32.772973 0 0 1 44.122201 11.803282Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.97,
+        0,
+        0,
+        0.86,
+        2.269542,
+        6.987595
+      ],
+      "eyeScale": 1,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        50.683591,
+        49.91139
+      ],
+      "faceRadius": 34.864865
+    },
+    "bean": {
+      "sourceName": "bean",
+      "label": {
+        "en": "Bean",
+        "zh": "豆豆"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M55.878958 8.560039H55.878958A31.32973 34.735135 0 0 1 87.208687 43.295174V46.603282A40.281081 44.659459 0 0 1 46.927606 91.262741H46.927606A34.313514 36.580042 0 0 1 12.614093 54.6827V54.6827A43.264865 46.122661 0 0 1 55.878958 8.560039Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.72,
+        0,
+        0,
+        0.9,
+        13.975189,
+        4.991139
+      ],
+      "eyeScale": 0.87,
+      "squashOnTurn": true,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 29.189189
+    },
+    "egg": {
+      "sourceName": "egg",
+      "label": {
+        "en": "Egg",
+        "zh": "蛋形"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 7.343822H49.91139A35.675676 40.158083 0 0 1 85.587066 47.501905V47.501905A39.956757 44.977053 0 0 1 45.630309 92.478958H45.630309A31.394595 37.459459 0 0 1 14.235714 55.019498V49.91139A35.675676 42.567568 0 0 1 49.91139 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.77,
+        0,
+        0,
+        0.97,
+        11.47962,
+        2.269542
+      ],
+      "eyeScale": 0.93,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        50.683591
+      ],
+      "faceRadius": 31.216216
+    },
+    "squircle": {
+      "sourceName": "squircle",
+      "label": {
+        "en": "Squircle",
+        "zh": "圆方块"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M32.073552 9.370849H67.749228A22.702703 22.702703 0 0 1 90.451931 32.073552V67.749228A22.702703 22.702703 0 0 1 67.749228 90.451931H32.073552A22.702703 22.702703 0 0 1 9.370849 67.749228V32.073552A22.702703 22.702703 0 0 1 32.073552 9.370849Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      "eyeScale": 1,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 40.540541
+    },
+    "tablet": {
+      "sourceName": "tablet",
+      "label": {
+        "en": "Tablet",
+        "zh": "小板"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M35.997876 6.127606H63.824903A17.708108 24.518919 0 0 1 81.533012 30.646525V69.176255A17.708108 24.518919 0 0 1 63.824903 93.695174H35.997876A17.708108 24.518919 0 0 1 18.289768 69.176255V30.646525A17.708108 24.518919 0 0 1 35.997876 6.127606Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.94,
+        0,
+        0,
+        0.65,
+        2.994683,
+        17.468986
+      ],
+      "eyeScale": 0.82,
+      "squashOnTurn": true,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 26.351351
+    },
+    "capsule": {
+      "sourceName": "capsule",
+      "label": {
+        "en": "Capsule",
+        "zh": "胶囊"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 6.127606H49.91139A25.945946 28.021622 0 0 1 75.857336 34.149228V65.673552A25.945946 28.021622 0 0 1 49.91139 93.695174H49.91139A25.945946 28.021622 0 0 1 23.965444 65.673552V34.149228A25.945946 28.021622 0 0 1 49.91139 6.127606Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.64,
+        0,
+        0,
+        0.92,
+        17.9681,
+        3.992911
+      ],
+      "eyeScale": 0.81,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 25.945946
+    },
+    "cylinder": {
+      "sourceName": "cylinder",
+      "label": {
+        "en": "Cylinder",
+        "zh": "圆柱"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M44.592471 7.749228H55.230309A27.924324 15.178378 0 0 1 83.154633 22.927606V76.895174A27.924324 15.178378 0 0 1 55.230309 92.073552H44.592471A27.924324 15.178378 0 0 1 16.668147 76.895174V22.927606A27.924324 15.178378 0 0 1 44.592471 7.749228Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.85,
+        0,
+        0,
+        0.96,
+        7.486708,
+        1.996456
+      ],
+      "eyeScale": 0.99,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 34.459459
+    },
+    "hex": {
+      "sourceName": "hex",
+      "label": {
+        "en": "Hex",
+        "zh": "六角"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M23.965444 9.370849H75.857336A14.594595 14.594595 0 0 1 90.451931 23.965444V75.857336A14.594595 14.594595 0 0 1 75.857336 90.451931H23.965444A14.594595 14.594595 0 0 1 9.370849 75.857336V23.965444A14.594595 14.594595 0 0 1 23.965444 9.370849Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.91,
+        0,
+        0,
+        0.91,
+        4.492025,
+        4.492025
+      ],
+      "eyeScale": 1,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 36.891892
+    },
+    "gem": {
+      "sourceName": "gem",
+      "label": {
+        "en": "Gem",
+        "zh": "宝石"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M38.357336 8.560039H76.870849A11.554054 12.405405 0 0 1 88.424903 20.965444V59.835714A29.27027 31.427027 0 0 1 59.154633 91.262741H25.262741A13.864865 14.886486 0 0 1 11.397876 76.376255V37.505985A26.959459 28.945946 0 0 1 38.357336 8.560039Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.89,
+        0,
+        0,
+        0.89,
+        5.490253,
+        5.490253
+      ],
+      "eyeScale": 0.99,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 36.081081
+    },
+    "crystal": {
+      "sourceName": "crystal",
+      "label": {
+        "en": "Crystal",
+        "zh": "水晶"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M22.18166 7.343822H58.668147A27.72973 32.351351 0 0 1 86.397876 39.695174V78.857336A11.675676 13.621622 0 0 1 74.722201 92.478958H44.073552A30.648649 35.756757 0 0 1 13.424903 56.722201V17.560039A8.756757 10.216216 0 0 1 22.18166 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.71,
+        0,
+        0,
+        0.89,
+        14.474303,
+        5.490253
+      ],
+      "eyeScale": 0.86,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 28.783784
+    },
+    "wedge": {
+      "sourceName": "wedge",
+      "label": {
+        "en": "Wedge",
+        "zh": "楔形"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M21.533012 9.370849H49.91139A40.540541 40.540541 0 0 1 90.451931 49.91139V49.91139A40.540541 40.540541 0 0 1 49.91139 90.451931H21.533012A12.162162 12.162162 0 0 1 9.370849 78.289768V21.533012A12.162162 12.162162 0 0 1 21.533012 9.370849Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.7,
+        0,
+        0,
+        0.7,
+        14.973417,
+        24.239826
+      ],
+      "eyeScale": 0.79,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        59.177799
+      ],
+      "faceRadius": 28.378378
+    },
+    "shield": {
+      "sourceName": "shield",
+      "label": {
+        "en": "Shield",
+        "zh": "盾牌"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M46.060039 7.343822H53.762741A34.662162 37.194962 0 0 1 88.424903 44.538784V44.538784A38.513514 47.940173 0 0 1 49.91139 92.478958H49.91139A38.513514 47.940173 0 0 1 11.397876 44.538784V44.538784A34.662162 37.194962 0 0 1 46.060039 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.79,
+        0,
+        0,
+        0.98,
+        10.481392,
+        0.998228
+      ],
+      "eyeScale": 0.95,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 32.027027
+    },
+    "dome": {
+      "sourceName": "dome",
+      "label": {
+        "en": "Dome",
+        "zh": "穹顶"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 12.614093H49.91139A41.351351 37.297297 0 0 1 91.262741 49.91139V64.830309A24.810811 22.378378 0 0 1 66.451931 87.208687H33.370849A24.810811 22.378378 0 0 1 8.560039 64.830309V49.91139A41.351351 37.297297 0 0 1 49.91139 12.614093Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.85,
+        0,
+        0,
+        0.68,
+        7.486708,
+        17.516046
+      ],
+      "eyeScale": 0.82,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        51.455792
+      ],
+      "faceRadius": 27.567568
+    },
+    "arch": {
+      "sourceName": "arch",
+      "label": {
+        "en": "Arch",
+        "zh": "拱门"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 7.343822H49.91139A36.486486 42.567568 0 0 1 86.397876 49.91139V73.749228A16.054054 18.72973 0 0 1 70.343822 92.478958H29.478958A16.054054 18.72973 0 0 1 13.424903 73.749228V49.91139A36.486486 42.567568 0 0 1 49.91139 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.67,
+        0,
+        0,
+        0.97,
+        16.470759,
+        1.497342
+      ],
+      "eyeScale": 0.85,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 27.162162
+    },
+    "cloud": {
+      "sourceName": "cloud",
+      "label": {
+        "en": "Cloud",
+        "zh": "云朵"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M43.100579 14.235714H43.100579A49.378378 39.041305 0 0 1 92.478958 53.27702V53.27702A40.864865 32.310046 0 0 1 51.614093 85.587066H51.614093A44.27027 37.102703 0 0 1 7.343822 48.484363V44.203282A35.756757 29.967568 0 0 1 43.100579 14.235714Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.79,
+        0,
+        0,
+        0.7,
+        10.481392,
+        16.517819
+      ],
+      "eyeScale": 0.81,
+      "squashOnTurn": true,
+      "faceOrigin": [
+        49.91139,
+        51.455792
+      ],
+      "faceRadius": 28.378378
+    },
+    "teardrop": {
+      "sourceName": "teardrop",
+      "label": {
+        "en": "Teardrop",
+        "zh": "水滴"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M49.91139 7.343822H49.91139A36.486486 38.006757 0 0 1 86.397876 45.350579V45.350579A45.243243 47.128378 0 0 1 41.154633 92.478958H41.154633A27.72973 32.351351 0 0 1 13.424903 60.127606V49.91139A36.486486 42.567568 0 0 1 49.91139 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.79,
+        0,
+        0,
+        0.79,
+        10.481392,
+        18.9756
+      ],
+      "eyeScale": 0.88,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        58.405598
+      ],
+      "faceRadius": 32.027027
+    },
+    "leaf": {
+      "sourceName": "leaf",
+      "label": {
+        "en": "Leaf",
+        "zh": "叶子"
+      },
+      "defaultColor": "#5b7fe5",
+      "body": {
+        "path": "M58.473552 7.343822H58.473552A27.113514 32.351351 0 0 1 85.587066 39.695174V39.695174A44.237838 52.783784 0 0 1 41.349228 92.478958H41.349228A27.113514 32.351351 0 0 1 14.235714 60.127606V60.127606A44.237838 52.783784 0 0 1 58.473552 7.343822Z",
+        "fillRule": "nonzero"
+      },
+      "eyeTransform": [
+        0.73,
+        0,
+        0,
+        0.91,
+        13.476075,
+        4.492025
+      ],
+      "eyeScale": 0.88,
+      "squashOnTurn": false,
+      "faceOrigin": [
+        49.91139,
+        49.91139
+      ],
+      "faceRadius": 29.594595
+    }
+  }
+}

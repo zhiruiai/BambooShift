@@ -63,10 +63,21 @@ async fn owner_pi_drafts_are_exact_persistent_and_deduplicated() {
                 false
             );
             let theme_schema = tools(&body, "propose_avatar_theme").unwrap();
-            assert_eq!(
-                theme_schema["function"]["parameters"]["properties"]["motif"]["enum"],
-                json!(["companions", "pandas", "dinosaurs", "chicks", "elephants"])
-            );
+            let motifs = theme_schema["function"]["parameters"]["properties"]["motif"]["enum"]
+                .as_array()
+                .unwrap();
+            assert_eq!(motifs.len(), 45);
+            for motif in [
+                "companions",
+                "pandas",
+                "dinosaurs",
+                "chicks",
+                "elephants",
+                "open-avatar-controller",
+                "grokbot-blob",
+            ] {
+                assert!(motifs.contains(&json!(motif)));
+            }
             let result_count = body["messages"]
                 .as_array()
                 .unwrap()

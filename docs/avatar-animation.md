@@ -1,10 +1,14 @@
 # Avatar animation
 
-BambooShift includes five original vector themes: Companions, Pandas, Dinosaurs, Chicks and Elephants. The Web and desktop clients render layered SVG artwork. The Flutter client uses the same character assets and its own motion widgets. A Bot keeps its theme, shape and color as it moves through idle, thinking, working, waiting for approval, success and failure. Status text provides the same information when motion is disabled.
+BambooShift includes five original vector themes: Companions, Pandas, Dinosaurs, Chicks and Elephants, plus 22 Open Bot Avatar characters and 18 community GrokBot shapes. Settings groups the collections into a compact, scrollable picker. Each Bot keeps its role color; choosing a community character applies that silhouette across the workspace. Uploaded images remain unchanged.
+
+The Web and desktop clients render layered SVG artwork. Flutter uses the same character data with native drawing. A Bot moves through idle, thinking, working, waiting for approval, success and failure. Status text provides the same information when motion is disabled.
 
 The browser and desktop clients draw the eyes in SVG. Flutter draws the matching eye layers over the same original artwork. Both consume the [shared geometry and task poses](../shared/avatar-face-motion.json). Recent task completions transition to their final expression. Historical results open with a static expression. Uploaded images stay static.
 
 Web pauses the eye animation clock when the artwork leaves the viewport or the page is hidden and respects `prefers-reduced-motion`. Flutter respects the platform animation setting, application lifecycle and `TickerMode`. Task text conveys the state at all sizes, including in a compact sidebar. [Web avatar](../web/src/components/Avatar.tsx) · [Flutter avatar](../mobile/lib/widgets/bot_avatar.dart)
+
+Community collections use their own eye geometry, clipped to their native body outlines. The [shared packs](../shared/avatar-packs/README.md) retain their source parameters and notices. Open Bot Avatar supplies three native moods, mapped to the task states; GrokBot supplies 25 expressions and 39 behavior records. BambooShift adapts their timing to its existing lifecycle instead of loading a second animation runtime. The Open Bot Avatar volume-based 3D engine is not included. All required artwork is bundled locally.
 
 ## Design references
 

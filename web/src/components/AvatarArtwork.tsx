@@ -4,7 +4,10 @@ import {
   avatarTheme,
   type AvatarShape,
   type AvatarTheme,
+  type OriginalAvatarTheme,
+  isOriginalAvatarTheme,
 } from '../avatarThemes';
+import { CommunityAvatarArtwork } from './CommunityAvatarArtwork';
 import { Chick, Elephant } from './AnimalAvatarArtwork';
 import { AvatarFaceEyes } from './AvatarFaceEyes';
 import { avatarEyeTilt, type AvatarFaceMotion } from './avatarFaceMotion';
@@ -25,7 +28,7 @@ function Eyes({
   shape,
   theme,
   faceMotion,
-}: Pick<ArtworkProps, 'shape' | 'faceMotion'> & { theme: AvatarTheme }) {
+}: Pick<ArtworkProps, 'shape' | 'faceMotion'> & { theme: OriginalAvatarTheme }) {
   const panda = theme === 'pandas';
   return (
     <g className="avatar-eyes" transform={avatarEyeTilt(theme, shape)}>
@@ -181,6 +184,16 @@ export function AvatarArtwork({
   const selected = avatarTheme(theme),
     form = avatarShape(shape),
     fill = avatarColor(color);
+  if (!isOriginalAvatarTheme(selected))
+    return (
+      <CommunityAvatarArtwork
+        theme={selected}
+        shape={form}
+        color={fill}
+        size={size}
+        motion={faceMotion}
+      />
+    );
   const Artwork = {
     companions: Companion,
     pandas: Panda,

@@ -1,0 +1,381 @@
+{
+  "version": 1,
+  "packs": [
+    {
+      "id": "open-avatar",
+      "name": "Open Bot Avatar",
+      "license": "MIT",
+      "repository": "https://github.com/DominikScholz/open-bot-avatar",
+      "themes": [
+        {
+          "id": "open-avatar-controller",
+          "sourceId": "controller",
+          "name": "Controller",
+          "label": {
+            "en": "Controller",
+            "zh": "游戏手柄"
+          }
+        },
+        {
+          "id": "open-avatar-barbell",
+          "sourceId": "barbell",
+          "name": "Barbell",
+          "label": {
+            "en": "Barbell",
+            "zh": "哑铃"
+          }
+        },
+        {
+          "id": "open-avatar-mug",
+          "sourceId": "mug",
+          "name": "Mug",
+          "label": {
+            "en": "Mug",
+            "zh": "咖啡杯"
+          }
+        },
+        {
+          "id": "open-avatar-lightbulb",
+          "sourceId": "lightbulb",
+          "name": "Lightbulb",
+          "label": {
+            "en": "Lightbulb",
+            "zh": "灯泡"
+          }
+        },
+        {
+          "id": "open-avatar-chat",
+          "sourceId": "chat",
+          "name": "Chat",
+          "label": {
+            "en": "Chat",
+            "zh": "对话气泡"
+          }
+        },
+        {
+          "id": "open-avatar-sprout",
+          "sourceId": "sprout",
+          "name": "Sprout",
+          "label": {
+            "en": "Sprout",
+            "zh": "小盆栽"
+          }
+        },
+        {
+          "id": "open-avatar-watering-can",
+          "sourceId": "watering-can",
+          "name": "Watering Can",
+          "label": {
+            "en": "Watering Can",
+            "zh": "浇水壶"
+          }
+        },
+        {
+          "id": "open-avatar-book",
+          "sourceId": "book",
+          "name": "Book",
+          "label": {
+            "en": "Book",
+            "zh": "书本"
+          }
+        },
+        {
+          "id": "open-avatar-brain",
+          "sourceId": "brain",
+          "name": "Brain",
+          "label": {
+            "en": "Brain",
+            "zh": "大脑"
+          }
+        },
+        {
+          "id": "open-avatar-bull",
+          "sourceId": "bull",
+          "name": "Bull",
+          "label": {
+            "en": "Bull",
+            "zh": "小牛"
+          }
+        },
+        {
+          "id": "open-avatar-bunny",
+          "sourceId": "bunny",
+          "name": "Bunny",
+          "label": {
+            "en": "Bunny",
+            "zh": "兔子"
+          }
+        },
+        {
+          "id": "open-avatar-camera",
+          "sourceId": "camera",
+          "name": "Camera",
+          "label": {
+            "en": "Camera",
+            "zh": "相机"
+          }
+        },
+        {
+          "id": "open-avatar-cat",
+          "sourceId": "cat",
+          "name": "Cat",
+          "label": {
+            "en": "Cat",
+            "zh": "猫咪"
+          }
+        },
+        {
+          "id": "open-avatar-cloud",
+          "sourceId": "cloud",
+          "name": "Cloud",
+          "label": {
+            "en": "Cloud",
+            "zh": "云朵"
+          }
+        },
+        {
+          "id": "open-avatar-ghost",
+          "sourceId": "ghost",
+          "name": "Ghost",
+          "label": {
+            "en": "Ghost",
+            "zh": "小幽灵"
+          }
+        },
+        {
+          "id": "open-avatar-magnifier",
+          "sourceId": "magnifier",
+          "name": "Magnifier",
+          "label": {
+            "en": "Magnifier",
+            "zh": "放大镜"
+          }
+        },
+        {
+          "id": "open-avatar-paint-brush",
+          "sourceId": "paint-brush",
+          "name": "Paint Brush",
+          "label": {
+            "en": "Paint Brush",
+            "zh": "画笔"
+          }
+        },
+        {
+          "id": "open-avatar-palette",
+          "sourceId": "palette",
+          "name": "Palette",
+          "label": {
+            "en": "Palette",
+            "zh": "调色盘"
+          }
+        },
+        {
+          "id": "open-avatar-rocket",
+          "sourceId": "rocket",
+          "name": "Rocket",
+          "label": {
+            "en": "Rocket",
+            "zh": "火箭"
+          }
+        },
+        {
+          "id": "open-avatar-shield",
+          "sourceId": "shield",
+          "name": "Shield",
+          "label": {
+            "en": "Shield",
+            "zh": "盾牌"
+          }
+        },
+        {
+          "id": "open-avatar-star",
+          "sourceId": "star",
+          "name": "Star",
+          "label": {
+            "en": "Star",
+            "zh": "星星"
+          }
+        },
+        {
+          "id": "open-avatar-witch-hat",
+          "sourceId": "witch-hat",
+          "name": "Witch Hat",
+          "label": {
+            "en": "Witch Hat",
+            "zh": "巫师帽"
+          }
+        }
+      ]
+    },
+    {
+      "id": "grokbot",
+      "name": "Community GrokBot",
+      "license": "BSD-3-Clause",
+      "repository": "https://github.com/nasawz/GrokBot",
+      "themes": [
+        {
+          "id": "grokbot-blob",
+          "sourceId": "blob",
+          "name": "blob",
+          "label": {
+            "en": "Blob",
+            "zh": "圆团"
+          }
+        },
+        {
+          "id": "grokbot-pebble",
+          "sourceId": "pebble",
+          "name": "pebble",
+          "label": {
+            "en": "Pebble",
+            "zh": "鹅卵石"
+          }
+        },
+        {
+          "id": "grokbot-bean",
+          "sourceId": "bean",
+          "name": "bean",
+          "label": {
+            "en": "Bean",
+            "zh": "豆豆"
+          }
+        },
+        {
+          "id": "grokbot-egg",
+          "sourceId": "egg",
+          "name": "egg",
+          "label": {
+            "en": "Egg",
+            "zh": "蛋形"
+          }
+        },
+        {
+          "id": "grokbot-squircle",
+          "sourceId": "squircle",
+          "name": "squircle",
+          "label": {
+            "en": "Squircle",
+            "zh": "圆方块"
+          }
+        },
+        {
+          "id": "grokbot-tablet",
+          "sourceId": "tablet",
+          "name": "tablet",
+          "label": {
+            "en": "Tablet",
+            "zh": "小板"
+          }
+        },
+        {
+          "id": "grokbot-capsule",
+          "sourceId": "capsule",
+          "name": "capsule",
+          "label": {
+            "en": "Capsule",
+            "zh": "胶囊"
+          }
+        },
+        {
+          "id": "grokbot-cylinder",
+          "sourceId": "cylinder",
+          "name": "cylinder",
+          "label": {
+            "en": "Cylinder",
+            "zh": "圆柱"
+          }
+        },
+        {
+          "id": "grokbot-hex",
+          "sourceId": "hex",
+          "name": "hex",
+          "label": {
+            "en": "Hex",
+            "zh": "六角"
+          }
+        },
+        {
+          "id": "grokbot-gem",
+          "sourceId": "gem",
+          "name": "gem",
+          "label": {
+            "en": "Gem",
+            "zh": "宝石"
+          }
+        },
+        {
+          "id": "grokbot-crystal",
+          "sourceId": "crystal",
+          "name": "crystal",
+          "label": {
+            "en": "Crystal",
+            "zh": "水晶"
+          }
+        },
+        {
+          "id": "grokbot-wedge",
+          "sourceId": "wedge",
+          "name": "wedge",
+          "label": {
+            "en": "Wedge",
+            "zh": "楔形"
+          }
+        },
+        {
+          "id": "grokbot-shield",
+          "sourceId": "shield",
+          "name": "shield",
+          "label": {
+            "en": "Shield",
+            "zh": "盾牌"
+          }
+        },
+        {
+          "id": "grokbot-dome",
+          "sourceId": "dome",
+          "name": "dome",
+          "label": {
+            "en": "Dome",
+            "zh": "穹顶"
+          }
+        },
+        {
+          "id": "grokbot-arch",
+          "sourceId": "arch",
+          "name": "arch",
+          "label": {
+            "en": "Arch",
+            "zh": "拱门"
+          }
+        },
+        {
+          "id": "grokbot-cloud",
+          "sourceId": "cloud",
+          "name": "cloud",
+          "label": {
+            "en": "Cloud",
+            "zh": "云朵"
+          }
+        },
+        {
+          "id": "grokbot-teardrop",
+          "sourceId": "teardrop",
+          "name": "teardrop",
+          "label": {
+            "en": "Teardrop",
+            "zh": "水滴"
+          }
+        },
+        {
+          "id": "grokbot-leaf",
+          "sourceId": "leaf",
+          "name": "leaf",
+          "label": {
+            "en": "Leaf",
+            "zh": "叶子"
+          }
+        }
+      ]
+    }
+  ]
+}

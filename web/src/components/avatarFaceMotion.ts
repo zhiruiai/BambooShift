@@ -1,5 +1,5 @@
 import face from '../../../shared/avatar-face-motion.json';
-import type { AvatarShape, AvatarTheme } from '../avatarThemes';
+import type { AvatarShape, OriginalAvatarTheme } from '../avatarThemes';
 
 export type AvatarFaceState = keyof typeof face.poses;
 export type AvatarFaceMotion = {
@@ -13,7 +13,7 @@ export const avatarFaceGeometry = face.themes;
 export const avatarFaceTiming = face.motion;
 export const avatarEyePose = (state: AvatarFaceState): EyePose => face.poses[state];
 
-export function avatarEyeTilt(theme: AvatarTheme, shape: AvatarShape) {
+export function avatarEyeTilt(theme: OriginalAvatarTheme, shape: AvatarShape) {
   if (!avatarFaceGeometry[theme].shapeTilt) return undefined;
   const tilt = shape === 'leaf' ? -8 : shape === 'gem' ? 7 : 0;
   return `rotate(${tilt} 32 31)`;
@@ -24,7 +24,7 @@ function precision(value: number) {
 }
 
 export function avatarEyeFrame(
-  theme: AvatarTheme,
+  theme: OriginalAvatarTheme,
   shape: AvatarShape,
   index: number,
   pose: EyePose,

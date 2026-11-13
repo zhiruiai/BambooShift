@@ -36,7 +36,7 @@
     "client:test": "node scripts/run.mjs --test desktop/*.test.cjs",
     "format": "prettier --write web operations shared scripts server/workers desktop",
     "sync:app-catalog": "node scripts/sync-app-catalog.mjs",
-    "check:source": "node scripts/run.mjs scripts/source/check-source-policy.mjs && node scripts/sync-app-catalog.mjs --check",
+    "check:source": "node scripts/run.mjs scripts/source/check-source-policy.mjs && node scripts/sync-app-catalog.mjs --check && node scripts/avatars/sync-community-packs.mjs --check",
     "test:pi-worker": "node scripts/run.mjs --test server/workers/pi-worker/*.test.ts",
     "test:source-policy": "node scripts/run.mjs --test scripts/source/source-policy.test.mjs",
     "check:privacy": "node scripts/run.mjs scripts/source/check-private-config.mjs",

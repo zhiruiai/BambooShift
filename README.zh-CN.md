@@ -112,6 +112,8 @@ Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 
 
 **给全队换头像。** 在熊猫、恐龙、小鸡和大象之间切换，看看整个群聊的变化。 [头像主题 GIF](docs/demo/avatar-themes.gif)
 
+还可选择两套离线社区系列：**Open Bot Avatar 的 22 款角色**和**社区 GrokBot 的 18 款造型**，保留各自眼型与 Bot 颜色，在网页、客户端和移动端分组选择。[系列说明与许可](shared/avatar-packs/README.md)
+
 **给新品发布拉一支小队。** 从团队模板接手三位有分工的 Bot，调整群名并创建群聊。 [团队模板 GIF](docs/demo/team-templates.gif)
 
 **把工作日简报排进日历。** 设好星期和时间，在例行任务里核对下次执行。 [定时简报 GIF](docs/demo/scheduled-brief.gif)

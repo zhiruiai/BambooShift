@@ -126,7 +126,7 @@ test(
           node.scrollHeight - node.clientHeight - node.scrollTop <= 1
         );
       }, initial.top);
-      const elephants = themes.getByRole('button', { name: /^Elephants / });
+      const elephants = themes.getByRole('button', { name: 'Elephants', exact: true });
       const hitElephants = await elephants.evaluate((node) => {
         const box = node.getBoundingClientRect();
         const point = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
@@ -176,10 +176,10 @@ test(
       );
       t.diagnostic('1440px: wheel, keyboard and native scrollbar drag work with fixed header');
       for (const [width, height, columns] of [
-        [1200, 820, 3],
-        [768, 660, 2],
-        [375, 660, 2],
-        [320, 560, 1],
+        [1200, 820, 4],
+        [768, 660, 3],
+        [375, 660, 3],
+        [320, 560, 2],
       ]) {
         await page.setViewportSize({ width, height });
         const actual = await cards.evaluateAll((nodes) =>
@@ -197,7 +197,7 @@ test(
                 item instanceof SVGElement
                   ? [item.getBoundingClientRect()]
                   : [...range.getClientRects()];
-              return (
+              const outside =
                 !rects.length ||
                 rects.some(
                   (rect) =>
@@ -206,8 +206,8 @@ test(
                     rect.right > box.right + 1 ||
                     rect.top < box.top - 1 ||
                     rect.bottom > box.bottom + 1,
-                )
-              );
+                );
+              return outside;
             });
             const artwork = Array.from(
               node.querySelectorAll<SVGElement>('.appearance-avatar-preview > svg'),
@@ -225,7 +225,11 @@ test(
           actual.flatMap((card) => card.nested),
           [64, 64, 64],
         );
-        assert.equal(new Set(actual.map((card) => card.left)).size, columns, `columns at ${width}`);
+        assert.equal(
+          new Set(actual.slice(0, 5).map((card) => card.left)).size,
+          columns,
+          `columns at ${width}`,
+        );
         assert.ok(
           actual.every((card) => !card.clipped && card.samples === 3 && card.sized),
           `card layout at ${width}: ${JSON.stringify(actual)}`,
@@ -243,7 +247,7 @@ test(
           'Elephants',
           customName,
         ]) {
-          const option = themes.getByRole('button', { name: new RegExp(`^${name} `) });
+          const option = themes.getByRole('button', { name: new RegExp(`^${name}( |$)`) });
           await option.click();
           assert.equal(await option.getAttribute('aria-pressed'), 'true');
         }

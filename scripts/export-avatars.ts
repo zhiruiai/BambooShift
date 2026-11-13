@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import sharp from 'sharp';
 import { AvatarArtwork } from '../web/src/components/AvatarArtwork';
 import { AVATAR_THEMES, AVATAR_THEME_NAMES } from '../web/src/avatarThemes';
+import './avatars/sync-community-packs.mjs';
 import type { BotAgent } from '../shared/types';
 
 const family: { name: string; agent: Partial<BotAgent> }[] = [
@@ -19,7 +20,7 @@ const directory = resolve('web/public/avatars');
 await mkdir(directory, { recursive: true });
 await copyFile('shared/avatar-face-motion.json', 'mobile/assets/avatars/avatar-face-motion.json');
 const rows: string[] = [];
-for (const theme of AVATAR_THEMES) {
+for (const theme of AVATAR_THEMES.filter((theme) => !theme.startsWith('open-avatar-') && !theme.startsWith('grokbot-'))) {
   const target = resolve(directory, theme);
   const mobile = resolve('mobile/assets/avatars', theme);
   await Promise.all([mkdir(target, { recursive: true }), mkdir(mobile, { recursive: true })]);
@@ -51,5 +52,5 @@ const overview = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="$
 await writeFile(resolve(directory, 'themes.svg'), overview);
 await sharp(Buffer.from(overview)).png().toFile(resolve(directory, 'themes.png'));
 console.log(
-  `Exported ${family.length * AVATAR_THEMES.length} original avatars for Web and Flutter`,
+  `Exported ${family.length * rows.length} original avatars and synchronized community packs for Web and Flutter`,
 );

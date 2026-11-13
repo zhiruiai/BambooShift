@@ -375,6 +375,16 @@ test('actual appearance controls update the shared store and retained handlers s
   const hooks = {
     ...React,
     useContext: () => null,
+    useState(initial: any) {
+      const index = cursor++;
+      if (!(index in slots)) slots[index] = typeof initial === 'function' ? initial() : initial;
+      return [
+        slots[index],
+        (value: any) => {
+          slots[index] = typeof value === 'function' ? value(slots[index]) : value;
+        },
+      ];
+    },
     useRef(value: any) {
       const index = cursor++;
       return (slots[index] ||= { current: value });
@@ -383,7 +393,8 @@ test('actual appearance controls update the shared store and retained handlers s
       const index = cursor++;
       if (!slots[index]) {
         slots[index] = true;
-        cleanups.push(effect());
+        const cleanup = effect();
+        if (typeof cleanup === 'function') cleanups.push(cleanup);
       }
     },
     useSyncExternalStore(subscribe: any, getSnapshot: any) {
@@ -410,7 +421,16 @@ test('actual appearance controls update the shared store and retained handlers s
   }
   const render = (active: boolean) => {
     cursor = 0;
-    return module.exports.AppearanceSettings({ active });
+    const expand = (node: any): any => {
+      if (!node || typeof node !== 'object') return node;
+      if (Array.isArray(node)) return node.map(expand);
+      if (typeof node.type === 'function' && node.type.name === 'AvatarThemeChoices')
+        return expand(node.type(node.props));
+      return node.props
+        ? { ...node, props: { ...node.props, children: expand(node.props.children) } }
+        : node;
+    };
+    return expand(module.exports.AppearanceSettings({ active }));
   };
   let tree = render(true);
   const select = all(
@@ -418,7 +438,7 @@ test('actual appearance controls update the shared store and retained handlers s
     (node) => node.type === 'select' && node.props['aria-label'] === '外观',
   )[0];
   const checkbox = all(tree, (node) => node.type === 'input')[0];
-  const panda = all(tree, (node) => node.type === 'button')[1];
+  const panda = all(tree, (node) => node.props?.['data-theme-choice'] === 'pandas')[0];
   panda.props.onClick();
   assert.equal(JSON.parse(saved.writes.at(-1)!).avatarTheme, 'pandas');
   select.props.onChange({ target: { value: 'dark' } });

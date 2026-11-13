@@ -113,6 +113,8 @@ Find all three in **Bot template library → Team templates**. Review the roles 
 
 **Give the whole team a new look.** Switch between pandas, dinosaurs, chicks, and elephants and see the change across the chat. [Avatar themes GIF](docs/demo/avatar-themes.en.gif)
 
+Explore two additional offline collections: **22 Open Bot Avatar characters** and **18 community GrokBot shapes**, with native eye expressions, role colors, and grouped selection on Web, desktop and mobile. [Collections and licenses](shared/avatar-packs/README.md)
+
 **Assemble a launch team.** Start with a team template, review its three roles, rename the group, and create the chat. [Team template GIF](docs/demo/team-templates.en.gif)
 
 **Schedule a weekday briefing.** Choose the days and time and check the next run in Routines. [Scheduled briefing GIF](docs/demo/scheduled-brief.en.gif)

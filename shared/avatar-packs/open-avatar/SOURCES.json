@@ -1,0 +1,99 @@
+{
+  "repository": "https://github.com/DominikScholz/open-bot-avatar",
+  "revision": "921907e614fb40e76c249bf8684d8619a8a3bf0f",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 Dominik Scholz",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "891ecc8c486c4067b259a326895c539296e0a6d62afb9e2d21b410938badde24"
+    },
+    {
+      "path": "gallery/README.md",
+      "sha256": "ce085f432827bf2dc8ebd228565b0dae3d19b28b9bc486db890db84005b590fe"
+    },
+    {
+      "path": "gallery/colors.json",
+      "sha256": "512f9d092ab58977f53fa31763bd212924f3c8ad38e3697d072ce027fcc09e4d"
+    },
+    {
+      "path": "packages/core/src/examples.ts",
+      "sha256": "9eb098d30ee863f53ea96fa029e42c4c53be9efeb4a310e1becf169fe78f4284"
+    },
+    {
+      "path": "packages/core/src/render.ts",
+      "sha256": "2b2e8b3dd7c1a5660da1afac8af27c08c6aeb1b9fe499bd0ea1a337cc013ec62"
+    },
+    {
+      "path": "packages/core/src/motion.ts",
+      "sha256": "3593c71794c20ea57f4835efffeb1dc162790625b9fc146adc3fc244cad2710c"
+    },
+    {
+      "path": "gallery/book.json",
+      "sha256": "cca8acef87439b53d19a9ddabc0d2e92fd21a078f967321635643e570adfaf65"
+    },
+    {
+      "path": "gallery/brain.json",
+      "sha256": "b23d071495e67cf694570edd368400e5074fd8ebf3554623c6f94bd02083c7b6"
+    },
+    {
+      "path": "gallery/bull.json",
+      "sha256": "42c08cc0bc6095827ef498f0688dd8fdc59cd83d27b3f31749224cb5b7981852"
+    },
+    {
+      "path": "gallery/bunny.json",
+      "sha256": "e43970b1464e0b1a79a266992d791572e6d6a46e981237ac908befa175ae4138"
+    },
+    {
+      "path": "gallery/camera.json",
+      "sha256": "b0100fe8a1c3506c9b975c24c2a5d5b545376fc2e0f6ce981635dd61f84c83fc"
+    },
+    {
+      "path": "gallery/cat.json",
+      "sha256": "e4c24d8bae43940deb299e58980776b68f36328bc9811b6440bc8a87cfaf079e"
+    },
+    {
+      "path": "gallery/cloud.json",
+      "sha256": "1d160bbe17dc1193fdb36405931bff614d3ab740276beb352fd3aa2a902445e5"
+    },
+    {
+      "path": "gallery/ghost.json",
+      "sha256": "5f4c049f212438403ba95d499b6a6a743f88fd9097ef3bffdd6403c0ab0f31bf"
+    },
+    {
+      "path": "gallery/magnifier.json",
+      "sha256": "63e73cfd62ce30760c29a4058caa74713198c8a92f90b920bf1fef2f6a8ecd83"
+    },
+    {
+      "path": "gallery/paint-brush.json",
+      "sha256": "eee692ad1db8ed577890bb616beee5661eccbc58cc48c44770c0209c4200f598"
+    },
+    {
+      "path": "gallery/palette.json",
+      "sha256": "079ead1c4d02eecf23bfb637e29eea378cabd6a0917334ec7fed84e37cd7fc64"
+    },
+    {
+      "path": "gallery/rocket.json",
+      "sha256": "4f5cfb9d8fc3a8a3dd8bad55b9e8633f2a7da7652d73181a580d5ed23c938fe7"
+    },
+    {
+      "path": "gallery/shield.json",
+      "sha256": "1b5343758ef4f938dcdbccf6e85a3133af491d8ef109476a9832c0aa676b149b"
+    },
+    {
+      "path": "gallery/star.json",
+      "sha256": "70c7330d96dcfe63a537fc9723a656d8ac5be4dcffe6e3cbbe4d07597886de71"
+    },
+    {
+      "path": "gallery/witch-hat.json",
+      "sha256": "36921f5571802d8d0a017031010e6a216793f14b577d42d03ba8e8b602dba4c1"
+    }
+  ],
+  "transformations": [
+    "Preserved all 7 starter and 15 gallery definitions.",
+    "Sampled the upstream depth-zero native pill and round-stroke happy eyes to closed 48-point rings.",
+    "Kept the three native moods; BambooShift state mappings are separate adapter policy."
+  ],
+  "provenance": "The pinned upstream describes starter geometry as generated using its own avatar design prompt and explicitly licenses gallery contributions under MIT.",
+  "affiliation": "Independent community artwork; no endorsement by or affiliation with xAI is implied."
+}

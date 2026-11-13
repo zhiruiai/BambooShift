@@ -1,4 +1,5 @@
 pub mod access;
+pub(crate) mod avatar_catalog;
 pub(crate) mod avatar_jobs;
 mod avatar_theme;
 mod avatar_uploads;

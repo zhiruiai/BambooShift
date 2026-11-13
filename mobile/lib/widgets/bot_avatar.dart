@@ -7,9 +7,11 @@ import '../core/api.dart';
 import '../core/avatar_assets.dart';
 import '../core/avatar_preferences.dart';
 import '../core/byte_read.dart';
+import '../core/community_avatar_catalog.g.dart';
 import '../core/workspace_controller.dart';
 import 'avatar_appearance.dart';
 import 'avatar_face.dart';
+import 'avatar_pack_face.dart';
 
 // Base fills in the SVGs produced by scripts/export-avatars.ts.
 const _exportedColors = {
@@ -78,6 +80,7 @@ class BotAvatar extends StatelessWidget {
         : base;
     final workspace = scope;
     final path = workspace == null ? null : botAvatarPath(workspace, bot);
+    final community = communityAvatarThemes.contains(theme);
     final asset = 'assets/avatars/$theme/$shape.svg';
     final mapper = AvatarColorMapper(color, baseColor: base);
     final original = SvgPicture.asset(
@@ -85,10 +88,20 @@ class BotAvatar extends StatelessWidget {
       colorMapper: mapper,
       semanticsLabel: bot['name'] as String?,
     );
-    final glyph =
-        path == null &&
-            bot['avatarImageId'] == null &&
-            (motion != null || blinkWhenIdle)
+    final glyph = community
+        ? AvatarPackFace(
+            theme: theme,
+            color: color,
+            state: motion?.name ?? 'idle',
+            sustain:
+                path == null && bot['avatarImageId'] == null && sustainMotion,
+            blinkWhenIdle:
+                path == null && bot['avatarImageId'] == null && blinkWhenIdle,
+            label: bot['name'] as String?,
+          )
+        : path == null &&
+              bot['avatarImageId'] == null &&
+              (motion != null || blinkWhenIdle)
         ? AvatarFace(
             key: ValueKey((asset, mapper)),
             asset: asset,

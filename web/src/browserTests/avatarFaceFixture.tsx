@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Avatar } from '../components/Avatar';
 import { AvatarArtwork } from '../components/AvatarArtwork';
 import type { AvatarFaceState } from '../components/avatarFaceMotion';
-import { AVATAR_SHAPES, AVATAR_THEMES, type AvatarTheme } from '../avatarThemes';
+import { AVATAR_SHAPES, ORIGINAL_AVATAR_THEMES, type OriginalAvatarTheme } from '../avatarThemes';
 import '../styles-sections/01-base.css';
 import './avatarFaceFixture.css';
 
@@ -13,7 +13,7 @@ const themes = {
   dinosaurs: { label: 'Dinosaurs', color: '#169771' },
   chicks: { label: 'Chicks', color: '#dda02e' },
   elephants: { label: 'Elephants', color: '#5085c8' },
-} satisfies Record<AvatarTheme, { label: string; color: string }>;
+} satisfies Record<OriginalAvatarTheme, { label: string; color: string }>;
 
 const states = {
   idle: 'Idle',
@@ -45,7 +45,7 @@ function Fixture() {
         </p>
       </header>
       <div className="fixture-grid" id="faces">
-        {AVATAR_THEMES.map((theme) => (
+        {ORIGINAL_AVATAR_THEMES.map((theme) => (
           <article key={theme} data-face-sample={theme}>
             <h2>{themes[theme].label}</h2>
             <div className="fixture-hero">
@@ -116,7 +116,7 @@ function Fixture() {
           <div id="stress">
             {stress &&
               Array.from({ length: 10 }, (_, index) =>
-                AVATAR_THEMES.map((theme, i) => (
+                ORIGINAL_AVATAR_THEMES.map((theme, i) => (
                   <AvatarArtwork
                     key={`${theme}-${index}`}
                     theme={theme}

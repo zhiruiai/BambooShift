@@ -1,5 +1,5 @@
 import { useId, useLayoutEffect, useRef } from 'react';
-import type { AvatarShape, AvatarTheme } from '../avatarThemes';
+import type { AvatarShape, OriginalAvatarTheme } from '../avatarThemes';
 import { watchAvatarFace } from './avatarFaceFrames';
 import {
   avatarEyeFrame,
@@ -19,7 +19,7 @@ export function AvatarFaceEyes({
   shape,
   motion,
 }: {
-  theme: AvatarTheme;
+  theme: OriginalAvatarTheme;
   shape: AvatarShape;
   motion: AvatarFaceMotion;
 }) {

@@ -1,6 +1,7 @@
 use super::{
     access,
-    creation_preview::{self, Kind, THEME_MOTIFS},
+    avatar_catalog::has_theme,
+    creation_preview::{self, Kind},
 };
 use crate::{
     db::State,
@@ -29,7 +30,7 @@ fn normalize(theme: &Value) -> Result<Value> {
     }
     let builtin = theme["avatarTheme"]
         .as_str()
-        .filter(|id| THEME_MOTIFS.contains(id))
+        .filter(|id| has_theme(id))
         .ok_or_else(invalid)?;
     let enabled = theme["useCustomAvatarTheme"]
         .as_bool()

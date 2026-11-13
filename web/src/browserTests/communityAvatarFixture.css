@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  background: #f7f8fb;
+  color: #292733;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.community-fixture {
+  max-width: 1380px;
+  margin: auto;
+  padding: 30px;
+}
+.community-fixture header {
+  margin-bottom: 25px;
+}
+.community-fixture header > span {
+  font-size: 13px;
+  color: #78629a;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.community-fixture h1 {
+  margin: 10px 0;
+  font-size: 34px;
+  letter-spacing: -0.04em;
+}
+.community-fixture header p {
+  margin: 0;
+  color: #777285;
+  font-size: 15px;
+}
+.community-layout {
+  display: grid;
+  grid-template-columns: 390px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.community-layout aside {
+  border: 1px solid #e7e3ee;
+  background: white;
+  border-radius: 20px;
+  padding: 0 18px 18px;
+}
+.community-gallery {
+  min-width: 0;
+  text-align: center;
+}
+.community-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.community-controls button,
+.community-test-controls button {
+  border: 1px solid #e0dbe8;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.community-controls button[aria-pressed='true'] {
+  background: #7859cf;
+  color: white;
+  border-color: #7859cf;
+}
+#selected-avatar {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 0;
+}
+.community-caption {
+  font-size: 13px;
+  margin: 6px 0 18px;
+  color: #777285;
+}
+.community-pack {
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  background: white;
+  border: 1px solid #e7e3ee;
+  border-radius: 20px;
+}
+.community-pack h2 {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 12px;
+  font-size: 14px;
+  text-align: left;
+}
+.community-pack h2 span {
+  color: #898191;
+  font-size: 12px;
+  font-weight: 400;
+}
+.community-pack-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px 4px;
+}
+.community-pack-grid > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: #78717f;
+}
+.community-pack-grid svg {
+  max-width: 100%;
+}
+.community-test-controls,
+#historical {
+  margin-top: 20px;
+}
+@media (max-width: 650px) {
+  .community-fixture {
+    padding: 16px;
+  }
+  .community-fixture h1 {
+    font-size: 26px;
+  }
+  .community-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .community-pack-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

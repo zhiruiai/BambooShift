@@ -10,6 +10,7 @@ import sharp from 'sharp';
 import {
   AVATAR_SHAPES,
   AVATAR_THEMES,
+  ORIGINAL_AVATAR_THEMES,
   avatarColor,
   avatarShape,
   avatarTheme,
@@ -50,7 +51,7 @@ test('existing device preferences preserve page appearance and default only the 
     assert.equal(store.getSnapshot(), before);
     store.update({ theme: 'light' });
     assert.equal(store.getSnapshot().avatarTheme, 'dinosaurs');
-    for (const theme of ['chicks', 'elephants'] as const) {
+    for (const theme of AVATAR_THEMES) {
       store.update({ avatarTheme: theme });
       const loaded = createAppearanceStore({ storage });
       assert.equal(loaded.getSnapshot().avatarTheme, theme);
@@ -64,7 +65,7 @@ test('existing device preferences preserve page appearance and default only the 
 
 test('the original SVG families contain six distinct forms and safe Bot colors without external content', async () => {
   const images = new Set<string>();
-  for (const theme of AVATAR_THEMES)
+  for (const theme of ORIGINAL_AVATAR_THEMES)
     for (const shape of AVATAR_SHAPES) {
       const svg = renderToStaticMarkup(
         React.createElement(AvatarArtwork, { theme, shape, color: '#123456', size: 512 }),
@@ -120,7 +121,7 @@ test('actual appearance chooser changes every Avatar while uploaded images keep 
     useContext: () => null,
     useRef: (value: unknown) => ({ current: value }),
     useEffect: () => {},
-    useState: (value: unknown) => [value, () => {}],
+    useState: (value: unknown) => [typeof value === 'function' ? value() : value, () => {}],
     useSyncExternalStore: (_subscribe: unknown, getSnapshot: () => unknown) => getSnapshot(),
   };
   const module = { exports: {} as any };
@@ -136,15 +137,22 @@ test('actual appearance chooser changes every Avatar while uploaded images keep 
       ? []
       : Array.isArray(node)
         ? node.flatMap(all)
-        : [node, ...all(node.props?.children)];
+        : [
+            node,
+            ...all(
+              typeof node.type === 'function' && node.type.name === 'AvatarThemeChoices'
+                ? node.type(node.props)
+                : node.props?.children,
+            ),
+          ];
   const controls = all(module.exports.AppearanceSettings({})).filter(
-    (node) => node.type === 'button',
+    (node) => node.props?.['data-theme-choice'],
   );
-  assert.equal(controls.length, AVATAR_THEMES.length);
+  assert.equal(controls.length, ORIGINAL_AVATAR_THEMES.length);
   const one = { id: 'a', avatar: 'orb', color: '#123456' };
   const two = { id: 'b', avatar: 'leaf', color: '#654321' };
   for (const theme of ['dinosaurs', 'chicks', 'elephants'] as const) {
-    controls[AVATAR_THEMES.indexOf(theme)].props.onClick();
+    controls[ORIGINAL_AVATAR_THEMES.indexOf(theme)].props.onClick();
     for (const agent of [one, two]) {
       const markup = renderToStaticMarkup(module.exports.Avatar({ agent }));
       assert.match(markup, new RegExp(`data-avatar-theme="${theme}"`));
@@ -160,7 +168,7 @@ test('actual appearance chooser changes every Avatar while uploaded images keep 
   assert.match(uploaded, /<img/);
   assert.doesNotMatch(uploaded, /<svg/);
   const hidden = all(module.exports.AppearanceSettings({ active: false })).filter(
-    (node) => node.type === 'button',
+    (node) => node.props?.['data-theme-choice'],
   );
   hidden[0].props.onClick();
   assert.equal(JSON.parse(values.get(APPEARANCE_STORAGE_KEY)!).avatarTheme, 'elephants');

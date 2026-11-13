@@ -6,8 +6,7 @@ import type { AppearancePreferences } from '../appearance';
 import { useAvatarAppearance } from '../avatarAppearance';
 import type { AvatarThemePatch } from '../avatarThemeSync';
 import { AvatarThemeSyncPanel } from './AvatarThemeSyncPanel';
-import { AVATAR_THEMES, AVATAR_THEME_NAMES } from '../avatarThemes';
-import { AvatarArtwork } from './AvatarArtwork';
+import { AvatarThemeChoices } from './AvatarThemeChoices';
 import { CreationBrief } from './CreationBrief';
 import { GeneratedAvatarArtwork } from './GeneratedAvatarArtwork';
 import './AppearanceSettings.css';
@@ -92,32 +91,13 @@ export function AppearanceSettings({
         aria-label={uiText('settings:text_cd8b6722e7e4')}
       >
         <span className="appearance-avatar-heading">{uiText('settings:text_cd8b6722e7e4')}</span>
-        <div className="appearance-avatar-options">
-          {AVATAR_THEMES.map((theme) => (
-            <button
-              key={theme}
-              type="button"
-              className="appearance-avatar-option"
-              aria-pressed={!appearance.useCustomAvatarTheme && appearance.avatarTheme === theme}
-              disabled={!active}
-              onClick={() => updateAvatar({ avatarTheme: theme, useCustomAvatarTheme: false })}
-            >
-              <span className="appearance-avatar-preview" aria-hidden="true">
-                <AvatarArtwork theme={theme} shape="orb" color="#8b5cf6" size={36} />
-                <AvatarArtwork theme={theme} shape="leaf" color="#24b78c" size={36} />
-                <AvatarArtwork theme={theme} shape="arch" color="#fb8742" size={36} />
-              </span>
-              <span>{AVATAR_THEME_NAMES[theme]}</span>
-              <small>
-                {!appearance.useCustomAvatarTheme && appearance.avatarTheme === theme && (
-                  <Check size={13} aria-hidden="true" />
-                )}
-                {!appearance.useCustomAvatarTheme && appearance.avatarTheme === theme
-                  ? uiText('settings:text_3f4ebc4aad97')
-                  : uiText('settings:text_37aea2b389a4')}
-              </small>
-            </button>
-          ))}
+        <AvatarThemeChoices
+          value={appearance.avatarTheme}
+          custom={appearance.useCustomAvatarTheme}
+          disabled={!active}
+          onChange={(avatarTheme) => updateAvatar({ avatarTheme, useCustomAvatarTheme: false })}
+        />
+        <div className="appearance-avatar-options appearance-custom-avatar">
           {appearance.customAvatarTheme && (
             <button
               type="button"

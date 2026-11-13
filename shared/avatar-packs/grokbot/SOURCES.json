@@ -1,0 +1,47 @@
+{
+  "repository": "https://github.com/nasawz/GrokBot",
+  "revision": "bb7b634b029a6c99121cb74954020ddfc8c07acf",
+  "license": "BSD-3-Clause",
+  "copyright": "Copyright (c) 2026, nasawz",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "dd388449b31845422129345d5f3e83218180230234c10df428df7af104147122"
+    },
+    {
+      "path": "README.md",
+      "sha256": "002f9fa9e21444ebc0e917d1b2192deb644cd39257d6441b24ec104ccc642cab"
+    },
+    {
+      "path": "lib/src/data/shape_data.dart",
+      "sha256": "527c960b10f6f79f7377b3a7d866e44f99ae3648a0a1f2acdc9e821970f3f1ad"
+    },
+    {
+      "path": "lib/src/data/expression_data.dart",
+      "sha256": "1b20f6deb4daaa967b92f9bd7c88c64f8e0dd555e29d4d5c54a4d5999a8540d4"
+    },
+    {
+      "path": "lib/src/data/state_data.dart",
+      "sha256": "5138724374cb8ecec1f941d8cca307736b5fd080e59e4cd1982711ec23b6f18b"
+    },
+    {
+      "path": "lib/src/grokbot_painter.dart",
+      "sha256": "d5e195335bcac4b16936ab25f4a11f9fee99fc475f8ba4e856a3ab9412c8c0d0"
+    },
+    {
+      "path": "lib/src/geometry.dart",
+      "sha256": "9d93b40a26d9cd42f88ba65ba69755ec7a676c8c88425d50871cc9bdf1a5a409"
+    },
+    {
+      "path": "lib/src/theme.dart",
+      "sha256": "a15746fd01309d0020ba30abe1c26d37e796e70a015436e599cd0f216f6d1e1b"
+    }
+  ],
+  "transformations": [
+    "Preserved all 18 body and face descriptors, 25 expressions and 39 state records.",
+    "Converted rounded bodies and 259-unit eye coordinates to a 100-unit viewBox.",
+    "Preserved native per-eye scale and face transform; the expression rings are not replaced."
+  ],
+  "provenance": "The pinned upstream publishes these parameter tables under BSD-3-Clause. Its documented TypeScript port attributes shape, expression and state design to nasawz. No xAI-extracted image or official character asset is bundled. This records the community author attribution, not independent proof of authorship or an xAI license.",
+  "affiliation": "Independent community artwork; no endorsement by or affiliation with xAI is implied."
+}

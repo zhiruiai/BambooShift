@@ -1,4 +1,11 @@
 export default {
+  avatarOriginalCollection: 'BambooShift 原创',
+  avatarCollections: '头像系列',
+  avatarSelectedTheme: '已选择：{{name}}',
+  avatarCustomTheme: '自定义主题',
+  avatarCommunityNote: '社区开源形象 · 原生表情 · 离线可用',
+  avatarCollectionLicense: '许可',
+
   language: '语言',
   languageHelp: '界面语言保存在当前浏览器或客户端。消息、记忆和 Bot 指令保持原文。',
   localOnly: '这些偏好只保存在当前浏览器或客户端，不会同步到其他设备。',

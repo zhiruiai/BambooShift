@@ -9,7 +9,8 @@ use crate::{
     error::{ApiError, Result},
     workspace::{
         Table, WorkspaceAccess, WorkspaceStore,
-        creation_preview::{self, Kind, THEME_BACKDROPS, THEME_BADGES, THEME_MOTIFS},
+        avatar_catalog::THEME_MOTIFS,
+        creation_preview::{self, Kind, THEME_BACKDROPS, THEME_BADGES},
     },
 };
 use serde_json::{Value, json};
@@ -46,7 +47,7 @@ pub(crate) fn definitions() -> [Value; 2] {
         "parameters":{"type":"object","additionalProperties":false,
             "properties":{
                 "name":{"type":"string","minLength":1,"maxLength":40},
-                "motif":{"type":"string","enum":THEME_MOTIFS},
+                "motif":{"type":"string","enum":&*THEME_MOTIFS},
                 "colors":{"type":"array","minItems":3,"maxItems":3,"uniqueItems":true,"items":color},
                 "badge":{"type":"string","enum":THEME_BADGES},
                 "backdrop":{"type":"string","enum":THEME_BACKDROPS}

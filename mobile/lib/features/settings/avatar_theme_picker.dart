@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/avatar_preferences.dart';
+import '../../core/community_avatar_catalog.g.dart';
 import '../../l10n/strings.dart';
 import 'avatar_theme_preview.dart';
 
@@ -47,7 +48,7 @@ class AvatarThemePicker extends StatelessWidget {
               spacing: gap,
               runSpacing: gap,
               children: [
-                for (final family in avatarThemes)
+                for (final family in originalAvatarThemes)
                   _option(
                     context,
                     width: optionWidth,
@@ -73,6 +74,64 @@ class AvatarThemePicker extends StatelessWidget {
                       selected: generatedSelected,
                     ),
                     onTap: onSelectGenerated,
+                  ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        for (final group in ['open-avatar', 'grokbot'])
+          _communityGroup(context, group),
+      ],
+    );
+  }
+
+  Widget _communityGroup(BuildContext context, String group) {
+    final themes = communityAvatarThemes
+        .where((theme) => communityAvatarGroups[theme] == group)
+        .toList();
+    final language = Localizations.localeOf(context).languageCode;
+    final name = group == 'open-avatar'
+        ? 'Open Bot Avatar'
+        : language == 'zh'
+        ? '社区 GrokBot'
+        : 'Community GrokBot';
+    return ExpansionTile(
+      key: PageStorageKey('avatar-pack-$group'),
+      tilePadding: EdgeInsets.zero,
+      title: Text(name, style: Theme.of(context).textTheme.titleSmall),
+      subtitle: Text(
+        '${themes.length} · ${group == 'open-avatar' ? 'MIT' : 'BSD-3-Clause'}',
+      ),
+      initiallyExpanded: communityAvatarGroups[selected] == group,
+      childrenPadding: const EdgeInsets.only(bottom: 16),
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            const gap = 8.0;
+            final columns = constraints.maxWidth >= 456
+                ? 3
+                : constraints.maxWidth >= 270
+                ? 2
+                : 1;
+            final width =
+                (constraints.maxWidth - (columns - 1) * gap) / columns;
+            return Wrap(
+              spacing: gap,
+              runSpacing: gap,
+              children: [
+                for (final theme in themes)
+                  _option(
+                    context,
+                    width: width,
+                    horizontal: columns == 1,
+                    name: communityAvatarLabels[theme]?[language] ?? theme,
+                    selected: !generatedSelected && selected == theme,
+                    preview: AvatarThemePreview(
+                      family: theme,
+                      selected: !generatedSelected && selected == theme,
+                    ),
+                    onTap: onChanged == null ? null : () => onChanged!(theme),
                   ),
               ],
             );

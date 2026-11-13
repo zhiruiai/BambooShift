@@ -10,6 +10,42 @@ fn builtin(id: &str) -> Value {
 fn recipe() -> Value {
     json!({"name":"  Personal stars  ","motif":"pandas","colors":["#AABBCC","#112233","#445566"],"badge":"star","backdrop":"halo"})
 }
+
+#[tokio::test]
+async fn community_catalog_themes_round_trip_and_unknown_ids_are_rejected() {
+    let f = Fixture::new().await;
+    let path = f.path("/avatar-theme");
+    let catalog: Value =
+        serde_json::from_str(include_str!("../../../shared/avatar-packs/catalog.json")).unwrap();
+    let mut revision = 0;
+    for pack in catalog["packs"].as_array().unwrap() {
+        for entry in pack["themes"].as_array().unwrap() {
+            let id = entry["id"].as_str().unwrap();
+            let mut custom = recipe();
+            custom["motif"] = json!(id);
+            let value =
+                json!({"avatarTheme":id,"customAvatarTheme":custom,"useCustomAvatarTheme":true});
+            let saved = put(&f, &path, false, value, revision).await;
+            assert_eq!(saved.0, 200, "{id}: {}", saved.1);
+            revision += 1;
+            assert_eq!(saved.1["revision"], revision);
+            assert_eq!(saved.1["theme"]["customAvatarTheme"]["motif"], id);
+            assert_eq!(get(&f, &path, false).await, saved.1);
+        }
+    }
+    assert_eq!(revision, 40);
+    for id in [
+        "grokbot-unknown",
+        "open-avatar-unknown",
+        "grokbot-../blob",
+        "https://example.com/avatar.svg",
+    ] {
+        assert_eq!(put(&f, &path, false, builtin(id), revision).await.0, 400);
+    }
+    assert_eq!(get(&f, &path, false).await["revision"], revision);
+    assert_eq!(get(&f, &path, true).await["revision"], 0);
+    f.close().await;
+}
 async fn get(f: &Fixture, path: &str, member: bool) -> Value {
     let actor = if member { &f.member } else { &f.owner };
     let result = f.request("GET", path, None, member, Some(actor)).await;
