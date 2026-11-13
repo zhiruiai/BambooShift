@@ -24,7 +24,7 @@ await output('web/public/apple-touch-icon.png', 180, opaque);
 // Keep the entire mark inside the central 80% circle on any maskable launcher.
 const maskable = opaque.replace(
   '<g id="mark">',
-  '<g id="mark" transform="translate(71.68 71.68) scale(.72)">',
+  '<g id="mark" transform="translate(74.24 74.24) scale(.71)">',
 );
 await output('web/public/icon-maskable-512.png', 512, maskable);
 const apple = 'mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset';

@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs/>
   <g id="mark">
-    <path d="M162 24h188c86 0 138 52 138 138v188c0 86-52 138-138 138H162C76 488 24 436 24 350V162C24 76 76 24 162 24Z" fill="#101010"/>
+    <path d="M158 16h196c90 0 142 52 142 142v196c0 90-52 142-142 142H158C68 496 16 444 16 354V158C16 68 68 16 158 16Z" fill="#101010"/>
     <g transform="rotate(-16 268 244)" fill="#FFFFFF">
-      <rect x="196" y="194" width="42" height="100" rx="21"/>
-      <rect x="298" y="194" width="42" height="100" rx="21"/>
+      <rect x="174.4" y="179" width="54.6" height="130" rx="27.3"/>
+      <rect x="307" y="179" width="54.6" height="130" rx="27.3"/>
     </g>
   </g>
 </svg>
