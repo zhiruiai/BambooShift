@@ -27,7 +27,9 @@ async function abortable<T>(signal: AbortSignal, work: () => Promise<T>): Promis
   });
   try {
     if (signal.aborted) throw cancelled();
-    const result = await Promise.race([stopped, work()]);
+    // Dispatch synchronously, but capture throws so both race branches gain rejection handlers.
+    const running = new Promise<T>((resolve) => resolve(work()));
+    const result = await Promise.race([stopped, running]);
     if (signal.aborted) throw cancelled();
     return result;
   } finally {
