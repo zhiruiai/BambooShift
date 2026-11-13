@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { delimiter, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { writeClientArchive } from './fixtures/client-archive.mjs';
 
 const publisher = fileURLToPath(new URL('./publish-release.sh', import.meta.url));
 const releaseTag = 'v0.0.3';
@@ -15,7 +16,13 @@ const apiBoundaryStatus = 27;
 
 async function fixture(
   t,
-  { brand = 'BambooShift', packageName = brand, runtimePackaging = 'none' } = {},
+  {
+    brand = 'BambooShift',
+    packageName = brand,
+    runtimePackaging = 'none',
+    runtimeApproval = true,
+    nativeImageCandidate = false,
+  } = {},
 ) {
   const base = await mkdtemp(join(tmpdir(), 'pandamate-release-tag-'));
   t.after(() => rm(base, { recursive: true, force: true }));
@@ -83,8 +90,37 @@ async function fixture(
     const path = join(builds, 'bambooshift-' + platform);
     await mkdir(path, { recursive: true });
     await writeFile(join(path, 'source-tree.txt'), stamped + '\n');
-    for (const kind of kinds)
-      await writeFile(join(path, packageName + '-' + releaseTag + '-' + kind), kind);
+    for (const kind of kinds) {
+      const artifact = join(path, packageName + '-' + releaseTag + '-' + kind);
+      if (!kind.endsWith('.zip')) await writeFile(artifact, kind);
+      else {
+        const resources =
+          packageName +
+          '-' +
+          releaseTag +
+          '-client-macos-arm64/' +
+          packageName +
+          '.app/Contents/Resources/';
+        const entries = { [resources + 'app.asar']: 'Synthetic client' };
+        if (runtimePackaging === 'bundled') {
+          const root = resources + 'bambooshift-runtime/';
+          entries[root + 'desktop-runtime.json'] = JSON.stringify({
+            version: 1,
+            platform: 'darwin',
+            architecture: 'arm64',
+            server: 'openbot-backend',
+            node: 'bin/node',
+            runtime: 'runtime',
+            ...(runtimeApproval === 'missing' ? {} : { releaseApproval: runtimeApproval }),
+            ...(nativeImageCandidate ? { nativeImage: { releaseApproval: false } } : {}),
+          });
+          entries[root + 'openbot-backend'] = 'Synthetic backend';
+          entries[root + 'bin/node'] = 'Synthetic node';
+          entries[root + 'runtime/package.json'] = '{}';
+        }
+        await writeClientArchive(artifact, entries);
+      }
+    }
   }
 
   return {
@@ -268,4 +304,21 @@ test('a mismatched build manifest stops release before pushing a tag', async (t)
   assert.equal(result.status, 1, result.stderr);
   assert.doesNotMatch(result.stderr, new RegExp(apiBoundary));
   assert.equal(f.git('tag', '--list', releaseTag), '');
+});
+
+test('unapproved bundled artifacts stop before tag creation or the first release API call', async (t) => {
+  for (const options of [
+    { runtimeApproval: false },
+    { runtimeApproval: 'missing' },
+    { runtimeApproval: 'true' },
+    { runtimeApproval: true, nativeImageCandidate: true },
+  ]) {
+    const f = await fixture(t, { runtimePackaging: 'bundled', ...options });
+    const result = f.publish();
+    assert.ifError(result.error);
+    assert.equal(result.status, 1, result.stderr);
+    assert.match(result.stderr, /Client release blocked/);
+    assert.doesNotMatch(result.stderr, new RegExp(apiBoundary));
+    assert.equal(f.git('tag', '--list', releaseTag), '');
+  }
 });

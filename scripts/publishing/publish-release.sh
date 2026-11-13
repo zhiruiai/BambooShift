@@ -35,9 +35,12 @@ for file in "$source_name" "$server_name"; do
 done
 test -s "$builds/bambooshift-macos-arm64/$mac_name"
 cp "$builds/bambooshift-macos-arm64/$mac_name" "$publish_dir/"
+publisher_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+node "$publisher_dir/check-client-release.mjs" "$publish_dir/$mac_name" darwin arm64 > /dev/null
 if [[ -f scripts/publishing/build-windows-client.mjs ]]; then
   test -s "$builds/bambooshift-windows-x64/$windows_name"
   cp "$builds/bambooshift-windows-x64/$windows_name" "$publish_dir/"
+  node "$publisher_dir/check-client-release.mjs" "$publish_dir/$windows_name" win32 x64 > /dev/null
   files+=("$windows_name")
   platforms+=(windows-x64)
   windows_notes_en="- **Windows x64 client** is an unsigned portable ZIP. Extract the entire folder, run $RELEASE_PACKAGE_NAME.exe, and enter the address of a running $RELEASE_BRAND server."

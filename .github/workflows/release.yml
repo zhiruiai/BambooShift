@@ -209,6 +209,7 @@ jobs:
         run: |
           set -euo pipefail
           git show "${GITHUB_SHA}:scripts/publishing/publish-release.sh" > "$RUNNER_TEMP/pandamate-publish-release.sh"
+          git show "${GITHUB_SHA}:scripts/publishing/check-client-release.mjs" > "$RUNNER_TEMP/check-client-release.mjs"
           bash "$RUNNER_TEMP/pandamate-publish-release.sh"
           printf 'Published [BambooShift %s](%s/%s/releases/tag/%s).\n' \
             "$RELEASE_TAG" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
