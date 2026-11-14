@@ -116,8 +116,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 The English and Chinese workflow catalogs include condensed, translated adaptations
 of Superpowers' debugging and verification skills (MIT, Jesse Vincent), Matt Pocock's
-specification and handoff skills (MIT, Matt Pocock), and Vercel Labs' Agent Desktop
-skill (Apache-2.0). The [source inventory](legal/third-party/community-skills/SOURCES.json)
+specification and handoff skills (MIT, Matt Pocock), Vercel Labs' Agent Desktop
+skill (Apache-2.0), and GitHub Awesome Copilot's documentation, web application
+testing, and security review skills (MIT, GitHub, Inc.).
+The [source inventory](legal/third-party/community-skills/SOURCES.json)
 pins each upstream revision and records the modifications. The original license
 texts are retained beside it and in the identical notices shipped with the
 [Web client](web/public/licenses/community-skills.txt) and

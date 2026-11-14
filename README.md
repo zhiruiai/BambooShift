@@ -66,9 +66,9 @@ Open a Bot's settings and choose skills, or use **Connect apps → Packaged skil
 Use **Import SKILL.md** in the Bot’s skill editor to start from a local skill file on Web, desktop, or Flutter. Review the imported instructions in the editor, then save and approve the draft.
 
 Each Bot can also use its own configured model or inherit the workspace default,
-including when working in a group. The 13 bundled workflows include reviewed
-Superpowers debugging and verification, Matt Pocock specification and handoff
-adaptations, and Agent Desktop guidance. Agent Desktop requires its CLI on an
+including when working in a group. The bilingual skill library includes browser
+flow testing, code security review, product documentation and team decision
+briefs, plus guidance for debugging, handoffs and Agent Desktop. Agent Desktop requires its CLI on an
 authorized execution computer; selecting a skill does not install it or grant
 desktop access. [Per-Bot models, skills and requirements](docs/bot-models-and-skills.md)
 

@@ -33,11 +33,11 @@ Enabled skills are filtered by Bot identity before reaching the model. A propose
 disabled or foreign Bot's skill cannot be selected for execution. Skills describe
 how to work; they do not install plugins, provide credentials or expand tool access.
 
-The bundled English and Chinese catalog contains 13 workflows. Debugging and
-verification are adapted from Superpowers; product specifications and team handoffs
-are adapted from Matt Pocock. The React performance workflow is original guidance
-with a Vercel reference. Frontend design, research, data quality and the existing
-office workflows remain available. See the pinned
+The bundled English and Chinese catalog contains 17 workflows. Web app testing,
+code security review and product documentation are adapted from GitHub Awesome
+Copilot. The team decision brief helps compare options for an authorized decision
+owner. Debugging and verification are adapted from Superpowers. Product
+specifications and team handoffs are adapted from Matt Pocock. See the pinned
 [source inventory and licenses](../legal/third-party/community-skills/SOURCES.json).
 
 ## Agent Desktop

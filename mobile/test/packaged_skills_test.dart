@@ -61,7 +61,7 @@ void main() {
   test('both locales load the same complete workflow catalog', () async {
     final en = await loadSkillRecipes('en'), zh = await loadSkillRecipes('zh');
     final ids = en.map((item) => item['id']).toSet();
-    expect(ids.length, 13);
+    expect(ids.length, 17);
     expect(
       ids,
       containsAll([
@@ -69,6 +69,10 @@ void main() {
         'team-handoff',
         'react-performance',
         'agent-desktop',
+        'web-app-testing',
+        'security-review',
+        'documentation-writer',
+        'decision-brief',
       ]),
     );
     expect(zh.map((item) => item['id']), en.map((item) => item['id']));

@@ -30,6 +30,19 @@
       "license": "Apache-2.0",
       "licenseFile": "agent-desktop-LICENSE.txt",
       "changes": "Condensed and translated for computer_status and approved local_shell; requires separately installed CLI; no native binaries, MCP server or VM provider."
+    },
+    {
+      "recipeIds": ["documentation-writer", "web-app-testing", "security-review"],
+      "repository": "github/awesome-copilot",
+      "revision": "8ecd5b17f02fe5fbebf35eccd1867265eded811f",
+      "paths": [
+        "skills/documentation-writer/SKILL.md",
+        "skills/webapp-testing/SKILL.md",
+        "skills/security-review/SKILL.md"
+      ],
+      "license": "MIT",
+      "licenseFile": "github-awesome-copilot-LICENSE.txt",
+      "changes": "Condensed and translated for available workspace and browser tools. The adaptations omit upstream scripts, automatic dependency installation and reference files."
     }
   ],
   "references": [
@@ -37,6 +50,11 @@
       "recipeId": "react-performance",
       "url": "https://github.com/vercel-labs/agent-skills/blob/1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62/skills/react-best-practices/SKILL.md",
       "relationship": "Original BambooShift workflow with an optional official reference. No upstream rule files or code bundled."
+    },
+    {
+      "recipeId": "decision-brief",
+      "url": "https://www.atlassian.com/team-playbook/plays/daci",
+      "relationship": "Original BambooShift workflow with an optional reference to Atlassian's DACI decision-making framework."
     }
   ],
   "catalogs": ["mobile/assets/skills/en.json", "mobile/assets/skills/zh.json"],

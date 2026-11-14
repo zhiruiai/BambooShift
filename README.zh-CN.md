@@ -64,9 +64,7 @@ npm run dev
 
 Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 读取本地技能文件。核对导入的指令后，保存草稿并审核启用。
 
-每个 Bot 也能选择独立模型或继承空间默认模型，群聊委派同样生效。13 项内置工作流
-包含改编自 Superpowers 的调试与验收、Matt Pocock 的需求与交接，以及 Agent Desktop
-操作指导。Agent Desktop 需要在已授权的执行电脑上另行安装 CLI；选择技能不会安装程序
+每个 Bot 也能选择独立模型或继承空间默认模型，群聊委派同样生效。中英文技能库包含网页流程验收、代码安全审查、产品文档写作、团队决策简报，以及调试、交接和 Agent Desktop 操作指导。Agent Desktop 需要在已授权的执行电脑上另行安装 CLI；选择技能不会安装程序
 或开启整机访问。[各 Bot 的模型、技能与使用条件](docs/bot-models-and-skills.md)
 
 ### 选择本机或云端工作电脑

@@ -13,7 +13,7 @@ const bots = [
   { id: 'design', name: 'Design Bot' },
   { id: 'review', name: 'Review Bot' },
 ];
-const recipe = skillWorkflowTemplates.en.find(({ id }) => id === 'frontend-design')!;
+const recipe = skillWorkflowTemplates.en.find(({ id }) => id === 'web-app-testing')!;
 
 test(
   'Connect apps previews packaged skills and hands an editable draft to separate approval',
@@ -139,7 +139,7 @@ test(
     await catalog.getByRole('heading', { name: recipe.name }).waitFor();
     assert.equal(await page.locator(':focus').textContent(), 'Back to packaged skills');
     await catalog
-      .getByText('Inspect screenshots and actual interactions', { exact: false })
+      .getByText('Verify visible outcomes at each important step.', { exact: false })
       .waitFor();
     await catalog
       .getByText('Existing tool permissions and approvals still apply.', { exact: false })
