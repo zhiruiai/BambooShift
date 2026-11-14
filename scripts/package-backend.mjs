@@ -9,7 +9,7 @@ import {
   writeFile,
   chmod,
 } from 'node:fs/promises';
-import { dirname, extname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash, randomUUID } from 'node:crypto';
 import { cargo, root, rustBinary } from './rust-toolchain.mjs';
@@ -35,7 +35,7 @@ const webTypes = new Set([
 const binaries = ['openbot-backend', 'openbot-image-worker'];
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
-export async function copyPublicWeb(source, target) {
+export async function copyPublicWeb(source, target, publicRoot = source) {
   const metadata = await lstat(source);
   if (!metadata.isDirectory()) throw Error('The built public UI must be a real directory.');
   await mkdir(target, { recursive: true });
@@ -48,8 +48,12 @@ export async function copyPublicWeb(source, target) {
     const from = join(source, entry.name),
       to = join(target, entry.name);
     if (entry.isSymbolicLink()) throw Error('The published web tree cannot contain links.');
-    if (entry.isDirectory()) await copyPublicWeb(from, to);
-    else if (entry.isFile() && webTypes.has(extname(entry.name))) await copyFile(from, to);
+    const communityNotice =
+      basename(publicRoot) === 'dist' &&
+      relative(publicRoot, from) === join('licenses', 'community-skills.txt');
+    if (entry.isDirectory()) await copyPublicWeb(from, to, publicRoot);
+    else if (entry.isFile() && (webTypes.has(extname(entry.name)) || communityNotice))
+      await copyFile(from, to);
     else throw Error(`Unexpected file in the built public UI: ${entry.name}`);
   }
 }

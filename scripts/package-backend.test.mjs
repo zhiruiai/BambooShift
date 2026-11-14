@@ -18,6 +18,11 @@ test('service assembly includes exactly two binaries and public assets without s
     await mkdir(join(sourceRoot, 'dist/assets'), { recursive: true });
     await writeFile(join(sourceRoot, 'dist/index.html'), '<html>Synthetic UI</html>');
     await writeFile(join(sourceRoot, 'dist/assets/app.js'), 'export const synthetic = true;');
+    await mkdir(join(sourceRoot, 'dist/licenses'));
+    await writeFile(
+      join(sourceRoot, 'dist/licenses/community-skills.txt'),
+      'Synthetic skill notices',
+    );
     await mkdir(join(sourceRoot, 'operations-dist/assets'), { recursive: true });
     await writeFile(
       join(sourceRoot, 'operations-dist/index.html'),
@@ -81,6 +86,13 @@ test('service assembly includes exactly two binaries and public assets without s
       'export const synthetic = true;',
     );
     assert.equal(
+      await readFile(join(output, 'runtime/dist/licenses/community-skills.txt'), 'utf8'),
+      'Synthetic skill notices',
+    );
+    assert.ok(
+      manifest.files.some((file) => file.path === 'runtime/dist/licenses/community-skills.txt'),
+    );
+    assert.equal(
       await readFile(join(output, 'runtime/operations-dist/assets/app.js'), 'utf8'),
       'export const operations = true;',
     );
@@ -91,6 +103,32 @@ test('service assembly includes exactly two binaries and public assets without s
     await assert.rejects(packageBackend({ output }), /already exists/);
   } finally {
     await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('only the exact product skill notice path allows a text file', async (t) => {
+  for (const path of [
+    'dist/private-secret.txt',
+    'dist/licenses/private-secret.txt',
+    'dist/community-skills.txt',
+    'dist/assets/licenses/community-skills.txt',
+    'operations-dist/licenses/community-skills.txt',
+  ]) {
+    await t.test(path, async () => {
+      const directory = await mkdtemp(join(tmpdir(), 'bambooshift-notice-boundary-'));
+      try {
+        const parts = path.split('/');
+        const file = join(directory, ...parts);
+        await mkdir(join(directory, ...parts.slice(0, -1)), { recursive: true });
+        await writeFile(file, 'SYNTHETIC_PRIVATE_VALUE');
+        await assert.rejects(
+          copyPublicWeb(join(directory, parts[0]), join(directory, 'target')),
+          /Unexpected file in the built public UI/,
+        );
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    });
   }
 });
 
