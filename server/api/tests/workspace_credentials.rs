@@ -1,3 +1,5 @@
+mod workspace_support;
+
 use openbot_backend::workspace::{Table, WorkspaceRegistry, WorkspaceStore, model};
 use serde_json::json;
 use std::sync::Arc;
@@ -18,6 +20,119 @@ async fn original() -> (
         .unwrap()
         .to_owned();
     (dir, wid, registry, store, id)
+}
+
+#[tokio::test]
+async fn replacing_a_model_key_updates_its_reference_and_survives_service_restart() {
+    let f = workspace_support::Fixture::new().await;
+    let (status, first) = f
+        .request(
+            "POST",
+            &f.path("/model-profiles"),
+            Some(json!({
+                "name":"Synthetic credential rotation",
+                "provider":"openai",
+                "model":"fixture-a",
+                "baseUrl":"https://model.example.test/v1",
+                "apiKey":"SYNTHETIC_REPLACEMENT_KEY_A",
+                "activate":true
+            })),
+            false,
+            Some(&f.owner),
+        )
+        .await;
+    assert_eq!(status, 201, "{first}");
+    let id = first["profile"]["id"].as_str().unwrap().to_owned();
+    let store = f
+        .state
+        .workspace
+        .get(&f.workspace, &f.workspace)
+        .await
+        .unwrap();
+    let first_profile = store
+        .get(Table::Settings, &format!("model-profile:{id}"))
+        .await
+        .unwrap()
+        .unwrap();
+    let first_ref = first_profile["credentialRef"].as_str().unwrap().to_owned();
+    assert_eq!(
+        model::runtime_config(&store).await.unwrap()["apiKey"],
+        "SYNTHETIC_REPLACEMENT_KEY_A"
+    );
+
+    let (status, second) = f
+        .request(
+            "POST",
+            &f.path("/model-profiles"),
+            Some(json!({"id":id,"model":"fixture-b","apiKey":"SYNTHETIC_REPLACEMENT_KEY_B"})),
+            false,
+            Some(&f.owner),
+        )
+        .await;
+    assert_eq!(status, 200, "{second}");
+    assert_eq!(second["profile"]["id"], id);
+    assert_eq!(second["settings"]["configured"], true);
+    let second_profile = store
+        .get(Table::Settings, &format!("model-profile:{id}"))
+        .await
+        .unwrap()
+        .unwrap();
+    let second_ref = second_profile["credentialRef"].as_str().unwrap().to_owned();
+    assert_ne!(first_ref, second_ref);
+    let runtime = model::runtime_config(&store).await.unwrap();
+    assert_eq!(runtime["apiKey"], "SYNTHETIC_REPLACEMENT_KEY_B");
+    assert_eq!(runtime["model"], "fixture-b");
+    let private: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(store.directory.join("config/models.private.json")).unwrap(),
+    )
+    .unwrap();
+    assert!(private["entries"].get(&first_ref).is_none());
+    assert_eq!(
+        private["entries"][&second_ref]["apiKey"],
+        "SYNTHETIC_REPLACEMENT_KEY_B"
+    );
+    let rows = serde_json::to_string(&store.list(Table::Settings).await.unwrap()).unwrap();
+    for secret in ["SYNTHETIC_REPLACEMENT_KEY_A", "SYNTHETIC_REPLACEMENT_KEY_B"] {
+        assert!(!rows.contains(secret));
+        assert!(!first.to_string().contains(secret));
+        assert!(!second.to_string().contains(secret));
+    }
+    assert!(
+        std::fs::read_dir(store.directory.join("config"))
+            .unwrap()
+            .all(|entry| {
+                !entry
+                    .unwrap()
+                    .file_name()
+                    .to_string_lossy()
+                    .starts_with(".private-")
+            })
+    );
+    f.db.close().await;
+    f.state.close().await;
+    let restarted = openbot_backend::db::State::open(openbot_backend::config::Config::local(
+        f.directory.path(),
+    ))
+    .await
+    .unwrap();
+    let resumed = restarted
+        .workspace
+        .get(&f.workspace, &f.workspace)
+        .await
+        .unwrap();
+    let runtime = model::runtime_config(&resumed).await.unwrap();
+    assert_eq!(runtime["profileId"], id);
+    assert_eq!(runtime["model"], "fixture-b");
+    assert_eq!(runtime["apiKey"], "SYNTHETIC_REPLACEMENT_KEY_B");
+    assert_eq!(
+        resumed
+            .get(Table::Settings, &format!("model-profile:{id}"))
+            .await
+            .unwrap()
+            .unwrap()["credentialRef"],
+        second_ref
+    );
+    restarted.close().await;
 }
 
 #[tokio::test]

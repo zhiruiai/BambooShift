@@ -4,7 +4,7 @@ use serde_json::{Value, json};
 use std::{
     collections::HashSet,
     fs::{self, OpenOptions},
-    io::{Read, Write},
+    io::Read,
 };
 
 fn path(store: &WorkspaceStore) -> std::path::PathBuf {
@@ -69,32 +69,12 @@ fn document(store: &WorkspaceStore) -> Result<Value> {
     Ok(value)
 }
 fn write(store: &WorkspaceStore, value: &Value) -> Result<()> {
-    let directory = store.directory.join("config");
-    super::store::private_directory(&directory)?;
     let bytes = serde_json::to_vec(value).map_err(|_| ApiError::new(409, "私有模型配置无效。"))?;
     if bytes.len() > 4 * 1024 * 1024 {
         return Err(ApiError::new(413, "私有模型配置数量过多。"));
     }
-    let temporary = directory.join(format!(".models-{}.tmp", uuid::Uuid::new_v4()));
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let result = (|| -> Result<()> {
-        let mut file = options.open(&temporary)?;
-        file.write_all(&bytes)?;
-        file.sync_all()?;
-        fs::rename(&temporary, path(store))?;
-        fs::File::open(&directory)?.sync_all()?;
-        Ok(())
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(temporary);
-    }
-    result
+    crate::filesystem::write_private(&path(store), &bytes)?;
+    Ok(())
 }
 /** Publish a new immutable entry before the database references it. Rollback never changes old credentials. */
 pub fn stage(

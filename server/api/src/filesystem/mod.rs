@@ -12,6 +12,8 @@ mod mutation;
 pub use mutation::{Removal, remove_matching, rename_unique};
 mod writable;
 pub use writable::{create_dir, create_file, open_for_change};
+mod private_file;
+pub use private_file::write_private;
 
 use cap_fs_ext::{DirExt, FollowSymlinks, OpenOptionsFollowExt, OpenOptionsSyncExt};
 use cap_std::fs::{Dir, OpenOptions};

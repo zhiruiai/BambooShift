@@ -99,7 +99,34 @@ Windows queries attributes with a short-lived handle that permits read, write an
 delete sharing, without requesting DELETE access. SQLx still opens SQLite by
 pathname: these checks do **not** replace its VFS or eliminate all path-replacement
 races. Account and workspace database initialization still have separate pathname checks.
-Private configuration and Windows ACL qualification remain separate work.
+Windows ACL qualification remains separate work.
+
+Model keys, connector credentials and execution-computer configuration now reuse
+one [private-file publisher](../server/api/src/filesystem/private_file.rs), backed
+by the already locked `tempfile` crate. It writes and synchronizes a temporary file
+beside the destination before atomically replacing it. A failure before publication
+preserves the previous document and removes the temporary file. After publication,
+an unconfirmed directory sync is logged without paths or contents, rather than
+returning an error that would leave database references or memory behind the file.
+Windows does not attempt Unix-style directory synchronization; new files inherit
+the selected parent ACL. This service-owned configuration helper does not replace
+the handle-relative workspace mutation boundary or establish an owner-only ACL.
+
+The private-file change passed **170 tests** in release mode on macOS: the library
+target and seven integration targets, including real synthetic MCP authentication,
+model-key and connector-token replacement, old-reference cleanup, restart recovery,
+and failure injection around the publication boundary. Four environment-dependent
+or explicitly invoked library tests remained ignored. The current filesystem source
+and its tests also passed isolated Windows MSVC type checking, including the Windows
+sharing-violation test; this is compilation, not native Windows execution.
+
+CI and Windows release jobs now run a
+[native persistence gate](../scripts/publishing/check-windows-foundation.mjs) before
+building the connection client. It checks executed test counts as well as process
+success, and rejects ignored or empty test suites. The gate's orchestration and
+existing release-boundary tests passed locally; a native Windows run is still
+required. These checks do not change `serviceIncluded: false` or qualify a bundled
+Windows personal workspace.
 
 The foundation at `e50f4df` passed 24 release-mode checks on macOS, including
 real HTTP asset routes and cross-process deployment-lock contention and release.

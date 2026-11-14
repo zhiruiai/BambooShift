@@ -31,7 +31,7 @@ jobs:
         run: npm test
   windows-client:
     runs-on: windows-2025
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -42,6 +42,10 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci
+      - name: Install native Windows Rust toolchain
+        run: rustup toolchain install stable --profile minimal
+      - name: Verify native Windows configuration and credential persistence
+        run: node scripts/publishing/check-windows-foundation.mjs
       - name: Build, launch and archive the Windows x64 client
         run: node scripts/publishing/build-windows-client.mjs
   mobile-source:

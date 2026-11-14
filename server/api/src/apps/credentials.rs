@@ -3,7 +3,7 @@ use crate::workspace::WorkspaceStore;
 use serde_json::{Value, json};
 use std::{
     fs::{self, OpenOptions},
-    io::{Read, Write},
+    io::Read,
 };
 
 fn path(store: &WorkspaceStore) -> std::path::PathBuf {
@@ -68,49 +68,11 @@ fn document(store: &WorkspaceStore) -> Result<Value> {
     Ok(value)
 }
 fn write(store: &WorkspaceStore, value: &Value) -> Result<()> {
-    let directory = store.directory.join("config");
-    crate::apps::credentials::private_directory(&directory)?;
     let bytes = serde_json::to_vec(value).map_err(|_| ApiError::new(409, "私有应用配置无效。"))?;
     if bytes.len() > 4 * 1024 * 1024 {
         return Err(ApiError::new(413, "私有应用配置数量过多。"));
     }
-    let temporary = directory.join(format!(".apps-{}.tmp", uuid::Uuid::new_v4()));
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let result = (|| -> Result<()> {
-        let mut file = options.open(&temporary)?;
-        file.write_all(&bytes)?;
-        file.sync_all()?;
-        fs::rename(&temporary, path(store))?;
-        fs::File::open(&directory)?.sync_all()?;
-        Ok(())
-    })();
-    if result.is_err() {
-        let _ = fs::remove_file(temporary);
-    }
-    result
-}
-fn private_directory(path: &std::path::Path) -> Result<()> {
-    if path.exists() {
-        let meta = fs::symlink_metadata(path)?;
-        if !meta.is_dir() || meta.file_type().is_symlink() {
-            return Err(ApiError::bad("私有应用配置目录不可用。"));
-        }
-        return Ok(());
-    }
-    let mut builder = fs::DirBuilder::new();
-    builder.recursive(true);
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::DirBuilderExt;
-        builder.mode(0o700);
-    }
-    builder.create(path)?;
+    crate::filesystem::write_private(&path(store), &bytes)?;
     Ok(())
 }
 pub async fn stage(store: &WorkspaceStore, owner: &str, payload: &Value) -> Result<String> {

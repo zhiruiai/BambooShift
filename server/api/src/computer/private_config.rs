@@ -1,7 +1,7 @@
 use super::model::SavedRemote;
 use crate::error::{ApiError, Result};
 use serde::{Deserialize, Serialize};
-use std::{io::Write, path::Path};
+use std::path::Path;
 
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -74,43 +74,10 @@ pub fn read_private(path: &Path, limit: usize) -> Result<Option<Vec<u8>>> {
     }
 }
 pub fn atomic_private(path: &Path, bytes: &[u8]) -> Result<()> {
-    let directory = path.parent().ok_or_else(invalid)?;
-    if !directory.exists() {
-        let mut builder = std::fs::DirBuilder::new();
-        builder.recursive(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::DirBuilderExt;
-            builder.mode(0o700);
-        }
-        builder.create(directory)?;
-    }
-    if !std::fs::symlink_metadata(directory)?.is_dir() {
-        return Err(invalid());
-    }
-    let temporary = directory.join(format!(".computer-{}.tmp", uuid::Uuid::new_v4()));
-    let result = (|| -> Result<()> {
-        let mut options = std::fs::OpenOptions::new();
-        options.write(true).create_new(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options
-                .mode(0o600)
-                .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-        }
-        let mut file = options.open(&temporary)?;
-        file.write_all(bytes)?;
-        file.sync_all()?;
-        std::fs::rename(&temporary, path)?;
-        std::fs::File::open(directory)?.sync_all()?;
-        Ok(())
-    })();
-    if result.is_err() {
-        let _ = std::fs::remove_file(temporary);
-    }
-    result
+    crate::filesystem::write_private(path, bytes)?;
+    Ok(())
 }
+
 fn invalid() -> ApiError {
     ApiError::new(409, "电脑私有配置不可用，请检查部署配置。")
 }
