@@ -144,8 +144,7 @@ pub(crate) async fn execute(
                 context
                     .active
                     .family
-                    .model_profile
-                    .get()
+                    .model_profile(&context.active.agent_id)
                     .is_some_and(|m| m["vision"] == true),
             )
         }

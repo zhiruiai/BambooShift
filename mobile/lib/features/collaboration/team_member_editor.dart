@@ -116,6 +116,7 @@ class TeamMemberEditor extends StatelessWidget {
                     initial: member,
                     enabled: controller.editable,
                     family: controller.scope.session.avatarTheme,
+                    modelScope: controller.scope,
                     onChanged: (profile) => patch({
                       for (final key in [
                         'name',
@@ -125,6 +126,7 @@ class TeamMemberEditor extends StatelessWidget {
                         'avatar',
                         'color',
                         'avatarImageId',
+                        'modelProfileId',
                       ])
                         if (profile.containsKey(key)) key: profile[key],
                     }),

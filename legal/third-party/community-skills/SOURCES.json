@@ -1,0 +1,47 @@
+{
+  "reviewedOn": "2026-11-14",
+  "adaptations": [
+    {
+      "recipeIds": ["systematic-debugging", "behavior-first"],
+      "repository": "obra/superpowers",
+      "revision": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "paths": [
+        "skills/systematic-debugging/SKILL.md",
+        "skills/verification-before-completion/SKILL.md"
+      ],
+      "license": "MIT",
+      "licenseFile": "superpowers-LICENSE.txt",
+      "changes": "Condensed and translated workflows; product tools and permissions retained; no hooks, installers or shell examples."
+    },
+    {
+      "recipeIds": ["product-spec", "team-handoff"],
+      "repository": "mattpocock/skills",
+      "revision": "5863806dd4e15c63174bee4e7515a4256792ecfa",
+      "paths": ["skills/engineering/to-spec/SKILL.md", "skills/productivity/handoff/SKILL.md"],
+      "license": "MIT",
+      "licenseFile": "matt-pocock-LICENSE.txt",
+      "changes": "Condensed and translated; workspace artifact delivery; no automatic issue publication, labels, tracker setup or cross-workspace access."
+    },
+    {
+      "recipeIds": ["agent-desktop"],
+      "repository": "vercel-labs/agent-desktop",
+      "revision": "46d2adf885002633b77d5a9956c9464b24f61431",
+      "paths": ["skills/agent-desktop/SKILL.md"],
+      "license": "Apache-2.0",
+      "licenseFile": "agent-desktop-LICENSE.txt",
+      "changes": "Condensed and translated for computer_status and approved local_shell; requires separately installed CLI; no native binaries, MCP server or VM provider."
+    }
+  ],
+  "references": [
+    {
+      "recipeId": "react-performance",
+      "url": "https://github.com/vercel-labs/agent-skills/blob/1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62/skills/react-best-practices/SKILL.md",
+      "relationship": "Original BambooShift workflow with an optional official reference. No upstream rule files or code bundled."
+    }
+  ],
+  "catalogs": ["mobile/assets/skills/en.json", "mobile/assets/skills/zh.json"],
+  "notices": [
+    "web/public/licenses/community-skills.txt",
+    "mobile/assets/licenses/community-skills.txt"
+  ]
+}

@@ -10,6 +10,7 @@ import 'package:openbot_mobile/features/bots/bot_draft_screen.dart';
 import 'package:openbot_mobile/features/bots/create_screen.dart';
 
 import 'creation_controller_test.dart' show receipt;
+import 'model_profile_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp, waitFor;
 
@@ -34,6 +35,21 @@ Future<void> _tap(WidgetTester tester, Finder target) async {
   await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();
+}
+
+Future<void> _modelReady(WidgetTester tester) async {
+  await tester.pump();
+  await waitFor(
+    tester,
+    () =>
+        find.byType(DropdownButtonFormField<String>).evaluate().isNotEmpty &&
+        tester
+                .widget<DropdownButtonFormField<String>>(
+                  find.byType(DropdownButtonFormField<String>),
+                )
+                .onChanged !=
+            null,
+  );
 }
 
 void main() {
@@ -101,6 +117,9 @@ void main() {
       final f = await fixture((request) async {
         expect(request.headers['X-OpenBot-Expected-User'], 'user-a');
         if (request.method == 'GET') {
+          if (request.url.path.endsWith('/model-profiles')) {
+            return jsonResponse(ModelsServer().list);
+          }
           expect(request.url.path, '/api/workspaces/space-a/bootstrap');
           return jsonResponse(bootstrap());
         }
@@ -139,7 +158,7 @@ void main() {
         ),
       );
       await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await _modelReady(tester);
       final name = find.byType(TextFormField).first;
       await tester.enterText(name, 'Previous unsaved name');
       await _tap(tester, find.text(labels.title));
@@ -160,7 +179,7 @@ void main() {
       await _tap(tester, find.text(labels.use));
       expect(find.text(labels.replace), findsOneWidget);
       await tester.tap(find.text(labels.done));
-      await tester.pumpAndSettle();
+      await _modelReady(tester);
       expect(find.text('Previous unsaved name'), findsNothing);
       expect(find.text('Draft reviewer'), findsOneWidget);
       expect(creates, isEmpty);

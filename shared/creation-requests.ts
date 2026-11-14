@@ -2,7 +2,14 @@ import type { BotAgent, Conversation } from './types.js';
 
 export type CreationBotProfile = Pick<
   BotAgent,
-  'name' | 'role' | 'description' | 'instructions' | 'avatar' | 'color' | 'avatarImageId'
+  | 'name'
+  | 'role'
+  | 'description'
+  | 'instructions'
+  | 'avatar'
+  | 'color'
+  | 'avatarImageId'
+  | 'modelProfileId'
 >;
 export type CreationRequest =
   | { kind: 'bot'; requestId: string; profile: CreationBotProfile }

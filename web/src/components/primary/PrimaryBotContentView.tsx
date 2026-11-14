@@ -134,6 +134,7 @@ export function PrimaryBotContentView(model: PrimaryBotContentModel) {
               </div>
             ) : (
               <BotProfileFields
+                modelSelection
                 key={avatarEdits.resetKey}
                 draft={draft}
                 onChange={setDraft}

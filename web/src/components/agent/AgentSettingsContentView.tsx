@@ -196,6 +196,7 @@ export function AgentSettingsContentView(model: AgentSettingsContentModel) {
             }}
           >
             <BotProfileFields
+              modelSelection
               key={avatarEdits.resetKey}
               section={tab}
               draft={draft}
@@ -209,6 +210,47 @@ export function AgentSettingsContentView(model: AgentSettingsContentModel) {
                 setDraft((current) => ({ ...current, ...patch }));
               }}
             />
+            {tab === 'profile' && (
+              <section
+                className="bot-skill-selection"
+                aria-label={uiText('settings:botSkillsLabel')}
+              >
+                <div className="bot-skill-selection-heading">
+                  <h3>{uiText('settings:botSkillsLabel')}</h3>
+                  <span className="pill">
+                    {uiText('settings:botSkillsEnabled', { count: props.skillCount })}
+                  </span>
+                </div>
+                <p className="field-help">
+                  {uiText(props.skillCount ? 'settings:botSkillsHint' : 'settings:botSkillsEmpty')}
+                </p>
+                {!!props.skills?.some(
+                  (skill) => skill.agentId === props.agent.id && skill.status === 'active',
+                ) && (
+                  <ul className="bot-skill-summary">
+                    {props.skills
+                      .filter(
+                        (skill) => skill.agentId === props.agent.id && skill.status === 'active',
+                      )
+                      .map((skill) => (
+                        <li key={skill.id}>
+                          <BookOpen size={14} aria-hidden="true" />
+                          <span>{skill.name}</span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={locked || avatarEdits.pending}
+                  onClick={() => navigate(props.onSkills)}
+                >
+                  <BookOpen size={15} aria-hidden="true" />
+                  {uiText('settings:botSkillsManage')}
+                </button>
+              </section>
+            )}
             <div className="dialog-actions">
               <button
                 type="button"

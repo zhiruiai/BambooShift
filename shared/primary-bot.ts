@@ -24,7 +24,14 @@ export interface PrimaryCheckInStatus {
 }
 export type PrimaryBotSettings = Pick<
   BotAgent,
-  'name' | 'role' | 'description' | 'instructions' | 'color' | 'avatar' | 'avatarImageId'
+  | 'name'
+  | 'role'
+  | 'description'
+  | 'instructions'
+  | 'color'
+  | 'avatar'
+  | 'avatarImageId'
+  | 'modelProfileId'
 >;
 export type UpdatePrimaryBot =
   | { mode: 'select'; expectedRevision: string; agentId: string; checkIn: PrimaryBotCheckIn }

@@ -1,5 +1,25 @@
 import type zh from '../zh-CN/settings';
 export default {
+  botModelLabel: 'Model for this Bot',
+  botModelDefault: 'Use workspace default',
+  botModelLoading: 'Loading selected model…',
+  botModelUnavailable: 'Selected model unavailable',
+  botModelNotConfigured: 'Not configured',
+  botModelUnavailableHelp:
+    'This model is no longer available. Choose a configured model or the workspace default; a different model will not be substituted automatically.',
+  botModelHelp:
+    'Choose a model for this Bot. The workspace default follows future changes to the default model. Changes apply to new tasks.',
+  botModelEmpty: 'Configure a model in Settings → Models, then refresh this list.',
+  botModelRefresh: 'Refresh models',
+  botSkillsLabel: 'Skills for this Bot',
+  botSkillsEnabled: '{{count}} enabled',
+  botSkillsEmpty:
+    'No skills enabled yet. Choose a workflow, review its instructions, then enable it for this Bot.',
+  botSkillsManage: 'Choose and manage skills',
+  botSkillsHint: 'Enabled skills guide this Bot’s work. You can pause or restore each skill.',
+  botSkillsCatalog: 'Choose from skill library',
+  botSkillsCatalogBack: 'Back to this Bot’s skills',
+  botSkillsScope: 'Skills for {{name}}',
   avatarOriginalCollection: 'Built-in themes',
   avatarCollections: 'Avatar collections',
   avatarSelectedTheme: 'Selected: {{name}}',

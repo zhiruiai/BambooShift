@@ -108,7 +108,13 @@ pub async fn tick(state: &State, at: i64) -> Result<()> {
                     continue;
                 }
             }
-            if crate::workspace::model::runtime_config(&store).await?["configured"] != true {
+            if !crate::workspace::model::bot_configured(
+                &store,
+                routine["agentId"].as_str().unwrap_or(""),
+            )
+            .await
+            .is_ok_and(|configured| configured)
+            {
                 continue;
             }
             let _ = execution::scheduled(state, &store, &routine, at).await;

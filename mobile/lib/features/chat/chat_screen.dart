@@ -294,7 +294,6 @@ class _ChatScreenState extends State<ChatScreen> {
       final focus = focusedMessageId == null
           ? -1
           : messages.indexWhere((row) => row['id'] == focusedMessageId);
-      final modelReady = scope.data?['settings']?['configured'] == true;
       final options = scope.chatOptions(controller.draftKey);
       final choices = chatMentions(scope, conversation);
       final skills = chatSkills(scope, conversation, options);
@@ -311,6 +310,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final lead = destination is String
           ? scope.find('agents', destination)
           : null;
+      final modelReady = botModelReady(lead, scope.data?['settings'] as Json?);
       final sourceUnavailable = !botAvailable(lead);
       final canCompose =
           scope.active &&

@@ -57,6 +57,19 @@ async fn public(store: &WorkspaceStore, conn: &mut SqliteConnection, id: &str) -
     p["credentialSource"] = json!(if has { "saved" } else { "none" });
     Ok(p)
 }
+/// Bot definitions contain only a workspace-local reference, never model credentials.
+pub(super) async fn validate_bot_selection(
+    store: &WorkspaceStore,
+    conn: &mut SqliteConnection,
+    selected: &Value,
+) -> Result<()> {
+    if let Some(id) = selected.as_str() {
+        if public(store, conn, id).await?["configured"] != true {
+            return Err(ApiError::bad("请先完成此模型配置，再分配给 Bot。"));
+        }
+    }
+    Ok(())
+}
 pub async fn settings(store: &WorkspaceStore, conn: &mut SqliteConnection) -> Result<Value> {
     let active = WorkspaceStore::get_in(conn, Table::Settings, "model")
         .await?
@@ -65,6 +78,32 @@ pub async fn settings(store: &WorkspaceStore, conn: &mut SqliteConnection) -> Re
     Ok(
         json!({"profileId":p["id"],"profileName":p["name"],"provider":p["provider"],"model":p["model"],"baseUrl":p["baseUrl"],"vision":p["vision"],"hasApiKey":p["hasApiKey"],"configured":p["configured"],"runtime":"pi","workspace":"workspace","language":"zh-CN"}),
     )
+}
+/// Public readiness follows the same local/shared model boundary as execution.
+pub(crate) async fn bot_configured_in(
+    store: &WorkspaceStore,
+    conn: &mut SqliteConnection,
+    agent_id: &str,
+) -> Result<bool> {
+    let agent = WorkspaceStore::get_in(conn, Table::Agents, agent_id)
+        .await?
+        .ok_or_else(|| ApiError::new(404, "Bot 不存在。"))?;
+    let selected = agent["modelProfileId"]
+        .as_str()
+        .filter(|_| agent.get("sharedBot").is_none());
+    let config = if let Some(id) = selected {
+        public(store, conn, id).await?
+    } else {
+        settings(store, conn).await?
+    };
+    Ok(config["configured"] == true)
+}
+pub(crate) async fn bot_configured(store: &WorkspaceStore, agent_id: &str) -> Result<bool> {
+    let _credentials = store.credential_lock.lock().await;
+    let mut tx = store.pool.begin().await?;
+    let configured = bot_configured_in(store, &mut tx, agent_id).await?;
+    tx.commit().await?;
+    Ok(configured)
 }
 /** Server-only credential snapshot for a single authenticated workspace run. */
 pub async fn runtime_config(store: &WorkspaceStore) -> Result<Value> {
@@ -352,6 +391,16 @@ pub async fn remove(
         .unwrap_or_default();
     if active["profileId"] == id {
         return Err(ApiError::new(409, "请先切换其他模型配置，再删除此配置。"));
+    }
+    if WorkspaceStore::list_in(&mut tx, Table::Agents)
+        .await?
+        .iter()
+        .any(|agent| agent.get("sharedBot").is_none() && agent["modelProfileId"] == id)
+    {
+        return Err(
+            ApiError::new(409, "此模型仍分配给 Bot，请先修改 Bot 的模型选择。")
+                .with_code("MODEL_PROFILE_IN_USE"),
+        );
     }
     WorkspaceStore::delete_in(&mut tx, Table::Settings, &format!("{PREFIX}{id}")).await?;
     WorkspaceStore::delete_in(&mut tx, Table::Settings, &format!("{SECRET}{id}")).await?;

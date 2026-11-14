@@ -1,21 +1,13 @@
 import { serviceText } from '../i18n/serviceText';
 import { uiText } from '../i18n';
-import {
-  ArrowDown,
-  ArrowUp,
-  ChevronRight,
-  FileText,
-  Loader2,
-  Plus,
-  Sparkles,
-  Square,
-  X,
-} from 'lucide-react';
+import { ArrowDown, ArrowUp, FileText, Loader2, Plus, Square, X } from 'lucide-react';
 import { isSharedBot } from '../../../shared/shared-bots';
-import { type ComposerState } from '../chatDrafts';
+import { composerContent, type ComposerState } from '../chatDrafts';
 import { groupMentionsUnavailable, removeMention } from '../composerMentions';
 import { ComposerInput, type ComposerInputProps } from './ComposerInput';
 import { ComposerContexts, composerSkill } from './ComposerContexts';
+import { composerModelConfigured } from './composerModel';
+import { ComposerModelNoticeView } from './ComposerModelNotice';
 import { DictationButton, DictationStatus } from '../components/DictationControls';
 import { VoiceControls } from '../components/VoiceControls';
 import { VoiceCallStart } from '../components/VoiceCallControls';
@@ -120,9 +112,17 @@ export function ChatComposer(
   const skillId = currentComposer.skillId;
   const { skill, skillUnavailable } = composerSkill(currentComposer, data.skills, members);
   const mentions = currentComposer.mentions;
+  const modelConfigured = composerModelConfigured(
+    { ...currentComposer, text: composerContent(currentComposer) },
+    members,
+    conversation,
+    data.settings.configured,
+    { messages: data.messages, runningRequests: data.runningRequests, threadRootId },
+  );
   const voiceMemoRequested = currentComposer.requestVoiceMemo === true;
   const voiceMemoEligible =
     data.voiceMemo?.available === true &&
+    modelConfigured === true &&
     props.account?.workspace.kind === 'personal' &&
     props.account.workspace.role === 'owner' &&
     !!conversation &&
@@ -198,26 +198,11 @@ export function ChatComposer(
               {uiText('workspace:text_d34db9bc67fb')}
             </button>
           )}
-          {!data.settings.configured &&
-            (canManage ? (
-              <button className="setup-note" onClick={() => openSettings('models')}>
-                <span>
-                  <Sparkles size={13} />
-                  {uiText('workspace:text_ba6c7c10cd66')}
-                </span>
-                <span>
-                  {uiText('workspace:text_df3d58c7d84b')}
-                  <ChevronRight size={12} />
-                </span>
-              </button>
-            ) : (
-              <div className="setup-note">
-                <span>
-                  <Sparkles size={13} />
-                  {uiText('workspace:text_4464defc411d')}
-                </span>
-              </div>
-            ))}
+          <ComposerModelNoticeView
+            configured={modelConfigured}
+            canManage={canManage}
+            onConfigure={() => openSettings('models')}
+          />
           {!conversation?.isGroup && isSharedBot(lead) && (
             <div className="shared-bot-banner" role="status">
               <strong>

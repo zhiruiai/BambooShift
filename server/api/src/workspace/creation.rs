@@ -152,7 +152,7 @@ pub async fn post(
         Some("bot") => {
             crate::error::only_fields(&body, &["kind", "requestId", "profile"])?;
             grant.authorize_owner(&state).await?;
-            let (agent, chat) = mutations::create_bot(&mut tx, &body["profile"]).await?;
+            let (agent, chat) = mutations::create_bot(&store, &mut tx, &body["profile"]).await?;
             ("bot", chat, vec![agent["id"].clone()])
         }
         Some("group") => {

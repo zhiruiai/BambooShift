@@ -61,6 +61,8 @@ pub fn profile(agent: &Value) -> Value {
             }
         }
         result["sharedBot"] = metadata;
+    } else if let Some(profile) = agent.get("modelProfileId") {
+        result["modelProfileId"] = profile.clone();
     }
     result
 }
@@ -82,6 +84,8 @@ pub fn version(agent: &Value) -> String {
     }
     if agent.get("sharedBot").is_some() {
         data.push(profile(agent)["sharedBot"].clone());
+    } else if let Some(profile) = agent.get("modelProfileId") {
+        data.push(profile.clone());
     }
     digest(&json!(data))
 }
@@ -174,6 +178,7 @@ pub async fn validate(
                 ];
                 if human {
                     allowed.push("avatarImageId");
+                    allowed.push("modelProfileId");
                 }
                 only_fields(member, &allowed)?;
                 let mut fields = json!({});
@@ -192,6 +197,9 @@ pub async fn validate(
                 }
                 if let Some(image) = member.get("avatarImageId") {
                     fields["avatarImageId"] = image.clone();
+                }
+                if let Some(profile) = member.get("modelProfileId") {
+                    fields["modelProfileId"] = profile.clone();
                 }
                 let settings = profiles::validate(&fields, false)?;
                 if let Some(image) = settings["avatarImageId"].as_str() {

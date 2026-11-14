@@ -139,7 +139,12 @@ export function WorkspaceSharingDialogs({
             }
             openTemplates({ kind: 'share', agentId: activeAgent.id, conversationId: direct.id });
           }}
-          skillCount={data.skills.filter((item) => item.agentId === activeAgent.id).length}
+          skillCount={
+            data.skills.filter(
+              (item) => item.agentId === activeAgent.id && item.status === 'active',
+            ).length
+          }
+          skills={data.skills.filter((item) => item.agentId === activeAgent.id)}
           fileCount={
             data.files.filter(
               (file) =>

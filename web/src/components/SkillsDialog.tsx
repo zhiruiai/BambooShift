@@ -1,5 +1,14 @@
 import { currentLanguage, uiText } from '../i18n';
-import { Check, ChevronDown, Info, LibraryBig, Pause, Plus, Sparkles } from 'lucide-react';
+import {
+  ArrowLeft,
+  Check,
+  ChevronDown,
+  Info,
+  LibraryBig,
+  Pause,
+  Plus,
+  Sparkles,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { isSharedBot } from '../../../shared/shared-bots';
 import type { BotAgent, Skill } from '../../../shared/types';
@@ -17,6 +26,7 @@ import { SkillVersionReview } from './SkillVersionReview';
 import { SkillFileImport } from './SkillFileImport';
 import { TeamSkillsView, type TeamSkillsAccess } from './TeamSkillsView';
 import { Dialog } from './UI';
+import { PackagedSkillsCatalog } from './apps/PackagedSkillsCatalog';
 
 export function SkillsDialog({
   agents,
@@ -58,6 +68,7 @@ export function SkillsDialog({
   );
   const [reviewId, setReviewId] = useState('');
   const [showTeam, setShowTeam] = useState(false);
+  const [showCatalog, setShowCatalog] = useState(false);
   const reviewing = skills.find((s) => s.id === reviewId);
   const [submission] = useState(createFormSubmission);
   const [saving, setSaving] = useState(false);
@@ -106,12 +117,46 @@ export function SkillsDialog({
   return (
     <Dialog
       title={uiText('common:text_2c38f222bfa4')}
-      subtitle={uiText('common:text_d6a77a2071ee')}
+      subtitle={
+        agents.length === 1
+          ? uiText('settings:botSkillsScope', { name: agents[0].name })
+          : uiText('common:text_d6a77a2071ee')
+      }
       onClose={() => {
         if (!locked && !submission.pending) onClose();
       }}
     >
-      {showTeam && team ? (
+      {showCatalog ? (
+        <>
+          <button
+            type="button"
+            className="text-button"
+            disabled={locked}
+            onClick={() => setShowCatalog(false)}
+          >
+            <ArrowLeft size={14} aria-hidden="true" />
+            {uiText('settings:botSkillsCatalogBack')}
+          </button>
+          <PackagedSkillsCatalog
+            embedded
+            bots={editableAgents}
+            initialAgentId={editableAgents.length === 1 ? editableAgents[0].id : agentId}
+            canEdit={!readOnly}
+            disabled={locked}
+            onEdit={(draft) => {
+              if (locked || readOnly || !editableAgents.some((agent) => agent.id === draft.agentId))
+                return;
+              setAgentId(draft.agentId);
+              setName(draft.recipe.name);
+              setDescription(draft.recipe.description);
+              setContent(draft.recipe.content);
+              setSaveError('');
+              setShowCatalog(false);
+              setAdding(true);
+            }}
+          />
+        </>
+      ) : showTeam && team ? (
         <TeamSkillsView
           access={{
             ...team,
@@ -157,6 +202,17 @@ export function SkillsDialog({
                 : uiText('common:text_23d225f28f98')}
             </span>
           </div>
+          {!readOnly && editableAgents.length > 0 && !adding && (
+            <button
+              className="secondary-button team-skill-entry"
+              type="button"
+              disabled={locked}
+              onClick={() => setShowCatalog(true)}
+            >
+              <LibraryBig size={15} aria-hidden="true" />
+              {uiText('settings:botSkillsCatalog')}
+            </button>
+          )}
           {team && !adding && (
             <button
               className="secondary-button team-skill-entry"

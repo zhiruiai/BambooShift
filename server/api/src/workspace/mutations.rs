@@ -39,8 +39,13 @@ pub fn local(agent: &Value) -> Result<()> {
     }
     Ok(())
 }
-pub async fn create_bot(conn: &mut SqliteConnection, body: &Value) -> Result<(Value, Value)> {
+pub async fn create_bot(
+    store: &WorkspaceStore,
+    conn: &mut SqliteConnection,
+    body: &Value,
+) -> Result<(Value, Value)> {
     let mut agent = profiles::validate(body, false)?;
+    super::model::validate_bot_selection(store, conn, &agent["modelProfileId"]).await?;
     super::avatars::publish(conn, &agent["avatarImageId"]).await?;
     agent["id"] = json!(uuid::Uuid::new_v4().to_string());
     agent["configRevision"] = json!(uuid::Uuid::new_v4().to_string());
@@ -59,7 +64,7 @@ pub async fn add_agent(
     let grant = access::require(&state, &headers, &wid, true, true).await?;
     let store = grant.store(&state).await?;
     let mut tx = store.begin().await?;
-    let (agent, _) = create_bot(&mut tx, &body).await?;
+    let (agent, _) = create_bot(&store, &mut tx, &body).await?;
     grant.authorize(&state).await?;
     tx.commit().await?;
     store.emit("update", json!({}));
@@ -81,6 +86,7 @@ pub async fn edit_agent(
     let mut tx = store.begin().await?;
     let mut agent = find(&mut tx, Table::Agents, &id).await?;
     local(&agent)?;
+    super::model::validate_bot_selection(&store, &mut tx, &changes["modelProfileId"]).await?;
     if expected
         .as_ref()
         .is_some_and(|value| value != &agent["configRevision"])

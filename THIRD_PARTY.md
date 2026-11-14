@@ -112,6 +112,25 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
+## Community skill workflows
+
+The English and Chinese workflow catalogs include condensed, translated adaptations
+of Superpowers' debugging and verification skills (MIT, Jesse Vincent), Matt Pocock's
+specification and handoff skills (MIT, Matt Pocock), and Vercel Labs' Agent Desktop
+skill (Apache-2.0). The [source inventory](legal/third-party/community-skills/SOURCES.json)
+pins each upstream revision and records the modifications. The original license
+texts are retained beside it and in the identical notices shipped with the
+[Web client](web/public/licenses/community-skills.txt) and
+[Flutter client](mobile/assets/licenses/community-skills.txt).
+
+These are reviewed BambooShift adaptations, not complete installations or official
+endorsements. The Agent Desktop recipe requires a separately installed CLI and an
+authorized execution computer; it does not bundle native adapters, a VM or an MCP
+server. The React performance workflow is original BambooShift content that links
+to Vercel guidance; upstream rule files are not included. Existing frontend-design
+content remains an original workflow. User-approved skill contents do not grant
+additional tool access or change action approvals.
+
 ## Other separately licensed assets
 
 The Flutter web client bundles a Chinese web font derived from [Noto Sans SC 2.004](https://github.com/google/fonts/tree/2894aab31764f10f29c421bdfd2340d3b382d384/ofl/notosanssc). Copyright 2014–2021 Adobe, with Reserved Font Name “Source.” The [SIL Open Font License 1.1](mobile/assets/fonts/OFL-NotoSansSC.txt) accompanies the font in the web build. The renamed WOFF2 uses a static regular weight and preserves all 30,890 character mappings from the upstream regional font. Native builds use the platform font fallback and omit this asset.

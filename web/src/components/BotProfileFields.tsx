@@ -2,6 +2,7 @@ import { uiText } from '../i18n';
 import type { BotProfileDraft } from '../botProfiles';
 import type { AvatarEditActivity } from '../avatarImages';
 import { AvatarPicker } from './AvatarPicker';
+import { BotModelSelect } from './BotModelSelect';
 import './BotProfiles.css';
 export function BotProfileFields({
   draft,
@@ -12,6 +13,7 @@ export function BotProfileFields({
   userId,
   onAvatarActivity,
   onAvatarChange,
+  modelSelection = false,
 }: {
   draft: BotProfileDraft;
   onChange: (draft: BotProfileDraft) => void;
@@ -21,6 +23,7 @@ export function BotProfileFields({
   userId?: string;
   onAvatarActivity?: (activity: AvatarEditActivity) => void;
   onAvatarChange?: (patch: Partial<BotProfileDraft>) => void;
+  modelSelection?: boolean;
 }) {
   return (
     <>
@@ -69,6 +72,16 @@ export function BotProfileFields({
               placeholder={uiText('bots:text_d3a302e11fd8')}
             />
           </label>
+          {modelSelection && (
+            <BotModelSelect
+              key={`${workspaceId || ''}:${userId || ''}`}
+              workspaceId={workspaceId}
+              userId={userId}
+              value={draft.modelProfileId}
+              disabled={disabled}
+              onChange={(modelProfileId) => onChange({ ...draft, modelProfileId })}
+            />
+          )}
         </>
       )}
       {section !== 'profile' && (

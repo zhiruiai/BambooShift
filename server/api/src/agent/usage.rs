@@ -11,14 +11,17 @@ pub(super) async fn record(
     result: &Value,
     event: &Value,
 ) -> Result<()> {
-    let profile = active.family.model_profile.get().unwrap_or(&Value::Null);
+    let profile = active
+        .family
+        .model_profile(&active.agent_id)
+        .unwrap_or(Value::Null);
     record_snapshot(
         conn,
         &active.run_id,
         result["id"].as_str().unwrap_or(""),
         grant.user_id(),
         Some(&active.agent_id),
-        profile,
+        &profile,
         &event["message"]["usage"],
     )
     .await

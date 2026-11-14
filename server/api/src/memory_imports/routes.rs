@@ -19,7 +19,13 @@ async fn readiness_value(
     grant: &WorkspaceAccess,
 ) -> Result<Value> {
     let primary = primary::read(conn, &grant.kind).await?;
-    let configured = model::settings(store, conn).await?["configured"] == true;
+    let configured = if let Some(agent) = primary["agentId"].as_str() {
+        model::bot_configured_in(store, conn, agent)
+            .await
+            .unwrap_or(false)
+    } else {
+        model::settings(store, conn).await?["configured"] == true
+    };
     let reason = if grant.kind != "personal" {
         Some("personal_required")
     } else if primary["agentId"].is_null() {

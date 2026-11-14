@@ -248,8 +248,7 @@ pub(crate) async fn execute(
             only_fields(args, &[])?;
             if !active
                 .family
-                .model_profile
-                .get()
+                .model_profile(&active.agent_id)
                 .is_some_and(|p| p["vision"] == true)
             {
                 return Err(ApiError::new(

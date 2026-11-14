@@ -173,16 +173,6 @@ pub(crate) async fn execute(
     }
     let grant = &effective_access;
     grant.authorize(state).await?;
-    let profile = if let Some(profile) = active.family.model_profile.get() {
-        profile.clone()
-    } else {
-        let captured = crate::workspace::model::runtime_config(store).await?;
-        let _ = active.family.model_profile.set(captured.clone());
-        captured
-    };
-    if profile["configured"] != true {
-        return Err(ApiError::bad("还没有连接模型服务，请先配置模型。"));
-    }
     let import_mode = active.kind == "memory_import";
     let memories = if webhook_event.is_some() {
         vec![]
@@ -201,6 +191,8 @@ pub(crate) async fn execute(
         agent = captured;
         skills
     };
+    let profile =
+        super::model_routing::resolve(store, active, &agent, grant.shared().is_some()).await?;
     let knowledge =
         active
             .family

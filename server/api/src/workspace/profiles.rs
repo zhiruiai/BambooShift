@@ -26,6 +26,9 @@ pub fn project_revision(agent: &mut Value) {
     {
         fields.push(agent["avatarImageId"].clone());
     }
+    if let Some(profile) = agent["modelProfileId"].as_str() {
+        fields.push(json!(profile));
+    }
     let digest = hex::encode(Sha256::digest(
         serde_json::to_vec(&fields).unwrap_or_default(),
     ));
@@ -49,6 +52,7 @@ pub fn validate(body: &Value, partial: bool) -> Result<Value> {
             "color",
             "avatar",
             "avatarImageId",
+            "modelProfileId",
         ],
     )?;
     let mut result = if partial {
@@ -102,6 +106,16 @@ pub fn validate(body: &Value, partial: bool) -> Result<Value> {
             return Err(ApiError::bad("头像标识无效。"));
         }
         result["avatarImageId"] = image.clone();
+    }
+    if let Some(profile) = body.get("modelProfileId") {
+        if !profile.is_null()
+            && !profile
+                .as_str()
+                .is_some_and(|id| uuid::Uuid::parse_str(id).is_ok())
+        {
+            return Err(ApiError::bad("模型配置标识无效。"));
+        }
+        result["modelProfileId"] = profile.clone();
     }
     Ok(result)
 }

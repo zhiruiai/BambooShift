@@ -147,7 +147,9 @@ pub async fn put(
     } else {
         next["checkIn"] = schedule(&body["checkIn"], &current["checkIn"])?;
         let agent = if mode == "create" {
-            mutations::create_bot(&mut tx, &body["bot"]).await?.0
+            mutations::create_bot(&store, &mut tx, &body["bot"])
+                .await?
+                .0
         } else {
             mutations::find(
                 &mut tx,

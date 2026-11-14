@@ -6,6 +6,7 @@ import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'bot_form.dart';
+import 'bot_skills_card.dart';
 import 'knowledge_screen.dart';
 import '../routines/routines_screen.dart';
 import '../computer/computer_screen.dart';
@@ -41,6 +42,7 @@ class _BotSettingsState extends State<BotSettings> {
         'instructions',
         'avatar',
         'color',
+        'modelProfileId',
       ])
         key: bot[key],
       if (bot.containsKey('avatarImageId'))
@@ -53,7 +55,9 @@ class _BotSettingsState extends State<BotSettings> {
   Future<void> _save() async {
     if (!widget.scope.active ||
         !widget.scope.owner ||
-        isManagedBot(widget.bot) ||
+        isManagedBot(
+          widget.scope.find('agents', widget.bot['id'] as String) ?? widget.bot,
+        ) ||
         !form.currentState!.validate() ||
         busy ||
         unknown) {
@@ -103,11 +107,17 @@ class _BotSettingsState extends State<BotSettings> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: Listenable.merge([widget.scope, widget.scope.session]),
+    builder: (context, _) => _content(context),
+  );
+
+  Widget _content(BuildContext context) {
     final scope = widget.scope;
     final botId = widget.bot['id'] as String;
     final expectedRevision = revision;
-    final editable = scope.owner && !isManagedBot(widget.bot);
+    final currentBot = scope.find('agents', botId) ?? widget.bot;
+    final editable = scope.active && scope.owner && !isManagedBot(currentBot);
     return Scaffold(
       appBar: AppBar(title: Text(context.tr('botSettings'))),
       body: Form(
@@ -139,7 +149,8 @@ class _BotSettingsState extends State<BotSettings> {
                     (current['configRevision'] as String? ?? '') ==
                         expectedRevision;
               },
-              sharedAvatar: widget.bot['sharedBot'],
+              sharedAvatar: currentBot['sharedBot'],
+              managed: isManagedBot(currentBot),
               onChanged: (value) => draft = value,
             ),
             const SizedBox(height: 24),
@@ -174,7 +185,8 @@ class _BotSettingsState extends State<BotSettings> {
                 ),
               ),
             ),
-            for (final kind in ['memories', 'skills'])
+            BotSkillsCard(scope: scope, agentId: botId),
+            for (final kind in ['memories'])
               Card(
                 child: ListTile(
                   title: Text(context.tr(kind)),

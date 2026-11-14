@@ -239,7 +239,7 @@ async fn perform(
             .await?;
         profile["avatarImageId"] = asset["id"].clone();
     }
-    let (agent, chat) = mutations::create_bot(&mut tx, &profile).await?;
+    let (agent, chat) = mutations::create_bot(store, &mut tx, &profile).await?;
     let mut skill_ids = Vec::new();
     for value in current.blueprint["skills"].as_array().unwrap() {
         let mut skill = value.clone();

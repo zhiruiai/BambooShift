@@ -1,6 +1,13 @@
 .packaged-skills .apps-search {
   width: 100%;
 }
+.packaged-skills-embedded {
+  min-width: 0;
+  padding-block: 12px;
+}
+.packaged-skills-embedded .apps-search input {
+  min-width: 0;
+}
 
 .packaged-skills .packaged-skill-content {
   max-height: none;

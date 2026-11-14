@@ -6,6 +6,7 @@ import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import '../../widgets/bot_avatar.dart';
 import 'avatar_crop_dialog.dart';
+import 'bot_model_picker.dart';
 
 class BotForm extends StatefulWidget {
   const BotForm({
@@ -15,16 +16,20 @@ class BotForm extends StatefulWidget {
     required this.family,
     required this.onChanged,
     this.avatarScope,
+    this.modelScope,
     this.avatarTargetCurrent,
     this.sharedAvatar,
+    this.managed = false,
   });
   final Json initial;
   final bool enabled;
   final String family;
   final ValueChanged<Json> onChanged;
   final WorkspaceController? avatarScope;
+  final WorkspaceController? modelScope;
   final bool Function()? avatarTargetCurrent;
   final Object? sharedAvatar;
+  final bool managed;
   @override
   State<BotForm> createState() => _BotFormState();
 }
@@ -93,6 +98,15 @@ class _BotFormState extends State<BotForm> {
       field('name', 40),
       field('role', 80),
       field('description', 1000, lines: 2),
+      if ((widget.modelScope ?? widget.avatarScope)
+          case final WorkspaceController scope)
+        BotModelPicker(
+          scope: scope,
+          value: draft['modelProfileId'] as String?,
+          enabled: widget.enabled,
+          managed: widget.managed,
+          onChanged: (value) => change('modelProfileId', value),
+        ),
       field('instructions', 16000, lines: 4),
       Text(
         context.tr('avatar'),

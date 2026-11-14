@@ -243,7 +243,7 @@ async fn submit(
     }
     if voice_memo {
         voice_memo::authorize_submission(&state, &grant, &conversation, &agent).await?;
-        if crate::workspace::model::settings(&store, &mut tx).await?["configured"] != true {
+        if !crate::workspace::model::bot_configured_in(&store, &mut tx, &agent_id).await? {
             return Err(voice_memo::unavailable());
         }
     }

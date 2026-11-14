@@ -122,7 +122,7 @@ pub async fn commit(
             for k in ["key", "kind", "assignment"] {
                 profile.as_object_mut().unwrap().remove(k);
             }
-            let (agent, _) = bots::create_bot(&mut tx, &profile).await?;
+            let (agent, _) = bots::create_bot(ws, &mut tx, &profile).await?;
             created.push(agent["id"].clone());
             agent
         };

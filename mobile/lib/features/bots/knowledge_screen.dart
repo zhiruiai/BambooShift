@@ -7,6 +7,7 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'knowledge_editor.dart';
 import 'memory_import_screen.dart';
+import 'skill_recipe_picker.dart';
 import 'team_skills_screen.dart';
 
 class KnowledgeScreen extends StatefulWidget {
@@ -26,6 +27,21 @@ class KnowledgeScreen extends StatefulWidget {
 class _KnowledgeScreenState extends State<KnowledgeScreen> {
   bool busy = false;
   String? error;
+  bool get canManageSkills {
+    final bot = widget.scope.find('agents', widget.agentId);
+    return widget.scope.active &&
+        widget.scope.owner &&
+        bot != null &&
+        !isManagedBot(bot);
+  }
+
+  Future<void> _chooseSkill() async {
+    if (busy || !canManageSkills) return;
+    final recipe = await pickSkillRecipe(context);
+    if (!mounted || recipe == null || busy || !canManageSkills) return;
+    await _edit(recipe);
+  }
+
   Future<void> _teamSkills() async {
     if (busy || !widget.scope.active) return;
     final agentId = await Navigator.push<String>(
@@ -56,7 +72,11 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
   }
 
   Future<void> _edit([Json? original]) async {
-    if (busy || !widget.scope.active) return;
+    if (busy ||
+        !widget.scope.active ||
+        (widget.kind == 'skills' && !canManageSkills)) {
+      return;
+    }
     await Navigator.push(
       context,
       MaterialPageRoute<void>(
@@ -72,7 +92,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
   }
 
   Future<void> _change(Json item, String action) async {
-    if (busy) return;
+    if (busy || (widget.kind == 'skills' && !canManageSkills)) return;
     final current = widget.scope
         .items('skills')
         .where(
@@ -88,7 +108,11 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
     )) {
       return;
     }
-    if (!mounted || !widget.scope.active) return;
+    if (!mounted ||
+        !widget.scope.active ||
+        (widget.kind == 'skills' && !canManageSkills)) {
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
@@ -111,7 +135,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: widget.scope,
+    listenable: Listenable.merge([widget.scope, widget.scope.session]),
     builder: (context, _) {
       final items = widget.scope
           .items(widget.kind)
@@ -120,6 +144,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
       final bot = widget.scope.find('agents', widget.agentId);
       final local = bot != null && !isManagedBot(bot);
       final allowed =
+          widget.scope.active &&
           bot != null &&
           (widget.kind == 'memories' || (widget.scope.owner && local));
       return Scaffold(
@@ -139,6 +164,23 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (widget.kind == 'skills') ...[
+                if (bot?['name'] is String)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      bot!['name'] as String,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                const Notice('mobileBotSkillsHelp'),
+                if (allowed)
+                  OutlinedButton.icon(
+                    onPressed: busy ? null : _chooseSkill,
+                    icon: const Icon(Icons.library_add_outlined),
+                    label: Text(context.tr('mobileKnowledgeRecipes')),
+                  ),
+              ],
               if (widget.kind == 'skills' &&
                   widget.scope.session.workspace?['kind'] == 'team')
                 OutlinedButton.icon(

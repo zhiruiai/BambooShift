@@ -58,10 +58,19 @@ bool _canPress(WidgetTester tester, Finder button) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('both locales load the same nine complete workflow recipes', () async {
+  test('both locales load the same complete workflow catalog', () async {
     final en = await loadSkillRecipes('en'), zh = await loadSkillRecipes('zh');
     final ids = en.map((item) => item['id']).toSet();
-    expect(ids.length, 9);
+    expect(ids.length, 13);
+    expect(
+      ids,
+      containsAll([
+        'product-spec',
+        'team-handoff',
+        'react-performance',
+        'agent-desktop',
+      ]),
+    );
     expect(zh.map((item) => item['id']), en.map((item) => item['id']));
     for (final recipe in [...en, ...zh]) {
       for (final field in ['name', 'description', 'content']) {
@@ -194,7 +203,9 @@ void main() {
       expect(find.text('Workflow'), findsOneWidget);
       expect(find.text('## Workflow'), findsNothing);
       expect(
-        find.textContaining('observed outcomes and remaining gaps.'),
+        find.textContaining(
+          'Report the observed result, exact checks and remaining uncertainty.',
+        ),
         findsOneWidget,
       );
       expect(

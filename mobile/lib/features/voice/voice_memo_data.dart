@@ -21,8 +21,7 @@ bool canRequestVoiceMemo(
       scope.session.workspace?['kind'] != 'personal' ||
       !scope.owner ||
       threadRootId != null ||
-      options != emptyChatOptions ||
-      scope.data?['settings']?['configured'] != true) {
+      options != emptyChatOptions) {
     return false;
   }
   final chat = scope.find('conversations', conversationId);
@@ -34,7 +33,9 @@ bool canRequestVoiceMemo(
     return false;
   }
   final bot = scope.find('agents', members.single as String);
-  return bot != null && !isManagedBot(bot);
+  return bot != null &&
+      !isManagedBot(bot) &&
+      botModelReady(bot, scope.data?['settings'] as Json?);
 }
 
 @immutable

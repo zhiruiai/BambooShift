@@ -1,4 +1,4 @@
-import type { BotAgent, ComputerState } from '../../../../shared/types';
+import type { BotAgent, ComputerState, Skill } from '../../../../shared/types';
 import '../BotProfiles.css';
 export type Props = {
   agent: BotAgent;
@@ -10,6 +10,7 @@ export type Props = {
   busy: boolean;
   deleteBlocked: string;
   skillCount: number;
+  skills?: Skill[];
   fileCount: number;
   onComputer: () => void;
   onSkills: () => void;

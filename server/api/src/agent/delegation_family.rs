@@ -29,7 +29,8 @@ pub(crate) struct DelegationFamily {
     knowledge: Mutex<HashMap<String, Arc<RunKnowledge>>>,
     direct_grants: Mutex<Vec<super::private_delegation::DirectGrant>>,
     /// This in-memory snapshot contains credentials and is never serialized to workspace data.
-    pub model_profile: OnceLock<Value>,
+    pub(super) default_model_profile: OnceLock<Value>,
+    model_profiles: Mutex<HashMap<String, Value>>,
     pub(super) app_context: OnceLock<super::app_context::AppContext>,
     pub(super) mentioned_agents: OnceLock<Vec<String>>,
     pub(super) selected_skill: OnceLock<()>,
@@ -57,7 +58,8 @@ impl DelegationFamily {
             local_definitions: Mutex::new(HashMap::new()),
             knowledge: Mutex::new(HashMap::new()),
             direct_grants: Mutex::new(Vec::new()),
-            model_profile: OnceLock::new(),
+            default_model_profile: OnceLock::new(),
+            model_profiles: Mutex::new(HashMap::new()),
             app_context: OnceLock::new(),
             mentioned_agents: OnceLock::new(),
             selected_skill: OnceLock::new(),
@@ -107,6 +109,17 @@ impl DelegationFamily {
             .unwrap()
             .entry(agent["id"].as_str().unwrap().to_owned())
             .or_insert((agent, skills))
+            .clone()
+    }
+    pub(super) fn model_profile(&self, agent_id: &str) -> Option<Value> {
+        self.model_profiles.lock().unwrap().get(agent_id).cloned()
+    }
+    pub(super) fn capture_model_profile(&self, agent_id: &str, profile: Value) -> Value {
+        self.model_profiles
+            .lock()
+            .unwrap()
+            .entry(agent_id.to_owned())
+            .or_insert(profile)
             .clone()
     }
     pub(super) fn capture_knowledge(

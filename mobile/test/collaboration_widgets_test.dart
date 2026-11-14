@@ -11,6 +11,7 @@ import 'package:openbot_mobile/features/bots/create_screen.dart';
 import 'package:openbot_mobile/features/chat/chat_message.dart';
 import 'package:openbot_mobile/features/collaboration/team_data.dart';
 import 'collaboration_support.dart';
+import 'model_profile_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp, waitFor;
 
@@ -282,15 +283,29 @@ void main() {
     'Create entry opens intelligent planning while preserving the manual Bot draft',
     (tester) async {
       final server = TeamServer();
-      final f = await fixture(server.handle);
+      final models = ModelsServer();
+      final f = await fixture(
+        (request) => request.url.path.endsWith('/model-profiles')
+            ? models.handle(request)
+            : server.handle(request),
+      );
       f.scope.data = teamSnapshot();
       await tester.pumpWidget(
         testApp(CreateScreen(scope: f.scope, kind: 'bot')),
       );
-      await tester.pumpAndSettle();
       await waitFor(
         tester,
-        () => find.byType(TextFormField).evaluate().isNotEmpty,
+        () =>
+            find
+                .byType(DropdownButtonFormField<String>)
+                .evaluate()
+                .isNotEmpty &&
+            tester
+                    .widget<DropdownButtonFormField<String>>(
+                      find.byType(DropdownButtonFormField<String>),
+                    )
+                    .onChanged !=
+                null,
       );
       final field = find.widgetWithText(TextFormField, 'Name');
       await reach(tester, field);

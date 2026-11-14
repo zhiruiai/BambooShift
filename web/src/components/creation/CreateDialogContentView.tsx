@@ -287,6 +287,7 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
             >
               {mode === 'bot' ? (
                 <BotProfileFields
+                  modelSelection
                   key={avatarEdits.resetKey}
                   draft={draft}
                   onChange={(next) => {

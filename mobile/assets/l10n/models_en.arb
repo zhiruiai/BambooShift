@@ -32,5 +32,15 @@
   "mobileModelsCheck": "Refresh and check profiles",
   "mobileModelsAcknowledge": "Continue from saved profiles",
   "mobileModelsAcknowledgeConfirm": "Have you checked the saved profiles? The original draft will be closed without resending it. This does not cancel the request; a late result may still appear.",
-  "mobileModelsRecoveryFailed": "Change recovery information could not be confirmed. Reopen and check the profile list."
+  "mobileModelsRecoveryFailed": "Change recovery information could not be confirmed. Reopen and check the profile list.",
+  "mobileBotModel": "Model for this Bot",
+  "mobileBotModelDefault": "Use workspace default",
+  "mobileBotModelAssigned": "A saved model is assigned",
+  "mobileBotModelShared": "Use the requester’s workspace model",
+  "mobileBotModelUnavailable": "Assigned model unavailable",
+  "mobileBotModelHelp": "Choose a saved model for this Bot. Other Bots keep their own settings.",
+  "mobileBotModelMissingHelp": "The assigned model is unavailable. Choose another saved model or use the workspace default.",
+  "mobileBotSkillsEnabled": "Enabled",
+  "mobileBotSkillsReview": "Awaiting review",
+  "mobileBotSkillsHelp": "Enabled skills guide this Bot’s tasks. Choose a workflow, review its instructions, then enable it for this Bot."
 }

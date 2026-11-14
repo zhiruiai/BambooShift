@@ -17,6 +17,7 @@ export interface NewTeamMember {
   color: string;
   avatar: BotAgent['avatar'];
   avatarImageId?: string | null;
+  modelProfileId?: string | null;
   assignment: string;
 }
 export interface BotTeamDraft {

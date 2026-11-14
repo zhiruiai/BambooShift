@@ -32,5 +32,15 @@
   "mobileModelsCheck": "刷新核对配置库",
   "mobileModelsAcknowledge": "已核对，从保存的配置继续",
   "mobileModelsAcknowledgeConfirm": "确认已核对当前配置库？将关闭原修改草稿且不重发；这不会撤销原请求，迟到的结果仍可能出现。",
-  "mobileModelsRecoveryFailed": "无法确认修改恢复信息，请重新打开并核对配置库。"
+  "mobileModelsRecoveryFailed": "无法确认修改恢复信息，请重新打开并核对配置库。",
+  "mobileBotModel": "此 Bot 使用的模型",
+  "mobileBotModelDefault": "跟随工作空间默认模型",
+  "mobileBotModelAssigned": "已指定保存的模型",
+  "mobileBotModelShared": "使用请求者工作空间的模型",
+  "mobileBotModelUnavailable": "指定的模型暂不可用",
+  "mobileBotModelHelp": "为此 Bot 选择已配置的模型，其他 Bot 的设置不受影响。",
+  "mobileBotModelMissingHelp": "原先指定的模型暂不可用，请选择其他已配置模型或跟随工作空间默认模型。",
+  "mobileBotSkillsEnabled": "已启用",
+  "mobileBotSkillsReview": "待审核",
+  "mobileBotSkillsHelp": "已启用的技能会指导此 Bot 完成任务。选择工作流，核对指令后，即可为此 Bot 启用。"
 }

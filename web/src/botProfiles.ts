@@ -4,7 +4,14 @@ import { validAvatarImageId } from './avatarImages';
 import { AVATAR_COLORS } from '../../shared/avatar-palette';
 export type BotProfileDraft = Pick<
   BotAgent,
-  'name' | 'role' | 'description' | 'instructions' | 'color' | 'avatar' | 'avatarImageId'
+  | 'name'
+  | 'role'
+  | 'description'
+  | 'instructions'
+  | 'color'
+  | 'avatar'
+  | 'avatarImageId'
+  | 'modelProfileId'
 >;
 export const botColors = AVATAR_COLORS;
 export const botShapes: BotAgent['avatar'][] = ['orb', 'drop', 'leaf', 'spark', 'gem', 'arch'];
@@ -25,6 +32,7 @@ export function botProfileDraft(agent?: BotAgent): BotProfileDraft {
     color: agent?.color || botColors[0],
     avatar: agent?.avatar || 'orb',
     avatarImageId: agent?.avatarImageId ?? null,
+    ...(agent?.modelProfileId !== undefined ? { modelProfileId: agent.modelProfileId } : {}),
   };
 }
 export function botProfileProblem(draft: BotProfileDraft) {

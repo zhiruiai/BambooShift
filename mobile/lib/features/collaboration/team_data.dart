@@ -110,7 +110,9 @@ String? draftProblem(
           row['color'] is! String ||
           !RegExp(r'^#[a-fA-F0-9]{6}$').hasMatch(row['color']) ||
           (row['avatarImageId'] != null &&
-              !isRequestId(row['avatarImageId']))) {
+              !isRequestId(row['avatarImageId'])) ||
+          (row['modelProfileId'] != null &&
+              !isRequestId(row['modelProfileId']))) {
         return 'mobileCollaborationInvalid';
       }
     } else {

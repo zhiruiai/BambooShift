@@ -88,7 +88,7 @@ pub(crate) async fn tick(
     if state.agent_runs.workspace_busy(&store.workspace_id).await {
         return Ok(());
     }
-    if crate::workspace::model::runtime_config(store).await?["configured"] != true {
+    if !crate::workspace::model::bot_configured(store, agent).await? {
         return Ok(());
     }
     let grant = ExecutionAccess::Background(

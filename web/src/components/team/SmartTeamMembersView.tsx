@@ -134,6 +134,7 @@ export function SmartTeamMembersView({
                   <summary>{uiText('bots:text_36b393923130')}</summary>
                   <div className="dialog-form">
                     <BotProfileFields
+                      modelSelection
                       key={avatarEdits.resetKey}
                       draft={member}
                       disabled={locked || !!commitRequest.current}

@@ -2,6 +2,68 @@
 .bot-create .segmented > button {
   min-height: 44px;
 }
+.bot-model-selection,
+.bot-skill-selection {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+}
+.bot-model-selection select {
+  min-width: 0;
+  width: 100%;
+  min-height: 44px;
+  text-overflow: ellipsis;
+}
+.bot-model-selection p,
+.bot-skill-selection p,
+.bot-skill-selection h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.bot-model-selection button,
+.bot-skill-selection > button {
+  justify-self: start;
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+}
+.bot-skill-selection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.bot-skill-selection-heading h3 {
+  font-size: 14px;
+}
+.bot-skill-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.bot-skill-summary li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.bot-skill-summary svg {
+  flex: none;
+}
 .bot-identity-picker {
   gap: 18px;
   flex-wrap: wrap;

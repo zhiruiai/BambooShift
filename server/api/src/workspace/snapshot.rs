@@ -39,13 +39,49 @@ pub async fn bootstrap(
     data["primaryBot"] = super::primary::read(&mut tx, &grant.kind).await?;
     data["workspaceTimeZone"] = super::time_zone::read(&mut tx).await?;
     data["settings"] = super::model::settings(&store, &mut tx).await?;
+    let default_configured = data["settings"]["configured"] == true;
+    let mut model_readiness = std::collections::HashMap::new();
+    for agent in data["agents"].as_array_mut().unwrap() {
+        let selected = agent["modelProfileId"]
+            .as_str()
+            .filter(|_| agent.get("sharedBot").is_none());
+        let configured = if let Some(profile) = selected {
+            if let Some(configured) = model_readiness.get(profile) {
+                *configured
+            } else {
+                let configured = super::model::bot_configured_in(
+                    &store,
+                    &mut tx,
+                    agent["id"].as_str().unwrap_or(""),
+                )
+                .await
+                .unwrap_or(false);
+                model_readiness.insert(profile.to_owned(), configured);
+                configured
+            }
+        } else {
+            default_configured
+        };
+        agent["modelConfigured"] = json!(configured);
+    }
+    let any_local_model = data["agents"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|agent| agent.get("sharedBot").is_none() && agent["modelConfigured"] == true);
     data["voiceMemo"] = json!({"available": grant.kind == "personal"
-        && grant.is_owner && data["settings"]["configured"] == true
+        && grant.is_owner && any_local_model
         && crate::speech::memo_synthesis::available(&state.config.data_dir)});
+    let primary_configured = data["agents"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|agent| agent["id"] == data["primaryBot"]["agentId"])
+        .is_some_and(|agent| agent["modelConfigured"] == true);
     data["primaryCheckIn"] = crate::scheduling::primary_status(
         &mut tx,
         &grant.kind,
-        data["settings"]["configured"] == true,
+        primary_configured,
         crate::db::now(),
     )
     .await?;
@@ -57,6 +93,11 @@ pub async fn bootstrap(
         .state()
         .await;
     crate::shared_bots::project_snapshot(&state, &grant, &mut data).await?;
+    for agent in data["agents"].as_array_mut().unwrap() {
+        if agent.get("sharedBot").is_some() {
+            agent["modelConfigured"] = json!(default_configured);
+        }
+    }
     data["apps"] = json!(crate::apps::connections::list(&store).await?);
     let running = state.agent_runs.requests(&wid).await;
     data["runningConversationIds"] = json!(

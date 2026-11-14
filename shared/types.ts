@@ -15,6 +15,10 @@ export interface BotAgent {
   /** Immutable workspace avatar asset; null explicitly restores the generated shape. */
   avatarImageId?: string | null;
   instructions: string;
+  /** Workspace-local model choice; null or absent inherits the execution workspace default. */
+  modelProfileId?: string | null;
+  /** Read-only availability of this Bot's effective model in the current execution workspace. */
+  modelConfigured?: boolean;
   status: AgentStatus;
   /** Server-issued configuration revision; older stored records are projected compatibly. */
   configRevision?: string;

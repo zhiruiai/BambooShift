@@ -343,9 +343,9 @@ async fn accept(
         return Err(ApiError::new(409, "此例行任务已暂停。").with_code("ROUTINE_WEBHOOK_PAUSED"));
     }
     keys::check_rate(&mut workspace, &id, at).await?;
-    if !model::settings(&store, &mut workspace)
+    if !model::bot_configured_in(&store, &mut workspace, agent)
         .await
-        .is_ok_and(|value| value["configured"] == true)
+        .is_ok_and(|configured| configured)
     {
         return Err(ApiError::new(503, "Webhook 任务需要已配置的模型。")
             .with_code("ROUTINE_WEBHOOK_MODEL_UNAVAILABLE"));

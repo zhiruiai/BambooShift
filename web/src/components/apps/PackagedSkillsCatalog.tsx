@@ -12,15 +12,19 @@ export function PackagedSkillsCatalog({
   canEdit,
   disabled,
   onEdit,
+  initialAgentId,
+  embedded = false,
 }: {
   bots: readonly Pick<BotAgent, 'id' | 'name'>[];
   canEdit: boolean;
   disabled: boolean;
   onEdit: (draft: PackagedSkillDraft) => void;
+  initialAgentId?: string;
+  embedded?: boolean;
 }) {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState('');
-  const [target, setTarget] = useState('');
+  const [target, setTarget] = useState(initialAgentId || '');
   const scroll = useRef<HTMLDivElement>(null);
   const previewBack = useRef<HTMLButtonElement>(null);
   const searchInput = useRef<HTMLInputElement>(null);
@@ -34,13 +38,17 @@ export function PackagedSkillsCatalog({
   );
 
   useEffect(() => {
-    if (scroll.current) scroll.current.scrollTop = 0;
+    if (embedded) scroll.current?.scrollIntoView({ block: 'start' });
+    else if (scroll.current) scroll.current.scrollTop = 0;
     if (selected) previewBack.current?.focus({ preventScroll: true });
     else if (returning.current) searchInput.current?.focus({ preventScroll: true });
-  }, [selected]);
+  }, [selected, embedded]);
 
   return (
-    <div className="apps-scroll packaged-skills" ref={scroll}>
+    <div
+      className={`${embedded ? 'packaged-skills-embedded' : 'apps-scroll'} packaged-skills`}
+      ref={scroll}
+    >
       {recipe ? (
         <section className="private-skill-review" aria-label={recipe.name}>
           <div className="private-skills-toolbar">
@@ -127,7 +135,7 @@ export function PackagedSkillsCatalog({
                     })}
                     onClick={() => {
                       setSelected(entry.id);
-                      setTarget('');
+                      setTarget(initialAgentId || '');
                     }}
                   >
                     <span className="integration-icon lavender" aria-hidden="true">

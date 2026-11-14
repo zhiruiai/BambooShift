@@ -51,7 +51,12 @@ async fn actual_pi_receives_the_reviewed_packaged_skill_and_can_read_a_long_sele
     let bot = &group.ids[0];
     let recipes: Value =
         serde_json::from_str(include_str!("../../../mobile/assets/skills/en.json")).unwrap();
-    let recipe = &recipes[0];
+    let recipe = recipes
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|recipe| recipe["id"] == "agent-desktop")
+        .expect("The bundled desktop workflow must be available for explicit selection");
     let name = recipe["name"].as_str().unwrap();
     let content = format!("{}\n\n{REVIEWED}", recipe["content"].as_str().unwrap());
     let draft = propose(&group.f, bot, name, &content).await;
