@@ -34,7 +34,7 @@ flowchart LR
 
 Each side keeps its own account identity, model credentials, history and workers. Remote input is untrusted task data; it cannot change local instructions, choose an approval identity, widen the grant or directly invoke the worker. Rust authorizes each accepted task and any subsequent local action. Cordis manages the reviewed adapter's lifecycle and protocol translation.
 
-Use the public [Agent2Agent specification](https://a2a-protocol.org/latest/specification/) as an interoperability candidate for capability discovery, tasks, messages and artifacts. Pin a supported version and test the chosen SDK's license and behavior before adoption. A2A's authorization model still requires product-specific grant and revocation decisions. [MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/) remains the tool/application integration layer; it should not silently turn every connected application into a trusted external teammate.
+Use the published [Agent2Agent v1.0.1 specification](https://a2a-protocol.org/v1.0.1/specification/) and its [normative data model](https://github.com/a2aproject/A2A/blob/v1.0.1/specification/a2a.proto) for capability discovery, tasks, messages and artifacts. The wire version is `1.0`. An adapter must pass interoperability with an independent implementation, using an Agent Card and the operations of its advertised binding. Rust owns grants and revocation for each contact and task. [MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/) remains the tool and application integration protocol.
 
 No new programming language or separately operated agent platform is required. Keep protocol adapters in the existing TypeScript worker extension area and durable authority in Rust.
 

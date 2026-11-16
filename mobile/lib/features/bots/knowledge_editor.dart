@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,8 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'knowledge_editor_controller.dart';
 import 'skill_file_import.dart';
+import 'skill_package_data.dart';
+import 'skill_package_preview.dart';
 import 'skill_recipe_picker.dart';
 
 class KnowledgeEditor extends StatefulWidget {
@@ -45,6 +48,7 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
     text: widget.original?['description'] as String? ?? '',
   );
   late String category = widget.original?['category'] as String? ?? 'context';
+  late Json? packageDraft = widget.original?['packageDraft'] as Json?;
   bool get skill => widget.kind == 'skills';
   bool get hasDraft =>
       name.text.isNotEmpty ||
@@ -52,6 +56,7 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
       content.text.isNotEmpty;
   bool importing = false, imported = false;
   String? importError;
+  bool invalidPackage = false;
   int importEpoch = 0;
   bool get editable =>
       model.ready && model.allowed && !model.busy && model.pending == null;
@@ -120,11 +125,25 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
     if (content.text.trim().isEmpty || (skill && name.text.trim().isEmpty)) {
       return;
     }
+    final package = packageDraft;
+    if (skill &&
+        package != null &&
+        (name.text != package['root'] ||
+            description.text.trim().isEmpty ||
+            description.text.trim().runes.length > 1024 ||
+            description.text.contains('\u0000') ||
+            content.text.contains('\u0000') ||
+            utf8.encode(content.text).length > skillPackageMaxContentBytes)) {
+      setState(() => invalidPackage = true);
+      return;
+    }
+    if (invalidPackage) setState(() => invalidPackage = false);
     final success = await model.save({
-      'content': content.text.trim(),
+      'content': package == null ? content.text.trim() : content.text,
       if (skill) ...{
         'name': name.text.trim(),
         'description': description.text.trim(),
+        'skillPackage': ?package,
       } else
         'category': category,
     }, id: skill ? null : widget.original?['id'] as String?);
@@ -158,15 +177,23 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
       return;
     }
     if (!mounted || !editable) return;
-    name.text = recipe['name'] as String;
-    description.text = recipe['description'] as String;
-    content.text = recipe['content'] as String;
+    final draft = skillRecipeDraft(recipe);
+    name.text = draft['name'] as String;
+    description.text = draft['description'] as String;
+    content.text = draft['content'] as String;
+    setState(() {
+      packageDraft = draft['packageDraft'] as Json;
+      imported = false;
+      importError = null;
+      invalidPackage = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([model, widget.scope, widget.scope.session]),
     builder: (context, _) {
+      final package = skill ? packageDraft : null;
       return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -193,6 +220,8 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
                 padding: const EdgeInsets.all(16),
                 children: [
                   if (model.error != null) Notice(model.error!),
+                  if (invalidPackage)
+                    const Notice('mobileSkillPackageDraftInvalid'),
                   if (model.accepted != null)
                     const Notice('mobileKnowledgeAccepted'),
                   if (model.pending != null) ...[
@@ -248,9 +277,18 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
                       icon: const Icon(Icons.auto_awesome_outlined),
                       label: Text(context.tr('mobileKnowledgeRecipes')),
                     ),
+                    if (package != null)
+                      Text(
+                        skillDisplayName({
+                          'name': package['root'],
+                          'skillPackage': package,
+                        }),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     TextField(
                       controller: name,
                       enabled: editable,
+                      readOnly: package != null,
                       maxLength: 100,
                       decoration: InputDecoration(
                         labelText: context.tr('mobileKnowledgeSkillName'),
@@ -259,7 +297,7 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
                     TextField(
                       controller: description,
                       enabled: editable,
-                      maxLength: 1000,
+                      maxLength: package == null ? 1000 : 1024,
                       maxLines: 3,
                       decoration: InputDecoration(
                         labelText: context.tr('description'),
@@ -292,12 +330,20 @@ class _KnowledgeEditorState extends State<KnowledgeEditor> {
                     enabled: editable,
                     minLines: 6,
                     maxLines: 18,
-                    maxLength: skill ? 16000 : 4000,
+                    maxLength: skill
+                        ? (package == null
+                              ? 16000
+                              : skillPackageMaxContentBytes)
+                        : 4000,
                     style: const TextStyle(fontSize: 16),
                     decoration: InputDecoration(
                       labelText: context.tr('mobileKnowledgeContent'),
                     ),
                   ),
+                  if (package != null)
+                    SkillPackagePreview(
+                      package: SkillPackageDetails.draft(package),
+                    ),
                 ],
               ),
       );

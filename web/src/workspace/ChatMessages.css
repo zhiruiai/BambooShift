@@ -56,11 +56,33 @@
   display: inline-flex;
   align-items: center;
 }
+.website-project-updated .website-project-card {
+  margin-block-end: 2px;
+}
+.website-project-update {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  margin-block-end: 5px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: 12px;
+}
+.website-project-update:hover {
+  background: var(--accent-soft);
+}
+@media (pointer: coarse) {
+  .website-project-update {
+    min-height: 44px;
+  }
+}
 .activity-row {
   margin-block: 3px 10px;
 }
 .activity-row .message-content {
-  margin-inline-start: 30px;
+  margin-inline-start: 40px;
 }
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
   .message-row .message-content {
@@ -81,11 +103,6 @@
   .activity-row .compact-message-footer {
     inset-inline-end: auto;
     inset-inline-start: 100%;
-  }
-}
-@media (max-width: 760px) {
-  .activity-row .message-content {
-    margin-inline-start: 25px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

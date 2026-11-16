@@ -29,6 +29,7 @@ pub struct LocalDesktopConfig {
     #[serde(default)]
     pub host_control: bool,
     pub desktop_driver: Option<DesktopDriverConfig>,
+    pub accessibility_helper: Option<PathBuf>,
 }
 #[derive(Clone, serde::Deserialize, serde::Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -129,6 +130,9 @@ impl Config {
                 || self.public_origin.is_some()
                 || self.web_origin.is_some()
                 || self.operations.is_some()
+                || local.accessibility_helper.as_ref().is_some_and(|helper| {
+                    !cfg!(target_os = "macos") || !helper.is_absolute() || !helper.is_file()
+                })
                 || local.desktop_driver.as_ref().is_some_and(|driver| {
                     !local.host_control
                         || driver.kind != "cua"

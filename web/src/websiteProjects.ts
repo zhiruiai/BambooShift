@@ -34,7 +34,13 @@ export type WebsiteProjectSummary = {
   totalBytes: number;
 };
 export type WebsiteProjectFile = { path: string; mime: string; bytes: Uint8Array<ArrayBuffer> };
-type WebsiteAsset = { path: string; mime: string; sha256: string; size: number };
+export type WebsiteAsset = { path: string; mime: string; sha256: string; size: number };
+export type WebsiteProjectVersion = {
+  message: Message;
+  project: WebsiteProjectSummary;
+  /** Stable ordinal of the first delivery of these immutable contents. */
+  number: number;
+};
 export type WebsiteProjectViewState =
   { kind: 'loading' } | { kind: 'error' } | { kind: 'ready'; files: WebsiteProjectFile[] };
 export type OpenWebsiteProject = (message: Message) => void;
@@ -82,6 +88,24 @@ export function websiteProjectFor(message: Message) {
   return message.kind === 'website_project' && message.role === 'assistant'
     ? parseWebsiteProject(message.metadata?.websiteProject)
     : undefined;
+}
+
+export function websiteProjectHistory(
+  messages: readonly Message[],
+  conversationId: string,
+  projectKey: string,
+): WebsiteProjectVersion[] {
+  const versions = new Map<string, WebsiteProjectVersion>();
+  for (const message of messages) {
+    if (message.conversationId !== conversationId) continue;
+    const project = websiteProjectFor(message);
+    if (project?.projectKey !== projectKey) continue;
+    const number = versions.get(project.id)?.number ?? versions.size + 1;
+    // A repeated delivery updates recency and its source thread, not its version number.
+    versions.delete(project.id);
+    versions.set(project.id, { message, project, number });
+  }
+  return [...versions.values()].reverse();
 }
 
 export function projectManifest(expected: WebsiteProjectSummary, value: unknown): WebsiteAsset[] {
@@ -200,13 +224,34 @@ export function websiteProjectClient(project: WebsiteProjectSummary, access: Pro
     return readWebsiteProjectResponse(response, mime, limit, () => check(signal));
   }
 
+  async function manifest(signal: AbortSignal) {
+    const bytes = await read('', 'application/json', 64 * 1024, signal);
+    return projectManifest(
+      project,
+      JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)),
+    );
+  }
+
   return {
-    async load(signal: AbortSignal): Promise<WebsiteProjectFile[]> {
-      const bytes = await read('', 'application/json', 64 * 1024, signal);
-      const files = projectManifest(
-        project,
-        JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)),
+    manifest,
+    async file(asset: WebsiteAsset, signal: AbortSignal): Promise<WebsiteProjectFile> {
+      check(signal);
+      if (
+        !isPath(asset.path) ||
+        !versionId.test(asset.sha256) ||
+        !boundedInteger(asset.size, 0, maxFileBytes) ||
+        !mediaTypes.has(asset.mime)
+      )
+        throw Error('Invalid website project file');
+      const [file] = await loadWebsiteProjectAssets(
+        [asset],
+        (path, size) => read(`/files/${path}`, 'application/octet-stream', size, signal),
+        () => check(signal),
       );
+      return file;
+    },
+    async load(signal: AbortSignal): Promise<WebsiteProjectFile[]> {
+      const files = await manifest(signal);
       return loadWebsiteProjectAssets(
         files,
         (path, size) => read(`/files/${path}`, 'application/octet-stream', size, signal),

@@ -5,7 +5,12 @@ import {
   sameChatMentions,
   validChatMentions,
 } from '../../shared/chat-mentions';
-import { sameAppSelection, submissionKey, type SendAttempt } from './chatDrafts';
+import {
+  matchesPreviewReply,
+  sameAppSelection,
+  submissionKey,
+  type SendAttempt,
+} from './chatDrafts';
 
 type StorageAccess = Pick<Storage, 'getItem' | 'setItem'>;
 type PendingRecord = {
@@ -166,7 +171,11 @@ export function createPendingSubmissions(options: {
       const beforeHash = [...records.values()];
       // The key includes an explicit recipient, while untargeted drafts retain
       // their existing key and can still recover old metadata-only receipts.
-      const submission = submissionKey(attempt.snapshot, attempt.threadRootId);
+      const submission = submissionKey(
+        attempt.snapshot,
+        attempt.threadRootId,
+        attempt.replyToMessageId,
+      );
       const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(submission));
       const fingerprint = Array.from(new Uint8Array(bytes), (value) =>
         value.toString(16).padStart(2, '0'),
@@ -221,7 +230,8 @@ export function createPendingSubmissions(options: {
         !record ||
         !prepared ||
         record.fingerprint !== prepared.fingerprint ||
-        prepared.submission !== submissionKey(attempt.snapshot, attempt.threadRootId)
+        prepared.submission !==
+          submissionKey(attempt.snapshot, attempt.threadRootId, attempt.replyToMessageId)
       )
         return;
       records.delete(id);
@@ -243,6 +253,7 @@ export function createPendingSubmissions(options: {
       if (Boolean(record.requestVoiceMemo) !== (message.metadata?.requestVoiceMemo === true))
         return undefined;
       const attempt = attempts.get(id);
+      if (attempt && !matchesPreviewReply(attempt, message)) return undefined;
       if (attempt && attempt.skillId !== message.skillId) return undefined;
       if (attempt?.agentId !== undefined && message.delivery.agentId !== attempt.agentId)
         return undefined;

@@ -116,23 +116,19 @@ export function Avatar({
     return () => clearTimeout(timeout);
   }, [completion]);
   const uploaded = image || sharedPath || agent?.avatarImageId;
-  const effect = uploaded
-    ? undefined
-    : terminalMotion(motion)
-      ? completion === 'fresh'
-        ? motion
-        : undefined
-      : motion;
-  const element = useRef<HTMLSpanElement>(null);
-  const sustained = sustain && runningMotion(effect);
   const priorMotion = previousMotion.current;
   const followsActiveTask = taskInProgress(priorMotion);
+  // A finished text stream can still be followed by tool work or finalization.
+  const continuing = awaitingCompletion && !motion && followsActiveTask ? priorMotion : motion;
+  const effect = terminalMotion(motion)
+    ? completion === 'fresh'
+      ? motion
+      : undefined
+    : continuing;
+  const element = useRef<HTMLSpanElement>(null);
   // Keep the eye layer mounted during the gap before a streamed result is finalized.
-  const expression = terminalMotion(motion)
-    ? motion
-    : awaitingCompletion && !motion && followsActiveTask
-      ? priorMotion
-      : effect;
+  const expression = terminalMotion(motion) ? motion : effect;
+  const sustained = sustain && runningMotion(expression);
   const faceMotion: AvatarFaceMotion | undefined =
     !uploaded && (sustain || expression || classic) && expression !== 'preview'
       ? {
@@ -214,22 +210,28 @@ export function GroupAvatar({
   size = 40,
   motion,
   sustain = false,
+  activeAgentId,
 }: {
   agents: BotAgent[];
   size?: number;
   motion?: AvatarMotion;
   sustain?: boolean;
+  activeAgentId?: string;
 }) {
+  const visible = agents.slice(0, 3);
+  const active = agents.find((agent) => agent.id === activeAgentId);
+  if (active && !visible.includes(active)) visible[visible.length - 1] = active;
+  const animatedId = activeAgentId || visible[0]?.id;
   return (
     <span className="group-avatar" style={{ width: size, height: size }} aria-hidden="true">
-      {agents.slice(0, 3).map((a, i) => (
+      {visible.map((a, i) => (
         <Avatar
           key={a.id}
           agent={a}
           size={size * 0.62}
           className={`group-avatar-${i}`}
-          motion={i === 0 ? motion : undefined}
-          sustain={sustain && i === 0}
+          motion={a.id === animatedId ? motion : undefined}
+          sustain={sustain && a.id === animatedId}
         />
       ))}
     </span>

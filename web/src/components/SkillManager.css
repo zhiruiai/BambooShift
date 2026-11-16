@@ -1,0 +1,302 @@
+.skill-manager-dialog > .modal-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.skill-manager {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+.skill-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+}
+.skill-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-muted);
+}
+.skill-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  outline-offset: 2px;
+  font-size: 13px;
+}
+.skill-browser .skill-version-tabs {
+  flex: none;
+  margin: 0;
+  gap: 2px;
+  padding: 3px;
+}
+.skill-browser .skill-version-tabs button {
+  min-height: 34px;
+  padding: 5px;
+}
+.skill-browser .skill-manager-list {
+  gap: 3px;
+  align-content: start;
+}
+.skill-picker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  text-align: start;
+}
+.skill-picker:hover {
+  background: var(--surface-subtle);
+}
+.skill-picker[aria-current='true'] {
+  border-color: var(--border);
+  background: var(--accent-soft);
+}
+.skill-picker .resource-icon {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 9px;
+}
+.skill-picker-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.skill-picker-copy strong,
+.skill-picker-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skill-picker-copy strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+.skill-picker-copy small {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.skill-pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.skill-pagination > span {
+  flex: 1;
+}
+.skill-detail {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.skill-detail-heading {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+}
+.skill-detail-heading > div {
+  min-width: 0;
+}
+.skill-detail-heading h3 {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.skill-detail-heading p {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.skill-detail-heading .approve-skill {
+  margin: 0;
+}
+.skill-detail-tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  padding: 0 12px 9px;
+  border-bottom: 1px solid var(--border);
+}
+.skill-detail-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.skill-detail-tabs [aria-selected='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.skill-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.skill-detail-description {
+  white-space: pre-wrap;
+}
+.skill-detail-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.skill-detail-facts dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.skill-detail-facts dd {
+  margin: 4px 0 0;
+  color: var(--text);
+}
+.skill-detail-back {
+  display: none;
+}
+.skill-detail-empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+.skill-manager-dialog .skill-secondary-actions {
+  gap: 3px 14px;
+  margin-top: 10px;
+  padding-top: 4px;
+}
+.skill-manager-dialog .skill-secondary-actions .add-detail-row {
+  min-height: 32px;
+  padding: 5px 0;
+  font-size: 12px;
+}
+@media (max-width: 760px), (max-height: 600px) {
+  .modal.skill-manager-dialog {
+    height: calc(100dvh - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 14px;
+  }
+  .skill-manager-dialog .skill-add-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .skill-manager-dialog .skill-add-actions button {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .skill-manager-dialog .skill-add-actions button svg {
+    flex: none;
+  }
+  .skill-manager-dialog .skill-folder-import {
+    min-width: 0;
+    height: 100%;
+  }
+  .skill-manager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .skill-manager[data-detail-open='false'] .skill-detail,
+  .skill-manager[data-detail-open='true'] .skill-browser,
+  .skill-manager .skill-detail-empty {
+    display: none;
+  }
+  .skill-manager-dialog:has(.skill-manager[data-detail-open='true'])
+    > .modal-body
+    > :is(.skill-add-actions, .skill-secondary-actions, .team-skill-entry) {
+    display: none;
+  }
+  .skill-detail-back {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    align-self: start;
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+  .skill-detail-heading {
+    padding: 8px 12px 12px;
+    gap: 8px;
+  }
+  .skill-detail-heading h3 {
+    font-size: 15px;
+  }
+  .skill-detail-tabs {
+    padding-inline: 6px;
+    gap: 2px;
+  }
+  .skill-detail-tabs button {
+    flex: 1;
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+  .skill-detail-body {
+    padding: 12px;
+  }
+}
+@media (max-height: 600px) {
+  .skill-manager-dialog > .modal-body {
+    display: block;
+    overflow: auto;
+  }
+  .skill-manager-dialog:has(.skill-manager[data-detail-open='true']) > .modal-body {
+    display: flex;
+    overflow: hidden;
+  }
+}

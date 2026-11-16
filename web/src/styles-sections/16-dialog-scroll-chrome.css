@@ -22,20 +22,34 @@
   padding: 3px;
   margin: -3px;
 }
-:where(.modal-body, .apps-scroll, .workspace-settings-main, .workspace-settings-navigation) {
-  scrollbar-gutter: stable;
+.modal
+  :is(
+    .modal-body,
+    .apps-scroll,
+    .workspace-settings-main,
+    .workspace-settings-navigation,
+    .skill-detail-body
+  ) {
+  scrollbar-gutter: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
-@supports not selector(::-webkit-scrollbar) {
-  :where(.modal-body, .apps-scroll, .workspace-settings-main, .workspace-settings-navigation) {
-    scrollbar-width: thin;
-    scrollbar-color: var(--text-muted) transparent;
-  }
+.modal
+  :is(
+    .modal-body,
+    .apps-scroll,
+    .workspace-settings-main,
+    .workspace-settings-navigation,
+    .skill-detail-body
+  ):is(:hover, :focus-within) {
+  scrollbar-color: var(--text-muted) transparent;
 }
 :where(
   .modal-body,
   .apps-scroll,
   .workspace-settings-main,
-  .workspace-settings-navigation
+  .workspace-settings-navigation,
+  .skill-detail-body
 )::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -44,7 +58,8 @@
   .modal-body,
   .apps-scroll,
   .workspace-settings-main,
-  .workspace-settings-navigation
+  .workspace-settings-navigation,
+  .skill-detail-body
 )::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -52,13 +67,54 @@
   .modal-body,
   .apps-scroll,
   .workspace-settings-main,
-  .workspace-settings-navigation
+  .workspace-settings-navigation,
+  .skill-detail-body
 )::-webkit-scrollbar-thumb {
   min-height: 32px;
   border: 2px solid transparent;
   border-radius: 8px;
-  background: var(--text-muted);
+  background: transparent;
   background-clip: padding-box;
+}
+.modal
+  :is(
+    .modal-body,
+    .apps-scroll,
+    .workspace-settings-main,
+    .workspace-settings-navigation,
+    .skill-detail-body
+  ):is(:hover, :focus-within)::-webkit-scrollbar-thumb {
+  background-color: var(--text-muted);
+}
+/* These sections already live inside a dialog's scrolling body. */
+.modal
+  .modal-body
+  :is(
+    .group-member-picker,
+    .primary-bot-choices,
+    .team-skill-preview,
+    .shared-file-list,
+    .shared-app-tools,
+    .shared-app-tool-description pre,
+    .template-detail pre,
+    .smart-team-catalog dl,
+    .bot-team-brief details[open]
+  ),
+.modal .apps-scroll .apps-tools pre {
+  max-height: none;
+  overflow: visible;
+}
+@media (forced-colors: active) {
+  .modal
+    :is(
+      .modal-body,
+      .apps-scroll,
+      .workspace-settings-main,
+      .workspace-settings-navigation,
+      .skill-detail-body
+    ) {
+    scrollbar-color: auto;
+  }
 }
 .modal:is(
     .bot-settings,

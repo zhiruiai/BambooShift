@@ -3,6 +3,7 @@ mod workspace_support;
 use computer_support::*;
 use openbot_backend::{computer, workspace::access};
 use serde_json::{Value, json};
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use workspace_support::Fixture;
 fn headers(cookie: &str, user: &str) -> axum::http::HeaderMap {
@@ -22,6 +23,123 @@ async fn fixture() -> (Fixture, Server, Value) {
     (f, s, data)
 }
 #[tokio::test]
+async fn mac_app_open_requires_requester_approval_and_keeps_native_binding_private() {
+    let f = Fixture::new().await;
+    let s = Server::start(&f.workspace).await;
+    s.worker.mac_app_launch.store(true, Ordering::SeqCst);
+    let status = connect(&f, &s.worker).await;
+    assert_eq!(
+        status["desktop"]["permissions"]["screenRecording"],
+        "denied"
+    );
+
+    let endpoint = f.path("/computer/actions");
+    let payload = json!({"type":"desktop_ax_open","bundleId":"com.apple.calculator"});
+    let mut forged = payload.clone();
+    forged["identity"] = json!(APP_LAUNCH_IDENTITY);
+    let (code, _) = f
+        .request("POST", &endpoint, Some(forged), true, Some(&f.member))
+        .await;
+    assert_eq!(code, 400);
+
+    let (code, action) = f
+        .request(
+            "POST",
+            &endpoint,
+            Some(payload.clone()),
+            true,
+            Some(&f.member),
+        )
+        .await;
+    assert_eq!(code, 200, "{action}");
+    assert_eq!(action["status"], "pending");
+    assert_eq!(
+        action["target"],
+        json!({"app":"计算器","bundleId":"com.apple.calculator"})
+    );
+    assert_eq!(action["payload"], payload);
+    assert!(!action.to_string().contains(APP_LAUNCH_IDENTITY));
+    assert!(
+        s.worker
+            .calls
+            .lock()
+            .await
+            .iter()
+            .all(|(_, body)| body["type"] != "desktop_ax_open")
+    );
+
+    let id = action["id"].as_str().unwrap();
+    let decision = format!("{endpoint}/{id}/approve");
+    assert_eq!(
+        f.request("POST", &decision, Some(json!({})), false, Some(&f.owner))
+            .await
+            .0,
+        403
+    );
+    assert_eq!(
+        f.request("POST", &decision, Some(json!({})), true, Some(&f.member))
+            .await
+            .0,
+        200
+    );
+    let done = settled(&f, id).await;
+    assert_eq!(done["status"], "done", "{done}");
+    assert_eq!(done["execution"]["surface"], "accessibility");
+    assert_eq!(done["result"], json!({"ok":true}));
+    assert_eq!(done["target"], action["target"]);
+    assert!(done.get("frame").is_none());
+    assert!(!done.to_string().contains(APP_LAUNCH_IDENTITY));
+    let calls = s.worker.calls.lock().await;
+    assert_eq!(
+        calls
+            .iter()
+            .filter(|(path, body)| path == "/execute" && body["type"] == "desktop_ax_open")
+            .count(),
+        1
+    );
+    assert!(calls.iter().all(|(path, _)| path != "/execute-with-frame"));
+    drop(calls);
+    f.state.close().await;
+}
+#[tokio::test]
+async fn mac_press_approval_and_receipt_preserve_the_worker_window_title() {
+    let f = Fixture::new().await;
+    let s = Server::start(&f.workspace).await;
+    s.worker.mac_app_launch.store(true, Ordering::SeqCst);
+    connect(&f, &s.worker).await;
+    let endpoint = f.path("/computer/actions");
+    let payload =
+        json!({"type":"desktop_ax_press","snapshotToken":"ab".repeat(32),"elementId":"2"});
+    let (code, pending) = f
+        .request(
+            "POST",
+            &endpoint,
+            Some(payload.clone()),
+            true,
+            Some(&f.member),
+        )
+        .await;
+    assert_eq!(code, 200, "{pending}");
+    assert_eq!(
+        pending["target"],
+        json!({"app":"Fixture","role":"AXButton","label":"Save","windowTitle":"Draft Delivery"})
+    );
+    assert_eq!(pending["payload"], payload);
+    let id = pending["id"].as_str().unwrap();
+    let decision = format!("{endpoint}/{id}/approve");
+    assert_eq!(
+        f.request("POST", &decision, Some(json!({})), true, Some(&f.member))
+            .await
+            .0,
+        200
+    );
+    let done = settled(&f, id).await;
+    assert_eq!(done["status"], "done", "{done}");
+    assert_eq!(done["target"], pending["target"]);
+    assert!(done.get("frame").is_none());
+    f.state.close().await;
+}
+#[tokio::test]
 async fn member_requester_approval_creates_real_frame_without_owner_override_or_secret_leak() {
     let (f, s, data) = fixture().await;
     let agent = data["agents"][0]["id"].as_str().unwrap();
@@ -31,7 +149,7 @@ async fn member_requester_approval_creates_real_frame_without_owner_override_or_
         .iter()
         .find(|c| c["agentIds"].as_array().unwrap().iter().any(|a| a == agent))
         .unwrap();
-    prepared(&f, agent).await;
+    let original = prepared(&f, agent).await;
     let path = f.path(&format!("/computer/bots/{agent}/actions"));
     let (status, action) = f
         .request(
@@ -45,6 +163,14 @@ async fn member_requester_approval_creates_real_frame_without_owner_override_or_
     assert_eq!(status, 200, "{action}");
     assert_eq!(action["status"], "pending");
     assert_eq!(action["requester"]["userId"], f.member);
+    assert_eq!(
+        action["execution"],
+        json!({"location":"remote","surface":"browser","targetRevision":original["targetRevision"]})
+    );
+    assert_eq!(
+        action["screenBinding"]["assignmentRevision"],
+        original["botScreen"]["assignmentRevision"]
+    );
     let decision = format!("{}/{}/approve", path, action["id"].as_str().unwrap());
     assert_eq!(
         f.request("POST", &decision, Some(json!({})), false, Some(&f.owner))
@@ -60,6 +186,7 @@ async fn member_requester_approval_creates_real_frame_without_owner_override_or_
     );
     let done = settled(&f, action["id"].as_str().unwrap()).await;
     assert_eq!(done["status"], "done", "{done}");
+    assert_eq!(done["execution"], action["execution"]);
     assert_eq!(done["frame"]["mimeType"], "image/webp");
     let store = f
         .state
@@ -71,6 +198,22 @@ async fn member_requester_approval_creates_real_frame_without_owner_override_or_
         .await
         .unwrap();
     assert_eq!(&image[8..12], b"WEBP");
+    let (status, released) = f
+        .request(
+            "POST",
+            &f.path(&format!("/computer/bots/{agent}/release")),
+            Some(json!({"confirm":true,"assignmentRevision":original["botScreen"]["assignmentRevision"]})),
+            false,
+            Some(&f.owner),
+        )
+        .await;
+    assert_eq!(status, 200, "{released}");
+    let current = prepared(&f, agent).await;
+    assert_ne!(current["targetRevision"], original["targetRevision"]);
+    assert_ne!(
+        current["botScreen"]["assignmentRevision"],
+        original["botScreen"]["assignmentRevision"]
+    );
     let cards = f.bootstrap().await["messages"].clone();
     let card = cards
         .as_array()
@@ -79,6 +222,11 @@ async fn member_requester_approval_creates_real_frame_without_owner_override_or_
         .find(|m| m["metadata"]["action"]["id"] == action["id"])
         .unwrap();
     assert_eq!(card["metadata"]["action"]["status"], "done");
+    assert_eq!(card["metadata"]["action"]["execution"], action["execution"]);
+    assert_eq!(
+        card["metadata"]["action"]["screenBinding"],
+        action["screenBinding"]
+    );
     assert!(!cards.to_string().contains(TOKEN));
     assert!(!cards.to_string().contains("base64"));
     assert_eq!(

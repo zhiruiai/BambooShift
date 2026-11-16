@@ -106,6 +106,15 @@ test(
     const working = await eyes();
     await page.waitForTimeout(150);
     assert.notDeepEqual(await eyes(), working);
+    // Work remains visible after the old two-pulse entry animation would end.
+    await page.waitForTimeout(1900);
+    const bodyTransform = () =>
+      page.locator('#selected-avatar .avatar > svg').evaluate((svg) => getComputedStyle(svg).transform);
+    const busyBody = await bodyTransform();
+    const busyEyes = await eyes();
+    await page.waitForTimeout(180);
+    assert.notEqual(await bodyTransform(), busyBody);
+    assert.notDeepEqual(await eyes(), busyEyes);
     await state('done');
     await page.waitForTimeout(120);
     const intermediate = (await eyes()).join(' ');
@@ -119,6 +128,10 @@ test(
       await page.locator('#selected-avatar [data-avatar-expression="working"]').count(),
       1,
     );
+    assert.equal(await page.locator('#selected-avatar [data-avatar-sustained]').count(), 1);
+    const finishingEyes = await eyes();
+    await page.waitForTimeout(220);
+    assert.notDeepEqual(await eyes(), finishingEyes, 'work continues while the result is finalized');
     await state('error');
     await page.waitForTimeout(650);
     assert.equal((await eyes()).join(' '), poses[5]);
@@ -128,6 +141,10 @@ test(
     const hidden = await eyes();
     await page.waitForTimeout(220);
     assert.deepEqual(await eyes(), hidden);
+    assert.equal(
+      await page.locator('#selected-avatar .avatar > svg').evaluate((svg) => getComputedStyle(svg).animationPlayState),
+      'paused',
+    );
     await page.locator('#selected-avatar').scrollIntoViewIfNeeded();
     await page.waitForTimeout(160);
     assert.notDeepEqual(await eyes(), hidden);
@@ -136,6 +153,7 @@ test(
     const reduced = await eyes();
     await page.waitForTimeout(170);
     assert.deepEqual(await eyes(), reduced);
+    assert.equal(await bodyTransform(), 'none');
     await page.setViewportSize({ width: 390, height: 844 });
     await chooseGroup('Open Bot Avatar');
     await choose('open-avatar-witch-hat');

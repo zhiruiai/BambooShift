@@ -50,7 +50,7 @@ export function useCreateDialogContent(props: Props) {
   manual.current = { title, customTitle, ids };
   const groupTitle = customTitle ? title : suggestedGroupTitle(ids, props.agents);
   const mode = props.botOnly ? 'bot' : props.canCreateBot ? choice : 'group',
-    locked = saving || teamBusy || creation.state.busy,
+    locked = saving || teamBusy || creation.state.busy || !!props.recruiterShortcut?.pending,
     manualLocked = locked || !!creation.state.request || !!creation.state.blocked;
   const dirty =
     mode === 'team'
@@ -68,6 +68,7 @@ export function useCreateDialogContent(props: Props) {
       running.current ||
       teamLock.current ||
       creation.getState().busy ||
+      latest.current.recruiterShortcut?.pending ||
       avatarEdits.current().busy
     )
       return;
@@ -109,6 +110,7 @@ export function useCreateDialogContent(props: Props) {
       viewRef.current !== 'create' ||
       running.current ||
       creation.getState().busy ||
+      latest.current.recruiterShortcut?.pending ||
       creation.getState().request ||
       creation.getState().blocked ||
       mode === 'team' ||
@@ -166,6 +168,7 @@ export function useCreateDialogContent(props: Props) {
       scope.current(scope.ticket()) &&
       !running.current &&
       !state.busy &&
+      !latest.current.recruiterShortcut?.pending &&
       !state.request &&
       !state.blocked
     );

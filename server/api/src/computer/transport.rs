@@ -261,6 +261,14 @@ impl Target {
             if error["code"] == "WORKER_CONNECTION_INVALID" {
                 self.poison();
             }
+            if request.path == "/execute" && self.saved.has(model::MACOS_ACCESSIBILITY) {
+                if let Some(error) = error["code"]
+                    .as_str()
+                    .and_then(super::accessibility::worker_error)
+                {
+                    return Err(error);
+                }
+            }
             return Err(ApiError::new(
                 if reply.status == 404 { 404 } else { 409 },
                 "远程电脑未能完成此请求，请核对当前状态。",
@@ -356,6 +364,7 @@ impl Target {
             Some(
                 "/screenshot"
                     | "/execute"
+                    | "/execute-skill-script"
                     | "/execute-with-frame"
                     | "/takeover/input"
                     | "/files/content"

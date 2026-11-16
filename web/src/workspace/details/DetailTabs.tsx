@@ -13,7 +13,7 @@ export function DetailTabs({
 }) {
   const tabs: Array<[DetailTab, string]> = [
     ['details', uiText('workspace:text_979a332955c8')],
-    ['files', uiText('workspace:text_433bdcb25776')],
+    ['files', uiText('workspace:libraryTab')],
     ['computer', uiText('workspace:detailComputerTab')],
     ['members', uiText(group ? 'workspace:text_6e6d6ddbb7c1' : 'workspace:text_7a6335b379b9')],
   ];

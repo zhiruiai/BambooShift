@@ -21,6 +21,7 @@
   "chatMessage": "消息",
   "chatMessageActions": "消息操作",
   "chatConversationActions": "会话操作",
+  "mobileChatBotSkills": "Bot 技能",
   "chatReactionCelebrate": "庆祝",
   "chatReactionDone": "完成",
   "chatReactionLike": "赞",

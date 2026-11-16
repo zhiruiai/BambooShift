@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,7 +62,16 @@ void main() {
   test('both locales load the same complete workflow catalog', () async {
     final en = await loadSkillRecipes('en'), zh = await loadSkillRecipes('zh');
     final ids = en.map((item) => item['id']).toSet();
-    expect(ids.length, 17);
+    final asset = File(
+      'assets/skills/workflow-resources.json',
+    ).readAsStringSync();
+    expect(
+      asset,
+      File('../shared/skill-workflow-resources.json').readAsStringSync(),
+    );
+    final resources = jsonDecode(asset) as Json;
+    expect(ids, resources.keys.toSet());
+    expect(ids.length, 20);
     expect(
       ids,
       containsAll([
@@ -73,6 +83,9 @@ void main() {
         'security-review',
         'documentation-writer',
         'decision-brief',
+        'website-delivery',
+        'spreadsheet-review',
+        'pdf-review',
       ]),
     );
     expect(zh.map((item) => item['id']), en.map((item) => item['id']));
@@ -82,109 +95,125 @@ void main() {
         expect((recipe[field] as String).trim(), isNotEmpty);
       }
       expect((recipe['content'] as String).length, greaterThan(100));
+      final package = recipe['packageDraft'] as Json;
+      expect(package['root'], recipe['id']);
+      expect(package['frontmatter']['metadata']['title'], recipe['name']);
+      expect(package['frontmatter']['license'], isA<String>());
+      final files = (package['files'] as List).cast<Json>();
+      final expected = resources[recipe['id']]['files'] as Json;
+      expect({
+        for (final file in files)
+          file['path']: utf8.decode(base64Decode(file['base64'] as String)),
+      }, expected);
+      expect(recipe['content'], contains('references/review-checklist.md'));
     }
   });
 
-  testWidgets('320px apps catalog preview submits only an edited proposal', (
-    tester,
-  ) async {
-    _narrow(tester, 320);
-    final recipe = await tester.runAsync(
-      () async => (await loadSkillRecipes(
-        'zh',
-      )).singleWhere((item) => item['id'] == 'issue-triage'),
-    );
-    final writes = <(String, Json)>[];
-    final scopeData = bootstrap(agents: [_local, _shared]);
-    final f = await fixture((request) async {
-      if (request.method == 'GET') {
-        return jsonResponse(
-          request.url.path.endsWith('/apps') ? [] : scopeData,
-        );
-      }
-      expect(request.method, 'POST');
-      expect(request.url.path, '/api/workspaces/space-a/skills');
-      expect(request.headers['X-OpenBot-Expected-User'], 'user-a');
-      final body = jsonDecode(request.body) as Json;
-      writes.add((request.url.path, body));
-      final proposed = {
-        ...body,
-        'id': 'skill-fixture',
-        'status': 'proposed',
-        'version': 1,
-      };
-      scopeData['skills'] = [proposed];
-      return jsonResponse(proposed, status: 201);
-    });
-    f.scope.data = scopeData;
-    await tester.pumpWidget(
-      testApp(ConnectionsList(scope: f.scope), locale: const Locale('zh')),
-    );
-    await waitFor(tester, () => find.text('内置技能').evaluate().isNotEmpty);
-    await _tap(tester, find.text('内置技能'));
-    await waitFor(tester, () => find.byType(TextField).evaluate().isNotEmpty);
-    expect(find.text('搜索内置技能'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'no-synthetic-match');
-    await tester.pump();
-    expect(find.text('没有符合搜索条件的内置技能。'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'issue-triage');
-    await tester.pump();
-    expect(find.text('系统化排障'), findsNothing);
-    await _tap(tester, find.widgetWithText(ListTile, '问题分诊'));
-    expect(find.text('预览指令'), findsOneWidget);
-    expect(find.text('执行步骤'), findsOneWidget);
-    expect(find.text('## 执行步骤'), findsNothing);
-    expect(find.textContaining('关闭外部问题前先征求确认。'), findsOneWidget);
-    final preview = tester.widget<ChatMarkdown>(find.byType(ChatMarkdown));
-    expect(preview.text, recipe!['content']);
-    expect(preview.canOpenLink(), isFalse);
-    expect(writes, isEmpty);
-    final edit = find.widgetWithText(FilledButton, '编辑技能草稿');
-    expect(_canPress(tester, edit), isFalse);
-    expect(find.text('选择 Bot'), findsOneWidget);
-    await _tap(tester, _choice());
-    expect(find.text('Shared Fixture Bot'), findsNothing);
-    await _tap(tester, find.text('Local Fixture Bot').last);
-    expect(_canPress(tester, edit), isTrue);
-    await _tap(tester, edit);
-    final submit = find.widgetWithText(FilledButton, '提交审核');
-    await waitFor(tester, () => _canPress(tester, submit));
-    final fields = find.byType(TextField);
-    expect(
-      tester.widget<TextField>(fields.at(0)).controller!.text,
-      recipe['name'],
-    );
-    expect(
-      tester.widget<TextField>(fields.at(1)).controller!.text,
-      recipe['description'],
-    );
-    expect(
-      tester.widget<TextField>(fields.at(2)).controller!.text,
-      recipe['content'],
-    );
-    expect(writes, isEmpty);
-    await tester.enterText(fields.first, '已核对的工作方式');
-    await _tap(tester, submit);
-    await waitFor(
-      tester,
-      () =>
-          find.byType(KnowledgeScreen).evaluate().isNotEmpty &&
-          find.byType(KnowledgeEditor).evaluate().isEmpty,
-    );
-    expect(find.byType(KnowledgeEditor), findsNothing);
-    expect(find.text('已核对的工作方式'), findsOneWidget);
-    expect(writes.single.$2, {
-      'agentId': 'bot-a',
-      'name': '已核对的工作方式',
-      'description': recipe['description'],
-      'content': recipe['content'],
-    });
-    expect((f.scope.items('skills').single)['status'], 'proposed');
-    expect(tester.takeException(), isNull);
-    await tester.pumpWidget(const SizedBox());
-    f.scope.dispose();
-    f.session.dispose();
-  });
+  testWidgets(
+    '320px apps catalog submits edited instructions with package files',
+    (tester) async {
+      _narrow(tester, 320);
+      final recipe = await tester.runAsync(
+        () async => (await loadSkillRecipes(
+          'zh',
+        )).singleWhere((item) => item['id'] == 'issue-triage'),
+      );
+      final writes = <(String, Json)>[];
+      final scopeData = bootstrap(agents: [_local, _shared]);
+      final f = await fixture((request) async {
+        if (request.method == 'GET') {
+          return jsonResponse(
+            request.url.path.endsWith('/apps') ? [] : scopeData,
+          );
+        }
+        expect(request.method, 'POST');
+        expect(request.url.path, '/api/workspaces/space-a/skills');
+        expect(request.headers['X-OpenBot-Expected-User'], 'user-a');
+        final body = jsonDecode(request.body) as Json;
+        writes.add((request.url.path, body));
+        final package = body['skillPackage'] as Json;
+        final proposed = {
+          ...body,
+          'id': 'skill-fixture',
+          'status': 'proposed',
+          'version': 1,
+          'skillPackage': {...package, 'format': 'agent-skills'},
+        };
+        scopeData['skills'] = [proposed];
+        return jsonResponse(proposed, status: 201);
+      });
+      f.scope.data = scopeData;
+      await tester.pumpWidget(
+        testApp(ConnectionsList(scope: f.scope), locale: const Locale('zh')),
+      );
+      await waitFor(tester, () => find.text('内置技能').evaluate().isNotEmpty);
+      await _tap(tester, find.text('内置技能'));
+      await waitFor(tester, () => find.byType(TextField).evaluate().isNotEmpty);
+      expect(find.text('搜索内置技能'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'no-synthetic-match');
+      await tester.pump();
+      expect(find.text('没有符合搜索条件的内置技能。'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'issue-triage');
+      await tester.pump();
+      expect(find.text('系统化排障'), findsNothing);
+      await _tap(tester, find.widgetWithText(ListTile, '问题分诊'));
+      expect(find.text('预览指令'), findsOneWidget);
+      expect(find.text('执行步骤'), findsOneWidget);
+      expect(find.text('## 执行步骤'), findsNothing);
+      expect(find.textContaining('关闭外部问题前先征求确认。'), findsOneWidget);
+      final preview = tester.widget<ChatMarkdown>(find.byType(ChatMarkdown));
+      expect(preview.text, recipe!['content']);
+      expect(preview.canOpenLink(), isFalse);
+      expect(writes, isEmpty);
+      final edit = find.widgetWithText(FilledButton, '编辑技能草稿');
+      expect(_canPress(tester, edit), isFalse);
+      expect(find.text('选择 Bot'), findsOneWidget);
+      await _tap(tester, _choice());
+      expect(find.text('Shared Fixture Bot'), findsNothing);
+      await _tap(tester, find.text('Local Fixture Bot').last);
+      expect(_canPress(tester, edit), isTrue);
+      await _tap(tester, edit);
+      final submit = find.widgetWithText(FilledButton, '提交审核');
+      await waitFor(tester, () => _canPress(tester, submit));
+      final fields = find.byType(TextField);
+      expect(
+        tester.widget<TextField>(fields.at(0)).controller!.text,
+        'issue-triage',
+      );
+      expect(tester.widget<TextField>(fields.first).readOnly, isTrue);
+      expect(
+        tester.widget<TextField>(fields.at(1)).controller!.text,
+        recipe['description'],
+      );
+      expect(
+        tester.widget<TextField>(fields.at(2)).controller!.text,
+        recipe['content'],
+      );
+      expect(writes, isEmpty);
+      await tester.enterText(fields.at(1), '已核对的工作方式');
+      await _tap(tester, submit);
+      await waitFor(
+        tester,
+        () =>
+            find.byType(KnowledgeScreen).evaluate().isNotEmpty &&
+            find.byType(KnowledgeEditor).evaluate().isEmpty,
+      );
+      expect(find.byType(KnowledgeEditor), findsNothing);
+      expect(find.text('问题分诊'), findsOneWidget);
+      expect(writes.single.$2, {
+        'agentId': 'bot-a',
+        'name': 'issue-triage',
+        'description': '已核对的工作方式',
+        'content': recipe['content'],
+        'skillPackage': recipe['packageDraft'],
+      });
+      expect((f.scope.items('skills').single)['status'], 'proposed');
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+      f.scope.dispose();
+      f.session.dispose();
+    },
+  );
 
   testWidgets(
     '390px member can read full instructions and stale scope hides it',

@@ -241,11 +241,24 @@ async fn perform(
     }
     let (agent, chat) = mutations::create_bot(store, &mut tx, &profile).await?;
     let mut skill_ids = Vec::new();
-    for value in current.blueprint["skills"].as_array().unwrap() {
+    for (index, value) in current.blueprint["skills"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+    {
         let mut skill = value.clone();
         let id = uuid::Uuid::new_v4().to_string();
         for (key,value) in json!({"id":id,"agentId":agent["id"],"version":1,"status":"active","createdAt":iso(at),"approvedAt":iso(at),"activatedAt":iso(at)}).as_object().unwrap() {skill[key]=value.clone();}
-        WorkspaceStore::put_in(&mut tx, Table::Skills, &skill).await?;
+        if let Some(source) = current
+            .skill_sources
+            .get(index)
+            .filter(|source| source["skillPackage"].is_object())
+        {
+            crate::workspace::skill_packages::duplicate(&mut tx, source, &mut skill).await?;
+        } else {
+            crate::workspace::skill_packages::persist_text(&mut tx, &mut skill).await?;
+        }
         skill_ids.push(id);
     }
     let mut routine_ids = Vec::new();

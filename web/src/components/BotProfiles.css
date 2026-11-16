@@ -2,6 +2,39 @@
 .bot-create .segmented > button {
   min-height: 44px;
 }
+.bot-creation-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.bot-creation-options > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  max-width: 100%;
+  white-space: normal;
+  text-align: start;
+}
+.bot-create-identity {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+}
+.bot-create-identity > label {
+  min-width: 0;
+}
+.bot-create-options {
+  border-top: 1px solid var(--border);
+}
+.bot-create-options > summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+}
 .bot-model-selection,
 .bot-skill-selection {
   display: grid;
@@ -148,6 +181,9 @@
 .bot-settings .dialog-actions,
 .bot-create .dialog-actions {
   margin-top: 20px;
+}
+.bot-create-bot .dialog-actions {
+  margin-top: 6px;
 }
 .bot-form-notice {
   padding: 12px;

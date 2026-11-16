@@ -190,14 +190,7 @@ pub async fn target(
         }
         let target = controller.target(authorize).await?;
         if !target.saved.has(model::SHARED_SCREEN)
-            && !controller
-                .local
-                .lock()
-                .await
-                .as_ref()
-                .is_some_and(|executor| {
-                    executor.url == target.saved.url && executor.token == target.saved.token
-                })
+            && execution_location(controller, &target).await != "server"
         {
             return Err(selection_changed());
         }
@@ -225,6 +218,25 @@ pub async fn target(
     require_agent(&controller.store, agent).await?;
     controller.bound_target(binding, authorize).await
 }
+
+pub(super) async fn execution_location(controller: &Controller, target: &Target) -> &'static str {
+    let is_local = controller
+        .local
+        .lock()
+        .await
+        .as_ref()
+        .is_some_and(|executor| {
+            executor.url == target.saved.url && executor.token == target.saved.token
+        });
+    if is_local {
+        "server"
+    } else if controller.cloud.matches_worker(&target.saved.url) {
+        "cloud"
+    } else {
+        "remote"
+    }
+}
+
 pub async fn status(
     controller: &Arc<Controller>,
     agent: &str,
@@ -352,6 +364,7 @@ fn validate_shared_state(value: &Value) -> Result<()> {
 }
 fn shared_reason(value: &Value) -> &'static str {
     match (value["mode"].as_str(), value["surface"].as_str()) {
+        (_, Some("accessibility")) => "所有 Bot 共用这台 Mac 的本机应用，任务按顺序执行。",
         (_, Some("desktop")) => "所有 Bot 共用这台电脑的桌面，任务按顺序执行。",
         (Some("local"), _) => "所有 Bot 共用一个本机独立浏览器；任务按顺序执行。",
         _ => "所有 Bot 共用这台电脑上的独立浏览器，任务按顺序执行。",

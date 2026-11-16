@@ -166,7 +166,12 @@ export function createComputerObservation(read: () => ComputerObservationContext
       setControlError,
     } = read();
 
-    if (!agentId || controlTransition.current || computerRef.current.botScreen?.status !== 'ready')
+    if (
+      !agentId ||
+      controlTransition.current ||
+      computerRef.current.surface === 'accessibility' ||
+      computerRef.current.botScreen?.status !== 'ready'
+    )
       return Promise.resolve();
     return observe('takeover', async () => {
       const version = scope.ticket(),
@@ -218,7 +223,11 @@ export function createComputerObservation(read: () => ComputerObservationContext
     } = read();
 
     return observe('screenshot', async () => {
-      if (computerRef.current.botScreen?.status !== 'ready') return;
+      if (
+        computerRef.current.surface === 'accessibility' ||
+        computerRef.current.botScreen?.status !== 'ready'
+      )
+        return;
       const lease = leaseRef.current;
       const version = scope.ticket();
       const allowed = () =>

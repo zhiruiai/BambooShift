@@ -6,11 +6,13 @@ export type FileComputerAction = {
   id: string;
   type: string;
   payload: Record<string, unknown>;
+  target?: unknown;
   status: string;
   createdAt: string;
   result?: unknown;
   error?: string;
   requester?: ActionRequester;
+  authorization?: unknown;
 };
 export type TransferContext = {
   computerName: string;

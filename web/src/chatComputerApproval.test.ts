@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import type { Message } from '../../shared/types';
-import { compile, deferred, harness, json, render } from './testSupport/appsFixture';
+import { all, compile, deferred, harness, json, render } from './testSupport/appsFixture';
 
 const workspaceId = '11111111-1111-4111-8111-111111111111';
 const otherWorkspace = '22222222-2222-4222-8222-222222222222';
@@ -37,6 +37,7 @@ function environment(locale = 'zh-CN') {
     }),
   };
 }
+
 async function open(
   transport: typeof fetch,
   overrides: Record<string, unknown> = {},
@@ -51,7 +52,7 @@ async function open(
       userId: 'member-a',
       owner: false,
       onChanged: async () => {},
-      onClick() {},
+      onOpenCurrentComputer() {},
       ...overrides,
     },
     transport,
@@ -273,6 +274,87 @@ test('pending cards expose the exact typed text and full address for review with
   }
 });
 
+test('Mac approval shows the trusted control without leaking snapshot identifiers', async () => {
+  const payload = { snapshotToken: 'private-snapshot-token', elementId: 'opaque-control-id' };
+  const target = { app: 'Calculator', role: 'AXButton', label: 'Clear', windowTitle: 'Basic' };
+  for (const approvedTarget of [target, undefined]) {
+    const { ui } = await open(
+      (async () => json([])) as typeof fetch,
+      {
+        message: message({ ...action, type: 'desktop_ax_press', payload, target: approvedTarget }),
+      },
+      environment('en'),
+    );
+    try {
+      assert.match(ui.copy, /Click Mac app control/);
+      assert.doesNotMatch(ui.copy, /private-snapshot-token|opaque-control-id/);
+      assert.equal(ui.button('Allow once').props.disabled, !approvedTarget);
+      if (approvedTarget) assert.match(ui.copy, /Calculator · Basic · Clear/);
+      else assert.match(ui.copy, /inspect the app again/);
+    } finally {
+      ui.dispose();
+    }
+  }
+});
+
+test('Mac text replacement shows exact text and its window before approval', async () => {
+  const text = '  第一行 <strong>\nsecond line  ';
+  const target = { app: 'TextEdit', windowTitle: 'Draft', role: 'AXTextArea', label: 'Document' };
+  const replacement = {
+    ...action,
+    type: 'desktop_ax_set_text',
+    target,
+    payload: { text, snapshotToken: 'private-snapshot-token', elementId: 'opaque-control-id' },
+  };
+  const transport = (async () => json([])) as typeof fetch;
+  for (const record of [replacement, { ...replacement, target: undefined }]) {
+    const { ui } = await open(transport, { message: message(record) }, environment('en'));
+    try {
+      assert.match(ui.copy, /Replace text in Mac app/);
+      assert.doesNotMatch(ui.copy, /private-snapshot-token|opaque-control-id/);
+      assert.equal(ui.button('Allow once').props.disabled, !record.target);
+      if (record.target) assert.match(ui.copy, /TextEdit · Draft · Document/);
+      const [details] = all(ui.tree, (node) => node.type === 'details' && node.props.open);
+      assert.ok(all(details, (node) => node.type === 'pre' && node.props.children === text).length);
+    } finally {
+      ui.dispose();
+    }
+  }
+
+  const { ui: receipt } = await open(
+    transport,
+    { message: message({ ...replacement, status: 'done', result: { ok: true } }) },
+    environment('en'),
+  );
+  try {
+    const [details] = all(receipt.tree, (node) => node.type === 'details' && !node.props.open);
+    assert.ok(details, 'completed receipt should start collapsed');
+    assert.ok(all(details, (node) => node.type === 'pre' && node.props.children === text).length);
+    assert.equal(receipt.maybeButton('Allow once'), undefined);
+  } finally {
+    receipt.dispose();
+  }
+
+  const dialog = await compile(
+    'web/src/components/computer/ComputerActionEntry.tsx',
+    '',
+    environment('en'),
+  );
+  const html = render(dialog.ComputerActionEntry, {
+    action: replacement,
+    owner: false,
+    userId: 'member-a',
+    busy: false,
+    controlled: false,
+    onApprove() {},
+    onReject() {},
+  });
+  assert.match(html, /TextEdit · Draft · Document/);
+  assert.match(html, /<details[^>]* open="">/);
+  assert.ok(html.includes('  第一行 &lt;strong&gt;\nsecond line  '));
+  assert.doesNotMatch(html, /private-snapshot-token|opaque-control-id/);
+});
+
 test('read-only actions can start without presenting approval or premature result controls', async () => {
   const calls: string[] = [];
   for (const type of [
@@ -296,7 +378,7 @@ test('read-only actions can start without presenting approval or premature resul
       assert.doesNotMatch(ui.copy, /Waiting for|Unconfirmed result/);
       assert.equal(ui.maybeButton('Allow once'), undefined);
       assert.equal(ui.maybeButton('Deny'), undefined);
-      assert.ok(ui.button('View computer'));
+      assert.ok(ui.button('Open current computer'));
     } finally {
       ui.dispose();
     }
@@ -323,7 +405,48 @@ test('receipts expose a screen assignment only when it belongs to the recorded a
       assert.equal(ui.copy.includes('Assigned Bot screen'), assigned);
       assert.doesNotMatch(ui.copy, /screen-a|cloud|Watching|Take control|Result/);
       assert.ok(!ui.copy.includes(assignmentRevision));
-      assert.ok(ui.button('Open computer panel'));
+      assert.ok(ui.button('Open current computer'));
+    } finally {
+      ui.dispose();
+    }
+  }
+});
+
+test('a receipt keeps its recorded execution location and opens the current computer explicitly', async () => {
+  const targetRevision = '44444444-4444-4444-8444-444444444444';
+  for (const [locale, location, origin] of [
+    ['zh-CN', 'remote', /已配对的 Mac · Mac 应用/],
+    ['en', 'remote', /Paired Mac · Mac apps/],
+    ['zh-CN', 'server', /这台 Mac · Mac 应用/],
+    ['en', 'server', /This Mac · Mac apps/],
+  ] as const) {
+    let currentComputer = 'original computer';
+    let opened = '';
+    const { ui } = await open(
+      (async () => json([])) as typeof fetch,
+      {
+        message: message({
+          ...action,
+          type: 'desktop_ax_press',
+          status: 'done',
+          result: { text: 'Pressed Clear' },
+          execution: { location, surface: 'accessibility', targetRevision },
+          screenBinding: undefined,
+        }),
+        onOpenCurrentComputer: () => {
+          opened = currentComputer;
+        },
+      },
+      environment(locale),
+    );
+    try {
+      assert.match(ui.copy, origin);
+      assert.match(ui.copy, /Pressed Clear/);
+      assert.ok(!ui.copy.includes(targetRevision));
+      currentComputer = 'replacement computer';
+      ui.button(locale === 'en' ? 'Open current computer' : '打开当前电脑').props.onClick();
+      assert.equal(opened, 'replacement computer');
+      assert.match(ui.copy, origin);
     } finally {
       ui.dispose();
     }

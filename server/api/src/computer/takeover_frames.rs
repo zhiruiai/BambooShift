@@ -4,7 +4,11 @@ use super::{
     model,
     transport::{Authority, Reply, Request, Target},
 };
-use crate::{db::now, error::Result, workspace::WorkspaceAccess};
+use crate::{
+    db::now,
+    error::{ApiError, Result},
+    workspace::WorkspaceAccess,
+};
 use axum::{
     http::{HeaderMap, header},
     response::{IntoResponse, Response},
@@ -74,7 +78,11 @@ pub async fn screenshot(
     authorize: Authority,
 ) -> Result<Reply> {
     let target = controls::target(controller, agent, authorize.clone()).await?;
-    let legacy = !supported(&target.state().await);
+    let state = target.state().await;
+    if state["surface"] == "accessibility" {
+        return Err(ApiError::new(409, "本机应用模式通过辅助功能读取控件。"));
+    }
+    let legacy = !supported(&state);
     public_status(controller, &target, &authorize, legacy).await?;
     let mut request = request();
     // A current worker checks both ends of the actual capture inside its input queue.

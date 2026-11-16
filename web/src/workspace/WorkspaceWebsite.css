@@ -9,11 +9,6 @@
   flex: 1;
   overflow-wrap: anywhere;
 }
-.website-project-library {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 16px;
-}
 @media (min-width: 901px) {
   .app-shell.with-website {
     grid-template-columns: 210px minmax(280px, 0.8fr) minmax(410px, 1.4fr);

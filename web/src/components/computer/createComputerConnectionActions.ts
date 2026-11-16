@@ -2,6 +2,7 @@ import { uiText } from '../../i18n';
 import { canDecideAction } from '../../../../shared/approvals';
 import type { ComputerState } from '../../../../shared/types';
 import { remoteShellRequestReadable } from '../RemoteShellDetails';
+import { skillScriptRequest } from '../SkillScriptDetails';
 import type { ComputerConnectionActionsContext } from './createComputerConnectionActions.types';
 export function createComputerConnectionActions(read: () => ComputerConnectionActionsContext) {
   async function prepareCloudStart() {
@@ -61,7 +62,8 @@ export function createComputerConnectionActions(read: () => ComputerConnectionAc
         approve &&
         ((!file && (state.controlled || !state.screenReady)) ||
           (['remote_shell', 'local_shell'].includes(action.type) &&
-            !remoteShellRequestReadable(action.payload)))
+            !remoteShellRequestReadable(action.payload)) ||
+          (action.type === 'local_skill_script' && !skillScriptRequest(action.payload)))
       )
         return;
       return action;
@@ -81,7 +83,13 @@ export function createComputerConnectionActions(read: () => ComputerConnectionAc
         if (
           current(version) &&
           approve &&
-          !['upload_file', 'download_file', 'remote_shell', 'local_shell'].includes(action.type)
+          ![
+            'upload_file',
+            'download_file',
+            'remote_shell',
+            'local_shell',
+            'local_skill_script',
+          ].includes(action.type)
         )
           await screenshot();
       });

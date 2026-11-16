@@ -27,6 +27,9 @@ pub const ACTIONS: &[&str] = &[
     "desktop_key",
     "desktop_scroll",
     "desktop_drag",
+    super::accessibility::PRESS,
+    super::accessibility::SET_TEXT,
+    super::accessibility::OPEN,
 ];
 pub fn readonly(kind: &str) -> bool {
     matches!(
@@ -79,6 +82,9 @@ pub fn action(input: &Value, virtual_desktop: bool) -> Result<Value> {
         return Err(ApiError::bad("电脑操作参数无效。"));
     }
     let mut out = json!({"type":kind});
+    if super::accessibility::mutation(kind) {
+        return super::accessibility::action_payload(kind, input);
+    }
     if kind == "browser_tabs" {
         return Ok(out);
     }

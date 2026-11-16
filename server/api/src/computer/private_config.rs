@@ -11,6 +11,15 @@ pub struct SavedConnection {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub remote: Option<SavedRemote>,
 }
+impl SavedConnection {
+    pub(super) fn local(remote: Option<SavedRemote>) -> Self {
+        Self {
+            version: 1,
+            selection: "local".into(),
+            remote,
+        }
+    }
+}
 pub fn read(directory: &Path) -> Result<Option<SavedConnection>> {
     let path = directory.join("computer/connection.json");
     let Some(bytes) = read_private(&path, 64 * 1024)? else {

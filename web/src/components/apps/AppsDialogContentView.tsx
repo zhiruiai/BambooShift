@@ -86,7 +86,7 @@ export function AppsDialogContentView(model: AppsDialogContentModel) {
       onClose={close}
       className={`apps-dialog apps-${view}-dialog`}
     >
-      {view !== 'list' && (
+      {view !== 'list' && view !== 'packaged-skills' && (
         <div className="apps-navigation">
           <button
             className="text-button apps-back"
@@ -104,12 +104,13 @@ export function AppsDialogContentView(model: AppsDialogContentModel) {
       ) : view === 'packaged-skills' && props.packagedSkills ? (
         <PackagedSkillsCatalog
           bots={props.packagedSkills.bots}
+          skills={props.packagedSkills.skills}
           canEdit={props.canManage && !!props.userId && !!props.workspaceId}
           disabled={busy}
-          onEdit={(draft) => {
-            if (props.canManage && !busy && model.scope.current(model.scope.ticket()))
-              props.packagedSkills?.onEdit(draft);
-          }}
+          onInstall={props.packagedSkills.onInstall}
+          onBusyChange={model.setPolicyBusy}
+          onExit={() => navigate('list')}
+          exitLabel={uiText('apps:text_74523742d407')}
         />
       ) : view === 'review' ? (
         <div className="apps-scroll">

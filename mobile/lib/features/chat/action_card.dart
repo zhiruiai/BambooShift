@@ -69,6 +69,9 @@ class _ActionCardState extends State<ActionCard> {
       final source = action.value['source'];
       final requester = action.value['requester'];
       final receipt = action.appApprovalReceipt;
+      final appTarget = action.macAppTarget;
+      final controlTarget = action.macControlTarget;
+      final appFingerprint = action.isMacAppAction ? action.fingerprint : null;
       return Card(
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -92,6 +95,9 @@ class _ActionCardState extends State<ActionCard> {
                           'browser_close_tab',
                           'remote_shell',
                           'local_shell',
+                          macAppOpenAction,
+                          macAppPressAction,
+                          macAppSetTextAction,
                         ].contains(action.title)
                     ? context.tr(action.title)
                     : action.title,
@@ -121,7 +127,53 @@ class _ActionCardState extends State<ActionCard> {
                   '${context.tr('mobileChatRequester')}: ${actionText(requester['name'] ?? requester['userId'])}',
                   style: const TextStyle(fontSize: 13),
                 ),
-              if (isShellAction(action))
+              if (action.isMacAppAction) ...[
+                if (appTarget != null) ...[
+                  SelectableText(
+                    appTarget.app,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  SelectableText(
+                    appTarget.bundleId,
+                    textDirection: TextDirection.ltr,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ] else if (controlTarget != null) ...[
+                  SelectableText(
+                    controlTarget.app,
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  if (controlTarget.windowTitle.isNotEmpty)
+                    SelectableText(controlTarget.windowTitle),
+                  SelectableText(
+                    [
+                      if (controlTarget.label.isNotEmpty) controlTarget.label,
+                      if (controlTarget.role.isNotEmpty &&
+                          controlTarget.role != controlTarget.label)
+                        controlTarget.role,
+                    ].join(' · '),
+                  ),
+                  if (controlTarget.text case final String replacement) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      context.tr('mobileChatMacReplacementText'),
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                    SelectableText(
+                      replacement,
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ] else
+                  Notice(
+                    action.opensMacApp
+                        ? 'mobileChatMacAppTargetUnavailable'
+                        : 'mobileChatMacControlUnavailable',
+                  ),
+              ] else if (isShellAction(action))
                 ShellActionDetails(
                   payload: action.value['payload'] as Json,
                   local: action.value['type'] == 'local_shell',
@@ -170,7 +222,10 @@ class _ActionCardState extends State<ActionCard> {
                       )) ...[
                     FilledButton(
                       onPressed: controller.canApprove
-                          ? () => controller.decide(true)
+                          ? () => controller.decide(
+                              true,
+                              visibleMacAppFingerprint: appFingerprint,
+                            )
                           : null,
                       child: Text(context.tr('mobileChatApprove')),
                     ),

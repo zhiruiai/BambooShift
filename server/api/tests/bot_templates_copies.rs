@@ -1,4 +1,5 @@
 mod bot_templates_support;
+use base64::{Engine, engine::general_purpose::STANDARD};
 use bot_templates_support::{Templates, id, webp};
 use openbot_backend::workspace::Table;
 use serde_json::json;
@@ -6,9 +7,52 @@ use serde_json::json;
 #[tokio::test]
 async fn exact_copy_is_atomic_durable_and_omits_source_private_resources() {
     let t = Templates::new().await;
+    let previous = t
+        .store
+        .list(Table::Skills)
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|skill| skill["status"] == "active")
+        .unwrap();
+    t.store
+        .delete(Table::Skills, previous["id"].as_str().unwrap())
+        .await
+        .unwrap();
+    let resource = b"EXACT_LOCAL_PACKAGE_RESOURCE\n\x00\xff";
+    let instructions = format!("{}\nRead references/report.bin.\n", "A".repeat(16_020));
+    let (status, source_skill) = t
+        .call(
+            "POST",
+            "/skills",
+            Some(json!({
+                "agentId":t.agent,"name":"approved-method","description":"Research method",
+                "content":instructions,"skillPackage":{
+                    "root":"approved-method","frontmatter":{"metadata":{"audience":"local-team"}},
+                    "files":[{"path":"references/report.bin","base64":STANDARD.encode(resource)}]
+                }
+            })),
+        )
+        .await;
+    assert_eq!(status, 201, "{source_skill}");
+    let source_skill_id = source_skill["id"].as_str().unwrap();
+    let (status, approved) = t
+        .call(
+            "POST",
+            &format!("/skills/{source_skill_id}/approve"),
+            Some(json!({})),
+        )
+        .await;
+    assert_eq!(status, 200, "{approved}");
     let preview = t.source().await;
     assert_eq!(preview["blueprint"]["skills"].as_array().unwrap().len(), 1);
     assert!(!preview.to_string().contains("PRIVATE MEMORY"));
+    assert!(!preview.to_string().contains("EXACT_LOCAL_PACKAGE_RESOURCE"));
+    assert!(
+        preview["blueprint"]["skills"][0]
+            .get("skillPackage")
+            .is_none()
+    );
     let body = json!({"requestId":id(),"agentId":t.agent,"expectedSourceRevision":preview["sourceRevision"],"name":"Independent copy","routineMode":"preserve"});
     let (a, b) = tokio::join!(
         t.call("POST", "/bot-copies", Some(body.clone())),
@@ -31,6 +75,31 @@ async fn exact_copy_is_atomic_durable_and_omits_source_private_resources() {
     assert_eq!(
         skills.iter().filter(|s| s["agentId"] == bot["id"]).count(),
         1
+    );
+    let copied = skills.iter().find(|s| s["agentId"] == bot["id"]).unwrap();
+    assert_ne!(copied["id"], approved["id"]);
+    assert_eq!(copied["version"], 1);
+    assert_eq!(copied["status"], "active");
+    assert_eq!(copied["content"], instructions);
+    assert_eq!(copied["skillPackage"], approved["skillPackage"]);
+    let files: Vec<(String, Vec<u8>)> = sqlx::query_as(
+        "SELECT path, content FROM skill_package_files WHERE skill_id=? ORDER BY path",
+    )
+    .bind(copied["id"].as_str().unwrap())
+    .fetch_all(&t.store.pool)
+    .await
+    .unwrap();
+    let source_files: Vec<(String, Vec<u8>)> = sqlx::query_as(
+        "SELECT path, content FROM skill_package_files WHERE skill_id=? ORDER BY path",
+    )
+    .bind(source_skill_id)
+    .fetch_all(&t.store.pool)
+    .await
+    .unwrap();
+    assert_eq!(files, source_files);
+    assert_eq!(
+        files[1],
+        ("references/report.bin".to_owned(), resource.to_vec())
     );
     let routines = t.store.list(Table::Routines).await.unwrap();
     let routine = routines.iter().find(|r| r["agentId"] == bot["id"]).unwrap();

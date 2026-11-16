@@ -289,8 +289,8 @@
   margin: 0;
   font-weight: 600;
 }
-.team-starter-preview > button {
-  justify-self: start;
+.team-starter-preview > .smart-team-actions {
+  margin: 0;
 }
 .team-starter-roles {
   display: grid;

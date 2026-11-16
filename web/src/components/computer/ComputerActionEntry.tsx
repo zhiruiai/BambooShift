@@ -9,10 +9,17 @@ import { FileCard } from '../FileCard';
 import {
   RemoteShellDetails,
   RemoteShellResult,
-  remoteShellRequestReadable,
   remoteShellResultStatus,
 } from '../RemoteShellDetails';
+import { SkillScriptDetails } from '../SkillScriptDetails';
 import { fileSize, labels, time, type ComputerAction } from './types';
+import {
+  computerActionFullyAuthorized,
+  isMacAppsTargetAction,
+  macAppsActionTarget,
+  mayAllowComputerAction,
+} from './chatApproval';
+import { ChatComputerRequestView } from './ChatComputerRequestView';
 export function ComputerActionEntry({
   action: a,
   busy,
@@ -30,26 +37,49 @@ export function ComputerActionEntry({
   onReject: () => void;
   onApprove: () => void;
 }) {
+  const fullyAuthorized = computerActionFullyAuthorized(a);
+  const pending = a.status === 'pending' && !fullyAuthorized;
   const isRemoteShell = a.type === 'remote_shell' || a.type === 'local_shell';
+  const isSkillScript = a.type === 'local_skill_script';
+  const hasShellOutput = isRemoteShell || isSkillScript;
   const isFileTransfer = a.type === 'upload_file' || a.type === 'download_file';
+  const isMacTarget = isMacAppsTargetAction(a.type);
+  const macTarget = isMacTarget ? macAppsActionTarget(a.type, a.target, a.payload) : undefined;
   const outcome =
-    isRemoteShell && (a.status === 'done' || a.status === 'error')
+    hasShellOutput && (a.status === 'done' || a.status === 'error')
       ? remoteShellResultStatus(a.result)
       : undefined;
   return (
-    <div className={`computer-action${isRemoteShell ? ' remote-shell-action' : ''}`}>
+    <div className={`computer-action${hasShellOutput ? ' remote-shell-action' : ''}`}>
       <div>
         <span className={`action-dot ${outcome?.kind || a.status}`} />
         <strong>{labels[a.type] || a.type}</strong>
         <small>{time(a.createdAt)}</small>
       </div>
-      {isRemoteShell ? (
+      {isSkillScript ? (
+        <SkillScriptDetails payload={a.payload} pending={pending} />
+      ) : isRemoteShell ? (
         <RemoteShellDetails
           payload={a.payload}
           execution={a.type === 'local_shell' ? 'local' : 'isolated'}
+          fullyAuthorized={fullyAuthorized}
         />
       ) : isFileTransfer ? (
         <ComputerFileSummary type={a.type} payload={a.payload} />
+      ) : isMacTarget ? (
+        <>
+          <p>
+            {macTarget ||
+              uiText(
+                a.type === 'desktop_ax_open'
+                  ? 'computer:macAppsOpenTargetUnavailable'
+                  : 'computer:macAppsTargetUnavailable',
+              )}
+          </p>
+          {a.type === 'desktop_ax_set_text' && (
+            <ChatComputerRequestView payload={{ text: a.payload.text }} expanded={pending} />
+          )}
+        </>
       ) : (
         <code>
           {String(
@@ -57,13 +87,16 @@ export function ComputerActionEntry({
           )}
         </code>
       )}
+      {fullyAuthorized && (
+        <p className="field-help">{uiText('computer:authorizationAutomaticReceipt')}</p>
+      )}
       {a.error && <p className="error-text">{serviceText(a.error)}</p>}
-      {a.status === 'pending' && (
+      {pending && (
         <p className="field-help">
           {approvalPendingLabel(a.requester, userId)} · {approvalHelp(a.requester, userId)}
         </p>
       )}
-      {a.status === 'pending' ? (
+      {pending ? (
         canDecideAction(a.requester, { userId, isOwner: owner }) && (
           <div className="approval-actions">
             <button type="button" className="secondary-button" disabled={busy} onClick={onReject}>
@@ -72,11 +105,7 @@ export function ComputerActionEntry({
             <button
               type="button"
               className="primary-button"
-              disabled={
-                busy ||
-                (controlled && !isFileTransfer) ||
-                (isRemoteShell && !remoteShellRequestReadable(a.payload))
-              }
+              disabled={busy || (controlled && !isFileTransfer) || !mayAllowComputerAction(a)}
               onClick={onApprove}
             >
               {uiText('computer:text_58cc5791e024')}
@@ -91,13 +120,15 @@ export function ComputerActionEntry({
               rejected: uiText('computer:text_f098218a3032'),
               error: uiText('computer:text_9344597efd49'),
               running: uiText('computer:text_5026a63b58cd'),
+              pending: uiText('computer:receiptStarting'),
             }[a.status] ||
             a.status}
         </span>
       )}
-      {a.result !== undefined &&
-        (isRemoteShell ? (
-          <RemoteShellResult result={a.result} />
+      {!isMacTarget &&
+        a.result !== undefined &&
+        (hasShellOutput ? (
+          <RemoteShellResult result={a.result} expanded={isSkillScript || undefined} />
         ) : (
           <ComputerResult result={a.result} requestedAt={a.createdAt} />
         ))}

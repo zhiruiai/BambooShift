@@ -71,9 +71,11 @@ pub(crate) async fn reply(
     };
     let content = original["content"].as_str().unwrap_or("");
     let excerpt = content.chars().take(2000).collect::<String>();
-    Ok(Some(
-        json!({"id":id,"agentId":original["agentId"],"author":author,"content":if excerpt.len()<content.len(){format!("{excerpt}…")}else{excerpt},"kind":original["kind"]}),
-    ))
+    let mut quote = json!({"id":id,"agentId":original["agentId"],"author":author,"content":if excerpt.len()<content.len(){format!("{excerpt}…")}else{excerpt},"kind":original["kind"]});
+    if let Some(project) = super::website_delivery::project_context(&original) {
+        quote["websiteProject"] = json!(project);
+    }
+    Ok(Some(quote))
 }
 pub async fn react(
     Extract(state): Extract<State>,

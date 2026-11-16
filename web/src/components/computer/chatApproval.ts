@@ -1,15 +1,20 @@
 import type { Message } from '../../../../shared/types';
 import { canDecideAction, type ApprovalActor } from '../../../../shared/approvals';
 import { remoteShellRequestReadable } from '../RemoteShellDetails';
+import { skillScriptRequest } from '../SkillScriptDetails';
 
 export type ChatComputerAction = Record<string, unknown> & {
   id: string;
   type: string;
   status: string;
   payload: Record<string, unknown>;
+  authorization?: unknown;
 };
 const identifier = (value: unknown): value is string =>
   typeof value === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(value);
+const revisionId = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value);
 
 // The API persists a pending record just before starting these read-only actions.
 const autoStartedActions = new Set([
@@ -19,10 +24,67 @@ const autoStartedActions = new Set([
   'terminal_command',
   'browser_screenshot',
   'desktop_screenshot',
+  'desktop_ax_inspect',
 ]);
 
 export function computerActionNeedsApproval(type: unknown) {
   return typeof type === 'string' && !autoStartedActions.has(type);
+}
+
+export function isMacAppsTargetAction(type: string) {
+  return (
+    type === 'desktop_ax_press' || type === 'desktop_ax_set_text' || type === 'desktop_ax_open'
+  );
+}
+
+export function macAppsActionTarget(
+  type: string,
+  target: unknown,
+  payload: Record<string, unknown>,
+) {
+  if (!target || typeof target !== 'object' || Array.isArray(target)) return;
+  const { app, bundleId, windowTitle, role, label } = target as Record<string, unknown>;
+  if (typeof app !== 'string' || !app.trim()) return;
+  if (type === 'desktop_ax_open') {
+    if (
+      typeof bundleId !== 'string' ||
+      bundleId.length > 300 ||
+      !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(bundleId) ||
+      bundleId.trim() !== bundleId ||
+      payload.type !== type ||
+      typeof payload.bundleId !== 'string' ||
+      bundleId.toLowerCase() !== payload.bundleId.toLowerCase()
+    )
+      return;
+    return `${app.trim()} · ${bundleId}`;
+  }
+  const control =
+    typeof label === 'string' && label.trim()
+      ? label.trim()
+      : typeof role === 'string' && role.trim()
+        ? role.trim()
+        : '';
+  if (control)
+    return [
+      ...new Set([app.trim(), typeof windowTitle === 'string' ? windowTitle.trim() : '', control]),
+    ]
+      .filter(Boolean)
+      .join(' · ');
+}
+
+/** Persisted by the server only for actions started under a full grant. */
+export function computerActionFullyAuthorized(action: { authorization?: unknown }) {
+  const value = action.authorization;
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'mode' in value &&
+    value.mode === 'full' &&
+    'scope' in value &&
+    value.scope === 'current-user-current-computer' &&
+    'grantedAt' in value &&
+    typeof value.grantedAt === 'string'
+  );
 }
 
 export function parseChatComputerAction(value: unknown): ChatComputerAction | undefined {
@@ -61,11 +123,13 @@ export function computerApprovalFingerprint(action: ChatComputerAction) {
           'id',
           'type',
           'payload',
+          'target',
           'requester',
           'agentId',
           'conversationId',
           'createdAt',
           'expiresAt',
+          'execution',
           'screenBinding',
           'desktopSession',
           'targetRevision',
@@ -92,13 +156,30 @@ export function computerApprovalPath(message: Message, action: ChatComputerActio
 export function hasAssignedComputerScreen(message: Message, action?: ChatComputerAction) {
   if (!action || !identifier(action.agentId) || action.agentId !== message.agentId) return false;
   const binding = action.screenBinding as Record<string, unknown> | undefined;
-  const revision = binding?.assignmentRevision;
   return (
     !!computerApprovalPath(message, action) &&
     identifier(binding?.screenId) &&
-    typeof revision === 'string' &&
-    /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(revision)
+    revisionId(binding?.assignmentRevision)
   );
+}
+
+export function computerReceiptExecution(message: Message, action?: ChatComputerAction) {
+  if (
+    !action ||
+    (action.agentId !== undefined && action.agentId !== message.agentId) ||
+    (action.conversationId !== undefined && action.conversationId !== message.conversationId) ||
+    !action.execution ||
+    typeof action.execution !== 'object' ||
+    Array.isArray(action.execution)
+  )
+    return;
+  const { location, surface, targetRevision } = action.execution as Record<string, unknown>;
+  if (
+    (location === 'server' || location === 'cloud' || location === 'remote') &&
+    (surface === 'browser' || surface === 'desktop' || surface === 'accessibility') &&
+    revisionId(targetRevision)
+  )
+    return { location, surface } as const;
 }
 
 export function mayDecideComputerAction(
@@ -110,16 +191,24 @@ export function mayDecideComputerAction(
     !!action &&
     message.status !== 'error' &&
     action.status === 'pending' &&
+    !computerActionFullyAuthorized(action) &&
     computerActionNeedsApproval(action.type) &&
     !!computerApprovalPath(message, action) &&
     canDecideAction(action.requester, actor)
   );
 }
 
-export function mayAllowComputerAction(action: ChatComputerAction) {
+export function mayAllowComputerAction(
+  action: Pick<ChatComputerAction, 'type' | 'payload'> & { target?: unknown; expiresAt?: unknown },
+) {
   return (
     (!['remote_shell', 'local_shell'].includes(action.type) ||
       remoteShellRequestReadable(action.payload)) &&
+    (action.type !== 'local_skill_script' || !!skillScriptRequest(action.payload)) &&
+    (!isMacAppsTargetAction(action.type) ||
+      !!macAppsActionTarget(action.type, action.target, action.payload)) &&
+    (action.type !== 'desktop_ax_set_text' ||
+      (typeof action.payload.text === 'string' && action.payload.text.length > 0)) &&
     (action.expiresAt === undefined ||
       (typeof action.expiresAt === 'string' && Date.parse(action.expiresAt) > Date.now()))
   );

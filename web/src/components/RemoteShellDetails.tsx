@@ -71,9 +71,11 @@ export function remoteShellResultStatus(result: unknown) {
 export function RemoteShellDetails({
   payload,
   execution = 'isolated',
+  fullyAuthorized = false,
 }: {
   payload: Record<string, unknown>;
   execution?: 'isolated' | 'local';
+  fullyAuthorized?: boolean;
 }) {
   return (
     <section
@@ -113,6 +115,7 @@ export function RemoteShellDetails({
       </dl>
       <p className="remote-shell-scope">
         {uiText(execution === 'local' ? 'computer:localShellScope' : 'computer:text_3b1f916bb177')}
+        {!fullyAuthorized && <> {uiText('computer:authorizationOnceOnly')}</>}
       </p>
     </section>
   );
@@ -139,12 +142,12 @@ function Output({ label, value }: { label: string; value: unknown }) {
   );
 }
 
-export function RemoteShellResult({ result }: { result: unknown }) {
+export function RemoteShellResult({ result, expanded }: { result: unknown; expanded?: boolean }) {
   const value = object(result);
   const status = remoteShellResultStatus(value);
   const resourceLimit = resourceLimitInfo(value.resourceLimit);
   return (
-    <details className="remote-shell-result">
+    <details className="remote-shell-result" open={expanded}>
       <summary>
         <span>
           {uiText('computer:text_db69ade95f43')}

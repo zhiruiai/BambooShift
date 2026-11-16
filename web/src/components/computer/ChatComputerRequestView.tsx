@@ -1,4 +1,5 @@
 import { uiText, type UiTextKey } from '../../i18n';
+import './ChatComputerApproval.css';
 
 const labels: Record<string, UiTextKey> = {
   url: 'computer:inlineDetailUrl',
@@ -20,13 +21,19 @@ const labels: Record<string, UiTextKey> = {
   durationMs: 'computer:inlineDetailDuration',
 };
 
-export function ChatComputerRequestView({ payload }: { payload: Record<string, unknown> }) {
+export function ChatComputerRequestView({
+  payload,
+  expanded,
+}: {
+  payload: Record<string, unknown>;
+  expanded?: boolean;
+}) {
   const fields = Object.entries(payload).filter(
     ([key, value]) => labels[key] && (typeof value === 'string' || typeof value === 'number'),
   );
   if (!fields.length) return null;
   return (
-    <details className="chat-computer-request">
+    <details className="chat-computer-request" open={expanded}>
       <summary>{uiText('computer:inlineApprovalDetails')}</summary>
       <dl>
         {fields.map(([key, value]) => (

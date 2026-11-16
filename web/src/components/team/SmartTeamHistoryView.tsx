@@ -13,6 +13,7 @@ export function SmartTeamHistoryView({
   choose,
   showHistory,
   history,
+  props,
 }: Pick<
   SmartTeamModel,
   | 'plan'
@@ -25,6 +26,7 @@ export function SmartTeamHistoryView({
   | 'choose'
   | 'showHistory'
   | 'history'
+  | 'props'
 >) {
   return (
     <>
@@ -42,22 +44,24 @@ export function SmartTeamHistoryView({
           <div>
             <button
               type="button"
-              className="secondary-button"
+              className={props.openOnly ? 'primary-button' : 'secondary-button'}
               disabled={busy}
               onClick={() => void enter(false)}
             >
               {uiText('bots:text_3a104d9d83e1')}
             </button>
-            <button
-              type="button"
-              className="primary-button"
-              disabled={busy}
-              onClick={() => void enter(true)}
-            >
-              {uiText('bots:text_be3cab435c83')}
-            </button>
+            {!props.openOnly && (
+              <button
+                type="button"
+                className="primary-button"
+                disabled={busy}
+                onClick={() => void enter(true)}
+              >
+                {uiText('bots:text_be3cab435c83')}
+              </button>
+            )}
           </div>
-          <p>{uiText('bots:text_e5cb2079e905')}</p>
+          {!props.openOnly && <p>{uiText('bots:text_e5cb2079e905')}</p>}
         </div>
       )}
       <div className="smart-team-actions">

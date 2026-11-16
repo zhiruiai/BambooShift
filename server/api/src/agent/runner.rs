@@ -336,7 +336,7 @@ pub(crate) async fn execute(
     }
     let directory = workspace_directory(&store.directory)?;
     let mut process = AgentProcess::spawn(state).await?;
-    let mut definitions = tools::definitions_for(grant, active, &mut system);
+    let mut definitions = tools::definitions_for(state, grant, active, &mut system);
     super::custom_app_proposals::offer(
         grant,
         active,
@@ -371,7 +371,7 @@ pub(crate) async fn execute(
         .iter()
         .any(|tool| tool["name"] == super::website_delivery::TOOL)
     {
-        system.push_str("\nDeliver a requested static website with workspace_deliver_website once its entry and relative assets are ready. Bundle allowed runtime dependencies locally. For a requested revision, websiteProjects in this conversation provides source directory hints. Recheck the current files and publish the revised version through the tool; previous versions remain available.");
+        system.push_str(super::website_delivery::GUIDANCE);
     }
     let offered = definitions
         .as_array()
@@ -423,6 +423,7 @@ async fn consume(
     tokio::pin!(deadline);
     let mut ready = false;
     let mut delivered_generation = active.admitted_generation;
+    let mut delivered_input = None;
     loop {
         active.family.deadline.remaining_ms()?;
         if active.cancelled.load(std::sync::atomic::Ordering::Acquire)
@@ -447,7 +448,8 @@ async fn consume(
                         if !offered.contains(name) || !tools::restricted_tool_allowed(active, name) {return Err(ApiError::new(403,"此任务未授予该工具。"));}
                         let sdk_call = event["toolCallId"].as_str().filter(|id| !id.is_empty() && id.len()<=1024).ok_or_else(||ApiError::new(502,"工具调用缺少稳定标识。"))?;
                         let stable_call = hex::encode(Sha256::digest(sdk_call.as_bytes()));
-                        let context=tools::ToolContext{active,input,catalog,generation:delivered_generation,call_id:&stable_call};
+                        let tool_input = if name == super::website_delivery::READ_TOOL {delivered_input.as_ref().unwrap_or(input)} else {input};
+                        let context=tools::ToolContext{active,input:tool_input,catalog,generation:delivered_generation,call_id:&stable_call};
                         let outcome=tools::execute(state,grant,store,&context,event["name"].as_str().unwrap_or(""),&event["arguments"]).await;
                         let response=match outcome{Ok(value)=>json!({"type":"tool_result","runId":active.run_id,"callId":event["callId"],"result":value}),Err(error)=>json!({"type":"tool_result","runId":active.run_id,"callId":event["callId"],"error":error.message})};
                         grant.authorize(state).await?;
@@ -456,7 +458,11 @@ async fn consume(
                         process.send(&response).await?;
                     },
                     "started"=>{ready=true;super::injection::inject(state,grant,store,active,process).await?;},
-                    "input_delivered"=>{if let Some(generation)=super::injection::delivered(state,grant,store,active,event["inputId"].as_str().unwrap_or("")).await?{delivered_generation=generation;}},
+                    "input_delivered"=>{
+                        let (message, generation) = super::injection::delivered(state,grant,store,active,event["inputId"].as_str().unwrap_or("")).await?;
+                        if let Some(generation) = generation { delivered_generation = generation; }
+                        delivered_input = Some(message);
+                    },
                     "event"=>{
                         if delivered_generation!=active.generation.load(std::sync::atomic::Ordering::Acquire) {
                             if event["event"]["type"]=="message_start" && event["event"]["message"]["role"]=="assistant" {result["metadata"]["modelMessageStarted"]=json!(true);}

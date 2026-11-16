@@ -256,7 +256,7 @@ test('group authors follow the date and actor, and file, approval and status row
     'ChatMessages',
     {
       conversation: { id: message.conversationId, isGroup: true, agentIds: ['bot-a', 'bot-b'] },
-      data: { agents: [{ id: 'bot-a', name: 'Synthetic Bot', color: '#123456' }] },
+      data: { messages, agents: [{ id: 'bot-a', name: 'Synthetic Bot', color: '#123456' }] },
       messages,
       navigationScope: 'actor:workspace',
       ownMessage: () => false,

@@ -1,5 +1,5 @@
 import { uiText } from '../../i18n';
-import { ChevronRight, Layers3, RefreshCw } from 'lucide-react';
+import { ChevronRight, RefreshCw } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { BotTemplate, BotTemplateSummary } from '../../../../shared/bot-templates';
 import { botTemplatePath } from '../../../../shared/bot-templates';
@@ -9,20 +9,28 @@ import { Dialog } from '../UI';
 import { Common } from './types';
 import { StarterTemplateCatalog } from '../StarterTemplateCatalog';
 import { StarterTemplateCreate } from './StarterTemplateCreate';
+import { SmartTeamPanel } from '../SmartTeamPanel';
+import { TeamStarterPicker } from '../team/TeamStarterPicker';
+import { useStarterBotInstall } from './useStarterBotInstall';
 import type { BotProfileDraft } from '../../botProfiles';
 export function TemplateLibrary(props: Common) {
-  const [tab, setTab] = useState<'starters' | 'gallery' | 'mine'>('starters'),
+  const [tab, setTab] = useState<'starters' | 'teams' | 'gallery' | 'mine'>('starters'),
     [gallery, setGallery] = useState<BotTemplateSummary[]>([]),
     [mine, setMine] = useState<BotTemplate[]>([]),
     [query, setQuery] = useState(''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   const [starter, setStarter] = useState<BotProfileDraft>();
+  const [teamBusy, setTeamBusy] = useState(false);
+  const [teamDirty, setTeamDirty] = useState(false);
+  const [leave, setLeave] = useState<() => void>();
+  const starterInstall = useStarterBotInstall(props);
+  const locked = teamBusy || starterInstall.busy;
   const sequence = useRef(0),
     latest = useRef(props);
   latest.current = props;
   async function read() {
-    if (tab === 'starters') return;
+    if (tab === 'starters' || tab === 'teams') return;
     const ticket = props.scope.ticket(),
       order = ++sequence.current;
     if (!props.scope.current(ticket)) return;
@@ -56,7 +64,7 @@ export function TemplateLibrary(props: Common) {
       setTab('starters');
       return;
     }
-    if (tab !== 'starters') void read();
+    if (tab === 'gallery' || tab === 'mine') void read();
     else {
       setBusy(false);
       setError('');
@@ -70,6 +78,18 @@ export function TemplateLibrary(props: Common) {
     matches(`${item.blueprint.profile.name} ${item.blueprint.profile.role}`),
   );
   const filteredGallery = gallery.filter((item) => matches(`${item.name} ${item.role}`));
+  function navigate(action: () => void) {
+    if (locked || !props.scope.current(props.scope.ticket())) return;
+    if (teamDirty) setLeave(() => action);
+    else action();
+  }
+  function pickTab(next: typeof tab) {
+    if (next === tab) return;
+    navigate(() => {
+      starterInstall.clearError();
+      setTab(next);
+    });
+  }
   if (starter && props.owner)
     return (
       <StarterTemplateCreate
@@ -82,31 +102,38 @@ export function TemplateLibrary(props: Common) {
     );
   return (
     <Dialog
-      title={uiText('common:text_9f42185e17cb')}
-      subtitle={uiText('common:text_66c25c1ee106')}
+      title={uiText('workspace:botGalleryTitle')}
       className="bot-template-dialog"
-      onClose={props.onClose}
+      onClose={() => navigate(props.onClose)}
     >
       <div className="segmented" role="tablist" aria-label={uiText('common:text_02a897db6c07')}>
         <button
           type="button"
           role="tab"
+          disabled={locked}
           aria-selected={tab === 'starters'}
           className={tab === 'starters' ? 'active' : ''}
-          onClick={() => {
-            if (props.scope.current(props.scope.ticket())) setTab('starters');
-          }}
+          onClick={() => pickTab('starters')}
         >
           {uiText('workspace:starterOriginal')}
         </button>
         <button
           type="button"
           role="tab"
+          aria-selected={tab === 'teams'}
+          className={tab === 'teams' ? 'active' : ''}
+          disabled={locked}
+          onClick={() => pickTab('teams')}
+        >
+          {uiText('workspace:teamStarterTitle')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          disabled={locked}
           aria-selected={tab === 'gallery'}
           className={tab === 'gallery' ? 'active' : ''}
-          onClick={() => {
-            if (props.scope.current(props.scope.ticket())) setTab('gallery');
-          }}
+          onClick={() => pickTab('gallery')}
         >
           {uiText('workspace:starterPublished')}
         </button>
@@ -114,38 +141,70 @@ export function TemplateLibrary(props: Common) {
           <button
             type="button"
             role="tab"
+            disabled={locked}
             aria-selected={tab === 'mine'}
             className={tab === 'mine' ? 'active' : ''}
             onClick={() => {
-              if (props.scope.current(props.scope.ticket()) && latest.current.owner) setTab('mine');
+              if (latest.current.owner) pickTab('mine');
             }}
           >
             {uiText('common:text_65e433b24dab')}
           </button>
         )}
       </div>
-      {tab === 'starters' && props.owner && props.onTeamTemplates && (
-        <button
-          type="button"
-          className="secondary-button"
-          onClick={() => {
-            if (latest.current.owner && props.scope.current(props.scope.ticket()))
-              latest.current.onTeamTemplates?.();
-          }}
-        >
-          <Layers3 size={16} aria-hidden="true" />
-          {uiText('workspace:teamStarterTitle')}
-        </button>
+      {leave && (
+        <div className="bot-form-notice" role="alert">
+          <p>{uiText('bots:text_310a2cdc4f6e')}</p>
+          <div>
+            <button type="button" className="secondary-button" onClick={() => setLeave(undefined)}>
+              {uiText('bots:text_fd4b9e3b6c68')}
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={locked}
+              onClick={() => {
+                if (!props.scope.current(props.scope.ticket())) return;
+                setLeave(undefined);
+                setTeamDirty(false);
+                leave();
+              }}
+            >
+              {uiText('bots:text_fc0ee8283b68')}
+            </button>
+          </div>
+        </div>
       )}
       {tab === 'starters' ? (
         <StarterTemplateCatalog
           canCreate={props.owner}
+          disabled={starterInstall.busy}
+          onInstall={starterInstall.install}
+          installError={starterInstall.error}
           current={() => props.scope.current(props.scope.ticket())}
           onChoose={(profile) => {
             if (latest.current.owner && props.scope.current(props.scope.ticket()))
               setStarter(structuredClone(profile));
           }}
         />
+      ) : tab === 'teams' ? (
+        props.owner && props.teamTemplates ? (
+          <SmartTeamPanel
+            {...props.teamTemplates}
+            templatesOnly
+            openOnly
+            workspaceId={props.workspaceId}
+            userId={props.userId}
+            onBusy={setTeamBusy}
+            onDirty={setTeamDirty}
+            onCreated={(plan, _start, confirmed) => {
+              if (latest.current.owner && props.scope.current(props.scope.ticket()))
+                latest.current.teamTemplates?.onCreated(plan, false, confirmed);
+            }}
+          />
+        ) : (
+          <TeamStarterPicker disabled={false} hideHeading />
+        )
       ) : (
         <>
           <div className="template-toolbar">

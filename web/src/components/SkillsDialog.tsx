@@ -1,29 +1,21 @@
-import { currentLanguage, uiText } from '../i18n';
-import {
-  ArrowLeft,
-  Check,
-  ChevronDown,
-  Info,
-  LibraryBig,
-  Pause,
-  Plus,
-  Sparkles,
-} from 'lucide-react';
+import { uiText } from '../i18n';
+import { Info, LibraryBig, Plus } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { isSharedBot } from '../../../shared/shared-bots';
 import type { BotAgent, Skill } from '../../../shared/types';
 import { createFormSubmission, type FormSaveResult } from '../formSubmission';
-import { skillWorkflowTemplates, type PackagedSkillDraft } from '../skillWorkflowTemplates';
-import {
-  currentSkillVersion,
-  skillStatusLabel,
-  skillVersionsInView,
-  type SkillAction,
-  type SkillView,
-} from '../skillVersions';
-import { Markdown } from './Markdown';
+import type { ImportedSkillDraft } from '../skillFileImport';
+import { skillPackageUpload, type SkillPackageDraft } from '../skillPackageImport';
+import type { PackagedSkillDraft } from '../skillWorkflowTemplates';
+import type { InstallSkill } from '../skillInstallation';
+import type { ImportedSkillPackage } from '../skillPackageImport';
+import { SkillInstallation } from './SkillInstallation';
+import { currentSkillVersion, type SkillAction, type SkillView } from '../skillVersions';
+import { SkillManager } from './SkillManager';
 import { SkillVersionReview } from './SkillVersionReview';
 import { SkillFileImport } from './SkillFileImport';
+import { SkillPackageDetails } from './SkillPackageDetails';
+import { SkillPackageImport, skillPackageErrorText } from './SkillPackageImport';
 import { TeamSkillsView, type TeamSkillsAccess } from './TeamSkillsView';
 import { Dialog } from './UI';
 import { PackagedSkillsCatalog } from './apps/PackagedSkillsCatalog';
@@ -38,6 +30,7 @@ export function SkillsDialog({
   onTransition,
   team,
   initialDraft,
+  onInstall,
 }: {
   agents: BotAgent[];
   skills: Skill[];
@@ -52,23 +45,23 @@ export function SkillsDialog({
   ) => Promise<FormSaveResult>;
   team?: TeamSkillsAccess;
   initialDraft?: PackagedSkillDraft;
+  onInstall?: InstallSkill;
 }) {
   const editableAgents = agents.filter((agent) => !isSharedBot(agent));
-  const workflowTemplates = skillWorkflowTemplates[currentLanguage()];
   const canEditSkill = (skill: Skill) =>
     !readOnly && editableAgents.some((agent) => agent.id === skill.agentId);
   const [adding, setAdding] = useState(!!initialDraft),
     [agentId, setAgentId] = useState(initialDraft?.agentId || editableAgents[0]?.id || ''),
-    [name, setName] = useState(initialDraft?.recipe.name || ''),
-    [description, setDescription] = useState(initialDraft?.recipe.description || ''),
-    [content, setContent] = useState(initialDraft?.recipe.content || ''),
-    [expanded, setExpanded] = useState('');
-  const [view, setView] = useState<SkillView>(() =>
-    skills.some((s) => s.status === 'proposed') ? 'proposals' : 'current',
-  );
+    [name, setName] = useState(initialDraft?.skill.name || ''),
+    [description, setDescription] = useState(initialDraft?.skill.description || ''),
+    [content, setContent] = useState(initialDraft?.skill.content || '');
+  const [view, setView] = useState<SkillView>('current');
   const [reviewId, setReviewId] = useState('');
+  const [selectedSkillId, setSelectedSkillId] = useState('');
+  const [packageDraft, setPackageDraft] = useState(initialDraft?.skill.skillPackage);
   const [showTeam, setShowTeam] = useState(false);
   const [showCatalog, setShowCatalog] = useState(false);
+  const [importing, setImporting] = useState<ImportedSkillPackage>();
   const reviewing = skills.find((s) => s.id === reviewId);
   const [submission] = useState(createFormSubmission);
   const [saving, setSaving] = useState(false);
@@ -76,7 +69,19 @@ export function SkillsDialog({
   const errorRef = useRef<HTMLDivElement>(null);
   const draftForm = useRef<HTMLFormElement>(null);
   const draftBot = useRef<HTMLSelectElement>(null);
+  const catalogButton = useRef<HTMLButtonElement>(null);
+  const returningFromCatalog = useRef(false);
   const locked = busy || saving;
+  const managing = !adding && !showCatalog && !importing && !showTeam && !reviewId;
+  const canSave = !!name.trim() && !!description.trim() && (!!packageDraft || !!content.trim());
+  function fillDraft(draft: ImportedSkillDraft, skillPackage?: SkillPackageDraft) {
+    setName(draft.name);
+    setDescription(draft.description);
+    setContent(draft.content);
+    setPackageDraft(skillPackage);
+    setSaveError('');
+    setAdding(true);
+  }
   useEffect(() => {
     if (!adding) return;
     draftForm.current?.scrollIntoView({ block: 'start' });
@@ -88,26 +93,39 @@ export function SkillsDialog({
       errorRef.current?.scrollIntoView({ block: 'nearest' });
     }
   }, [saveError]);
+  useEffect(() => {
+    if (!showCatalog && returningFromCatalog.current) {
+      returningFromCatalog.current = false;
+      catalogButton.current?.focus({ preventScroll: true });
+    }
+  }, [showCatalog]);
   async function save() {
     if (
       readOnly ||
       !editableAgents.some((agent) => agent.id === agentId) ||
       busy ||
       submission.pending ||
-      !name.trim() ||
-      !description.trim() ||
-      !content.trim()
+      !canSave
     )
       return;
+    const draft = { agentId, name, description, content };
+    let skillPackage: ReturnType<typeof skillPackageUpload> | undefined;
+    try {
+      if (packageDraft) skillPackage = skillPackageUpload(draft, packageDraft);
+    } catch (error) {
+      setSaveError(skillPackageErrorText(error));
+      return;
+    }
     setSaving(true);
     setSaveError('');
     const result = await submission.submit(
-      () => onAdd({ agentId, name, description, content }),
+      () => onAdd(skillPackage ? { ...draft, skillPackage } : draft),
       () => {
         setAdding(false);
         setName('');
         setDescription('');
         setContent('');
+        setPackageDraft(undefined);
         setView('proposals');
       },
     );
@@ -116,7 +134,8 @@ export function SkillsDialog({
   }
   return (
     <Dialog
-      title={uiText('common:text_2c38f222bfa4')}
+      className={`bot-skills-dialog${managing ? ' skill-manager-dialog' : ''}`}
+      title={uiText(showCatalog ? 'workspace:packagedSkillsTitle' : 'common:text_2c38f222bfa4')}
       subtitle={
         agents.length === 1
           ? uiText('settings:botSkillsScope', { name: agents[0].name })
@@ -127,35 +146,55 @@ export function SkillsDialog({
       }}
     >
       {showCatalog ? (
-        <>
+        <PackagedSkillsCatalog
+          embedded
+          bots={editableAgents}
+          skills={skills}
+          initialAgentId={editableAgents.length === 1 ? editableAgents[0].id : agentId}
+          canEdit={!readOnly}
+          disabled={locked}
+          onExit={() => {
+            returningFromCatalog.current = true;
+            setShowCatalog(false);
+          }}
+          onInstall={onInstall}
+          onBusyChange={setSaving}
+          onInstalled={() => {
+            setShowCatalog(false);
+            setView('current');
+          }}
+        />
+      ) : importing ? (
+        <section className="packaged-skill-preview">
           <button
             type="button"
             className="text-button"
             disabled={locked}
-            onClick={() => setShowCatalog(false)}
+            onClick={() => setImporting(undefined)}
           >
-            <ArrowLeft size={14} aria-hidden="true" />
             {uiText('settings:botSkillsCatalogBack')}
           </button>
-          <PackagedSkillsCatalog
-            embedded
+          <header className="packaged-skill-heading">
+            <div>
+              <h3>{importing.skillPackage.frontmatter.metadata?.title || importing.name}</h3>
+              <p>{importing.description}</p>
+            </div>
+          </header>
+          <SkillInstallation
+            skill={importing}
             bots={editableAgents}
-            initialAgentId={editableAgents.length === 1 ? editableAgents[0].id : agentId}
-            canEdit={!readOnly}
+            skills={skills}
+            initialAgentId={agentId}
             disabled={locked}
-            onEdit={(draft) => {
-              if (locked || readOnly || !editableAgents.some((agent) => agent.id === draft.agentId))
-                return;
-              setAgentId(draft.agentId);
-              setName(draft.recipe.name);
-              setDescription(draft.recipe.description);
-              setContent(draft.recipe.content);
-              setSaveError('');
-              setShowCatalog(false);
-              setAdding(true);
+            canEdit={!readOnly}
+            onInstall={onInstall}
+            onBusyChange={setSaving}
+            onDone={() => {
+              setImporting(undefined);
+              setView('current');
             }}
           />
-        </>
+        </section>
       ) : showTeam && team ? (
         <TeamSkillsView
           access={{
@@ -194,132 +233,58 @@ export function SkillsDialog({
         )
       ) : (
         <>
-          <div className="info-box">
-            <Sparkles size={16} />
-            <span>
-              {readOnly || !editableAgents.length
-                ? uiText('common:text_59294c3c8bdf')
-                : uiText('common:text_23d225f28f98')}
-            </span>
-          </div>
-          {!readOnly && editableAgents.length > 0 && !adding && (
-            <button
-              className="secondary-button team-skill-entry"
-              type="button"
-              disabled={locked}
-              onClick={() => setShowCatalog(true)}
-            >
-              <LibraryBig size={15} aria-hidden="true" />
-              {uiText('settings:botSkillsCatalog')}
-            </button>
-          )}
-          {team && !adding && (
-            <button
-              className="secondary-button team-skill-entry"
-              type="button"
-              disabled={locked}
-              onClick={() => setShowTeam(true)}
-            >
-              <LibraryBig size={15} aria-hidden="true" />
-              {uiText('common:teamSkillTitle')}
-            </button>
-          )}
-          <div
-            className="skill-version-tabs"
-            role="group"
-            aria-label={uiText('common:text_1d724da1aa0c')}
-          >
-            {(
-              [
-                ['current', uiText('common:text_5ddff4afab27')],
-                ['proposals', uiText('common:text_a8b0bd9c65f7')],
-                ['history', uiText('common:text_6fd29579ab66')],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                type="button"
-                key={id}
-                aria-pressed={view === id}
-                disabled={locked}
-                onClick={() => setView(id)}
-              >
-                {label}
-                <small>{skillVersionsInView(skills, id).length}</small>
-              </button>
-            ))}
-          </div>
-          <div className="skill-list">
-            {skillVersionsInView(skills, view).map((s) => (
-              <div className="skill-card" key={s.id}>
-                <button
-                  className="skill-heading"
-                  aria-expanded={expanded === s.id}
-                  onClick={() => setExpanded(expanded === s.id ? '' : s.id)}
-                >
-                  <span className="resource-icon lavender">
-                    <Sparkles size={17} />
-                  </span>
-                  <span>
-                    <strong>{s.name}</strong>
-                    <small>
-                      v{s.version} ·{' '}
-                      {agents.find((a) => a.id === s.agentId)?.name ||
-                        uiText('common:text_25536a7889ed')}
-                    </small>
-                  </span>
-                  <span
-                    className={`pill ${s.status === 'proposed' ? 'pending' : s.status === 'active' ? '' : 'skill-muted'}`}
-                  >
-                    {skillStatusLabel(s.status)}
-                  </span>
-                  <ChevronDown size={14} />
-                </button>
-                <p>{s.description}</p>
-                {s.teamSource && (
-                  <p className="field-help">
-                    {uiText('common:teamSkillPinned', { value0: s.teamSource.version })}
-                  </p>
-                )}
-                {(s.status === 'archived' || s.status === 'disabled') && (
-                  <small className="skill-history-note">
-                    {s.status === 'disabled'
-                      ? uiText('common:text_043ee02fa5fe')
-                      : uiText('common:text_db9139b1adec')}
-                  </small>
-                )}
-                {expanded === s.id && (
-                  <div className="skill-content">
-                    <Markdown text={s.content} />
-                  </div>
-                )}
-                {canEditSkill(s) && (
+          {!adding && (
+            <>
+              {!readOnly && editableAgents.length > 0 && (
+                <div className="skill-add-actions">
                   <button
-                    className="secondary-button approve-skill"
+                    ref={catalogButton}
+                    className="primary-button"
+                    type="button"
                     disabled={locked}
-                    onClick={() => {
-                      setReviewId(s.id);
-                      setSaveError('');
-                    }}
+                    onClick={() => setShowCatalog(true)}
                   >
-                    {s.status === 'active' ? <Pause size={14} /> : <Check size={14} />}
-                    {s.status === 'proposed'
-                      ? uiText('common:text_f0979151f176')
-                      : s.status === 'active'
-                        ? uiText('common:text_e01cdce960fb')
-                        : uiText('common:text_7fd2a0d1fe18')}
+                    <LibraryBig size={16} aria-hidden="true" />
+                    {uiText('settings:botSkillsCatalog')}
                   </button>
-                )}
-              </div>
-            ))}
-          </div>
-          {skillVersionsInView(skills, view).length === 0 && (
-            <p className="section-help">
-              {view === 'current'
-                ? uiText('common:text_6c1973ebd192')
-                : view === 'proposals'
-                  ? uiText('common:text_75ad326d6613')
-                  : uiText('common:text_f2ae7b5e827e')}
-            </p>
+                  <SkillPackageImport
+                    disabled={locked}
+                    onImport={(draft) =>
+                      onInstall ? setImporting(draft) : fillDraft(draft, draft.skillPackage)
+                    }
+                  />
+                </div>
+              )}
+              {(readOnly || !editableAgents.length) && (
+                <p className="section-help">{uiText('common:text_59294c3c8bdf')}</p>
+              )}
+              <SkillManager
+                skills={skills}
+                agents={agents}
+                view={view}
+                disabled={locked}
+                onView={setView}
+                canEdit={canEditSkill}
+                initialSelection={selectedSkillId}
+                compact={!!team}
+                onReview={(id) => {
+                  setSelectedSkillId(id);
+                  setReviewId(id);
+                  setSaveError('');
+                }}
+              />
+              {team && (
+                <button
+                  className="secondary-button team-skill-entry"
+                  type="button"
+                  disabled={locked}
+                  onClick={() => setShowTeam(true)}
+                >
+                  <LibraryBig size={15} aria-hidden="true" />
+                  {uiText('common:teamSkillTitle')}
+                </button>
+              )}
+            </>
           )}
           {!readOnly &&
             editableAgents.length > 0 &&
@@ -333,7 +298,7 @@ export function SkillsDialog({
                   void save();
                 }}
               >
-                <h3>{uiText('common:text_f4b0fa7e6b83')}</h3>
+                <h3>{uiText('settings:botSkillsPackageDraft')}</h3>
                 <label>
                   {uiText('common:text_68458e102038')}
                   <select
@@ -350,35 +315,10 @@ export function SkillsDialog({
                   </select>
                 </label>
                 <label>
-                  {uiText('common:skill_workflow_template')}
-                  <select
-                    disabled={locked}
-                    value=""
-                    onChange={(event) => {
-                      const template = workflowTemplates.find(
-                        ({ id }) => id === event.target.value,
-                      );
-                      if (!template) return;
-                      setName(template.name);
-                      setDescription(template.description);
-                      setContent(template.content);
-                      setSaveError('');
-                    }}
-                  >
-                    <option value="" disabled>
-                      {uiText('common:skill_workflow_template_placeholder')}
-                    </option>
-                    {workflowTemplates.map(({ id, name }) => (
-                      <option key={id} value={id}>
-                        {name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
                   {uiText('common:text_939f41f5c276')}
                   <input
                     disabled={locked}
+                    readOnly={!!packageDraft}
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -386,8 +326,9 @@ export function SkillsDialog({
                 </label>
                 <label>
                   {uiText('common:text_3e7120a81b35')}
-                  <input
+                  <textarea
                     required
+                    rows={2}
                     disabled={locked}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -396,7 +337,7 @@ export function SkillsDialog({
                 <label>
                   {uiText('common:text_94d9aed12735')}
                   <textarea
-                    required
+                    required={!packageDraft}
                     rows={4}
                     disabled={locked}
                     aria-describedby={saveError ? 'skill-create-error' : undefined}
@@ -405,6 +346,12 @@ export function SkillsDialog({
                     placeholder={uiText('common:text_74fde5186d5b')}
                   />
                 </label>
+                {packageDraft && (
+                  <SkillPackageDetails
+                    {...packageDraft}
+                    files={[{ path: 'SKILL.md' }, ...packageDraft.files]}
+                  />
+                )}
                 {saveError && (
                   <div
                     className="inline-save-error"
@@ -432,10 +379,7 @@ export function SkillsDialog({
                   >
                     {uiText('common:text_2cd0f3be8738')}
                   </button>
-                  <button
-                    className="primary-button"
-                    disabled={locked || !name.trim() || !description.trim() || !content.trim()}
-                  >
+                  <button className="primary-button" disabled={locked || !canSave}>
                     {saving
                       ? uiText('common:text_6bdb4435095e')
                       : uiText('common:text_d81e84e915a0')}
@@ -443,26 +387,20 @@ export function SkillsDialog({
                 </div>
               </form>
             ) : (
-              <>
+              <div className="skill-secondary-actions">
                 <button
                   className="add-detail-row"
                   disabled={locked}
-                  onClick={() => setAdding(true)}
+                  onClick={() => {
+                    if (packageDraft) fillDraft({ name: '', description: '', content: '' });
+                    else setAdding(true);
+                  }}
                 >
                   <Plus size={17} />
-                  {uiText('common:text_71b3a207d7fe')}
+                  {uiText('settings:botSkillsNewPackage')}
                 </button>
-                <SkillFileImport
-                  disabled={locked}
-                  onImport={(draft) => {
-                    setName(draft.name);
-                    setDescription(draft.description);
-                    setContent(draft.content);
-                    setSaveError('');
-                    setAdding(true);
-                  }}
-                />
-              </>
+                <SkillFileImport disabled={locked} onImport={fillDraft} />
+              </div>
             ))}
         </>
       )}

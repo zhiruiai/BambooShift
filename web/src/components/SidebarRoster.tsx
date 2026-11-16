@@ -15,7 +15,9 @@ import {
   sidebarTargetForConversation,
   type SidebarRosterOperation,
 } from '../../../shared/sidebar-roster';
-import type { Bootstrap, Conversation } from '../../../shared/types';
+import type { Bootstrap, Conversation, Message } from '../../../shared/types';
+import { useAccount } from '../AccountContext';
+import { conversationAvatarActivity } from '../avatarActivity';
 import { conversationTime } from '../dates';
 import { conversationRosterEntry, projectSidebar, sidebarTargetKey } from '../sidebarRoster';
 import { Avatar, GroupAvatar } from './Avatar';
@@ -26,6 +28,11 @@ import { ListProps, MenuAction } from './roster/types';
 export { RosterManagementDialog } from './roster/RosterManagementDialog';
 export type { RosterDialogRequest } from './roster/types';
 export function SidebarRosterList(props: ListProps) {
+  const account = useAccount();
+  const actor = {
+    userId: account?.session.user?.id,
+    isOwner: !account || account.workspace.role === 'owner',
+  };
   const { data, roster } = props,
     projection = projectSidebar(data, props.query, props.mobile);
   const agentsById = new Map(data.agents.map((agent) => [agent.id, agent]));
@@ -37,6 +44,12 @@ export function SidebarRosterList(props: ListProps) {
       .filter((message) => message.kind !== 'web_research')
       .map((message) => [message.conversationId, message]),
   );
+  const conversationMessages = new Map<string, Message[]>();
+  for (const message of data.messages) {
+    const entries = conversationMessages.get(message.conversationId) || [];
+    entries.push(message);
+    conversationMessages.set(message.conversationId, entries);
+  }
   const locked = !roster.state || roster.busy || roster.needsSync;
   async function write(operation: SidebarRosterOperation, notice: string) {
     const fallback =
@@ -64,6 +77,12 @@ export function SidebarRosterList(props: ListProps) {
       primary = conversation.id === projection.primary?.id;
     const last = latestMessages.get(conversation.id),
       working = props.working(conversation.id);
+    const activity = conversationAvatarActivity(
+      conversationMessages.get(conversation.id) || [],
+      working,
+      actor,
+      data.runningRequests,
+    );
     const actions: MenuAction[] = [
       {
         label: entry.pinned
@@ -110,8 +129,18 @@ export function SidebarRosterList(props: ListProps) {
           onClick={() => props.onOpen(conversation)}
         >
           <span className="conversation-avatar">
-            {conversation.isGroup ? <GroupAvatar agents={agents} /> : <Avatar agent={agents[0]} />}{' '}
-            {working && <span className="status-dot working" />}
+            {conversation.isGroup ? (
+              <GroupAvatar
+                agents={agents}
+                size={44}
+                motion={activity.motion}
+                sustain={working}
+                activeAgentId={activity.agentId}
+              />
+            ) : (
+              <Avatar agent={agents[0]} size={44} motion={activity.motion} sustain={working} />
+            )}{' '}
+            {working && activity.motion !== 'attention' && <span className="status-dot working" />}
           </span>
           <span className="conversation-copy">
             <span className="conversation-heading">
@@ -126,16 +155,18 @@ export function SidebarRosterList(props: ListProps) {
               )}
             </span>
             <span className={`conversation-preview ${working ? 'preview-working' : ''}`}>
-              {primary && data.primaryBot
-                ? primaryBotSummary(data.primaryBot, conversation, working, data.primaryCheckIn)
-                : working
-                  ? uiText('common:text_1967f541db92')
-                  : (last &&
-                      chatMessageText(last)
-                        .replace(/[#*`\[\]]/g, '')
-                        .slice(0, 75)) ||
-                    agents[0]?.description ||
-                    uiText('common:text_cc628b087505')}
+              {activity.motion === 'attention'
+                ? uiText('workspace:avatarWaiting')
+                : primary && data.primaryBot
+                  ? primaryBotSummary(data.primaryBot, conversation, working, data.primaryCheckIn)
+                  : working
+                    ? uiText('common:text_1967f541db92')
+                    : (last &&
+                        chatMessageText(last)
+                          .replace(/[#*`\[\]]/g, '')
+                          .slice(0, 75)) ||
+                      agents[0]?.description ||
+                      uiText('common:text_cc628b087505')}
             </span>
           </span>
           {conversation.unread > 0 && <span className="unread-badge">{conversation.unread}</span>}

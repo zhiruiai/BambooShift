@@ -53,6 +53,8 @@ pub async fn create(
             draft::validate(&mut tx, &starter, &agents, None, false, false).await?;
         saved["plan"]["status"] = json!("ready");
         saved["template"] = body["template"].clone();
+        saved["starterMembers"] = saved["plan"]["draft"]["members"].clone();
+        starters::review_skills(&mut saved)?;
         None
     } else {
         Some(ws.team_jobs.reserve(&id)?)

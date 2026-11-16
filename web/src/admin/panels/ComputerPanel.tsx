@@ -43,9 +43,11 @@ export function ComputerPanel({
           <div>
             <dt>{uiText('platform:text_573394a6e549')}</dt>
             <dd>
-              {computer.surface === 'desktop'
-                ? uiText('platform:text_5b096afbdb0c')
-                : uiText('platform:text_162f582e1060')}
+              {computer.surface === 'accessibility'
+                ? uiText('computer:macAppsSurface')
+                : computer.surface === 'desktop'
+                  ? uiText('platform:text_5b096afbdb0c')
+                  : uiText('platform:text_162f582e1060')}
             </dd>
           </div>
           {computer.savedRemote && (

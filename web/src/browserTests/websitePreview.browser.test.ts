@@ -73,6 +73,8 @@ test(
         contents: `
           import { createRoot } from 'react-dom/client';
           import { WebsiteProjectPanel } from './web/src/components/WebsiteProjectPanel';
+          import { initializeLanguage } from './web/src/i18n';
+          initializeLanguage().setLanguage('en');
           const files = ${JSON.stringify(fixture)}.map(([path, mime, content]) =>
             ({ path, mime, bytes: new TextEncoder().encode(content) }));
           const project = {
@@ -81,10 +83,16 @@ test(
             totalBytes: files.reduce((total, file) => total + file.bytes.length, 0),
           };
           const noop = () => {};
-          createRoot(document.getElementById('root')).render(
+          const root = document.getElementById('root');
+          const versions = [
+            { project, message: { id: 'current' }, number: 2 },
+            { project: { ...project, id: 'older-version' }, message: { id: 'older' }, number: 1 },
+          ];
+          createRoot(root).render(
             <WebsiteProjectPanel project={project} state={{ kind: 'ready', files }}
-              onClose={noop} onDiscuss={noop} onRetry={noop} onDownload={noop}
-              downloading={false} downloadFailed={false} />
+              onClose={noop} onDiscuss={() => { root.dataset.editedVersion = project.id; }}
+              onShare={noop} onRetry={noop} onDownload={noop}
+              downloading={false} downloadFailed={false} versions={versions} />
           );`,
         resolveDir: process.cwd(),
         loader: 'tsx',
@@ -123,7 +131,7 @@ test(
       await page.addStyleTag({
         content:
           bundled.outputFiles.find(({ path }) => path.endsWith('.css'))!.text +
-          '\n.website-project-panel { height: 560px }',
+          '\n.website-project-panel { height: 560px } .modal-overlay { position: fixed; inset: 0; }',
       });
       await page.addScriptTag({
         content: bundled.outputFiles.find(({ path }) => path.endsWith('.js'))!.text,
@@ -160,6 +168,22 @@ test(
       await frame.getByRole('link', { name: 'Local details' }).click();
       await frame.getByRole('heading', { name: 'Local details page' }).waitFor();
       assert.deepEqual(requests, []);
+
+      const desktop = page.getByRole('complementary', { name: 'Local website' });
+      await desktop.getByText('Version 2', { exact: true }).waitFor();
+      await desktop.getByRole('button', { name: 'Edit this version' }).click();
+      assert.equal(
+        await page.locator('#root').getAttribute('data-edited-version'),
+        'synthetic-version',
+      );
+
+      await page.setViewportSize({ width: 320, height: 640 });
+      const mobile = page.getByRole('dialog', { name: 'Local website' });
+      await mobile.getByText('Version 2', { exact: true }).waitFor();
+      const mobileEdit = mobile.getByRole('button', { name: 'Edit this version' });
+      assert.equal(await mobileEdit.getByText('Edit this version').isVisible(), true);
+      const bounds = await mobileEdit.boundingBox();
+      assert.ok(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 320);
     } finally {
       await browser.close();
     }

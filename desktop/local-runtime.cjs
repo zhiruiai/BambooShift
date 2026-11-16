@@ -17,6 +17,8 @@ const { isAbsolute, join } = require('node:path');
 const { setTimeout: pause } = require('node:timers/promises');
 
 const bundleName = 'bambooshift-runtime';
+const bundledAccessibilityHelper =
+  'bin/OpenBot Desktop Helper.app/Contents/MacOS/OpenBotDesktopHelper';
 const localPartition = 'persist:openbot-managed-local';
 const profileMarker = 'local-workspace.selected';
 const maxLineBytes = 4096;
@@ -70,7 +72,17 @@ function runtimeBundle(resourcesPath, platform, architecture) {
         // The local workspace remains usable when this optional driver is missing.
       }
     }
-    return { root, server, node, runtime, cua };
+    let accessibilityHelper;
+    if (platform === 'darwin' && spec.accessibilityHelper === bundledAccessibilityHelper) {
+      try {
+        const helper = checkedPath(root, bundledAccessibilityHelper);
+        accessSync(helper, constants.X_OK);
+        accessibilityHelper = helper;
+      } catch {
+        // The local workspace remains usable without its optional accessibility helper.
+      }
+    }
+    return { root, server, node, runtime, cua, accessibilityHelper };
   } catch {
     return undefined;
   }
@@ -99,6 +111,7 @@ function writeConfig(dataDir, bundle, token, desktopDriver) {
         nodeBinary: bundle.node,
         localDesktop: {
           bootstrapToken: token,
+          accessibilityHelper: bundle.accessibilityHelper,
           ...(desktopDriver ? { hostControl: true, desktopDriver } : {}),
         },
       }) + '\n',

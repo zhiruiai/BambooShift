@@ -1,5 +1,5 @@
 import { uiText } from '../../i18n';
-import { ChevronRight, Loader2, Plus, Sparkles, Users } from 'lucide-react';
+import { ChevronRight, Layers3, Loader2, Plus, Sparkles, UserPlus, Users } from 'lucide-react';
 import { GROUP_MAX_MEMBERS, GROUP_MIN_MEMBERS } from '../../../../shared/group-members';
 import { StarterTemplateCatalog } from '../StarterTemplateCatalog';
 import { BotProfileFields } from '../BotProfileFields';
@@ -54,10 +54,13 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
       <Dialog
         active={view === 'create'}
         title={
-          props.canCreateBot ? uiText('bots:text_c9b8fb3c8582') : uiText('bots:text_60b9878b1841')
+          mode === 'bot'
+            ? uiText('bots:text_a25af04e6a9b')
+            : mode === 'team'
+              ? uiText('workspace:newChatPlanTeam')
+              : uiText('bots:text_60b9878b1841')
         }
-        subtitle={uiText('bots:text_2ab15784303b')}
-        className="bot-create"
+        className={`bot-create bot-create-${mode}`}
         wide={mode === 'team'}
         onClose={() => navigate(props.onClose)}
       >
@@ -232,27 +235,37 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
             )}
           </section>
         )}
-        {mode === 'bot' && (
-          <button
-            type="button"
-            className="secondary-button starter-trigger"
-            disabled={manualLocked || !props.canCreateBot || avatarEdits.pending}
-            onClick={model.browseStarters}
-          >
-            {uiText('workspace:starterBrowse')}
-          </button>
-        )}
-        {mode === 'bot' && props.canCreateBot && props.workspaceId && props.userId && (
-          <CreationBrief
-            kind="bot"
-            active={view === 'create' && !manualLocked && !avatarEdits.pending}
-            configured={props.modelConfigured}
-            workspaceId={props.workspaceId}
-            userId={props.userId}
-            onUse={(draft) => {
-              if (draft.kind === 'bot') model.chooseStarter(draft.profile);
-            }}
-          />
+        {mode === 'bot' && props.canCreateBot && (
+          <div className="bot-creation-options">
+            <button
+              type="button"
+              className="secondary-button starter-trigger"
+              disabled={manualLocked || avatarEdits.pending}
+              onClick={model.browseStarters}
+            >
+              <Layers3 size={16} aria-hidden="true" />
+              {uiText('workspace:starterBrowse')}
+            </button>
+            {props.recruiterShortcut && (
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={manualLocked || avatarEdits.pending}
+                onClick={() => navigate(() => void latest.current.recruiterShortcut?.open(''))}
+              >
+                {props.recruiterShortcut.pending ? (
+                  <Loader2 size={16} className="spin" aria-hidden="true" />
+                ) : (
+                  <UserPlus size={16} aria-hidden="true" />
+                )}
+                {uiText(
+                  props.recruiterShortcut.pending
+                    ? 'workspace:composerRecruiterOpening'
+                    : 'workspace:creationAskRecruiter',
+                )}
+              </button>
+            )}
+          </div>
         )}
         {mode === 'team' ? (
           <SmartTeamPanel
@@ -288,6 +301,7 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
               {mode === 'bot' ? (
                 <BotProfileFields
                   modelSelection
+                  compactCreation
                   key={avatarEdits.resetKey}
                   draft={draft}
                   onChange={(next) => {
@@ -378,6 +392,18 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
                 </button>
               </div>
             </form>
+            {mode === 'bot' && props.canCreateBot && props.workspaceId && props.userId && (
+              <CreationBrief
+                kind="bot"
+                active={view === 'create' && !manualLocked && !avatarEdits.pending}
+                configured={props.modelConfigured}
+                workspaceId={props.workspaceId}
+                userId={props.userId}
+                onUse={(draft) => {
+                  if (draft.kind === 'bot') model.chooseStarter(draft.profile);
+                }}
+              />
+            )}
           </>
         )}
       </Dialog>

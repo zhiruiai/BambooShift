@@ -4,6 +4,7 @@ import { isSharedBot } from '../../../shared/shared-bots';
 import type { BotAgent, Skill } from '../../../shared/types';
 import type { ComposerState } from '../chatDrafts';
 import { uiText } from '../i18n';
+import { skillDisplayName } from '../skillVersions';
 
 export function composerSkill(
   draft: ComposerState,
@@ -58,7 +59,7 @@ export function ComposerContexts({
           <span title={uiText('workspace:composerSkillHelp')}>
             {skill
               ? uiText('workspace:composerSkillSelected', {
-                  name: skill.name,
+                  name: skillDisplayName(skill),
                   version: skill.version,
                 })
               : uiText('workspace:composerSkillSelection')}

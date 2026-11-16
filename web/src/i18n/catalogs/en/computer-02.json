@@ -80,7 +80,7 @@
   "text_7dfe4bbbaf0a": ". (workspace root)",
   "text_7e5af961cb47": "Checking this Bot's computer screen…",
   "text_7e6874e9e06c": "The work computer is disconnected. Connect it in the computer panel before sending files.",
-  "text_7e98d07f81a5": "File transfer records appear here. Bot-requested file sending still requires the requester's confirmation.",
+  "text_7e98d07f81a5": "File transfer records appear here. Bot file actions follow the computer’s authorization setting.",
   "text_802a407c7743": "Refresh status",
   "text_8030b2ffbc69": "The screenshot did not update. Showing the last successful capture.",
   "text_8089084e6ebc": "Workspace connection",

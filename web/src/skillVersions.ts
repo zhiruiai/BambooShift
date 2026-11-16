@@ -4,6 +4,10 @@ import type { Skill } from '../../shared/types';
 
 export type SkillAction = 'approve' | 'restore' | 'disable';
 export type SkillView = 'current' | 'proposals' | 'history';
+export function skillDisplayName(skill: Skill) {
+  return skill.skillPackage?.frontmatter.metadata?.title?.trim() || skill.name;
+}
+
 export function skillStatusLabel(status: Skill['status']) {
   return {
     active: uiText('common:text_5ddff4afab27'),
@@ -37,7 +41,7 @@ export function skillVersionsInView(skills: Skill[], view: SkillView) {
     .slice()
     .sort(
       (a, b) =>
-        a.name.localeCompare(b.name, currentLanguage()) ||
+        skillDisplayName(a).localeCompare(skillDisplayName(b), currentLanguage()) ||
         a.agentId.localeCompare(b.agentId) ||
         b.version - a.version,
     );

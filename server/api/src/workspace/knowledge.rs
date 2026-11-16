@@ -118,7 +118,10 @@ pub async fn add_skill(
     headers: HeaderMap,
     Body(body): Body,
 ) -> Result<(StatusCode, Json<Value>)> {
-    crate::error::only_fields(&body, &["agentId", "name", "description", "content"])?;
+    crate::error::only_fields(
+        &body,
+        &["agentId", "name", "description", "content", "skillPackage"],
+    )?;
     let grant = access::require(&state, &headers, &wid, true, true).await?;
     let store = grant.store(&state).await?;
     let mut tx = store.begin().await?;
@@ -141,7 +144,27 @@ pub(super) async fn stage_skill(
     body: &Value,
     team_source: Option<Value>,
 ) -> Result<Value> {
-    let name = crate::error::text(&body["name"], "技能名称", 100)?;
+    let package = body
+        .get("skillPackage")
+        .map(|package| super::skill_packages::Package::parse(body, package))
+        .transpose()?;
+    let (name, description, content) = if let Some(package) = &package {
+        (
+            package.name.clone(),
+            package.description.clone(),
+            package.content.clone(),
+        )
+    } else {
+        let description = body["description"].as_str().unwrap_or("");
+        if description.encode_utf16().count() > 1000 {
+            return Err(ApiError::bad("技能说明过长。"));
+        }
+        (
+            crate::error::text(&body["name"], "技能名称", 100)?,
+            description.to_owned(),
+            crate::error::text(&body["content"], "技能内容", 16000)?,
+        )
+    };
     let version = WorkspaceStore::list_in(conn, Table::Skills)
         .await?
         .into_iter()
@@ -149,20 +172,49 @@ pub(super) async fn stage_skill(
         .filter_map(|s| s["version"].as_u64())
         .max()
         .unwrap_or(0);
-    let description = body["description"].as_str().unwrap_or("");
-    if description.encode_utf16().count() > 1000 {
-        return Err(ApiError::bad("技能说明过长。"));
-    }
-    let mut value = json!({"id":uuid::Uuid::new_v4().to_string(),"agentId":body["agentId"],"name":name,"description":description,"content":crate::error::text(&body["content"],"技能内容",16000)?,"version":version+1,"status":"proposed","createdAt":iso(now())});
+    let id = uuid::Uuid::new_v4().to_string();
+    let mut value = json!({"id":id,"agentId":body["agentId"],"name":name,"description":description,"content":content,"version":version+1,"status":"proposed","createdAt":iso(now())});
     if version > 0 {
         value["previousVersion"] = json!(version);
     }
     if let Some(source) = team_source {
         value["teamSource"] = source;
     }
-    WorkspaceStore::put_in(conn, Table::Skills, &value).await?;
+    if let Some(package) = package {
+        super::skill_packages::persist(conn, &mut value, package).await?;
+    } else {
+        super::skill_packages::persist_text(conn, &mut value).await?;
+    }
     Ok(value)
 }
+
+pub(super) async fn activate_skill(
+    conn: &mut SqliteConnection,
+    skill: &mut Value,
+    other_versions: &[Value],
+    approve: bool,
+) -> Result<()> {
+    let at = iso(now());
+    for old in other_versions {
+        if old["agentId"] == skill["agentId"]
+            && old["name"] == skill["name"]
+            && old["status"] == "active"
+        {
+            let mut old = old.clone();
+            old["status"] = json!("archived");
+            old["deactivatedAt"] = json!(at);
+            WorkspaceStore::put_in(conn, Table::Skills, &old).await?;
+        }
+    }
+    skill["status"] = json!("active");
+    skill["activatedAt"] = json!(at);
+    if approve {
+        skill["approvedAt"] = json!(at);
+    }
+    WorkspaceStore::put_in(conn, Table::Skills, skill).await?;
+    Ok(())
+}
+
 pub async fn transition(
     Extract(state): Extract<State>,
     Path((wid, id, action)): Path<(String, String, String)>,
@@ -202,28 +254,13 @@ pub async fn transition(
     if !valid {
         return Err(ApiError::new(409, "技能状态已变化，请重新查看。"));
     }
-    let at = iso(now());
     if action == "disable" {
         skill["status"] = json!("disabled");
-        skill["deactivatedAt"] = json!(at);
+        skill["deactivatedAt"] = json!(iso(now()));
+        WorkspaceStore::put_in(&mut tx, Table::Skills, &skill).await?;
     } else {
-        for mut old in all {
-            if old["agentId"] == skill["agentId"]
-                && old["name"] == skill["name"]
-                && old["status"] == "active"
-            {
-                old["status"] = json!("archived");
-                old["deactivatedAt"] = json!(at);
-                WorkspaceStore::put_in(&mut tx, Table::Skills, &old).await?;
-            }
-        }
-        skill["status"] = json!("active");
-        skill["activatedAt"] = json!(at);
-        if action == "approve" {
-            skill["approvedAt"] = json!(at);
-        }
+        activate_skill(&mut tx, &mut skill, &all, action == "approve").await?;
     }
-    WorkspaceStore::put_in(&mut tx, Table::Skills, &skill).await?;
     grant.authorize(&state).await?;
     tx.commit().await?;
     state.workspace.emit_all("update", json!({})).await;

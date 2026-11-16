@@ -11,6 +11,7 @@ pub struct Snapshot {
     pub blueprint: Value,
     pub avatar: Option<Vec<u8>>,
     pub revision: String,
+    pub(super) skill_sources: Vec<Value>,
 }
 pub fn hash(value: &Value) -> String {
     bytes_hash(value.to_string().as_bytes())
@@ -47,11 +48,20 @@ fn optional_text(value: &Value, max: usize) -> Result<String> {
     Ok(value.trim().to_owned())
 }
 pub fn validate(input: &Value, avatar: Option<&[u8]>) -> Result<Value> {
+    validate_with_sources(input, avatar, None)
+}
+
+fn validate_with_sources(
+    input: &Value,
+    avatar: Option<&[u8]>,
+    local_skills: Option<&[Value]>,
+) -> Result<Value> {
     only_fields(
         input,
         &["version", "profile", "skills", "routines", "avatar"],
     )?;
-    if input["version"] != 1 || input.to_string().len() > 2 * 1024 * 1024 {
+    let limit = if local_skills.is_some() { 8 } else { 2 } * 1024 * 1024;
+    if input["version"] != 1 || input.to_string().len() > limit {
         return Err(ApiError::bad("Bot 模板版本无效或内容过大。"));
     }
     let fields = [
@@ -77,13 +87,26 @@ pub fn validate(input: &Value, avatar: Option<&[u8]>) -> Result<Value> {
         .ok_or_else(|| ApiError::bad("Bot 模板任务数量无效。"))?;
     let mut names = std::collections::HashSet::new();
     let mut skills = Vec::new();
-    for skill in raw_skills {
+    for (index, skill) in raw_skills.iter().enumerate() {
         only_fields(skill, &["name", "description", "content"])?;
-        let name = text(&skill["name"], "技能名称", 100)?;
+        let packaged = local_skills
+            .and_then(|skills| skills.get(index))
+            .is_some_and(|source| source["skillPackage"].is_object());
+        let (name_limit, description_limit) = if packaged { (128, 2048) } else { (100, 1000) };
+        let name = text(&skill["name"], "技能名称", name_limit)?;
         if !names.insert(name.clone()) {
             return Err(ApiError::bad("Bot 模板不能包含同名启用技能。"));
         }
-        skills.push(json!({"name":name,"description":optional_text(&skill["description"],1000)?,"content":text(&skill["content"],"技能内容",16000)?}));
+        let content = if packaged {
+            skill["content"]
+                .as_str()
+                .filter(|content| content.len() <= 64 * 1024 && !content.contains('\0'))
+                .ok_or_else(|| ApiError::bad("来源技能包的内容无效。"))?
+                .to_owned()
+        } else {
+            text(&skill["content"], "技能内容", 16000)?
+        };
+        skills.push(json!({"name":name,"description":optional_text(&skill["description"],description_limit)?,"content":content}));
     }
     let mut routines = Vec::new();
     for routine in raw_routines {
@@ -182,13 +205,27 @@ pub async fn capture(conn: &mut SqliteConnection, id: &str) -> Result<Snapshot> 
     } else {
         None
     };
-    let blueprint = validate(&blueprint, avatar.as_deref())?;
+    let blueprint = validate_with_sources(&blueprint, avatar.as_deref(), Some(&skills))?;
+    let skill_sources = skills
+        .iter()
+        .map(|skill| {
+            let mut value = json!({"id":skill["id"],"version":skill["version"]});
+            if let Some(package) = skill.get("skillPackage") {
+                value["skillPackage"] = package.clone();
+                if let Some(source) = skill.get("skillPackageSource") {
+                    value["skillPackageSource"] = source.clone();
+                }
+            }
+            value
+        })
+        .collect::<Vec<_>>();
     let revision = hash(
-        &json!({"agentId":id,"configRevision":agent["configRevision"],"blueprint":blueprint,"skillSources":skills.iter().map(|s|json!({"id":s["id"],"version":s["version"]})).collect::<Vec<_>>(),"routineSources":routines.iter().map(|r|json!({"id":r["id"],"conversationId":r["conversationId"]})).collect::<Vec<_>>()}),
+        &json!({"agentId":id,"configRevision":agent["configRevision"],"blueprint":blueprint,"skillSources":skill_sources,"routineSources":routines.iter().map(|r|json!({"id":r["id"],"conversationId":r["conversationId"]})).collect::<Vec<_>>()}),
     );
     Ok(Snapshot {
         blueprint,
         avatar,
         revision,
+        skill_sources: skills,
     })
 }

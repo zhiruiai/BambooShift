@@ -15,6 +15,10 @@ use sha2::{Digest, Sha256};
 use sqlx::{Row, SqliteConnection};
 use std::collections::HashSet;
 
+mod source;
+pub(super) use source::asset_response;
+pub(crate) use source::quoted_source;
+
 pub(crate) const MAX_FILES: usize = 64;
 pub(crate) const MAX_PATH: usize = 240;
 pub(crate) const MAX_TITLE: usize = 100;
@@ -163,7 +167,7 @@ impl Publication {
         Ok(input)
     }
 
-    fn identity(&self, workspace: &str, storage_key: &str) -> (String, String) {
+    pub(crate) fn identity(&self, workspace: &str, storage_key: &str) -> (String, String) {
         let project_key = digest(
             json!([1, workspace, storage_key, self.directory])
                 .to_string()
@@ -222,13 +226,15 @@ async fn find(conn: &mut SqliteConnection, id: &str) -> Result<Option<Manifest>>
 pub(crate) async fn snapshot(
     conn: &mut SqliteConnection,
     store: &WorkspaceStore,
-    storage_key: &str,
+    identity: (String, String),
     publisher_id: &str,
     request: &Publication,
+    has_delivery: bool,
 ) -> Result<Summary> {
-    let (id, project_key) = request.identity(&store.workspace_id, storage_key);
-    if let Some(saved) = find(conn, &id).await? {
-        return Ok(saved.summary);
+    let (id, project_key) = identity;
+    let saved = find(conn, &id).await?;
+    if has_delivery {
+        return saved.map(|manifest| manifest.summary).ok_or_else(changed);
     }
     for file in &request.files {
         let path = format!("{}/{}", request.directory, file.path);
@@ -251,6 +257,9 @@ pub(crate) async fn snapshot(
     let captured = tokio::task::spawn_blocking(move || capture(&directory, &project_path, specs))
         .await
         .map_err(|_| changed())??;
+    if let Some(saved) = saved {
+        return Ok(saved.summary);
+    }
     let mut manifest = Manifest {
         summary: Summary {
             id,
@@ -362,37 +371,6 @@ pub async fn file(
     Ok(response)
 }
 
-pub(super) async fn asset_response(
-    conn: &mut SqliteConnection,
-    id: &str,
-    path: &str,
-) -> Result<Response> {
-    if !portable_path(&path) {
-        return Err(missing());
-    }
-    let manifest = find(conn, id).await?.ok_or_else(missing)?;
-    let asset = manifest
-        .files
-        .iter()
-        .find(|asset| asset.path == path)
-        .ok_or_else(missing)?;
-    let bytes: Vec<u8> =
-        sqlx::query_scalar("SELECT bytes FROM website_project_files WHERE project_id=? AND path=?")
-            .bind(id)
-            .bind(path)
-            .fetch_optional(conn)
-            .await?
-            .ok_or_else(missing)?;
-    if bytes.len() != asset.size || bytes.len() > MAX_FILE_BYTES {
-        return Err(changed());
-    }
-    attachment(
-        bytes,
-        "application/octet-stream",
-        path.rsplit('/').next().unwrap_or("asset"),
-    )
-}
-
 pub(super) async fn share_scope(
     conn: &mut SqliteConnection,
     id: &str,
@@ -434,6 +412,7 @@ pub async fn download(
             || !portable_path(&path)
             || bytes.len() != asset.size
             || bytes.len() > MAX_FILE_BYTES
+            || digest(&bytes) != asset.sha256
         {
             return Err(changed());
         }

@@ -7,6 +7,8 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import 'knowledge_editor.dart';
 import 'memory_import_screen.dart';
+import 'skill_package_data.dart';
+import 'skill_package_preview.dart';
 import 'skill_recipe_picker.dart';
 import 'team_skills_screen.dart';
 
@@ -39,7 +41,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
     if (busy || !canManageSkills) return;
     final recipe = await pickSkillRecipe(context);
     if (!mounted || recipe == null || busy || !canManageSkills) return;
-    await _edit(recipe);
+    await _edit(skillRecipeDraft(recipe));
   }
 
   Future<void> _teamSkills() async {
@@ -74,7 +76,9 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
   Future<void> _edit([Json? original]) async {
     if (busy ||
         !widget.scope.active ||
-        (widget.kind == 'skills' && !canManageSkills)) {
+        (widget.kind == 'skills' &&
+            (!canManageSkills ||
+                (original != null && bundledSkill(original))))) {
       return;
     }
     await Navigator.push(
@@ -137,11 +141,36 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: Listenable.merge([widget.scope, widget.scope.session]),
     builder: (context, _) {
+      final skills = widget.kind == 'skills';
+      final bot = widget.scope.find('agents', widget.agentId);
+      if (skills && (!widget.scope.active || bot == null)) {
+        return Scaffold(
+          appBar: AppBar(title: Text(context.tr('skills'))),
+          body: Notice(widget.scope.active ? 'unavailable' : 'scopeChanged'),
+        );
+      }
       final items = widget.scope
           .items(widget.kind)
           .where((item) => item['agentId'] == widget.agentId)
           .toList();
-      final bot = widget.scope.find('agents', widget.agentId);
+      final groups = skills
+          ? <String, List<Json>>{
+              'mobileBotSkillsEnabled': [
+                for (final item in items)
+                  if (item['status'] == 'active') item,
+              ],
+              'mobileBotSkillsReview': [
+                for (final item in items)
+                  if (item['status'] == 'proposed') item,
+              ],
+              'mobileBotSkillsHistory': [
+                for (final item in items)
+                  if (item['status'] != 'active' &&
+                      item['status'] != 'proposed')
+                    item,
+              ],
+            }
+          : {'': items};
       final local = bot != null && !isManagedBot(bot);
       final allowed =
           widget.scope.active &&
@@ -164,7 +193,7 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              if (widget.kind == 'skills') ...[
+              if (skills) ...[
                 if (bot?['name'] is String)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -173,13 +202,14 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
-                const Notice('mobileBotSkillsHelp'),
-                if (allowed)
+                if (allowed) ...[
+                  const Notice('mobileBotSkillsHelp'),
                   OutlinedButton.icon(
                     onPressed: busy ? null : _chooseSkill,
                     icon: const Icon(Icons.library_add_outlined),
                     label: Text(context.tr('mobileKnowledgeRecipes')),
                   ),
+                ],
               ],
               if (widget.kind == 'skills' &&
                   widget.scope.session.workspace?['kind'] == 'team')
@@ -209,94 +239,137 @@ class _KnowledgeScreenState extends State<KnowledgeScreen> {
                   action: 'refresh',
                   onAction: () => widget.scope.refresh(),
                 ),
-              if (items.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(context.tr('noItems')),
-                ),
-              for (final item in items)
-                Card(
-                  child: ExpansionTile(
-                    title: Text(
-                      widget.kind == 'skills'
-                          ? item['name'] as String? ?? ''
-                          : item['content'] as String? ?? '',
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: widget.kind == 'skills'
-                        ? Text(
-                            '${context.tr(item['status'] as String? ?? '')} · v${item['version'] ?? 1}',
-                          )
-                        : Text(
-                            context.tr(
-                              item['category'] as String? ?? 'context',
-                            ),
-                          ),
-                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (item['teamSource'] is Json)
-                        Text(
-                          "${context.tr('mobileTeamSkillPinned')} v${item['teamSource']['version']}",
+              for (final section in groups.entries)
+                if (section.value.isNotEmpty ||
+                    section.key == 'mobileBotSkillsEnabled' ||
+                    section.key.isEmpty) ...[
+                  if (section.key.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(4, 16, 4, 4),
+                      child: Semantics(
+                        header: true,
+                        child: Text(
+                          context.tr(section.key),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
-                      if (widget.kind == 'skills' &&
-                          (item['description'] as String? ?? '').isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Text(item['description'] as String),
-                        ),
-                      SelectableText(
-                        item['content'] as String? ?? '',
-                        style: const TextStyle(fontSize: 14, height: 1.5),
                       ),
-                      if (allowed)
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            TextButton(
-                              onPressed: busy ? null : () => _edit(item),
-                              child: Text(
+                    ),
+                  if (section.value.isEmpty)
+                    Padding(
+                      padding: EdgeInsets.all(skills ? 12 : 24),
+                      child: Text(
+                        context.tr(skills ? 'mobileBotSkillsEmpty' : 'noItems'),
+                      ),
+                    ),
+                  for (final item in section.value)
+                    Card(
+                      child: ExpansionTile(
+                        title: Text(
+                          widget.kind == 'skills'
+                              ? skillDisplayName(item)
+                              : item['content'] as String? ?? '',
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: widget.kind == 'skills'
+                            ? Text(
+                                '${context.tr(item['status'] as String? ?? '')} · v${item['version'] ?? 1}',
+                              )
+                            : Text(
                                 context.tr(
-                                  widget.kind == 'skills'
-                                      ? 'mobileKnowledgeNewVersion'
-                                      : 'edit',
+                                  item['category'] as String? ?? 'context',
                                 ),
                               ),
+                        childrenPadding: const EdgeInsets.fromLTRB(
+                          16,
+                          0,
+                          16,
+                          16,
+                        ),
+                        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (item['teamSource'] is Json)
+                            Text(
+                              "${context.tr('mobileTeamSkillPinned')} v${item['teamSource']['version']}",
                             ),
-                            if (widget.kind == 'skills')
-                              TextButton(
-                                onPressed: busy
-                                    ? null
-                                    : () => _change(
-                                        item,
+                          if (widget.kind == 'skills' &&
+                              (item['description'] as String? ?? '').isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text(item['description'] as String),
+                            ),
+                          if (skills)
+                            if ((
+                                  item['id'],
+                                  SkillPackageDetails.installed(item),
+                                )
+                                case (
+                                  final String id,
+                                  final SkillPackageDetails package,
+                                ))
+                              SkillPackagePreview(
+                                package: package,
+                                export: SkillPackageExport(
+                                  key: ValueKey(id),
+                                  scope: widget.scope,
+                                  agentId: widget.agentId,
+                                  skillId: id,
+                                  package: package,
+                                ),
+                              ),
+                          SelectableText(
+                            item['content'] as String? ?? '',
+                            style: const TextStyle(fontSize: 14, height: 1.5),
+                          ),
+                          if (allowed)
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                if (!skills || !bundledSkill(item))
+                                  TextButton(
+                                    onPressed: busy ? null : () => _edit(item),
+                                    child: Text(
+                                      context.tr(
+                                        skills
+                                            ? 'mobileKnowledgeNewVersion'
+                                            : 'edit',
+                                      ),
+                                    ),
+                                  ),
+                                if (widget.kind == 'skills')
+                                  TextButton(
+                                    onPressed: busy
+                                        ? null
+                                        : () => _change(
+                                            item,
+                                            item['status'] == 'proposed'
+                                                ? 'approve'
+                                                : item['status'] == 'active'
+                                                ? 'disable'
+                                                : 'restore',
+                                          ),
+                                    child: Text(
+                                      context.tr(
                                         item['status'] == 'proposed'
                                             ? 'approve'
                                             : item['status'] == 'active'
                                             ? 'disable'
                                             : 'restore',
                                       ),
-                                child: Text(
-                                  context.tr(
-                                    item['status'] == 'proposed'
-                                        ? 'approve'
-                                        : item['status'] == 'active'
-                                        ? 'disable'
-                                        : 'restore',
+                                    ),
                                   ),
+                                TextButton(
+                                  onPressed: busy
+                                      ? null
+                                      : () => _change(item, 'delete'),
+                                  child: Text(context.tr('delete')),
                                 ),
-                              ),
-                            TextButton(
-                              onPressed: busy
-                                  ? null
-                                  : () => _change(item, 'delete'),
-                              child: Text(context.tr('delete')),
+                              ],
                             ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
+                        ],
+                      ),
+                    ),
+                ],
             ],
           ),
         ),

@@ -1,5 +1,5 @@
 import { uiText } from './i18n';
-import type { Bootstrap, BotAgent, Conversation } from '../../shared/types';
+import type { Bootstrap, BotAgent, Conversation, Skill } from '../../shared/types';
 import type { BotBlueprint, BotInstallReceipt } from '../../shared/bot-blueprint';
 import {
   BOT_TEMPLATE_TOKEN,
@@ -17,7 +17,7 @@ export type BotCopySource = {
   avatarPath?: string;
 };
 export type RoutineInstallMode = 'preserve' | 'pause';
-export type ConfirmedBotInstall = { agent: BotAgent; conversation: Conversation };
+export type ConfirmedBotInstall = { agent: BotAgent; conversation: Conversation; skills?: Skill[] };
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
 export function createBotTemplateScope(
   options: TemplateIdentity & {

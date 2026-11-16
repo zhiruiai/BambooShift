@@ -1,6 +1,6 @@
 use super::{Table, WorkspaceStore, access, profiles};
 use crate::{
-    db::{State, iso, now},
+    db::State,
     error::{ApiError, Body, Result},
 };
 use axum::{
@@ -50,9 +50,8 @@ pub async fn create_bot(
     agent["id"] = json!(uuid::Uuid::new_v4().to_string());
     agent["configRevision"] = json!(uuid::Uuid::new_v4().to_string());
     agent["status"] = json!("idle");
-    let conversation = json!({"id":uuid::Uuid::new_v4().to_string(),"title":agent["name"],"agentIds":[agent["id"]],"isGroup":false,"updatedAt":iso(now()),"unread":0,"pinned":false});
     WorkspaceStore::put_in(conn, Table::Agents, &agent).await?;
-    WorkspaceStore::put_in(conn, Table::Conversations, &conversation).await?;
+    let conversation = super::groups::create_direct(conn, &agent).await?;
     Ok((agent, conversation))
 }
 pub async fn add_agent(

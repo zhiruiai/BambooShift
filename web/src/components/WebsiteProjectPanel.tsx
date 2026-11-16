@@ -1,19 +1,26 @@
-import { Download, FileText, House, MessageCircle, RefreshCw, Share2, X } from 'lucide-react';
-import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Download, FileText, History, House, Pencil, RefreshCw, Share2, X } from 'lucide-react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import type { Message } from '../../../shared/types';
 import { uiText } from '../i18n';
 import type {
   WebsiteProjectFile,
   WebsiteProjectSummary,
+  WebsiteProjectVersion,
   WebsiteProjectViewState,
 } from '../websiteProjects';
 import { Dialog, IconButton } from './UI';
 import { WebsiteProjectPreview } from './WebsiteProjectPreview';
+import { WebsiteVersionHistory, websiteVersionNumber } from './WebsiteVersionHistory';
 import './WebsiteProjectPanel.css';
 
-const modes = ['preview', 'source'] as const;
-type Mode = (typeof modes)[number];
+const modeLabels = {
+  preview: 'workspace:filePreviewTab',
+  source: 'workspace:filePreviewSource',
+  changes: 'workspace:websiteVersionChanges',
+} as const;
+type Mode = keyof typeof modeLabels;
 
-function useProjectOverlay() {
+export function useProjectOverlay() {
   const query = '(max-width: 900px)';
   const [overlay, setOverlay] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(query).matches,
@@ -98,7 +105,9 @@ export function WebsiteProjectPanel({
   onDownload,
   downloading,
   downloadFailed,
-  onOpenLatest,
+  versions,
+  onOpenVersion,
+  changes,
   onShare,
 }: {
   project: WebsiteProjectSummary;
@@ -109,12 +118,20 @@ export function WebsiteProjectPanel({
   onDownload: () => void;
   downloading: boolean;
   downloadFailed: boolean;
-  onOpenLatest?: () => void;
+  versions?: WebsiteProjectVersion[];
+  onOpenVersion?: (message: Message) => void;
+  changes?: ReactNode;
   onShare?: () => void;
 }) {
   const overlay = useProjectOverlay();
   const panel = useRef<HTMLElement>(null);
-  const [mode, setMode] = useState<Mode>('preview');
+  const [activeMode, setMode] = useState<Mode>('preview');
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const mode = activeMode === 'changes' && !changes ? 'preview' : activeMode;
+  const modes: Mode[] = changes ? ['preview', 'source', 'changes'] : ['preview', 'source'];
+  const showHistory = !!onOpenVersion && !!versions && versions.length > 1;
+  const latest = versions?.[0];
+  const newerDelivery = latest && latest.project.id !== project.id ? latest : undefined;
   const [entry, setEntry] = useState(project.entry);
   const [selected, setSelected] = useState(project.entry);
   const id = useId();
@@ -128,8 +145,23 @@ export function WebsiteProjectPanel({
   const downloadLabel = uiText(
     downloading ? 'workspace:websiteDownloading' : 'workspace:websiteDownload',
   );
+  const versionLabel = `${uiText('workspace:websiteVersionCurrent')} · ${uiText(
+    'workspace:websiteVersionNumber',
+    { number: websiteVersionNumber(versions ?? [], project.id) ?? project.id.slice(0, 8) },
+  )}${latest && !newerDelivery ? ` · ${uiText('workspace:websiteVersionLatest')}` : ''}`;
+  const editLabel = uiText('workspace:websiteEditVersion');
   const actions = (
     <>
+      <button
+        type="button"
+        className="website-project-action website-project-edit"
+        onClick={onDiscuss}
+        aria-label={editLabel}
+        title={editLabel}
+      >
+        <Pencil size={16} aria-hidden="true" />
+        <span>{editLabel}</span>
+      </button>
       {onShare && (
         <button
           type="button"
@@ -142,16 +174,6 @@ export function WebsiteProjectPanel({
           <span>{uiText('workspace:websiteShare')}</span>
         </button>
       )}
-      <button
-        type="button"
-        className="website-project-action"
-        onClick={onDiscuss}
-        aria-label={uiText('workspace:websiteDiscuss')}
-        title={uiText('workspace:websiteDiscuss')}
-      >
-        <MessageCircle size={17} aria-hidden="true" />
-        <span>{uiText('workspace:websiteDiscuss')}</span>
-      </button>
       <button
         type="button"
         className="website-project-action"
@@ -168,28 +190,38 @@ export function WebsiteProjectPanel({
   );
   const content = (
     <>
+      {newerDelivery && onOpenVersion && (
+        <div className="website-project-latest" role="status">
+          <span>
+            {uiText('workspace:websiteNewDeliveryAvailable', { number: newerDelivery.number })}
+          </span>
+          <button
+            type="button"
+            className="website-project-action"
+            onClick={() => onOpenVersion(newerDelivery.message)}
+          >
+            {uiText('workspace:websiteViewLatestDelivery')}
+          </button>
+        </div>
+      )}
       <div className="website-project-toolbar">
         <div
           className="website-project-tabs"
           role="tablist"
           aria-label={uiText('workspace:filePreviewMode')}
           onKeyDown={(event) => {
-            const next =
-              event.key === 'Home'
-                ? 'preview'
-                : event.key === 'End'
-                  ? 'source'
-                  : ['ArrowLeft', 'ArrowRight'].includes(event.key)
-                    ? mode === 'preview'
-                      ? 'source'
-                      : 'preview'
-                    : undefined;
-            if (!next) return;
+            const index = modes.indexOf(mode);
+            const positions: Record<string, number> = {
+              Home: 0,
+              End: modes.length - 1,
+              ArrowLeft: (index + modes.length - 1) % modes.length,
+              ArrowRight: (index + 1) % modes.length,
+            };
+            const next = positions[event.key];
+            if (typeof next !== 'number') return;
             event.preventDefault();
-            setMode(next);
-            event.currentTarget
-              .querySelectorAll<HTMLButtonElement>('[role="tab"]')
-              [modes.indexOf(next)]?.focus();
+            setMode(modes[next]);
+            event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
           }}
         >
           {modes.map((value) => (
@@ -203,21 +235,37 @@ export function WebsiteProjectPanel({
               tabIndex={mode === value ? 0 : -1}
               onClick={() => setMode(value)}
             >
-              {uiText(
-                value === 'preview' ? 'workspace:filePreviewTab' : 'workspace:filePreviewSource',
-              )}
+              {uiText(modeLabels[value])}
             </button>
           ))}
         </div>
         <div className="website-project-meta">
           <span>{uiText('workspace:websiteFileCount', { count: project.fileCount })}</span>
-          {onOpenLatest && (
-            <button type="button" className="website-project-action" onClick={onOpenLatest}>
-              {uiText('workspace:websiteNewVersion')}
+          {showHistory && (
+            <button
+              type="button"
+              className="website-project-action"
+              aria-expanded={historyOpen}
+              aria-controls={`${id}-versions`}
+              onClick={() => setHistoryOpen((open) => !open)}
+            >
+              <History size={15} aria-hidden="true" />
+              {uiText('workspace:websiteVersionHistory')}
             </button>
           )}
         </div>
       </div>
+      {showHistory && (
+        <div id={`${id}-versions`} className="website-project-history" hidden={!historyOpen}>
+          {historyOpen && (
+            <WebsiteVersionHistory
+              versions={versions}
+              currentId={project.id}
+              onOpen={onOpenVersion}
+            />
+          )}
+        </div>
+      )}
       {downloadFailed && (
         <p role="alert" className="website-project-notice">
           {uiText('workspace:websiteDownloadFailed')}
@@ -228,14 +276,15 @@ export function WebsiteProjectPanel({
         id={`${id}-content`}
         role="tabpanel"
         aria-labelledby={`${id}-${mode}`}
-        aria-busy={state.kind === 'loading'}
+        aria-busy={mode !== 'changes' && state.kind === 'loading'}
       >
-        {state.kind === 'loading' && (
+        {mode === 'changes' && changes}
+        {mode !== 'changes' && state.kind === 'loading' && (
           <p role="status" className="website-project-status">
             {uiText('workspace:websiteLoading')}
           </p>
         )}
-        {state.kind === 'error' && (
+        {mode !== 'changes' && state.kind === 'error' && (
           <div className="website-project-status" role="alert">
             <p>{uiText('workspace:websiteLoadFailed')}</p>
             <button className="secondary-button" type="button" onClick={onRetry}>
@@ -246,7 +295,7 @@ export function WebsiteProjectPanel({
         )}
         {state.kind === 'ready' && (
           <>
-            <div className="website-project-preview-pane" hidden={mode === 'source'}>
+            <div className="website-project-preview-pane" hidden={mode !== 'preview'}>
               {entry !== project.entry && (
                 <div className="website-project-current-page">
                   <IconButton
@@ -273,6 +322,7 @@ export function WebsiteProjectPanel({
       <Dialog
         scrollBody={false}
         title={project.title}
+        subtitle={versionLabel}
         className="website-project-panel website-project-overlay"
         portal
         wide
@@ -294,7 +344,10 @@ export function WebsiteProjectPanel({
       }}
     >
       <header className="website-project-header">
-        <h2 title={project.title}>{project.title}</h2>
+        <div className="website-project-heading">
+          <h2 title={project.title}>{project.title}</h2>
+          <p>{versionLabel}</p>
+        </div>
         <div className="website-project-actions">
           {actions}
           <IconButton label={uiText('common:text_3fd47edce45b')} onClick={onClose}>

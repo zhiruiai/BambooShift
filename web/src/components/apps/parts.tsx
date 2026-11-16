@@ -4,8 +4,8 @@ import { ChevronRight } from 'lucide-react';
 import { type ReactNode } from 'react';
 import type { CustomAppProposalEntry } from '../../appProposalEntry';
 import type { ConnectedApp } from '../../../../shared/app-connections';
-import type { BotAgent } from '../../../../shared/types';
-import type { PackagedSkillDraft } from '../../skillWorkflowTemplates';
+import type { BotAgent, Skill } from '../../../../shared/types';
+import type { InstallSkill } from '../../skillInstallation';
 import '../AppsDialog.css';
 export type Props = {
   workspaceId?: string;
@@ -22,7 +22,8 @@ export type Props = {
   onTemplates?: () => void;
   packagedSkills?: {
     bots: readonly Pick<BotAgent, 'id' | 'name'>[];
-    onEdit: (draft: PackagedSkillDraft) => void;
+    skills: readonly Skill[];
+    onInstall: InstallSkill;
   };
   onClose: () => void;
   onChanged?: () => void;

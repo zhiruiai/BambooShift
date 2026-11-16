@@ -46,7 +46,9 @@ void main() {
         writes.add(request.url.path);
         final draft = jsonDecode(request.body) as Json;
         expect(draft['agentId'], 'bot-a');
-        expect(draft['name'], 'Issue triage');
+        expect(draft['name'], 'issue-triage');
+        expect(draft['skillPackage']['root'], 'issue-triage');
+        expect(draft['skillPackage']['files'], isNotEmpty);
         expect(draft['content'], contains('Ask before creating'));
         return jsonResponse({
           ...draft,
@@ -91,7 +93,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(
         tester.widget<TextField>(find.byType(TextField).first).controller!.text,
-        'Issue triage',
+        'issue-triage',
       );
       expect(writes, isEmpty);
       final submit = find.widgetWithText(FilledButton, 'Submit for review');

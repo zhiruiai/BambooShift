@@ -1,0 +1,254 @@
+{
+  "source-research": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/claims.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/claims.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 核对证据 / Review the evidence\n\n- [ ] 记录一手来源的网址、发布日期、所用版本与适用范围。 / Record URL, date, version and scope of the primary source.\n- [ ] 登记该证据实际支持的主张，标记原话、推断和来源冲突。 / Connect evidence to an exact claim and flag quotations, inference and conflicts.\n- [ ] 链接指向能让读者回查的页码、段落或代码位置。 / Link to the page, section or code location that supports the claim.\n",
+      "assets/claims.csv": "claim,source_url,location,date_utc,version,scope,confidence,open_question\n"
+    }
+  },
+  "systematic-debugging": {
+    "license": "MIT",
+    "source": "https://github.com/obra/superpowers/blob/22f0b463e7a5e579904dd6211a520321035526f7/skills/systematic-debugging/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/experiment-log.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/experiment-log.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 故障调查 / Debugging investigation\n\n- [ ] 用已知版本和最小数据重现，保留精确错误和发生边界。 / Reproduce on a known revision with minimal input. Capture the exact error and the first incorrect boundary.\n- [ ] 列出能区分两个假设的最小实验。一次只改变一个变量。 / Use a discriminating experiment and change one variable at a time.\n- [ ] 在修复后以相同输入再测，并跑邻近正常路径。 / Repeat with the same input after the repair and exercise an adjacent passing path.\n",
+      "assets/experiment-log.md": "# Experiment log\n\n- Revision and environment\n- Minimal reproduction and expected outcome\n- Earliest incorrect state\n- Hypothesis and falsifying observation\n- One controlled change\n- Before and after evidence\n- Adjacent regression check\n",
+      "LICENSE.txt": "MIT License\n\nCopyright (c) 2025 Jesse Vincent\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  },
+  "behavior-first": {
+    "license": "MIT",
+    "source": "https://github.com/obra/superpowers/blob/22f0b463e7a5e579904dd6211a520321035526f7/skills/verification-before-completion/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/verification.json) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/verification.json)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 行为验收 / Behavior acceptance\n\n- [ ] 选择真实入口，经相同调用者和权限走一遍。 / Exercise the normal entry point with the intended caller and permissions.\n- [ ] 对照可观察结果，保留失败、退出或恢复的证据。 / Compare visible outcomes and retain evidence for failure or recovery.\n- [ ] 写明跑过的版本、命令、时间和遗留路径。 / Record the tested revision, command, time and paths still unverified.\n",
+      "assets/verification.json": "{\n  \"revision\": \"\",\n  \"environment\": \"\",\n  \"checks\": [\n    {\n      \"flow\": \"\",\n      \"expected\": \"\",\n      \"observed\": \"\",\n      \"status\": \"unrun\",\n      \"evidence\": \"\"\n    }\n  ]\n}\n",
+      "LICENSE.txt": "MIT License\n\nCopyright (c) 2025 Jesse Vincent\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  },
+  "frontend-design": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/ui-review.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/ui-review.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 界面检查 / Interface review\n\n- [ ] 在常用窗口尺寸检查主任务和键盘顺序。 / Exercise the main task and keyboard sequence at representative window widths.\n- [ ] 验证空白、加载、失败、重试和未保存更改。 / Exercise empty, loading, failure, retry and unsaved changes.\n- [ ] 记录实际控件名称和结果，检查长内容、对比度和焦点。 / Record control names and outcomes. Inspect long content, contrast and focus.\n",
+      "assets/ui-review.csv": "viewport,task,control,keyboard,expected_state,observed_state,evidence\n"
+    }
+  },
+  "issue-triage": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/issue.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/issue.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 工单信息 / Triage evidence\n\n- [ ] 从报告提取版本、影响范围、可复现步骤和正确行为。 / Extract the version, impact, reproduction steps and expected behavior.\n- [ ] 按可见影响给出紧急程度，并记录判断依据。 / Rank urgency by observed impact and record the rationale.\n- [ ] 链接相关工单与验证证据，去掉不必要的个人数据。 / Link related tickets and evidence with unnecessary personal data removed.\n",
+      "assets/issue.md": "# Issue\n\n## Impact and scope\n\n## Build and environment\n\n## Reproduction\n\n## Expected and observed\n\n## Evidence and related work\n\n## Suggested owner and next action\n"
+    }
+  },
+  "release-readiness": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/release-gates.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/release-gates.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 发布门槛 / Release gates\n\n- [ ] 把本次版本号绑定到实际测试、构建和已知缺陷。 / Bind the actual revision to test/build evidence and known defects.\n- [ ] 确认发布范围、回滚责任人和触发回滚的观察指标。 / Record scope, rollback owner and rollback signals.\n- [ ] 由授权负责人做发布决定，附尚待确认的阻塞项。 / Record open blockers for the authorized release owner.\n",
+      "assets/release-gates.csv": "gate,applicable,owner,status,evidence,rollback_signal,notes\n"
+    }
+  },
+  "meeting-followup": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/actions.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/actions.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 会议结果 / Meeting outcomes\n\n- [ ] 把决定、行动、未决问题分别登记并引用授权纪要。 / Record decisions, actions and open questions with the authorized notes.\n- [ ] 只有明确认领才填负责人，按原文记录截至时间和时区。 / Record owners and deadlines only as confirmed, including the time zone.\n- [ ] 为后续跟进注明依赖和检查点。 / Include dependencies and the next checkpoint.\n",
+      "assets/actions.csv": "kind,summary,owner,due_date,time_zone,status,follow_up,evidence\n"
+    }
+  },
+  "data-quality-review": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/exceptions.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in BambooShift, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside BambooShift, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/exceptions.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 BambooShift 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 数据核对 / Dataset checks\n\n- [ ] 定义观察对象、预期主键和纳入条件。 / Define the observation unit, expected key and inclusion criteria.\n- [ ] 登记重复、空值及相同口径下的行数与总量。 / Count duplicate keys, blanks and totals under comparable filters.\n- [ ] 列出显著例外及其决策影响。 / Record material exceptions and their impact on the decision.\n",
+      "assets/exceptions.csv": "check,record_reference,expected,observed,affected_count,severity,next_step\n",
+      "scripts/profile_csv.py": "import argparse\nimport csv\nimport json\nfrom collections import Counter\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Profile a UTF-8 CSV without altering the source.\")\n    parser.add_argument(\"csv_file\")\n    parser.add_argument(\"--key\", help=\"Column checked for blank and duplicate values\")\n    args = parser.parse_args()\n    with open(args.csv_file, encoding=\"utf-8-sig\", newline=\"\") as source:\n        reader = csv.reader(source, strict=True)\n        columns = next(reader, [])\n        if not columns or len(set(columns)) != len(columns) or not all(columns):\n            parser.error(\"the first row must contain unique, non-empty column names\")\n        if args.key and args.key not in columns:\n            parser.error(\"--key must match an existing column\")\n        key_index = columns.index(args.key) if args.key else None\n        blanks = Counter()\n        keys = Counter()\n        total = 0\n        skipped = 0\n        for row in reader:\n            total += 1\n            if len(row) != len(columns):\n                skipped += 1\n                continue\n            for column, value in zip(columns, row):\n                if not value.strip():\n                    blanks[column] += 1\n            if key_index is not None and row[key_index].strip():\n                keys[row[key_index]] += 1\n    print(json.dumps({\n        \"rows\": total,\n        \"wrong_width_rows\": skipped,\n        \"blank_cells_by_column\": {column: blanks[column] for column in columns},\n        \"key\": args.key,\n        \"duplicate_key_rows\": sum(count - 1 for count in keys.values()),\n    }, ensure_ascii=False))\n\nif __name__ == \"__main__\":\n    try:\n        main()\n    except (OSError, UnicodeError, csv.Error) as error:\n        raise SystemExit(str(error)) from error\n"
+    },
+    "compatibility": "The optional CSV checker requires Python 3. No Python dependencies beyond the standard library."
+  },
+  "account-health-review": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/account-signals.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/account-signals.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 客户健康 / Account evidence\n\n- [ ] 使用一致时间窗口和稳定客户标识，标记数据缺失。 / Use a comparable period and stable account keys. Flag missing coverage.\n- [ ] 由约定标准解释正面信号和风险，附原记录位置。 / Link observations to agreed positive or risk criteria.\n- [ ] 把建议动作和对外草稿交给明确的跟进人。 / Assign the next review or draft to a confirmed owner.\n",
+      "assets/account-signals.csv": "account_reference,observed_at,metric,baseline,value,criterion,evidence,followup\n"
+    }
+  },
+  "product-spec": {
+    "license": "MIT",
+    "source": "https://github.com/mattpocock/skills/blob/5863806dd4e15c63174bee4e7515a4256792ecfa/skills/engineering/to-spec/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/acceptance.yaml) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/acceptance.yaml)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 需求与验收 / Requirements and acceptance\n\n- [ ] 先界定用户、目标、现有流程和成功信号。 / Define user, goal, current flow and success signals first.\n- [ ] 给每条需求安排一项从用户入口可观察的验证。 / Give each requirement a user-observable acceptance check.\n- [ ] 标记不能从用户原话确定的决策并列出影响。 / Flag decisions where the user has not confirmed a choice.\n",
+      "assets/acceptance.yaml": "goal: \"\"\nconstraints: []\nrequirements:\n  - id: \"\"\n    user_story: \"\"\n    given: \"\"\n    when: \"\"\n    then: \"\"\n    evidence: \"\"\nopen_decisions: []\n",
+      "LICENSE.txt": "MIT License\n\nCopyright (c) 2026 Matt Pocock\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  },
+  "team-handoff": {
+    "license": "MIT",
+    "source": "https://github.com/mattpocock/skills/blob/5863806dd4e15c63174bee4e7515a4256792ecfa/skills/productivity/handoff/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/handoff.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/handoff.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 交接证据 / Handoff evidence\n\n- [ ] 列出已确认的要求、最后一次更改和接手边界。 / Record agreed requirements, latest changes and the handoff boundary.\n- [ ] 给出已验证结果与原始文件或任务链接。 / Link verified outcomes to files or tasks.\n- [ ] 写清下一项可以执行的工作、负责人和需要的输入。 / Specify the next concrete action, owner and inputs.\n",
+      "assets/handoff.md": "# Handoff\n\n## Goal and latest decisions\n\n## Checked changes and evidence\n\n## Work in progress\n\n## Inputs and access for the next step\n\n## Next owner and action\n",
+      "LICENSE.txt": "MIT License\n\nCopyright (c) 2026 Matt Pocock\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\n"
+    }
+  },
+  "react-performance": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/measurements.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/measurements.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 性能证据 / Performance comparison\n\n- [ ] 锁定浏览器、构建和硬件条件，在同一操作上重复测量。 / Use the same browser, build configuration, hardware and interaction across repeated runs.\n- [ ] 定位主线程、网络、包体或渲染中的实际耗时。 / Trace a measured cost to main thread, network, bundle or rendering.\n- [ ] 保留修改前后指标和回归检查。 / Save before/after metrics and functional checks.\n",
+      "assets/measurements.csv": "scenario,build,device,metric,unit,before,after,samples,trace\n"
+    }
+  },
+  "agent-desktop": {
+    "license": "Apache-2.0",
+    "source": "https://github.com/vercel-labs/agent-desktop/blob/46d2adf885002633b77d5a9956c9464b24f61431/skills/agent-desktop/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/activity-log.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/activity-log.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 桌面操作记录 / Desktop operation record\n\n- [ ] 核对实际执行电脑与所需能力，读取当前版本命令帮助。 / Verify the selected computer and required capability. Read the installed command help.\n- [ ] 记录目标应用、观察结果和授权动作。 / Record the target application, observation and approved action.\n- [ ] 操作后重新观察目标，以应用状态记录结果。 / Re-observe the target after the action and record its application state.\n",
+      "assets/activity-log.csv": "execution_device,app,observation,approved_action,observed_result,disposition\n",
+      "LICENSE.txt": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n"
+    }
+  },
+  "web-app-testing": {
+    "license": "MIT",
+    "source": "https://github.com/github/awesome-copilot/blob/8ecd5b17f02fe5fbebf35eccd1867265eded811f/skills/webapp-testing/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/test-cases.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/test-cases.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 浏览器测试矩阵 / Browser test matrix\n\n- [ ] 从真实入口覆盖成功、失败和明确恢复路径。 / Start from the actual entry point and cover success, failure and explicit recovery.\n- [ ] 给每项检查保留可重现步骤和可见证据。 / Keep reproducible steps and visible evidence for each check.\n- [ ] 用一次无害重载验证要求持久化的改动。 / Reload to verify changes whose persistence is required.\n",
+      "assets/test-cases.csv": "case,viewport,entry,steps,expected,observed,status,evidence\n",
+      "LICENSE.txt": "MIT License\n\nCopyright GitHub, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    }
+  },
+  "security-review": {
+    "license": "MIT",
+    "source": "https://github.com/github/awesome-copilot/blob/8ecd5b17f02fe5fbebf35eccd1867265eded811f/skills/security-review/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/finding.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/finding.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 验证可达性 / Verify reachability\n\n- [ ] 标出身份、对象权限和信任边界的检查位置。 / Identify checks for identity, object permissions and trust boundaries.\n- [ ] 从用户输入追踪到存储、网络或执行点。 / Trace user-controlled inputs to storage, network or execution.\n- [ ] 记录真实可利用条件、影响、验证方式和最小修复。 / State prerequisites, impact, evidence and the smallest fix.\n",
+      "assets/finding.md": "# Finding\n\n- Affected entry point and code location\n- Prerequisites and authorization\n- Reproduction with synthetic data\n- Impact and evidence\n- Fix and regression check\n",
+      "LICENSE.txt": "MIT License\n\nCopyright GitHub, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    }
+  },
+  "documentation-writer": {
+    "license": "MIT",
+    "source": "https://github.com/github/awesome-copilot/blob/8ecd5b17f02fe5fbebf35eccd1867265eded811f/skills/documentation-writer/SKILL.md",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/task-guide.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/task-guide.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 文档走查 / Documentation review\n\n- [ ] 对照当前产品验证按钮、命令、链接和版本。 / Check buttons, commands, links and versions against the running product.\n- [ ] 明确第一步需要的条件、成功信号和失败恢复。 / Include prerequisites, observable success and failure recovery.\n- [ ] 让另一位读者能在没有上下文时完成目标任务。 / Make the task reproducible by a reader without the original context.\n",
+      "assets/task-guide.md": "# Task guide\n\n## Outcome and intended reader\n\n## Prerequisites\n\n## Steps\n\n## Check the result\n\n## If a step fails\n\n## Support and version\n",
+      "LICENSE.txt": "MIT License\n\nCopyright GitHub, Inc.\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE."
+    }
+  },
+  "decision-brief": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/options.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/options.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 决策比较 / Compare options\n\n- [ ] 与授权决策人确认期限、必需条件和比较标准。 / Confirm deadline, constraints and criteria with the authorized decision owner.\n- [ ] 按一致标准比较实际候选方案，标记证据不足或不可逆影响。 / Compare feasible options consistently and flag missing evidence or irreversible effects.\n- [ ] 说明推荐的改变条件，并记录确认。 / Note what would change the recommendation and record confirmation.\n",
+      "assets/options.csv": "option,criterion,scope,value,evidence,tradeoff,reversible,open_question\n"
+    }
+  },
+  "website-delivery": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/delivery-review.md) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/delivery-review.md)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 网站交付验收 / Website delivery checks\n\n- [ ] 确认原线程和交付项目，记录基线版本及要求改动。 / Identify the source chat and delivery project. Record the baseline version and requested change.\n- [ ] 打开实际预览，核验关键交互并回看旧版。 / Open the preview, verify key interactions and revisit the old version.\n- [ ] 核对版本对比，再从交付所在原线程继续，记录链接和版本。 / Compare the revisions, then reopen the source chat and record the links and versions.\n",
+      "assets/delivery-review.md": "# Website delivery review\n\n- Source chat and delivery identity\n- Baseline and new version\n- Requested change and acceptance outcome\n- Viewport and interactions checked\n- Old preview, comparison, and revision link\n- What remains to review\n"
+    }
+  },
+  "spreadsheet-review": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/workbook-review.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in BambooShift, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside BambooShift, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/workbook-review.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 BambooShift 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
+    },
+    "files": {
+      "references/review-checklist.md": "# 表格复核 / Workbook review\n\n- [ ] 记录工作表、表头、区域、计量单位和缺失值约定。 / Record sheets, headers, ranges, units and missing value conventions.\n- [ ] 抽查公式是否覆盖同一范围，验证关键小计的输入与输出。 / Check formula ranges and reconcile key subtotals with their inputs.\n- [ ] 记录公式和 CSV 检查的覆盖边界，保留原文件。 / Record whether each check covers formulas or CSV values. Preserve the input workbook.\n",
+      "assets/workbook-review.csv": "sheet,range,check,expected,observed,evidence,impact,status\n",
+      "scripts/profile_csv.py": "import argparse\nimport csv\nimport json\nfrom collections import Counter\n\ndef main():\n    parser = argparse.ArgumentParser(description=\"Profile a UTF-8 CSV without altering the source.\")\n    parser.add_argument(\"csv_file\")\n    parser.add_argument(\"--key\", help=\"Column checked for blank and duplicate values\")\n    args = parser.parse_args()\n    with open(args.csv_file, encoding=\"utf-8-sig\", newline=\"\") as source:\n        reader = csv.reader(source, strict=True)\n        columns = next(reader, [])\n        if not columns or len(set(columns)) != len(columns) or not all(columns):\n            parser.error(\"the first row must contain unique, non-empty column names\")\n        if args.key and args.key not in columns:\n            parser.error(\"--key must match an existing column\")\n        key_index = columns.index(args.key) if args.key else None\n        blanks = Counter()\n        keys = Counter()\n        total = 0\n        skipped = 0\n        for row in reader:\n            total += 1\n            if len(row) != len(columns):\n                skipped += 1\n                continue\n            for column, value in zip(columns, row):\n                if not value.strip():\n                    blanks[column] += 1\n            if key_index is not None and row[key_index].strip():\n                keys[row[key_index]] += 1\n    print(json.dumps({\n        \"rows\": total,\n        \"wrong_width_rows\": skipped,\n        \"blank_cells_by_column\": {column: blanks[column] for column in columns},\n        \"key\": args.key,\n        \"duplicate_key_rows\": sum(count - 1 for count in keys.values()),\n    }, ensure_ascii=False))\n\nif __name__ == \"__main__\":\n    try:\n        main()\n    except (OSError, UnicodeError, csv.Error) as error:\n        raise SystemExit(str(error)) from error\n"
+    },
+    "compatibility": "The optional CSV checker requires Python 3. No Python dependencies beyond the standard library."
+  },
+  "pdf-review": {
+    "license": "MIT",
+    "source": "BambooShift",
+    "instruction": {
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/page-evidence.csv) to record the result.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/page-evidence.csv)记录结果。"
+    },
+    "files": {
+      "references/review-checklist.md": "# PDF 证据 / PDF evidence\n\n- [ ] 按文件实际页序编号，印刷页码不同则两个都标。 / Cite physical PDF pages and printed page numbers where they differ.\n- [ ] 区分直接提取、图像识别和手工核对。 / Record whether text, OCR or manual inspection produced the evidence.\n- [ ] 对关键表格记录单位、脚注和跨页表头。 / Check units, footnotes and continued headings in consequential tables.\n",
+      "assets/page-evidence.csv": "file,page_index,printed_page,section_or_table,claim,evidence,extraction_method,verification\n"
+    }
+  }
+}

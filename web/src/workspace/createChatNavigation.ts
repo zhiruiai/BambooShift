@@ -96,7 +96,7 @@ export function createChatNavigation(read: () => ChatNavigationContext) {
     setReactionPicker(null);
     setModal(null);
   }
-  function beginReply(message: Message) {
+  function beginReply(message: Message, target?: { threadRootId?: string }) {
     const { userName, data, updateComposer, setReactionPicker, composerRef, threadRootId } = read();
 
     const author =
@@ -105,7 +105,11 @@ export function createChatNavigation(read: () => ChatNavigationContext) {
         : data?.agents.find((a) => a.id === message.agentId)?.name ||
           historicalAuthor(message)?.name ||
           uiText('workspace:text_0583e9855b7b');
-    updateComposer(composerScopeKey(message.conversationId, threadRootId), (previous) => ({
+    const composerKey = composerScopeKey(
+      message.conversationId,
+      target ? target.threadRootId : threadRootId,
+    );
+    updateComposer(composerKey, (previous) => ({
       ...previous,
       replyTo: {
         id: message.id,

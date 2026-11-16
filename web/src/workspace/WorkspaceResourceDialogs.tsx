@@ -12,8 +12,11 @@ import { previewFilePath } from '../filePreview';
 import { currentWorkspaceId, workspaceApiUrl } from '../workspace-scope';
 import type { OpenWebsiteProject } from '../websiteProjects';
 import type { WorkspaceModel } from './types';
+import type { Skill } from '../../../shared/types';
+import { acceptInstalledSkill, skillInstallBody } from '../skillInstallation';
 
 export function WorkspaceResourceDialogs({
+  api,
   modal,
   data,
   selected,
@@ -36,10 +39,9 @@ export function WorkspaceResourceDialogs({
   appsShareId,
   appsProviderId,
   appsCustomProposal,
-  setSkillsAgentId,
-  setPackagedSkillDraft,
   members,
   openTemplates,
+  acceptConfirmedTeam,
   fileRef,
   openComputer,
   openSettings,
@@ -58,6 +60,7 @@ export function WorkspaceResourceDialogs({
   openWebsiteSearchResult,
 }: Pick<
   WorkspaceModel,
+  | 'api'
   | 'modal'
   | 'data'
   | 'selected'
@@ -80,10 +83,9 @@ export function WorkspaceResourceDialogs({
   | 'appsShareId'
   | 'appsProviderId'
   | 'appsCustomProposal'
-  | 'setSkillsAgentId'
-  | 'setPackagedSkillDraft'
   | 'members'
   | 'openTemplates'
+  | 'acceptConfirmedTeam'
   | 'fileRef'
   | 'openComputer'
   | 'openSettings'
@@ -276,17 +278,27 @@ export function WorkspaceResourceDialogs({
           onTemplates={() => openTemplates({ kind: 'library' })}
           packagedSkills={{
             bots: canManage ? data.agents.filter((agent) => !isSharedBot(agent)) : [],
-            onEdit: (draft) => {
-              if (
-                !canManage ||
-                !currentUserId ||
-                !sendScope.current(sendScope.ticket()) ||
-                !data.agents.some((agent) => agent.id === draft.agentId && !isSharedBot(agent))
-              )
-                return;
-              setSkillsAgentId(draft.agentId);
-              setPackagedSkillDraft({ ...draft, scope: navigationScope });
-              setModal('skills');
+            skills: data.skills,
+            onInstall: async (draft, expectedActiveId) => {
+              const ticket = sendScope.ticket();
+              const installed = await api<Skill>(
+                '/skills/install',
+                'POST',
+                skillInstallBody(draft, expectedActiveId),
+              ).catch((cause: unknown) => {
+                if (sendScope.current(ticket)) void refresh();
+                throw cause;
+              });
+              if (!sendScope.current(ticket))
+                throw new Error(uiText('workspace:text_75d366e971e2'));
+              sync.written();
+              setData((previous) =>
+                previous
+                  ? { ...previous, skills: acceptInstalledSkill(previous.skills, installed) }
+                  : previous,
+              );
+              void refresh();
+              return installed;
             },
           }}
           onClose={() => setModal(null)}
@@ -307,7 +319,19 @@ export function WorkspaceResourceDialogs({
           key={`${navigationScope}:${JSON.stringify(templateDialog)}`}
           request={templateDialog}
           onOpenPublic={navigateTemplatePage}
-          onTeamTemplates={() => openCreate(undefined, 'team')}
+          teamTemplates={{
+            agents: data.agents,
+            modelConfigured: data.settings.configured,
+            modelLabel: data.settings.profileName || data.settings.model,
+            onCreated: (_, _start, confirmed) => {
+              if (!sendScope.current(sendScope.ticket())) return;
+              sync.written();
+              acceptConfirmedTeam(confirmed);
+              openConversation(confirmed.conversation);
+              setModal(null);
+              void refresh();
+            },
+          }}
           workspaceId={account?.workspace.id || currentWorkspaceId()}
           userId={currentUserId}
           owner={canManage}
@@ -333,6 +357,12 @@ export function WorkspaceResourceDialogs({
                         (item) => item.id !== confirmed.conversation.id,
                       ),
                       confirmed.conversation,
+                    ],
+                    skills: [
+                      ...previous.skills,
+                      ...(confirmed.skills || []).filter(
+                        (skill) => !previous.skills.some((item) => item.id === skill.id),
+                      ),
                     ],
                   }
                 : previous,

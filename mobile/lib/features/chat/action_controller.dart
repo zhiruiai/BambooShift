@@ -38,10 +38,11 @@ class ActionController extends ChangeNotifier {
       current?.status == 'pending' &&
       current!.canDecide(scope.userId, scope.owner);
 
-  bool get canApprove =>
-      canDecide &&
-      (!isShellAction(current!) ||
-          shellRequestReadable(current!.value['payload']));
+  bool get canApprove => canDecide && _approvalInputReadable(current!);
+
+  bool _approvalInputReadable(ChatAction action) =>
+      (!action.isMacAppAction || action.macAppRequestReadable) &&
+      (!isShellAction(action) || shellRequestReadable(action.value['payload']));
 
   ExactAppRead? alwaysAllowReview(ChatAction action) =>
       scope.personalOwner &&
@@ -119,9 +120,7 @@ class ActionController extends ChangeNotifier {
       action != null &&
       action.status == 'pending' &&
       action.fingerprint == displayed &&
-      (!approve ||
-          !isShellAction(action) ||
-          shellRequestReadable(action.value['payload'])) &&
+      (!approve || _approvalInputReadable(action)) &&
       action.canDecide(scope.userId, scope.owner) &&
       (!alwaysAllow || alwaysAllowReview(action) != null);
 
@@ -134,14 +133,20 @@ class ActionController extends ChangeNotifier {
     uncertain = false;
   }
 
-  Future<void> decide(bool approve, {String? alwaysAllowFingerprint}) async {
+  Future<void> decide(
+    bool approve, {
+    String? alwaysAllowFingerprint,
+    String? visibleMacAppFingerprint,
+  }) async {
     if (!canDecide || (approve && !canApprove)) return;
     final displayed = current!.fingerprint;
     final alwaysAllow = alwaysAllowFingerprint != null;
-    if (alwaysAllow &&
-        (!approve ||
-            alwaysAllowFingerprint != displayed ||
-            alwaysAllowReview(current!) == null)) {
+    if ((visibleMacAppFingerprint != null &&
+            visibleMacAppFingerprint != displayed) ||
+        (alwaysAllow &&
+            (!approve ||
+                alwaysAllowFingerprint != displayed ||
+                alwaysAllowReview(current!) == null))) {
       error = 'mobileChatActionChanged';
       notifyListeners();
       return;

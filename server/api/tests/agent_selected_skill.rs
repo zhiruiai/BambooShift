@@ -4,6 +4,7 @@ mod workspace_support;
 
 use agent_delegation_support::{Group, Model, call, finish, wait_gate};
 use axum::{body::Body, http::Response};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use knowledge_acceptance_support::{approve, latest_tool, owner, propose, result, system, tools};
 use openbot_backend::workspace::Table;
 use serde_json::{Value, json};
@@ -43,6 +44,71 @@ async fn turn(group: &Group, input: &Value) -> Value {
     })
     .await
     .expect("Selected-skill task did not finish")
+}
+
+#[tokio::test]
+async fn agent_skills_package_loads_reviewed_instructions_and_exact_resources_on_demand() {
+    let group = Group::new().await;
+    let bot = &group.ids[0];
+    let payload = json!({"agentId":bot,"name":"sample-audit","description":"Verify a sample audit result.",
+    "content":"AUDIT_INSTRUCTIONS: read references/fixture.md before answering.","skillPackage":{
+    "root":"sample-audit","frontmatter":{"license":"MIT","metadata":{"version":"1"}},"files":[
+        {"path":"references/fixture.md","base64":STANDARD.encode("RESOURCE_CANARY_Z36")},
+        {"path":"assets/seed.bin","base64":STANDARD.encode([0,255,8])}
+    ]}});
+    let mut invalid = payload.clone();
+    invalid["skillPackage"]["files"][0]["path"] = json!("references/../fixture.md");
+    assert_eq!(owner(&group.f, "POST", "/skills", invalid).await.0, 400);
+    let (status, draft) = owner(&group.f, "POST", "/skills", payload).await;
+    assert_eq!(status, 201, "{draft}");
+    assert_eq!(draft["version"], 1);
+    assert_eq!(draft["skillPackage"]["files"].as_array().unwrap().len(), 3);
+    assert!(!draft.to_string().contains("RESOURCE_CANARY"));
+    assert_eq!(send(&group, message(bot, &draft)).await.0, 409);
+    let skill = approve(&group.f, &draft, None).await;
+    let id = skill["id"].as_str().unwrap().to_owned();
+    let model = Model::new(Arc::new(move |body| {
+        let id = id.clone();
+        Box::pin(async move {
+            let instructions = system(&body);
+            assert!(instructions.contains("sample-audit"));
+            assert!(!instructions.contains("AUDIT_INSTRUCTIONS"));
+            assert!(!instructions.contains("RESOURCE_CANARY"));
+            assert!(tools(&body).contains(&"read_skill_resource"));
+            if let Some(receipt) = latest_tool(&body) {
+                let read = result(receipt);
+                if read.get("path").is_some() {
+                    assert_eq!(read["content"], "RESOURCE_CANARY_Z36");
+                    return finish("Package result verified.");
+                }
+                assert_eq!(read["skillPackage"]["root"], "sample-audit");
+                assert!(
+                    read["content"]
+                        .as_str()
+                        .unwrap()
+                        .contains("AUDIT_INSTRUCTIONS")
+                );
+                call(
+                    "read_skill_resource",
+                    json!({"skillId":id,"path":"references/fixture.md"}),
+                )
+            } else {
+                call("read_skill", json!({"skillId":id}))
+            }
+        })
+    }))
+    .await;
+    group.configure(&model).await;
+    assert_eq!(send(&group, message(bot, &skill)).await.0, 202);
+    assert!(
+        group
+            .done()
+            .await
+            .iter()
+            .any(|m| m["content"] == "Package result verified.")
+    );
+    assert_eq!(model.calls.lock().await.len(), 3);
+    group.close().await;
 }
 
 #[tokio::test]

@@ -5,11 +5,13 @@ import type { Skill } from '../../../shared/types';
 import { createFormSubmission, type FormSaveResult } from '../formSubmission';
 import {
   skillAction,
+  skillDisplayName,
   skillStatusLabel,
   skillTransitionLabel,
   type SkillAction,
 } from '../skillVersions';
 import { Markdown } from './Markdown';
+import { SkillPackageDetails } from './SkillPackageDetails';
 import './SkillVersions.css';
 
 export function SkillVersionReview({
@@ -57,7 +59,7 @@ export function SkillVersionReview({
       </button>
       <div className="skill-review-heading">
         <strong>
-          {skill.name} · v{skill.version}
+          {skillDisplayName(skill)} · v{skill.version}
         </strong>
         <span
           className={`pill ${skill.status === 'proposed' ? 'pending' : skill.status === 'active' ? '' : 'skill-muted'}`}
@@ -77,6 +79,7 @@ export function SkillVersionReview({
       <div className="skill-content skill-review-content">
         <Markdown text={skill.content} />
       </div>
+      {skill.skillPackage && <SkillPackageDetails {...skill.skillPackage} skillId={skill.id} />}
       {current && current.id !== skill.id && (
         <details className="skill-version-compare">
           <summary>
@@ -86,6 +89,9 @@ export function SkillVersionReview({
           <div className="skill-content">
             <Markdown text={current.content} />
           </div>
+          {current.skillPackage && (
+            <SkillPackageDetails {...current.skillPackage} skillId={current.id} />
+          )}
         </details>
       )}
       {changed && (

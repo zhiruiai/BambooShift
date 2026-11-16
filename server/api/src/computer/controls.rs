@@ -108,7 +108,11 @@ pub async fn start(
     authorize().await?;
     let slot = key(controller, agent).await;
     let target = target(controller, agent, authorize.clone()).await?;
-    if !super::takeover_frames::supported(&target.state().await) {
+    let state = target.state().await;
+    if state["surface"] == "accessibility" {
+        return Err(ApiError::new(409, "请直接在这台 Mac 上操作已打开的应用。"));
+    }
+    if !super::takeover_frames::supported(&state) {
         return Err(model::takeover_upgrade());
     }
     if controller
@@ -263,22 +267,37 @@ pub async fn end(
 }
 pub async fn surface(
     controller: &Arc<Controller>,
+    user: &str,
     agent: Option<&str>,
     body: &Value,
     authorize: Authority,
 ) -> Result<Value> {
     let surface = body["surface"]
         .as_str()
-        .filter(|s| ["browser", "desktop"].contains(s))
+        .filter(|s| ["browser", "desktop", "accessibility"].contains(s))
         .ok_or_else(|| ApiError::bad("电脑界面类型无效。"))?;
-    if surface == "desktop" && body["confirm"] != true {
-        return Err(ApiError::bad("请明确确认开启电脑桌面。"));
+    if surface != "browser" && body["confirm"] != true {
+        return Err(ApiError::bad("请明确确认开启此电脑操作方式。"));
     }
     let _guard = controller.management.lock().await;
     controller.active()?;
     authorize().await?;
     let target = target(controller, agent, authorize.clone()).await?;
+    if surface == "accessibility" {
+        target
+            .request(Request::get("/health"), authorize.clone())
+            .await?;
+    }
     let state = target.state().await;
+    if surface == "accessibility"
+        && (!target.saved.has(model::MACOS_ACCESSIBILITY)
+            || state["desktop"]["accessibilityReady"] != true)
+    {
+        return Err(ApiError::new(
+            403,
+            "这台电脑尚未提供可用的 Mac 辅助功能控制。",
+        ));
+    }
     if surface == "desktop"
         && state["desktop"]["kind"] != "virtual"
         && !target.saved.has(model::HOST_DESKTOP)
@@ -315,6 +334,9 @@ pub async fn surface(
     target
         .request(Request::get("/health"), authorize.clone())
         .await?;
+    if controller.is_local().await {
+        super::local_surface::remember(controller, user, surface)?;
+    }
     controller.changed();
     match agent {
         Some(agent) => screen_bindings::status(controller, agent, authorize).await,

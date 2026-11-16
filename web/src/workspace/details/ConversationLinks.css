@@ -1,11 +1,11 @@
-.conversation-library-links {
+.conversation-library-link {
   display: grid;
-  gap: 5px;
-  margin-bottom: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
 }
-.conversation-library-links a {
+.conversation-library-link a {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) 14px;
+  grid-template-columns: 16px minmax(0, 1fr);
   align-items: center;
   gap: 9px;
   padding: 8px;
@@ -13,23 +13,20 @@
   color: var(--text-secondary);
   text-decoration: none;
 }
-.conversation-library-links a:hover {
+.conversation-library-link a:hover {
   background: var(--surface-hover);
 }
-.conversation-library-links strong,
-.conversation-library-links small {
+.conversation-library-link strong,
+.conversation-library-link small {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.conversation-library-links strong {
+.conversation-library-link strong {
   font-size: 13px;
   color: var(--text);
 }
-.conversation-library-links small {
+.conversation-library-link small {
   font-size: 12px;
-}
-.conversation-library-links > button {
-  justify-self: start;
 }

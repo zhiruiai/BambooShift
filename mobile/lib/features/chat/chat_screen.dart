@@ -20,6 +20,7 @@ import 'attachment_controller.dart';
 import 'attachment_panel.dart';
 import 'attachment_selection.dart';
 import '../bots/group_settings.dart';
+import '../bots/knowledge_screen.dart';
 import '../computer/computer_screen.dart';
 import '../settings/model_settings.dart';
 import '../voice/voice_controller.dart';

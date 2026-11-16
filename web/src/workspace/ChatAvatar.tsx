@@ -1,62 +1,16 @@
-import { canDecideAction, type ApprovalActor } from '../../../shared/approvals';
-import { parseChatQuestion } from '../../../shared/chat-questions';
+import type { ApprovalActor } from '../../../shared/approvals';
 import type { BotAgent, Message } from '../../../shared/types';
-import { parseAppAction } from '../components/AppActionCard';
-import { Avatar, type AvatarMotion } from '../components/Avatar';
-import { remoteShellResultStatus } from '../components/RemoteShellDetails';
-import {
-  mayDecideComputerAction,
-  parseChatComputerAction,
-} from '../components/computer/chatApproval';
+import { Avatar } from '../components/Avatar';
+import { messageAvatarMotion } from '../avatarActivity';
 import { uiText } from '../i18n';
-
-export function messageAvatarMotion(
-  message: Message,
-  streaming: boolean,
-  actor: ApprovalActor,
-): AvatarMotion | undefined {
-  if (message.kind === 'question' && message.status === 'done' && message.agentId) {
-    const question = parseChatQuestion(message.metadata?.question);
-    return question?.status === 'pending' && question.requester.userId === actor.userId
-      ? 'attention'
-      : undefined;
-  }
-  if (message.kind === 'computer') {
-    const action = parseChatComputerAction(message.metadata?.action);
-    if (mayDecideComputerAction(message, action, actor)) return 'attention';
-    if (action?.status === 'running') return 'working';
-    if (action?.status === 'error') return 'error';
-    if (action?.status !== 'done') return;
-    if (action.type === 'local_shell' || action.type === 'remote_shell') {
-      const outcome = remoteShellResultStatus(action.result)?.kind;
-      return outcome === 'done' || outcome === 'error' ? outcome : undefined;
-    }
-    return 'done';
-  }
-  if (message.kind === 'approval') {
-    const action = parseAppAction(message.metadata?.appAction);
-    if (
-      action?.status === 'pending' &&
-      action.agentId === message.agentId &&
-      action.conversationId === message.conversationId &&
-      canDecideAction(action.requester, actor)
-    )
-      return 'attention';
-    if (action?.status === 'running') return 'working';
-    if (action?.status === 'error' || (action?.status === 'done' && action.result?.isError))
-      return 'error';
-    return action?.status === 'done' ? 'done' : undefined;
-  }
-  if (streaming) return 'working';
-  if (message.status === 'error') return 'error';
-  return message.status === 'done' ? 'done' : undefined;
-}
+export { messageAvatarMotion } from '../avatarActivity';
 
 export function ChatMessageAvatar({
   message,
   agent,
   actor,
   streaming,
+  active = false,
   grouped,
   teammate,
 }: {
@@ -64,17 +18,22 @@ export function ChatMessageAvatar({
   agent?: Partial<BotAgent>;
   actor: ApprovalActor;
   streaming: boolean;
+  active?: boolean;
   grouped: boolean;
   teammate?: string;
 }) {
+  const state = messageAvatarMotion(message, streaming, actor);
+  const motion = !active && (state === 'working' || state === 'thinking') ? undefined : state;
   return (
     <div className="message-avatar">
       {!grouped && message.role === 'assistant' && (
         <Avatar
           agent={agent}
-          size={23}
-          motion={messageAvatarMotion(message, streaming, actor)}
+          size={32}
+          motion={motion}
+          sustain={active && (motion === 'working' || motion === 'thinking')}
           awaitingCompletion={
+            active &&
             (!message.kind || message.kind === 'text') &&
             message.status === 'running' &&
             message.metadata?.streamEnded === true
@@ -98,10 +57,14 @@ export function ChatWorkingAvatar({
   actor: ApprovalActor;
 }) {
   const motion = last?.role === 'assistant' ? messageAvatarMotion(last, false, actor) : undefined;
-  if (motion === 'attention' || motion === 'working') return null;
+  if (
+    (!agent || last?.agentId === agent.id) &&
+    (motion === 'attention' || motion === 'working' || motion === 'thinking')
+  )
+    return null;
   return (
     <div className="working-line" role="status">
-      <Avatar key={agent?.id} agent={agent} size={22} motion="thinking" />
+      <Avatar key={agent?.id} agent={agent} size={32} motion="thinking" sustain />
       <span className="typing-dots" aria-hidden="true">
         <i />
         <i />

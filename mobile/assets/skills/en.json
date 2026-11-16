@@ -100,5 +100,23 @@
     "name": "Team decision brief",
     "description": "Compare options against agreed criteria and prepare a recommendation for the decision owner.",
     "content": "## Workflow\n\n1. State the decision, its owner and deadline if known, and the evidence the team has. Distinguish mandatory constraints from preferences. Mark missing facts that could change the choice.\n2. Compare feasible options using the same criteria and units. Include the current approach when retaining it is a real option. Identify costs, risks, reversibility, dependencies, and uncertainty that matter to this decision.\n3. Recommend an option with the main tradeoff and the conditions that would change your recommendation. If a missing fact would materially change the choice, propose the smallest useful check before deciding.\n4. Return a short brief with the decision sought, options, evidence, recommendation, and proposed owners for next steps. Record a decision as final only when an authorized decision owner has confirmed it.\n\n## Reference\n\nOriginal BambooShift workflow. Consult the [Atlassian DACI decision-making guide](https://www.atlassian.com/team-playbook/plays/daci) when defining decision roles."
+  },
+  {
+    "id": "website-delivery",
+    "name": "Website delivery and revisions",
+    "description": "Verify a generated website, compare revisions and continue from its source conversation.",
+    "content": "Confirm the delivery project and original thread. Compare the requested scope with the current and previous preview, and exercise the critical flow. Record the exact preview and revision identifiers. Use the original thread to request follow-up edits. Ask for clarification when the delivery target is ambiguous."
+  },
+  {
+    "id": "spreadsheet-review",
+    "name": "Spreadsheet analysis and reconciliation",
+    "description": "Check workbook formulas, sheet coverage, joins and totals before using figures in decisions.",
+    "content": "Identify the workbook version, sheets, inputs, units and decision to support. Sample formulas and compare key totals with known subtotals or source records. Label checks performed on exported CSVs separately. Explain exceptions without changing source data."
+  },
+  {
+    "id": "pdf-review",
+    "name": "PDF reading and evidence",
+    "description": "Extract and verify key claims or tables from PDFs with stable page references.",
+    "content": "Identify the document version and requested claims. Use text extraction when reliable and inspect page images for scanned, multi-column or table-heavy pages. Validate key cells and quoted phrases against the page. Return a compact result with exact page references and unresolved extraction issues."
   }
 ]

@@ -32,6 +32,10 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final requests = <String>[];
       final f = await fixture((request) async {
+        if (request.url.path.endsWith('/library/pins')) {
+          expect(request.method, 'GET');
+          return jsonResponse({'pins': []});
+        }
         requests.add(request.url.path);
         return jsonResponse(bootstrap());
       });

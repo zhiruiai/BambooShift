@@ -16,5 +16,16 @@
   "mobileChatLibraryOpenLink": "Open link in browser",
   "mobileChatLibraryMoreFiles": "Show more files",
   "mobileChatLibraryMoreLinks": "Show more links",
-  "mobileChatLibrarySourceHint": "Open the source message"
+  "mobileChatLibrarySourceHint": "Open the source message",
+  "mobileChatLibraryAll": "All",
+  "mobileChatLibraryWebsites": "Websites",
+  "mobileChatLibraryMedia": "Media",
+  "mobileChatLibraryMoreItems": "Show more items",
+  "mobileChatLibraryPinnedItems": "Pinned items",
+  "mobileChatLibraryPin": "Pin to library",
+  "mobileChatLibraryUnpin": "Unpin from library",
+  "mobileChatLibraryPinsLoadError": "Could not load pinned items.",
+  "mobileChatLibraryPinSaveError": "Could not save the pin. Try again.",
+  "mobileChatLibraryNoPins": "No pinned items yet.",
+  "mobileChatLibraryEmpty": "No items in this category."
 }

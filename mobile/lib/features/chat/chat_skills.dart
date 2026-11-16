@@ -5,6 +5,7 @@ import '../../core/bot_access.dart';
 import '../../core/chat_draft.dart';
 import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
+import '../bots/skill_package_data.dart';
 
 typedef ChatSkill = ({
   String id,
@@ -54,7 +55,7 @@ List<ChatSkill> chatSkills(
         id: id as String,
         agentId: agentId,
         agentName: agentName,
-        name: name,
+        name: skillDisplayName(skill),
         version: version,
       ));
     }

@@ -12,6 +12,7 @@ import {
   type MouseEvent,
 } from 'react';
 import type { Message } from '../../../shared/types';
+import { activeAvatarMessageIds } from '../avatarActivity';
 import { ChatMessageAvatar, ChatWorkingAvatar } from './ChatAvatar';
 import { MessageActions, type MessagePopup } from '../components/MessageActions';
 import { MessageActivity } from '../components/MessageActivity';
@@ -28,6 +29,7 @@ import { ChatMessageAuthorView } from './ChatMessageAuthorView';
 import { ChatStarter } from './ChatStarter';
 import { WebResearchCard } from '../components/WebResearchCard';
 import { VoiceCallCard } from '../components/VoiceCallControls';
+import { useWebsiteUpdates } from '../components/WebsiteProjectCard';
 import './ChatMessages.css';
 export function ChatMessages({
   scrollRef,
@@ -136,6 +138,7 @@ export function ChatMessages({
     [messages, timelineWorking],
   );
   const actor = { userId: currentUserId, isOwner: canManage };
+  const activeAvatars = activeAvatarMessageIds(messages, data.runningRequests);
   const agentsById = useMemo(
     () => new Map(data.agents.map((agent) => [agent.id, agent])),
     [data.agents],
@@ -158,6 +161,7 @@ export function ChatMessages({
     sendScope,
     sync,
     refresh,
+    websiteUpdates: useWebsiteUpdates(data.messages, conversation?.id),
     modal,
     voice,
   };
@@ -176,7 +180,6 @@ export function ChatMessages({
     setMore((old) => (popup === 'more' ? { id, scope } : old?.id === id || popup ? null : old));
     setReactionPicker((old) => (popup === 'reactions' ? id : old === id || popup ? null : old));
   }
-
   function openContext(event: MouseEvent<HTMLElement>, id: string) {
     if (event.defaultPrevented || !current()) return;
     if (
@@ -189,9 +192,8 @@ export function ChatMessages({
     event.preventDefault();
     showPopup(id, 'more');
   }
-
   function actions(message: Message) {
-    const collaborative = message.role !== 'system' && message.kind !== 'activity';
+    const interactive = message.role !== 'system' && message.kind !== 'activity';
     return (
       <MessageActions
         key={`${scope}:${message.id}`}
@@ -211,12 +213,10 @@ export function ChatMessages({
         onPopup={(value) => showPopup(message.id, value)}
         busy={reactionPending.has(message.id)}
         onReact={
-          collaborative ? (emoji, active) => void reactToMessage(message, emoji, active) : undefined
+          interactive ? (emoji, active) => void reactToMessage(message, emoji, active) : undefined
         }
-        onReply={collaborative ? () => beginReply(message) : undefined}
-        onThread={
-          collaborative && !threadRoot && openThread ? () => openThread(message) : undefined
-        }
+        onReply={interactive ? () => beginReply(message) : undefined}
+        onThread={interactive && !threadRoot && openThread ? () => openThread(message) : undefined}
         onJump={
           message.replyTo && message.replyTo.id !== threadRoot?.id
             ? () => jumpToMessage(message.conversationId, message.replyTo?.id)
@@ -226,7 +226,6 @@ export function ChatMessages({
       />
     );
   }
-
   return (
     <>
       <div
@@ -367,6 +366,7 @@ export function ChatMessages({
                         agent={agent}
                         actor={actor}
                         streaming={streaming}
+                        active={timelineWorking && activeAvatars.has(m.id)}
                         grouped={groupedWithNext}
                         teammate={m.role === 'user' && !ownMessage(m) ? userName(m) : undefined}
                       />
@@ -489,7 +489,7 @@ export function ChatMessages({
         {timeline.showWorking && (
           <ChatWorkingAvatar
             agent={currentWorker}
-            last={timeline.rows.at(-1)?.message}
+            last={timeline.rows.findLast((row) => activeAvatars.has(row.message.id))?.message}
             actor={actor}
           />
         )}

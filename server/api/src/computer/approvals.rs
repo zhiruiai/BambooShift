@@ -1,7 +1,7 @@
 use super::{
-    action_store,
+    accessibility, action_store, authorization,
     controller::Controller,
-    controls, frames, model, screen_bindings, transfers,
+    controls, model, screen_bindings, skill_scripts, transfers,
     transport::{Authority, Request, Target},
     validation,
 };
@@ -32,10 +32,30 @@ pub struct Job {
     pub stopped: watch::Sender<bool>,
     pub finished: watch::Sender<bool>,
     decision: Mutex<()>,
+    pub(super) app_identity: Option<String>,
 }
 pub async fn request(
     controller: &Arc<Controller>,
     input: &Value,
+    context: ActionContext,
+    authorize: Authority,
+) -> Result<Value> {
+    request_inner(controller, input, None, context, authorize).await
+}
+
+pub(crate) async fn request_skill_script(
+    controller: &Arc<Controller>,
+    script: skill_scripts::Prepared,
+    context: ActionContext,
+    authorize: Authority,
+) -> Result<Value> {
+    request_inner(controller, &Value::Null, Some(script), context, authorize).await
+}
+
+async fn request_inner(
+    controller: &Arc<Controller>,
+    input: &Value,
+    script: Option<skill_scripts::Prepared>,
     context: ActionContext,
     authorize: Authority,
 ) -> Result<Value> {
@@ -77,8 +97,25 @@ pub async fn request(
         .request(Request::get("/health"), authorize.clone())
         .await?;
     let current = target.state().await;
-    let mut payload = validation::action(input, current["desktop"]["kind"] == "virtual")?;
+    let mut payload = match script {
+        Some(script) => script.into_payload(),
+        None => validation::action(input, current["desktop"]["kind"] == "virtual")?,
+    };
     let kind = payload["type"].as_str().unwrap().to_owned();
+    let mac_app_action = accessibility::mutation(&kind);
+    let authorize = if kind == skill_scripts::KIND {
+        skill_scripts::require_target(controller, &target).await?;
+        let agent = context.agent_id.clone().ok_or_else(model::invalid)?;
+        if context.requester.is_none()
+            || context.conversation_id.is_none()
+            || context.run_id.is_none()
+        {
+            return Err(model::invalid());
+        }
+        skill_scripts::bind(authorize, controller.store.clone(), agent, &payload)
+    } else {
+        authorize
+    };
     if kind == "local_shell" && !target.saved.has("local-shell-v1") {
         return Err(ApiError::new(409, "此电脑未启用本机命令执行能力。"));
     }
@@ -101,7 +138,14 @@ pub async fn request(
     {
         return Err(ApiError::new(409, "此电脑未提供隔离的远程命令执行能力。"));
     }
-    if (kind.starts_with("browser_") || kind.starts_with("desktop_"))
+    let ax_target = if mac_app_action {
+        accessibility::require_ready(&target, &current)?;
+        Some(accessibility::approval_target(&target, &payload, authorize.clone()).await?)
+    } else {
+        None
+    };
+    if !mac_app_action
+        && (kind.starts_with("browser_") || kind.starts_with("desktop_"))
         && !kind.starts_with(&format!(
             "{}_",
             current["surface"].as_str().unwrap_or("browser")
@@ -126,6 +170,15 @@ pub async fn request(
     let id = uuid::Uuid::new_v4().to_string();
     let mut action =
         json!({"id":id,"type":kind,"payload":payload,"status":"pending","createdAt":iso(now())});
+    action["execution"] = json!({
+        "location": screen_bindings::execution_location(controller, &target).await,
+        "surface": current["surface"],
+        "targetRevision": current["targetRevision"],
+    });
+    let app_identity = ax_target.and_then(|approved| {
+        action["target"] = approved.details;
+        approved.app_identity
+    });
     if let Some(agent) = &context.agent_id {
         action["agentId"] = json!(agent);
     }
@@ -136,7 +189,7 @@ pub async fn request(
         action["screenBinding"] =
             json!({"screenId":binding.screen_id,"assignmentRevision":binding.assignment_revision});
     }
-    if kind.starts_with("desktop_") {
+    if kind.starts_with("desktop_") && !mac_app_action {
         action["desktopSession"] = current["desktop"]["session"].clone();
     }
     let recovery_scope = if controller.uses_shared_screen().await {
@@ -144,6 +197,14 @@ pub async fn request(
     } else {
         context.agent_id.as_deref().unwrap_or("default")
     };
+    let automatic = if validation::readonly(&kind) {
+        None
+    } else {
+        authorization::automatic(controller, &target, context.requester.as_ref()).await?
+    };
+    if let Some((_, details)) = &automatic {
+        action["authorization"] = details.clone();
+    }
     let saved = json!({"id":id,"action":action,"context":context,"recoveryScope":recovery_scope,
         "cardId":uuid::Uuid::new_v4().to_string()});
     authorize().await?;
@@ -157,11 +218,13 @@ pub async fn request(
         stopped,
         finished,
         decision: Mutex::new(()),
+        app_identity,
     });
     controller.jobs.lock().await.insert(id.clone(), job.clone());
     drop(_guard);
-    if validation::readonly(&kind) {
-        if let Err(error) = start(controller, &id, job.clone(), None).await {
+    if validation::readonly(&kind) || automatic.is_some() {
+        let decision = automatic.map(|(check, _)| check);
+        if let Err(error) = start(controller, &id, job.clone(), decision, None).await {
             cancel(controller, &id, "电脑操作未能开始，请检查当前画面。").await?;
             return Err(error);
         }
@@ -243,7 +306,7 @@ pub async fn decide(
             }
         })
     });
-    start(controller, id, job, Some(authority)).await?;
+    start(controller, id, job, Some(authority), None).await?;
     action_store::get(&controller.store, id).await
 }
 async fn start(
@@ -251,6 +314,7 @@ async fn start(
     id: &str,
     job: Arc<Job>,
     decision: Option<Authority>,
+    authorization_details: Option<Value>,
 ) -> Result<()> {
     let _guard = job.decision.lock().await;
     let mut saved = action_store::raw(&controller.store, id).await?;
@@ -272,13 +336,18 @@ async fn start(
     {
         return Err(ApiError::new(409, "请先结束人工接管，再批准 Bot 操作。"));
     }
+    if let Some(details) = authorization_details {
+        saved["action"]["authorization"] = details;
+    }
     saved["action"]["status"] = json!("running");
     action_store::persist(&controller.store, &saved).await?;
     let controller = controller.clone();
     let id = id.to_owned();
     let executing = job.clone();
     tokio::spawn(async move {
-        let result = execute(&controller, &executing, &saved["action"], decision).await;
+        let result =
+            super::action_execution::execute(&controller, &executing, &saved["action"], decision)
+                .await;
         let mut latest = action_store::raw(&controller.store, &id)
             .await
             .unwrap_or(saved);
@@ -313,95 +382,33 @@ async fn start(
     });
     Ok(())
 }
-fn authority(job: &Arc<Job>, decision: Option<Authority>) -> Authority {
-    let job = job.clone();
-    Arc::new(move || {
-        let job = job.clone();
-        let decision = decision.clone();
-        Box::pin(async move {
-            if *job.stopped.borrow() {
-                return Err(ApiError::new(
-                    409,
-                    "电脑操作已取消，已经发生的效果不会回滚。",
-                ));
-            }
-            (job.authorize)().await?;
-            if let Some(check) = decision {
-                check().await?;
-            }
-            Ok(())
-        })
-    })
-}
-async fn execute(
-    controller: &Arc<Controller>,
-    job: &Arc<Job>,
-    action: &Value,
-    decision: Option<Authority>,
-) -> Result<Value> {
-    let authorize = authority(job, decision);
-    authorize().await?;
-    let kind = action["type"].as_str().unwrap_or("");
-    if matches!(kind, "upload_file" | "download_file") {
-        return Ok(
-            json!({"result":transfers::execute(&controller.store,&job.target,&action["payload"],job.context.conversation_id.as_deref(),job.context.agent_id.as_deref(),authorize).await?}),
-        );
-    }
-    let with_frame = validation::frame_action(kind)
-        && job.context.conversation_id.is_some()
-        && job.context.agent_id.is_some()
-        && job
-            .target
-            .saved
-            .capabilities
-            .iter()
-            .any(|c| c == "action-frames");
-    let mut request = Request::post(
-        if with_frame {
-            "/execute-with-frame"
-        } else {
-            "/execute"
-        },
-        &action["payload"],
-    );
-    if matches!(kind, "remote_shell" | "local_shell") {
-        request.shell_id = action["id"].as_str().map(str::to_owned);
-    }
-    let value = job
-        .target
-        .request(request, authorize.clone())
-        .await?
-        .json()?;
-    authorize().await?;
-    if matches!(kind, "remote_shell" | "local_shell") {
-        super::validation::shell_result(&value)?;
-    }
-    if !with_frame {
-        return Ok(json!({"result":value}));
-    }
-    if value.get("result").is_none() {
-        return Err(model::invalid());
-    }
-    let mut result = json!({"result":value["result"]});
-    if let Some(frame) = value.get("frame") {
-        match frames::save(
-            &controller.store,
-            &job.target,
-            frame,
-            job.context.conversation_id.as_deref().unwrap(),
-            job.context.agent_id.as_deref().unwrap(),
-            authorize.clone(),
-        )
+pub(crate) async fn apply_authorization(controller: &Arc<Controller>, user: &str) -> Result<()> {
+    let jobs: Vec<_> = controller
+        .jobs
+        .lock()
         .await
-        {
-            Ok(frame) => result["frame"] = frame,
-            Err(_) => result["frameUnavailable"] = json!("操作已完成，但当时画面未能保存。"),
+        .iter()
+        .filter(|(_, job)| {
+            job.context
+                .requester
+                .as_ref()
+                .is_some_and(|r| r["userId"] == user)
+                && !*job.finished.borrow()
+        })
+        .map(|(id, job)| (id.clone(), job.clone()))
+        .collect();
+    for (id, job) in jobs {
+        if action_store::raw(&controller.store, &id).await?["action"]["status"] != "pending" {
+            continue;
         }
-    } else {
-        result["frameUnavailable"] = json!("操作已完成，但当时画面未能保存。");
+        if let Ok(Some((check, details))) =
+            authorization::automatic(controller, &job.target, job.context.requester.as_ref()).await
+        {
+            // A simultaneous manual decision wins. Never rerun an already handled operation.
+            let _ = start(controller, &id, job, Some(check), Some(details)).await;
+        }
     }
-    authorize().await?;
-    Ok(result)
+    Ok(())
 }
 pub async fn cancel(controller: &Arc<Controller>, id: &str, reason: &str) -> Result<()> {
     let Some(job) = controller.jobs.lock().await.get(id).cloned() else {

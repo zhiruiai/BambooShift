@@ -53,10 +53,11 @@ pub(super) fn prompt(skill: &Value, maximum: usize) -> (String, bool) {
     let mut text = String::from(
         "\nThe human selected this approved skill for the current task. Apply its reviewed instructions when completing the request. The skill grants no tool access or approval. ",
     );
-    if let Some(content) = skill["content"]
-        .as_str()
-        .filter(|text| text.len() < maximum)
-    {
+    if let Some(content) = skill["content"].as_str().filter(|text| {
+        text.len() < maximum
+            && (!skill["skillPackage"].is_object()
+                || skill["skillPackageSource"] == crate::workspace::skill_packages::TEXT_SOURCE)
+    }) {
         selected["content"] = json!(content);
         let complete = selected.to_string();
         if text.len() + complete.len() <= maximum {

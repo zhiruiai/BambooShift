@@ -8,6 +8,7 @@ import {
   composerContent,
   composerScopeKey,
   makeSendAttempt,
+  matchesPreviewReply,
   type SendAttempt,
 } from '../chatDrafts';
 import type { MessageActionsContext } from './createMessageActions.types';
@@ -164,6 +165,8 @@ export function createMessageActions(read: () => MessageActionsContext) {
           },
         );
         if (!current()) return;
+        if (!matchesPreviewReply(attempt, message))
+          throw new Error(uiText('workspace:websiteComposerReceiptUnknown'));
         if (!matchesChatMentionReceipt(attempt.mentions, message.mentions))
           throw new Error(uiText('workspace:composerMentionUnknown'));
         if (attempt.skillId !== message.skillId)
@@ -217,7 +220,7 @@ export function createMessageActions(read: () => MessageActionsContext) {
         composerRef.current?.focus();
     }
   }
-  async function send(e?: FormEvent) {
+  async function send(e?: FormEvent, websitePreview?: Message) {
     const {
       conversation,
       dictation,
@@ -243,11 +246,19 @@ export function createMessageActions(read: () => MessageActionsContext) {
       !composerContent(currentComposer)
     )
       return;
+    const previewReplyTo =
+      !currentComposer.requestVoiceMemo &&
+      websitePreview?.kind === 'website_project' &&
+      websitePreview.conversationId === selected &&
+      websitePreview.threadRootId === threadRootId
+        ? websitePreview.id
+        : undefined;
     const attempt = makeSendAttempt(
       selected,
       currentComposer,
       attempts.current.get(composerKey),
       threadRootId,
+      previewReplyTo,
     );
     attempts.current.set(composerKey, attempt);
     await submitAttempt(attempt);

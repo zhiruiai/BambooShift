@@ -8,6 +8,7 @@ import { AgentSettingsContentView } from '../components/agent/AgentSettingsConte
 import { useAgentSettingsContent } from '../components/agent/useAgentSettingsContent';
 import { SkillsDialog } from '../components/SkillsDialog';
 import type { BotAgent, Skill } from '../../../shared/types';
+import { acceptInstalledSkill, skillInstallBody } from '../skillInstallation';
 
 export const workspaceId = '11111111-1111-4111-8111-111111111111';
 export const userId = '22222222-2222-4222-8222-222222222222';
@@ -42,6 +43,15 @@ function Fixture() {
       busy={false}
       readOnly={readOnly}
       onClose={() => setMode('settings')}
+      onInstall={async (draft, expectedActiveId) => {
+        const skill = await scope.request<Skill>(
+          '/skills/install',
+          'POST',
+          skillInstallBody(draft, expectedActiveId),
+        );
+        setSkills((previous) => acceptInstalledSkill(previous, skill));
+        return skill;
+      }}
       onAdd={async (body) => {
         const skill = await scope.request<Skill>('/skills', 'POST', body);
         setSkills((previous) => [...previous, skill]);

@@ -1,8 +1,45 @@
 import { serviceText } from '../i18n/serviceText';
 import { uiText } from '../i18n';
 import { useEffect, useState } from 'react';
-import { Check, Info, Loader2, Monitor, ShieldCheck, Square, RefreshCw } from 'lucide-react';
+import {
+  AppWindow,
+  Check,
+  Info,
+  Loader2,
+  Monitor,
+  ShieldCheck,
+  Square,
+  RefreshCw,
+} from 'lucide-react';
 import type { ComputerState } from '../../../shared/types';
+import { MACOS_ACCESSIBILITY_CAPABILITY } from '../../../shared/computer-screens';
+import { supportsMacApps } from '../computerScope';
+
+export function MacAppsStatus({ ready, canOpenApp }: { ready: boolean; canOpenApp: boolean }) {
+  return (
+    <div className="takeover-bar">
+      <div>
+        <span className="takeover-icon">
+          <AppWindow size={17} />
+        </span>
+        <span>
+          <strong>
+            {uiText(ready ? 'computer:macAppsReady' : 'computer:macAppsNeedsPermission')}
+          </strong>
+          <small>
+            {uiText(
+              !ready
+                ? 'computer:macAppsHelp'
+                : canOpenApp
+                  ? 'computer:macAppsOpenInstructions'
+                  : 'computer:macAppsInstructions',
+            )}
+          </small>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function ComputerSurface({
   computer,
@@ -15,13 +52,17 @@ export function ComputerSurface({
   busy: boolean;
   checking: boolean;
   onCheck: () => void;
-  onSelect: (surface: 'browser' | 'desktop') => void;
+  onSelect: (surface: ComputerState['surface']) => void;
 }) {
   const surface = computer.surface || 'browser';
-  const [choice, setChoice] = useState<'browser' | 'desktop'>(surface);
+  const [pendingSurface, setChoice] = useState<ComputerState['surface']>(surface);
   useEffect(() => setChoice(surface), [surface]);
   const desktop = computer.desktop;
   const virtual = desktop?.kind === 'virtual';
+  const macAppsAvailable = supportsMacApps(computer);
+  const choice = pendingSurface === 'accessibility' && !macAppsAvailable ? surface : pendingSurface;
+  const accessibilityPermission =
+    desktop?.accessibilityPermission ?? desktop?.permissions?.accessibility;
   const desktopLabel = virtual
     ? uiText('computer:text_c255841f6809')
     : uiText('computer:text_5b096afbdb0c');
@@ -37,7 +78,11 @@ export function ComputerSurface({
         <span>{uiText('computer:text_573394a6e549')}</span>
         <small>
           {uiText('computer:text_660648805666')}
-          {surface === 'desktop' ? desktopLabel : uiText('computer:text_162f582e1060')}
+          {surface === 'accessibility'
+            ? uiText('computer:macAppsSurface')
+            : surface === 'desktop'
+              ? desktopLabel
+              : uiText('computer:text_162f582e1060')}
         </small>
       </div>
       <div className="segmented surface-choices">
@@ -50,6 +95,17 @@ export function ComputerSurface({
           <Square size={14} />
           {uiText('computer:text_162f582e1060')}
         </button>
+        {macAppsAvailable && (
+          <button
+            type="button"
+            className={choice === 'accessibility' ? 'active' : ''}
+            aria-pressed={choice === 'accessibility'}
+            onClick={() => setChoice('accessibility')}
+          >
+            <AppWindow size={14} />
+            {uiText('computer:macAppsSurface')}
+          </button>
+        )}
         <button
           type="button"
           className={choice === 'desktop' ? 'active' : ''}
@@ -60,7 +116,49 @@ export function ComputerSurface({
           {desktopLabel}
         </button>
       </div>
-      {choice === 'desktop' ? (
+      {choice === 'accessibility' ? (
+        <div className="desktop-scope">
+          <p>{uiText('computer:macAppsScope')}</p>
+          <div className="desktop-permissions">
+            <div>
+              <span>{uiText('computer:text_b8f88aeead15')}</span>
+              <strong className={accessibilityPermission === 'granted' ? 'granted' : ''}>
+                {accessibilityPermission === 'granted' && <Check size={12} />}
+                {permissionLabel(accessibilityPermission)}
+              </strong>
+            </div>
+          </div>
+          {!desktop?.accessibilityReady && <p>{uiText('computer:macAppsHelp')}</p>}
+          <div className="surface-actions">
+            <button
+              type="button"
+              className="text-button"
+              disabled={busy || checking}
+              onClick={onCheck}
+            >
+              {checking ? <Loader2 size={13} className="spin" /> : <RefreshCw size={13} />}
+              {uiText('computer:text_65208b4d7435')}
+            </button>
+            {surface !== 'accessibility' && (
+              <button
+                type="button"
+                className="primary-button"
+                disabled={
+                  busy ||
+                  checking ||
+                  !computer.connected ||
+                  !computer.capabilities?.includes(MACOS_ACCESSIBILITY_CAPABILITY) ||
+                  !desktop?.accessibilityReady
+                }
+                onClick={() => onSelect('accessibility')}
+              >
+                <AppWindow size={14} />
+                {uiText('computer:macAppsUse')}
+              </button>
+            )}
+          </div>
+        </div>
+      ) : choice === 'desktop' ? (
         <div className="desktop-scope">
           <div className="desktop-scope-title">
             <ShieldCheck size={17} />
@@ -155,9 +253,9 @@ export function ComputerSurface({
             </p>
           )}
         </div>
-      ) : surface === 'desktop' ? (
+      ) : surface !== 'browser' ? (
         <div className="browser-scope">
-          <p>{uiText('computer:text_c99609d34a19')}</p>
+          {surface === 'desktop' && <p>{uiText('computer:text_c99609d34a19')}</p>}
           <button
             type="button"
             className="secondary-button"

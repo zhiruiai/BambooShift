@@ -50,11 +50,15 @@ function submissionMode(draft: ComposerState): ComposerState['mode'] {
   return draft.requestVoiceMemo || draft.skillId ? 'followUp' : draft.mode;
 }
 
-export function submissionKey(draft: ComposerState, threadRootId?: string): string {
+export function submissionKey(
+  draft: ComposerState,
+  threadRootId?: string,
+  replyToMessageId = draft.replyTo?.id || threadRootId,
+): string {
   // Preserve the previous fingerprint for ordinary drafts so their saved
   // receipt IDs remain recoverable after upgrading the client.
   const mode = submissionMode(draft);
-  const fields = [composerContent(draft), draft.replyTo?.id || threadRootId || '', mode];
+  const fields = [composerContent(draft), replyToMessageId || '', mode];
   if (draft.agentId !== undefined) fields.push(draft.agentId);
   if (
     !threadRootId &&
@@ -82,18 +86,21 @@ export function makeSendAttempt(
   draft: ComposerState,
   previous?: SendAttempt,
   threadRootId?: string,
+  previewReplyTo?: string,
 ): SendAttempt {
+  const replyToMessageId = draft.replyTo?.id || previewReplyTo || threadRootId;
   if (
     previous?.conversationId === conversationId &&
     previous.threadRootId === threadRootId &&
-    submissionKey(previous.snapshot, threadRootId) === submissionKey(draft, threadRootId)
+    submissionKey(previous.snapshot, threadRootId, previous.replyToMessageId) ===
+      submissionKey(draft, threadRootId, replyToMessageId)
   )
     return previous.snapshot === draft ? previous : { ...previous, snapshot: draft };
   return {
     conversationId,
     clientId: crypto.randomUUID(),
     content: composerContent(draft),
-    replyToMessageId: draft.replyTo?.id || threadRootId,
+    replyToMessageId,
     ...(threadRootId ? { threadRootId } : {}),
     mode: submissionMode(draft),
     ...(draft.requestVoiceMemo ? { requestVoiceMemo: true } : {}),
@@ -118,6 +125,13 @@ export function makeSendAttempt(
     snapshot: draft,
   };
 }
+export function matchesPreviewReply(attempt: SendAttempt, message: Message): boolean {
+  const draftReply = attempt.snapshot.replyTo?.id || attempt.threadRootId;
+  return (
+    attempt.replyToMessageId === draftReply || message.replyTo?.id === attempt.replyToMessageId
+  );
+}
+
 export function clearSubmittedDraft(
   current: ComposerState,
   snapshot: ComposerState,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/workspace_controller.dart';
 import '../../l10n/strings.dart';
 import 'knowledge_screen.dart';
+import 'skill_package_data.dart';
 
 class BotSkillsCard extends StatelessWidget {
   const BotSkillsCard({super.key, required this.scope, required this.agentId});
@@ -24,7 +25,7 @@ class BotSkillsCard extends StatelessWidget {
             '${context.tr('mobileBotSkillsEnabled')}: ${active.length}',
             if (pending > 0) '${context.tr('mobileBotSkillsReview')}: $pending',
             if (active.isNotEmpty)
-              active.take(3).map((s) => s['name'] as String? ?? '').join(' · '),
+              active.take(3).map(skillDisplayName).join(' · '),
           ].join('\n'),
           maxLines: 4,
           overflow: TextOverflow.ellipsis,

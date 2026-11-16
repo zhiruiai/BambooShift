@@ -41,8 +41,8 @@
     localWorkspaceMenu: ['本机工作空间…', 'Workspace on this computer…'],
     localStatusWorkspace: ['本机个人空间正在运行', 'Your local workspace is running'],
     localStatusWorkspaceHelp: [
-      '对话和工作空间文件保存在这台电脑。本次未开启整机操作，可继续聊天和处理工作空间文件。',
-      'Chats and workspace files stay on this computer. Computer control is off; you can still chat and work with workspace files.',
+      '对话和工作空间文件保存在这台电脑。整机桌面和本机终端当前关闭。',
+      'Chats and workspace files stay on this computer. Whole-desktop and local terminal access are off.',
     ],
     localStatusControl: ['本机整机操作已开启', 'Local computer control is enabled'],
     localStatusControlHelp: [
@@ -50,8 +50,8 @@
       'Computer control is enabled for this session. Check capabilities in the workspace computer panel.',
     ],
     localStatusPermissionBoundary: [
-      '录屏、键鼠仍需系统授权，电脑操作仍需审批。此窗口不会更改权限。',
-      'Screen, keyboard and mouse access still require OS permission; actions follow workspace approval rules. This window changes no permissions.',
+      '录屏、键鼠仍需系统授权。可在电脑面板选择完全授权，让 Bot 直接执行。此窗口不会更改权限。',
+      'Screen, keyboard and mouse access still require OS permission. Choose Full access in the computer panel to let Bots act directly. This window changes no permissions.',
     ],
     localStatusRemote: ['已连接已有工作空间', 'Connected to an existing workspace'],
     localStatusRemoteHelp: [
@@ -60,8 +60,8 @@
     ],
     localStatusDisconnected: ['尚未打开工作空间', 'No workspace is open'],
     localStatusDisconnectedHelp: [
-      '在启动页选择“在这台电脑开始”，配置模型后即可免登录使用。需要操作本机终端或其他应用时，启动前选择“允许整机操作”。',
-      'Choose “Start on this computer”, then configure a model. No sign-in is needed. Select “Allow computer control” before starting to use host commands or other apps.',
+      '在启动页选择“在这台电脑开始”，配置模型后即可免登录使用。',
+      'Choose “Start on this computer”, then configure a model. No sign-in is needed.',
     ],
     localStatusStarting: ['工作空间正在连接或启动', 'Workspace is connecting or starting'],
     localStatusStartingHelp: [
@@ -79,8 +79,8 @@
     localStatusAdjust: ['返回启动页调整', 'Return to startup to adjust'],
     hostControl: ['允许整机操作', 'Allow computer control'],
     hostControlHelp: [
-      'Bot 可在你批准后操作屏幕、键鼠、文件和终端。macOS 可能要求录屏和辅助功能权限。',
-      'With your approval, Bots can use the screen, keyboard, mouse, files, and terminal. macOS may ask for Screen Recording and Accessibility permissions.',
+      '开启整机桌面和本机终端。整机桌面需要录屏和辅助功能权限。只需点按控件或填表时，打开聊天里的「电脑 → Mac 应用」。',
+      'Enable whole-desktop and local terminal access. Whole-desktop mode requires Screen Recording and Accessibility. To click app controls or fill fields, open Computer → Mac apps in a chat.',
     ],
     localHostControlUnavailable: [
       '此安装包未提供整机操作。你可以使用普通本机工作空间。',

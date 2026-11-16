@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Cloud, Laptop2, Loader2, Monitor, RefreshCw } from 'lucide-react';
 import type { ComputerState } from '../../../../shared/types';
+import { supportsMacApps } from '../../computerScope';
 import { uiText } from '../../i18n';
 import { serviceText } from '../../i18n/serviceText';
 import { CloudComputerCard } from '../CloudComputerCard';
 import { ComputerWorkerPairing } from './ComputerWorkerPairing';
+import { ComputerAuthorizationSettings } from './ComputerAuthorizationSettings';
 import type { ComputerDialogModel } from './types';
 import './ComputerConnectionSettingsView.css';
 
@@ -29,6 +31,8 @@ export function ComputerConnectionSettingsView({
     controlled,
     otherControlled,
     connectionPending,
+    authorizationBusy,
+    setAuthorizationBusy,
     connection,
     connectionError,
     cloudState,
@@ -45,11 +49,13 @@ export function ComputerConnectionSettingsView({
   const current =
     machine.executionLocation ??
     (machine.connected ? (machine.mode === 'local' ? 'server' : 'remote') : 'none');
+  const macAppsAvailable = machine.connected && supportsMacApps(machine);
+  const localMac = current === 'server' && macAppsAvailable;
   const [choice, setChoice] = useState<Location | null>(null);
   const selected = choice ?? (current === 'none' ? 'server' : current);
   const showPairing = selected === 'remote' && (choice === 'remote' || !machine.connected);
   const showCloud = selected === 'cloud' && (!!onWatch || choice === 'cloud' || !machine.connected);
-  const changing = inputBusy || connectionPending !== null;
+  const changing = inputBusy || authorizationBusy || connectionPending !== null;
   const disabled = busy || changing || controlled || otherControlled;
   const pairingSection = useRef<HTMLElement>(null);
   const focusPairing = useRef(false);
@@ -100,7 +106,11 @@ export function ComputerConnectionSettingsView({
             <h3 id="bot-computer-title">{uiText('computer:location_bot_computer')}</h3>
             <p role="status">
               {uiText(
-                machine.connected ? `computer:location_${current}` : 'computer:location_none',
+                localMac
+                  ? 'computer:locationThisMac'
+                  : machine.connected
+                    ? `computer:location_${current}`
+                    : 'computer:location_none',
               )}
               {machine.connected && machine.name && <> · {machine.name}</>}
               {machine.connected && <> · {uiText('computer:text_5be0323e8adc')}</>}
@@ -114,7 +124,7 @@ export function ComputerConnectionSettingsView({
                 disabled={changing}
                 onClick={onWatch}
               >
-                {uiText('computer:location_watch')}
+                {uiText(localMac ? 'workspace:detailOpenComputer' : 'computer:location_watch')}
                 <ArrowRight size={14} aria-hidden="true" />
               </button>
             )}
@@ -162,7 +172,9 @@ export function ComputerConnectionSettingsView({
         <div className="computer-location-detail">
           {selected === 'server' && (
             <>
-              <p>{uiText('computer:location_help_server')}</p>
+              <p>
+                {uiText(localMac ? 'computer:locationHelpMac' : 'computer:location_help_server')}
+              </p>
               {canManage && (current !== 'server' || !machine.connected) && (
                 <button
                   type="button"
@@ -205,7 +217,16 @@ export function ComputerConnectionSettingsView({
             }}
           />
           {selected === 'remote' && <p>{uiText('computer:location_help_remote')}</p>}
-          {desktop && (
+          {macAppsAvailable && (
+            <p>
+              {uiText(
+                desktop?.accessibilityReady
+                  ? 'computer:macAppsReady'
+                  : 'computer:macAppsNeedsPermission',
+              )}
+            </p>
+          )}
+          {desktop && !macAppsAvailable && (
             <p>
               {uiText(
                 desktop.kind === 'virtual'
@@ -234,6 +255,16 @@ export function ComputerConnectionSettingsView({
           )}
         </div>
       </section>
+      {machine.connected && machine.targetRevision && (
+        <ComputerAuthorizationSettings
+          key={`${scope.key}:${machine.targetRevision}`}
+          scope={scope}
+          targetRevision={machine.targetRevision}
+          targetName={machine.name}
+          disabled={disabled}
+          onBusyChange={setAuthorizationBusy}
+        />
+      )}
       {(onWatch || showPairing) && (
         <section
           className="computer-location-chooser"

@@ -40,8 +40,8 @@ export function registerControlsRoutes(context: WorkerRoutes) {
   });
   app.post('/surface', async (req, res) => {
     if (
-      !['browser', 'desktop'].includes(req.body.surface) ||
-      (req.body.surface === 'desktop' && req.body.confirm !== true)
+      !['browser', 'desktop', 'accessibility'].includes(req.body.surface) ||
+      (req.body.surface !== 'browser' && req.body.confirm !== true)
     )
       return res.status(400).json({ error: '请明确确认开启整机桌面。' });
     runtime.surfaceChanging++;
@@ -64,6 +64,8 @@ export function registerControlsRoutes(context: WorkerRoutes) {
   });
   app.get('/takeover/status', (_req, res) => res.json(computer.takeoverStatus()));
   app.post('/takeover/start', async (req, res) => {
+    if (computer.status().surface === 'accessibility')
+      return res.status(409).json({ error: '原生应用模式无需远程接管。' });
     if (runtime.takeoverPending) return res.status(409).json({ error: '正在准备接管，请稍候。' });
     runtime.takeoverPending = true;
     try {

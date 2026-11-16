@@ -41,6 +41,10 @@ void main() {
     final reads = <String>[];
     final f = await fixture((request) async {
       expect(request.headers['X-OpenBot-Expected-User'], 'user-a');
+      if (request.url.path.endsWith('/library/pins')) {
+        expect(request.method, 'GET');
+        return jsonResponse({'pins': []});
+      }
       reads.add(request.url.path);
       return http.Response(
         '''
@@ -73,7 +77,7 @@ Verified preview.
         ],
       ),
       'files': [
-        _record('registered', 'report.md'),
+        _record('registered', 'report.md', chat: ''),
         _record('other', 'cross-chat.md', chat: 'chat-b'),
         _record('not-shared', 'unattached.md', chat: null),
       ],
@@ -91,10 +95,12 @@ Verified preview.
     expect(find.text('文件'), findsOneWidget);
     expect(find.text('report.md'), findsOneWidget);
     expect(find.text('cross-chat.md'), findsNothing);
-    expect(find.text('unattached.md'), findsNothing);
-    expect(find.byType(ChatFileCard), findsOneWidget);
+    expect(find.text('unattached.md'), findsOneWidget);
+    expect(find.byType(ChatFileCard), findsNWidgets(2));
     expect(
-      tester.widget<ChatFileCard>(find.byType(ChatFileCard)).message['id'],
+      tester
+          .widget<ChatFileCard>(find.widgetWithText(ChatFileCard, 'report.md'))
+          .message['id'],
       'latest',
     );
     expect(reads, isEmpty);
@@ -120,7 +126,11 @@ Verified preview.
   testWidgets('large conversation file list reveals more on request', (
     tester,
   ) async {
-    final f = await fixture((_) async {
+    final f = await fixture((request) async {
+      if (request.url.path.endsWith('/library/pins') &&
+          request.method == 'GET') {
+        return jsonResponse({'pins': []});
+      }
       fail(
         'Listing already authorized file cards should not fetch file bytes.',
       );

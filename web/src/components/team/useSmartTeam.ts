@@ -72,8 +72,8 @@ export function useSmartTeam(props: Props) {
     !!draft && plan?.status === 'ready' && draftRevision.current !== plan.revision;
   const goalChanged = !!goal.trim() && (!plan || goal !== plan.goal);
   useEffect(() => {
-    props.onDirty(dirty || goalChanged || avatarEdits.pending || !!catalogRequest);
-  }, [dirty, goalChanged, avatarEdits.pending, catalogRequest]);
+    props.onDirty(dirty || goalChanged || avatarEdits.pending || !!catalogRequest || uncertain);
+  }, [dirty, goalChanged, avatarEdits.pending, catalogRequest, uncertain]);
   const { accept, read, mutate, update, resumeEditing, choose, enter } =
     createTeamPlanActions(readActionContext);
   const { invalidateCatalogPreview, retainCatalogRequest, finishCatalog, reviewBots, saveCatalog } =

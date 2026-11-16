@@ -81,9 +81,10 @@
   gap: 16px;
   min-width: 0;
 }
-.starter-selected > button {
-  justify-self: start;
-  font-size: 14px;
+.starter-selected-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 .starter-notice {
   color: var(--muted);

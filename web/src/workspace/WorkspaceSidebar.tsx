@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { NewChatPicker } from '../components/NewChatPicker';
 import { uiText } from '../i18n';
-import { ChevronRight, FolderOpen, Plus, Search, Settings, Terminal, Zap } from 'lucide-react';
+import {
+  ChevronRight,
+  FolderOpen,
+  LayoutGrid,
+  Plus,
+  Search,
+  Settings,
+  Terminal,
+  Zap,
+} from 'lucide-react';
 import { MobileBotShortcuts, MobileHomeHeader } from '../components/MobileHome';
 import { SidebarRosterList } from '../components/SidebarRoster';
 import { IconButton } from '../components/UI';
@@ -19,6 +28,7 @@ export function WorkspaceSidebar({
   canManage,
   openSearch,
   openCreate,
+  openTemplates,
   search,
   setSearch,
   data,
@@ -48,6 +58,7 @@ export function WorkspaceSidebar({
   | 'canManage'
   | 'openSearch'
   | 'openCreate'
+  | 'openTemplates'
   | 'search'
   | 'setSearch'
   | 'data'
@@ -165,6 +176,16 @@ export function WorkspaceSidebar({
           />
         </div>
         <div className="sidebar-bottom">
+          <button
+            type="button"
+            className="connect-apps sidebar-bot-gallery"
+            onClick={() => openTemplates({ kind: 'library' })}
+          >
+            <span className="apps-icon">
+              <LayoutGrid size={14} aria-hidden="true" />
+            </span>
+            <span>{uiText('workspace:botGalleryTitle')}</span>
+          </button>
           <button className="connect-apps" onClick={() => openApps()}>
             <span className="apps-icon">
               <Zap size={14} />
@@ -217,6 +238,7 @@ export function WorkspaceSidebar({
           onClose={() => setPicker(undefined)}
           onOpen={openConversation}
           onCreate={(mode) => openCreate(undefined, mode)}
+          onOpenGallery={() => openTemplates({ kind: 'library' })}
         />
       )}
     </>

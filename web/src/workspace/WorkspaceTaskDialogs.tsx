@@ -8,6 +8,8 @@ import { RoutineDialog } from '../components/RoutineDialog';
 import { SkillsDialog } from '../components/SkillsDialog';
 import { Dialog } from '../components/UI';
 import type { WorkspaceModel } from './types';
+import type { Skill } from '../../../shared/types';
+import { acceptInstalledSkill, skillInstallBody } from '../skillInstallation';
 
 export function WorkspaceTaskDialogs({
   api,
@@ -29,6 +31,7 @@ export function WorkspaceTaskDialogs({
   openRoutineRun,
   openRoutineChat,
   data,
+  setData,
   routineToEdit,
   routineInitialAction,
   setRoutineInitialAction,
@@ -74,6 +77,7 @@ export function WorkspaceTaskDialogs({
   | 'openRoutineRun'
   | 'openRoutineChat'
   | 'data'
+  | 'setData'
   | 'routineToEdit'
   | 'routineInitialAction'
   | 'setRoutineInitialAction'
@@ -280,6 +284,26 @@ export function WorkspaceTaskDialogs({
               : undefined
           }
           onClose={() => setModal(null)}
+          onInstall={async (draft, expectedActiveId) => {
+            const ticket = sendScope.ticket();
+            const installed = await api<Skill>(
+              '/skills/install',
+              'POST',
+              skillInstallBody(draft, expectedActiveId),
+            ).catch((cause: unknown) => {
+              if (sendScope.current(ticket)) void refresh();
+              throw cause;
+            });
+            if (!sendScope.current(ticket)) throw new Error(uiText('workspace:text_75d366e971e2'));
+            sync.written();
+            setData((previous) =>
+              previous
+                ? { ...previous, skills: acceptInstalledSkill(previous.skills, installed) }
+                : previous,
+            );
+            void refresh();
+            return installed;
+          }}
           onAdd={(body) =>
             formAction(() => api('/skills', 'POST', body), uiText('workspace:text_7ff7bc943cd1'))
           }

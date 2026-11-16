@@ -9,9 +9,7 @@ import { verifyNodeArchive, nodeArtifact } from './node-runtime.mjs';
 import { stageDesktopRuntime } from './runtime-package.mjs';
 import { stageCuaDriver } from './cua-driver.mjs';
 
-async function fakeBackend({ output }, { inventory = true, binaryArch = process.arch } = {}) {
-  await mkdir(join(output, 'runtime'), { recursive: true });
-  await writeFile(join(output, 'runtime/package-lock.json'), '{"lockfileVersion":3}');
+function nativeHeader(binaryArch = process.arch) {
   const header = Buffer.alloc(64);
   if (process.platform === 'darwin') {
     header.writeUInt32LE(0xfeedfacf, 0);
@@ -23,8 +21,14 @@ async function fakeBackend({ output }, { inventory = true, binaryArch = process.
     header.writeUInt16LE(binaryArch === 'arm64' ? 183 : 62, 18);
     header.writeUInt32LE(1, 20);
   }
+  return header;
+}
+
+async function fakeBackend({ output }, { inventory = true, binaryArch = process.arch } = {}) {
+  await mkdir(join(output, 'runtime'), { recursive: true });
+  await writeFile(join(output, 'runtime/package-lock.json'), '{"lockfileVersion":3}');
   for (const name of ['openbot-backend', 'openbot-image-worker'])
-    await writeFile(join(output, name), header, { mode: 0o755 });
+    await writeFile(join(output, name), nativeHeader(binaryArch), { mode: 0o755 });
   if (inventory)
     await writeFile(
       join(output, 'package-manifest.json'),
@@ -84,7 +88,11 @@ test(
         stageDriver: async () => ({ hostControl: false }),
         prepareDependencies: async () => {},
         buildRuntimeNotices: async () => {},
-        command: async (...args) => calls.push(args),
+        command: async (program, args, cwd) => {
+          calls.push([program, args, cwd]);
+          if (program === '/usr/bin/xcrun')
+            await writeFile(args[args.indexOf('-o') + 1], nativeHeader(), { mode: 0o755 });
+        },
         buildBackend: fakeBackend,
         stageNode: async () => ({
           nodeVersion: '24.0.0',
@@ -101,8 +109,36 @@ test(
         '--no-fund',
       ]);
       assert.equal(calls[1][2], join(output, 'runtime'));
-      assert.deepEqual(calls[2][1], ['--version']);
+      assert.deepEqual(calls.at(-1)[1], ['--version']);
       assert.equal(manifest.server, 'openbot-backend');
+      const packagedPaths = [
+        'desktop-runtime.json', 'openbot-backend', 'openbot-image-worker',
+        'package-manifest.json', 'runtime',
+      ];
+      if (process.platform === 'darwin') {
+        const helper = 'bin/OpenBot Desktop Helper.app/Contents/MacOS/OpenBotDesktopHelper';
+        const bundle = join(output, 'bin/OpenBot Desktop Helper.app');
+        assert.equal(manifest.accessibilityHelper, helper);
+        assert.deepEqual(await readdir(join(output, 'bin')), ['OpenBot Desktop Helper.app']);
+        assert.deepEqual((await readdir(join(bundle, 'Contents'))).sort(), ['Info.plist', 'MacOS']);
+        assert.match(await readFile(join(bundle, 'Contents/Info.plist'), 'utf8'), /com\.openbot\.desktop-helper/);
+        assert.deepEqual(await readFile(join(output, helper)), nativeHeader());
+        const [compile, sign, verify] = calls.slice(2, -1);
+        assert.equal(compile[0], '/usr/bin/xcrun');
+        assert.equal(compile[1].includes('server/native/macos/DesktopHelper.swift'), true);
+        assert.equal(compile[1].includes('-module-cache-path'), false);
+        assert.deepEqual(sign.slice(0, 2), [
+          '/usr/bin/codesign',
+          ['--force', '--sign', '-', '--identifier', 'com.openbot.desktop-helper', '--options', 'runtime', bundle],
+        ]);
+        assert.deepEqual(verify.slice(0, 2), [
+          '/usr/bin/codesign',
+          ['--verify', '--strict', '-R', '=identifier "com.openbot.desktop-helper"', bundle],
+        ]);
+        packagedPaths.push('bin');
+      } else {
+        assert.equal(manifest.accessibilityHelper, undefined);
+      }
       const text = await readFile(join(output, 'desktop-runtime.json'), 'utf8');
       assert.equal(text.includes(directory), false);
       assert.equal(text.includes('SYNTHETIC_PRIVATE_VALUE'), false);
@@ -111,13 +147,7 @@ test(
         inventory.inventoryScope,
         'backend-inputs-before-desktop-dependencies-and-signing',
       );
-      assert.deepEqual((await readdir(output)).sort(), [
-        'desktop-runtime.json',
-        'openbot-backend',
-        'openbot-image-worker',
-        'package-manifest.json',
-        'runtime',
-      ]);
+      assert.deepEqual((await readdir(output)).sort(), packagedPaths.sort());
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
@@ -152,6 +182,7 @@ test('candidate staging precedes strict notices and carries only relocatable pro
     },
     stageNode: async () => ({}),
     stageDriver: async () => ({ hostControl: false }),
+    stageAccessibilityHelper: async () => ({}),
     buildRuntimeNotices: async (options) => {
       assert.equal(options.nativeImage, nativeImage);
       events.push('strict-notices');

@@ -29,6 +29,7 @@
   "text_d158d1543e4d": "有消息尚未确认",
   "text_d301bc125833": "关闭提示",
   "text_d34db9bc67fb": "最新消息",
+  "computerApprovalJump": "有一项操作待批准",
   "text_d468845e5d84": "选择负责的 Bot ",
   "text_d48f1dcf88d2": "电脑",
   "text_d516034aa424": "独立 Bot 已创建",
@@ -69,5 +70,10 @@
   "text_fcff8ee2ea11": "重试原消息",
   "text_fd4e0ab45e27": "共享 Bot · ",
   "text_fd748c59afe2": "↑ ↓ 选择 · Enter 确认",
-  "text_fdc61c8e2914": "暂时无法确认任务是否已停止，请刷新状态后核对。"
+  "text_fdc61c8e2914": "暂时无法确认任务是否已停止，请刷新状态后核对。",
+  "websiteComposerPrompt": "修改 {{name}}",
+  "websiteComposerPlaceholder": "描述要修改的内容…",
+  "websiteComposerDetach": "取消本条消息的网站引用",
+  "websiteComposerReceiptUnknown": "暂时无法确认消息引用的版本，请先检查对话再重试。",
+  "avatarWaiting": "等待回应"
 }

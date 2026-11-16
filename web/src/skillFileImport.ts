@@ -10,23 +10,21 @@ export class SkillFileError extends Error {
   }
 }
 
-export function parseSkillFile(bytes: Uint8Array): ImportedSkillDraft {
-  if (bytes.byteLength > SKILL_FILE_MAX_BYTES) throw new SkillFileError('size');
+export function parseSkillDocument(bytes: Uint8Array, maxBytes = SKILL_FILE_MAX_BYTES) {
+  if (bytes.byteLength > maxBytes) throw new SkillFileError('size');
   let source: string;
   try {
     // The decoder consumes an optional UTF-8 BOM and rejects malformed bytes.
-    source = new TextDecoder('utf-8', { fatal: true }).decode(bytes).replace(/\r\n/g, '\n');
+    source = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
   } catch {
     throw new SkillFileError('encoding');
   }
-  const frontmatter = /^---\n([\s\S]*?)\n---(?:\n|$)/.exec(source);
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(source);
   if (!frontmatter) throw new SkillFileError('format');
-  let name: string, description: string;
   try {
     const document = parseDocument(frontmatter[1], { uniqueKeys: true, schema: 'core' });
     if (document.errors.length || document.warnings.length || !isMap(document.contents))
       throw new SkillFileError('format');
-    const mapping = document.contents;
     // Inspect syntax nodes directly: never resolve aliases or convert arbitrary
     // metadata into JS objects, dependencies, permissions, or executable setup.
     visit(document, {
@@ -34,17 +32,22 @@ export function parseSkillFile(bytes: Uint8Array): ImportedSkillDraft {
         throw new SkillFileError('format');
       },
     });
-    const field = (key: 'name' | 'description') => {
-      const node: unknown = mapping.get(key, true);
-      if (!isScalar(node) || typeof node.value !== 'string') throw new SkillFileError(key);
-      return node.value.trim();
-    };
-    name = field('name');
-    description = field('description');
+    return { frontmatter: document.contents, content: source.slice(frontmatter[0].length) };
   } catch (error) {
     throw error instanceof SkillFileError ? error : new SkillFileError('format');
   }
-  const content = source.slice(frontmatter[0].length).trim();
+}
+
+export function parseSkillFile(bytes: Uint8Array): ImportedSkillDraft {
+  const { frontmatter, content: body } = parseSkillDocument(bytes);
+  const field = (key: 'name' | 'description') => {
+    const node: unknown = frontmatter.get(key, true);
+    if (!isScalar(node) || typeof node.value !== 'string') throw new SkillFileError(key);
+    return node.value.trim();
+  };
+  const name = field('name');
+  const description = field('description');
+  const content = body.replace(/\r\n/g, '\n').trim();
   if (!name || name.length > 100 || /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(name))
     throw new SkillFileError('name');
   if (!description || description.length > 1000) throw new SkillFileError('description');

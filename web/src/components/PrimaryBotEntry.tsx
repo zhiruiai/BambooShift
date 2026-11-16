@@ -137,7 +137,12 @@ export function PrimaryBotEntry({
         }
       >
         <span className="conversation-avatar">
-          <Avatar agent={agent} size={40} />
+          <Avatar
+            agent={agent}
+            size={44}
+            motion={working ? 'thinking' : 'idle'}
+            sustain={working}
+          />
           {working && <span className="status-dot working" />}
         </span>
         <span className="conversation-copy">

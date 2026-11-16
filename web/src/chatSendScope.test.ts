@@ -71,7 +71,7 @@ async function handlerSource() {
     "import { uiText } from './i18n';",
     "import { createChatSendScope } from './chatSendScope';",
     "import { createPendingSubmissions } from './pendingSubmissions';",
-    "import { emptyComposer, makeSendAttempt, clearSubmittedDraft, composerScopeKey } from './chatDrafts';",
+    "import { emptyComposer, makeSendAttempt, clearSubmittedDraft, composerScopeKey, matchesPreviewReply } from './chatDrafts';",
     'export { createChatSendScope, createPendingSubmissions, makeSendAttempt };',
     ...handlers,
     `export const onTeamCreated = ${teamCallback.getText(ast)};`,

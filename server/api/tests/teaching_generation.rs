@@ -50,6 +50,8 @@ async fn real_isolated_pi_uses_explicit_profile_and_persists_exactly_one_unappro
         bootstrap["skills"].as_array().unwrap().len() + 1
     );
     let skill = skills.iter().find(|s| s["id"] == done["skillId"]).unwrap();
+    assert_eq!(skill["skillPackage"]["format"], "agent-skills");
+    assert_eq!(skill["skillPackage"]["files"][0]["path"], "SKILL.md");
     assert_eq!(skill["status"], "proposed");
     let (status, replayed) = t.request("POST", "/generate", Some(body.clone())).await;
     assert_eq!(status, 200);

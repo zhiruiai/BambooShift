@@ -243,15 +243,15 @@
   display: flex;
   align-items: flex-end;
   margin: 0 0 16px;
-  gap: 7px;
+  gap: 8px;
 }
 .message-avatar {
-  width: 23px;
+  width: 32px;
   flex-shrink: 0;
   padding-bottom: 20px;
 }
 .message-content {
-  max-width: 86%;
+  max-width: min(86%, calc(100% - 40px));
   min-width: 0;
 }
 .message-author {

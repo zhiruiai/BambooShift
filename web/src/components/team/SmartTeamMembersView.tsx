@@ -6,8 +6,10 @@ import { Avatar } from '../Avatar';
 import { BotProfileFields } from '../BotProfileFields';
 import '../SmartTeamPanel.css';
 import { type SmartTeamModel } from './types';
+import { matchesTeamStarterMember } from './reviewedTeamStarter';
 export function SmartTeamMembersView({
   draft,
+  plan,
   props,
   update,
   locked,
@@ -28,6 +30,7 @@ export function SmartTeamMembersView({
 }: Pick<
   SmartTeamModel,
   | 'draft'
+  | 'plan'
   | 'props'
   | 'update'
   | 'locked'
@@ -51,6 +54,11 @@ export function SmartTeamMembersView({
     <>
       <div className="smart-team-members">
         {draft.members.map((member, index) => {
+          const prior = plan?.draft?.members.find((item) => item.key === member.key);
+          const starterSkills =
+            prior && matchesTeamStarterMember(prior, member)
+              ? plan?.starterSkills?.[member.key]
+              : undefined;
           const agent =
             member.kind === 'reuse'
               ? props.agents.find((item) => item.id === member.agentId)
@@ -95,6 +103,13 @@ export function SmartTeamMembersView({
                   <Trash2 size={15} />
                 </button>
               </header>
+              {!!starterSkills?.length && (
+                <p className="field-help">
+                  {uiText('workspace:starterIncludedSkills', {
+                    names: starterSkills.map((skill) => skill.name).join(' · '),
+                  })}
+                </p>
+              )}
               <label>
                 {uiText('bots:text_c15b9e74e7bd')}
                 <select

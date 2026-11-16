@@ -19,7 +19,7 @@ export function eventToken(id: string): SyncToken | null {
   return syncToken({ epoch: id.slice(0, split), revision: Number(id.slice(split + 1)) });
 }
 
-/** One workspace subscription. Stream IDs protect GET snapshots; they are not a replay log. */
+/** One workspace subscription. Structural events require a GET; message deltas can be merged. */
 export function createWorkspaceSync(options: {
   fetch: (signal: AbortSignal) => Promise<Bootstrap>;
   snapshot: (data: Bootstrap) => void;
@@ -36,7 +36,9 @@ export function createWorkspaceSync(options: {
     generation = 0;
   let latest: SyncToken | null = null,
     snapshotRevision = -1,
+    snapshotFloor = -1,
     hasSnapshot = false;
+  const pendingMessages = new Map<string, { revision: number; message: Message }>();
   let inflight: Promise<void> | null = null,
     controller: AbortController | null = null;
   let retry: ReturnType<typeof setTimeout> | undefined,
@@ -85,20 +87,28 @@ export function createWorkspaceSync(options: {
         if (stopped || requestGeneration !== generation) return;
         const token = syncToken(data.sync);
         if (!token) throw new Error(uiText('common:text_2b2eb00f54d0'));
-        // A fresh handshake is the authority after a server restart. An old HTTP
-        // response must neither change epochs nor overwrite a newer stream delta.
-        if (latest && (latest.epoch !== token.epoch || latest.revision > token.revision)) {
+        // Handshakes, structural updates and gaps require a newer full snapshot.
+        // Unrelated streaming text must not starve completed run/agent updates.
+        if (latest && (latest.epoch !== token.epoch || snapshotFloor > token.revision)) {
           throw new Error(
             latest.epoch !== token.epoch
               ? uiText('common:text_4592a970a45e')
               : uiText('common:text_83711b70b1a8'),
           );
         }
-        latest = token;
+        if (!latest || token.revision > latest.revision) latest = token;
         snapshotRevision = token.revision;
+        snapshotFloor = token.revision;
         hasSnapshot = true;
         failures = 0;
-        options.snapshot(data);
+        const messages = new Map(data.messages.map((message) => [message.id, message]));
+        for (const [id, pending] of pendingMessages) {
+          if (pending.revision > token.revision) messages.set(id, pending.message);
+          else pendingMessages.delete(id);
+        }
+        // Keep the server's token: only messages, not all metadata, reach the
+        // latest stream revision. Replacement preserves existing thread/order.
+        options.snapshot({ ...data, messages: [...messages.values()] });
         publish(connected && handshaken ? 'online' : 'offline');
       } catch (error) {
         if (stopped || requestGeneration !== generation) return;
@@ -145,8 +155,10 @@ export function createWorkspaceSync(options: {
         return;
       }
       generation++;
+      if (latest?.epoch !== token.epoch) pendingMessages.clear();
       latest = latest?.epoch === token.epoch && latest.revision > token.revision ? latest : token;
       snapshotRevision = -1;
+      snapshotFloor = latest.revision;
       connected = true;
       handshaken = true;
       publish('syncing');
@@ -164,7 +176,11 @@ export function createWorkspaceSync(options: {
       if (token.revision <= latest.revision) return;
       const gap = token.revision > latest.revision + 1;
       latest = token;
-      if (kind === 'message' && message) options.message(message);
+      if (kind === 'update' || gap || !message) snapshotFloor = token.revision;
+      if (kind === 'message' && message) {
+        pendingMessages.set(message.id, { revision: token.revision, message });
+        options.message(message);
+      }
       if (gap) publish('syncing', uiText('common:text_005ba2559638'));
       if (kind === 'update' || gap || !hasSnapshot || snapshotRevision < 0) void refresh(false);
     },
@@ -181,6 +197,7 @@ export function createWorkspaceSync(options: {
       generation++;
       clearRetry();
       controller?.abort();
+      pendingMessages.clear();
     },
   };
 }

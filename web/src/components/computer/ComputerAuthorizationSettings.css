@@ -1,0 +1,86 @@
+.computer-authorization {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 14px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--surface);
+}
+.computer-authorization-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.computer-authorization-heading h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.computer-authorization-heading > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.computer-authorization p,
+.computer-authorization-options button > span {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.computer-authorization-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.computer-authorization-options button {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  min-width: 0;
+  min-height: 70px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--text);
+  text-align: start;
+  cursor: pointer;
+}
+.computer-authorization-options button strong {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 13px;
+}
+.computer-authorization-options button[aria-pressed='true'] {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+}
+.computer-authorization-error p {
+  color: var(--danger);
+}
+@media (max-width: 480px) {
+  .computer-authorization-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.computer-authorization details > summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.computer-authorization details[open] > summary {
+  margin-bottom: 10px;
+}
+.computer-authorization details > p {
+  margin-top: 10px;
+}

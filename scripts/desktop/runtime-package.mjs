@@ -6,6 +6,7 @@ import { packageBackend } from '../package-backend.mjs';
 import { root } from '../rust-toolchain.mjs';
 import { stageNodeRuntime } from './node-runtime.mjs';
 import { stageCuaDriver } from './cua-driver.mjs';
+import { stageMacAccessibilityHelper } from './macos-accessibility-helper.mjs';
 import { collectRuntimeNotices } from './runtime-notices.mjs';
 import { validateNativeBinary } from './native-binary.mjs';
 import { prepareDesktopDependencies } from './runtime-dependencies.mjs';
@@ -38,6 +39,7 @@ export async function stageDesktopRuntime({
   command = run,
   stageNode = stageNodeRuntime,
   stageDriver = stageCuaDriver,
+  stageAccessibilityHelper = stageMacAccessibilityHelper,
   buildRuntimeNotices = collectRuntimeNotices,
   prepareDependencies = prepareDesktopDependencies,
   nativeImageArtifactsDirectory,
@@ -95,6 +97,13 @@ export async function stageDesktopRuntime({
     : undefined;
   const node = await stageNode({ output, version: nodeVersion, platform, arch, command });
   const driver = await stageDriver({ output, platform, sourceRoot, command });
+  const accessibility = await stageAccessibilityHelper({
+    output,
+    platform,
+    arch,
+    sourceRoot,
+    command,
+  });
   await buildRuntimeNotices({ sourceRoot, output, nativeImage });
   await command(join(output, 'bin/node'), ['--version'], output);
   const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -107,6 +116,7 @@ export async function stageDesktopRuntime({
     runtime: 'runtime',
     ...node,
     ...driver,
+    ...accessibility,
     ...(nativeImage ? { nativeImage, releaseApproval: false } : {}),
     dependencyLockSha256: sha256(await readFile(join(runtime, 'package-lock.json'))),
   };

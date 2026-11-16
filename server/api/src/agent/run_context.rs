@@ -103,7 +103,7 @@ pub(crate) fn current_research_guidance(tools: &[Value]) -> String {
     }
     if browser && !public_fetch {
         guidance.push_str(
-            " If no search tool is usable, use computer_status to check for an assigned, available browser. Request the necessary browser_navigate through computer_action and wait for requester approval and the actual result.",
+            " If no search tool is usable, use computer_status to check for an assigned, available browser. Request the necessary browser_navigate through computer_action and follow computer_status.authorization.mode and wait for the actual result. Full authorization runs directly without asking for confirmation; confirm mode uses the runtime approval card.",
         );
     }
     if !public_search && !public_fetch && !connected && !shared && !browser {

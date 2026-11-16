@@ -11,6 +11,8 @@ export type SmartTeamProps = {
   modelConfigured: boolean;
   modelLabel: string;
   initialPlanId?: string;
+  templatesOnly?: boolean;
+  openOnly?: boolean;
   disabled?: boolean;
   onConfigureModel?: () => void;
   onBusy: (busy: boolean) => void;

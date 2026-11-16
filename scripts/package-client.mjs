@@ -18,6 +18,7 @@ import { writeMacLocalizations } from './client-localizations.mjs';
 import { parseClientArguments } from './desktop/options.mjs';
 import { stageDesktopRuntime } from './desktop/runtime-package.mjs';
 import { copyDesktopRuntime } from './desktop/runtime-copy.mjs';
+import { signLocalMacClient } from './desktop/macos-signing.mjs';
 export { parseClientArguments } from './desktop/options.mjs';
 import { desktopProductName, readDesktopProductName } from './publishing/package-names.mjs';
 
@@ -189,43 +190,6 @@ async function makeIcon(platform, working) {
     return icon;
   }
   return undefined; // Linux window icons belong to BrowserWindow, not Packager's icon option.
-}
-
-async function signLocalMacClient(app, electronVersion, working) {
-  const { sign } = await import('@electron/osx-sign');
-  // Ad-hoc code has no Apple Team ID. Permit its bundled Electron libraries while
-  // retaining hardened runtime and V8 JIT. These are app entitlements, not TCC grants.
-  const entitlements = join(working, 'client-entitlements.plist');
-  const pluginEntitlements = join(working, 'client-plugin-entitlements.plist');
-  const plist = (plugin) => `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>com.apple.security.cs.allow-jit</key><true/>
-  <key>com.apple.security.cs.disable-library-validation</key><true/>
-  <key>com.apple.security.device.audio-input</key><true/>
-  ${plugin ? '<key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/>' : ''}
-</dict></plist>
-`;
-  await writeFile(entitlements, plist(false));
-  await writeFile(pluginEntitlements, plist(true));
-  console.log('正在为本机测试签名并校验 macOS 客户端（ad-hoc）。');
-  // osx-sign signs nested code before its containing bundle. Do not use --deep to sign.
-  await sign({
-    app,
-    platform: 'darwin',
-    version: electronVersion,
-    identity: '-',
-    identityValidation: false,
-    preAutoEntitlements: false,
-    preEmbedProvisioningProfile: false,
-    strictVerify: true,
-    optionsForFile: (path) => ({
-      entitlements: path.includes('(Plugin).app') ? pluginEntitlements : entitlements,
-      hardenedRuntime: true,
-      timestamp: 'none',
-    }),
-  });
-  await command('/usr/bin/codesign', ['--verify', '--deep', '--strict', app]);
 }
 
 /** Publish only a completed bundle; a failed publication restores the previous one. */
@@ -406,7 +370,13 @@ export async function packageClient(options) {
           join(app, 'Contents', 'Info.plist'),
         ]);
         await writeMacLocalizations(app);
-        await signLocalMacClient(app, electron.version, working);
+        await signLocalMacClient({
+          app,
+          electronVersion: electron.version,
+          working,
+          bundledRuntime,
+          command,
+        });
       }
     }
     const manifestFile = join(working, 'manifest.json');

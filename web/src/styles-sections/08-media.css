@@ -22,7 +22,7 @@
     padding-inline: 21px;
   }
   .message-content {
-    max-width: 91%;
+    max-width: min(91%, calc(100% - 40px));
   }
   .app-wordmark {
     display: none;
@@ -102,12 +102,12 @@
   }
   .conversation-avatar > .avatar,
   .conversation-avatar > .group-avatar {
-    width: 43px !important;
-    height: 43px !important;
+    width: 46px !important;
+    height: 46px !important;
   }
   .conversation-avatar > .avatar > svg {
-    width: 43px;
-    height: 43px;
+    width: 46px;
+    height: 46px;
   }
   .conversation-heading > span {
     font-size: 14px;
@@ -185,19 +185,11 @@
     font-size: 12px;
   }
   .message-row {
-    gap: 5px;
+    gap: 8px;
     margin-bottom: 14px;
   }
-  .message-avatar {
-    width: 20px;
-  }
-  .message-avatar .avatar,
-  .message-avatar svg {
-    width: 20px !important;
-    height: 20px !important;
-  }
   .message-content {
-    max-width: 88%;
+    max-width: min(88%, calc(100% - 40px));
   }
   .message-bubble {
     padding: 11px 12px;

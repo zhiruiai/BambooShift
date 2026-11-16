@@ -11,6 +11,7 @@ import {
 import type { DesktopAdapter } from '../desktop.js';
 import { IsolatedShellRunner, type IsolatedShellConfiguration } from '../isolated-shell.js';
 import { HostShellRunner } from '../host-shell.js';
+import { LOCAL_SKILL_SCRIPT_BODY_LIMIT, LOCAL_SKILL_SCRIPT_CAPABILITY } from '../skill-script.js';
 import {
   createLinuxDesktopAdapter,
   linuxDesktopMaintenanceState,
@@ -27,12 +28,17 @@ import {
 } from '../../../../shared/computer-screen-lifecycle.js';
 import {
   HOST_DESKTOP_CAPABILITY,
+  MACOS_ACCESSIBILITY_CAPABILITY,
+  MACOS_APP_LAUNCH_CAPABILITY,
   SCREEN_ID_HEADER,
   SCREEN_POOL_CAPABILITY,
   SHARED_SCREEN_CAPABILITY,
   WORKSPACE_SCOPE_HEADER,
 } from '../../../../shared/computer-screens.js';
-import { ISOLATED_SHELL_CAPABILITY, LOCAL_SHELL_CAPABILITY } from '../../../../shared/isolated-shell.js';
+import {
+  ISOLATED_SHELL_CAPABILITY,
+  LOCAL_SHELL_CAPABILITY,
+} from '../../../../shared/isolated-shell.js';
 import {
   VIRTUAL_DESKTOP_CAPABILITY,
   parseDesktopSession,
@@ -63,6 +69,8 @@ export function createComputerWorker(options: {
   screenOnly?: boolean;
   screenPool?: boolean;
   hostDesktop?: boolean;
+  /** Trusted managed local configuration for app control independent of whole-desktop access. */
+  hostAccessibilityAdapter?: DesktopAdapter;
   hostShell?: boolean;
   screenLifecycle?: boolean;
   isolatedShell?: IsolatedShellConfiguration;
@@ -76,13 +84,23 @@ export function createComputerWorker(options: {
   const sharedScreen = !!options.workspaceScopeId && !options.screenPool && !options.screenId;
   if (options.hostDesktop && (!sharedScreen || !options.desktopAdapter))
     throw new Error('A host desktop requires a workspace-scoped standalone worker.');
+  if (
+    options.hostAccessibilityAdapter &&
+    (!sharedScreen || options.screenOnly || !options.hostAccessibilityAdapter.accessibility)
+  )
+    throw new Error(
+      'Host app control requires a workspace-scoped worker and an accessibility adapter.',
+    );
   if (options.hostShell && !sharedScreen)
     throw new Error('A host shell requires a workspace-scoped standalone worker.');
   const desktopAdapter =
     options.desktopAdapter ??
     (options.linuxDesktop ? createLinuxDesktopAdapter(options.linuxDesktop) : undefined);
+  const accessibilityAdapter =
+    options.hostAccessibilityAdapter ?? (options.hostDesktop ? desktopAdapter : undefined);
   const computer = new LocalComputer(resolve(options.workspaceDir), undefined, {
     desktopAdapter,
+    accessibilityAdapter,
     browserSession: options.browserSession,
   });
   const shell = new IsolatedShellRunner(resolve(options.workspaceDir), options.isolatedShell);
@@ -142,7 +160,13 @@ export function createComputerWorker(options: {
     ...(options.screenPool ? [SCREEN_POOL_CAPABILITY] : []),
     ...(sharedScreen ? [SHARED_SCREEN_CAPABILITY] : []),
     ...(options.hostDesktop ? [HOST_DESKTOP_CAPABILITY] : []),
-    ...(!runtime.shellCleanupUnknown && (await hostShell.available()) ? [LOCAL_SHELL_CAPABILITY] : []),
+    ...(options.hostAccessibilityAdapter || computer.status().desktop?.accessibilityAvailable
+      ? [MACOS_ACCESSIBILITY_CAPABILITY]
+      : []),
+    ...(accessibilityAdapter?.appLaunchAvailable ? [MACOS_APP_LAUNCH_CAPABILITY] : []),
+    ...(!runtime.shellCleanupUnknown && (await hostShell.available())
+      ? [LOCAL_SHELL_CAPABILITY, LOCAL_SKILL_SCRIPT_CAPABILITY]
+      : []),
     ...(options.screenLifecycle ? [SCREEN_LIFECYCLE_CAPABILITY] : []),
     ...(!runtime.shellCleanupUnknown && (await shell.available())
       ? [ISOLATED_SHELL_CAPABILITY]
@@ -266,7 +290,16 @@ export function createComputerWorker(options: {
     }
     next();
   });
-  app.use(express.json({ limit: '256kb' }));
+  const parseJson = express.json({ limit: '256kb' });
+  const parseSkillScript = express.json({ limit: LOCAL_SKILL_SCRIPT_BODY_LIMIT, inflate: false });
+  app.use((req, res, next) => {
+    if (req.path === '/execute-skill-script' && req.method === 'POST') {
+      if (!options.hostShell)
+        return res.status(400).json({ error: '此电脑尚未启用本机技能脚本执行。' });
+      return parseSkillScript(req, res, next);
+    }
+    return parseJson(req, res, next);
+  });
   app.use((_req, res, next) =>
     runtime.lifecycleLocked
       ? res.status(409).json({ error: '此画面正在维护。', code: 'SCREEN_LIFECYCLE_BUSY' })
@@ -398,9 +431,14 @@ export function createComputerWorker(options: {
   registerExecutionRoutes(routes);
   app.use((_req, res) => res.status(404).json({ error: 'Unknown worker route.' }));
   app.use(
-    (error: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    (error: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
       res.status(error.status ?? 400).json({
-        error: error.type === 'entity.too.large' ? '文件不能超过 10 MiB。' : error.message,
+        error:
+          req.path === '/execute-skill-script'
+            ? '本机技能脚本请求格式无效或超出大小限制。'
+            : error.type === 'entity.too.large'
+              ? '文件不能超过 10 MiB。'
+              : error.message,
       });
     },
   );

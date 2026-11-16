@@ -7,6 +7,8 @@ pub const CLEANUP: &str = "operation-cleanup-v1";
 pub const SCREEN_POOL: &str = "screen-pool-v1";
 pub const SHARED_SCREEN: &str = "workspace-shared-screen-v1";
 pub const HOST_DESKTOP: &str = "workspace-host-desktop-v1";
+pub const MACOS_ACCESSIBILITY: &str = "macos-accessibility-v1";
+pub const MACOS_APP_LAUNCH: &str = "macos-app-launch-v1";
 pub const LIFECYCLE: &str = "screen-lifecycle-v1";
 pub const PRIVATE_TAKEOVER: &str = "private-takeover-frames-v1";
 pub const MAX_FILE: usize = 10 * 1024 * 1024;
@@ -134,11 +136,25 @@ pub fn health(
         || (raw["surface"] == "desktop"
             && raw["desktop"]["kind"] != "virtual"
             && !saved.has(HOST_DESKTOP))
+        || (saved.has(MACOS_ACCESSIBILITY)
+            && (!saved.has(SHARED_SCREEN)
+                || saved.platform != "darwin"
+                || raw["desktop"]["kind"] != "host"))
+        || (saved.has(MACOS_APP_LAUNCH) && !saved.has(MACOS_ACCESSIBILITY))
+        || (saved.has(super::skill_scripts::CAPABILITY) && !saved.has("local-shell-v1"))
+        || (raw["surface"] == "accessibility" && !saved.has(MACOS_ACCESSIBILITY))
         || (screen.is_none()
             && expected.is_some_and(|previous| {
-                [SHARED_SCREEN, HOST_DESKTOP, SCREEN_POOL]
-                    .iter()
-                    .any(|capability| saved.has(capability) != previous.has(capability))
+                [
+                    SHARED_SCREEN,
+                    HOST_DESKTOP,
+                    SCREEN_POOL,
+                    MACOS_ACCESSIBILITY,
+                    "local-shell-v1",
+                    super::skill_scripts::CAPABILITY,
+                ]
+                .iter()
+                .any(|capability| saved.has(capability) != previous.has(capability))
             }))
     {
         return Err(invalid());
@@ -171,8 +187,13 @@ pub fn health(
             return Err(invalid());
         }
     }
+    let surface = match raw["surface"].as_str() {
+        Some("desktop") => "desktop",
+        Some("accessibility") => "accessibility",
+        _ => "browser",
+    };
     let mut state = json!({"connected":true,"name":saved.name,"platform":saved.platform,
-        "mode":"remote","surface":if raw["surface"]=="desktop" {"desktop"}else{"browser"},
+        "mode":"remote","surface":surface,
         "status":raw["status"].as_str().unwrap_or("已连接"),"capabilities":saved.capabilities});
     if raw["desktop"].is_object() {
         let d = &raw["desktop"];
@@ -183,6 +204,23 @@ pub fn health(
                 "accessibility":permission(&d["permissions"]["accessibility"])}});
         if let Some(reason) = d["reason"].as_str().filter(|s| s.len() <= 1000) {
             state["desktop"]["reason"] = json!(reason);
+        }
+        if saved.has(MACOS_ACCESSIBILITY) {
+            let accessibility_permission = permission(
+                d.get("accessibilityPermission")
+                    .unwrap_or(&d["permissions"]["accessibility"]),
+            );
+            let accessibility_available = d
+                .get("accessibilityAvailable")
+                .unwrap_or(&d["accessibilityReady"])
+                == true;
+            state["desktop"]["accessibilityAvailable"] = json!(accessibility_available);
+            state["desktop"]["accessibilityPermission"] = json!(accessibility_permission);
+            state["desktop"]["accessibilityReady"] = json!(
+                accessibility_available
+                    && d["accessibilityReady"] == true
+                    && accessibility_permission == "granted"
+            );
         }
     }
     Ok(Health {
@@ -257,4 +295,54 @@ pub fn takeover_upgrade() -> ApiError {
 }
 pub fn disconnected() -> Value {
     json!({"connected":false,"name":"未连接电脑","platform":"unknown","mode":"remote","surface":"browser","status":"未连接电脑","capabilities":[]})
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shared_mac_apps_keep_their_own_permission_and_do_not_authorize_the_host_desktop() {
+        let workspace = uuid::Uuid::new_v4().to_string();
+        let worker = json!({
+            "protocol":PROTOCOL,"instanceId":uuid::Uuid::new_v4().to_string(),
+            "workspaceScopeId":workspace,"name":"Local Mac","platform":"darwin",
+            "surface":"accessibility","capabilities":[SHARED_SCREEN,MACOS_ACCESSIBILITY],
+            "desktop":{"kind":"host","accessibilityAvailable":true,"accessibilityReady":true,
+                "accessibilityPermission":"granted",
+                "permissions":{"accessibility":"denied","screenRecording":"denied"}},
+        });
+        let inspect = |value| {
+            health(
+                value,
+                "http://127.0.0.1:52190",
+                &"a".repeat(48),
+                &workspace,
+                None,
+                None,
+                None,
+                None,
+            )
+        };
+        let accepted = inspect(worker.clone()).unwrap();
+        assert!(accepted.saved.has(MACOS_ACCESSIBILITY));
+        assert!(!accepted.saved.has(HOST_DESKTOP));
+        assert_eq!(accepted.state["desktop"]["accessibilityReady"], true);
+        assert_eq!(
+            accepted.state["desktop"]["permissions"]["accessibility"],
+            "denied"
+        );
+
+        let mut denied = worker.clone();
+        denied["desktop"]["accessibilityPermission"] = json!("denied");
+        denied["desktop"]["permissions"]["accessibility"] = json!("granted");
+        assert_eq!(
+            inspect(denied).unwrap().state["desktop"]["accessibilityReady"],
+            false
+        );
+
+        let mut unauthorized = worker;
+        unauthorized["surface"] = json!("desktop");
+        assert!(inspect(unauthorized).is_err());
+    }
 }

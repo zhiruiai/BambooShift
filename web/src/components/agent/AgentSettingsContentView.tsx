@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { isSharedBot } from '../../../../shared/shared-bots';
 import { conversationVisibility } from '../../approvalUi';
+import { skillDisplayName } from '../../skillVersions';
 import { Avatar } from '../Avatar';
 import { BotProfileFields } from '../BotProfileFields';
 import '../BotProfiles.css';
@@ -195,21 +196,6 @@ export function AgentSettingsContentView(model: AgentSettingsContentModel) {
               void save();
             }}
           >
-            <BotProfileFields
-              modelSelection
-              key={avatarEdits.resetKey}
-              section={tab}
-              draft={draft}
-              onChange={setDraft}
-              disabled={locked}
-              workspaceId={props.workspaceId}
-              userId={props.userId}
-              onAvatarActivity={(value) => avatarEdits.set('profile', value)}
-              onAvatarChange={(patch) => {
-                avatarEdits.markChanged();
-                setDraft((current) => ({ ...current, ...patch }));
-              }}
-            />
             {tab === 'profile' && (
               <section
                 className="bot-skill-selection"
@@ -235,7 +221,7 @@ export function AgentSettingsContentView(model: AgentSettingsContentModel) {
                       .map((skill) => (
                         <li key={skill.id}>
                           <BookOpen size={14} aria-hidden="true" />
-                          <span>{skill.name}</span>
+                          <span>{skillDisplayName(skill)}</span>
                         </li>
                       ))}
                   </ul>
@@ -251,6 +237,21 @@ export function AgentSettingsContentView(model: AgentSettingsContentModel) {
                 </button>
               </section>
             )}
+            <BotProfileFields
+              modelSelection
+              key={avatarEdits.resetKey}
+              section={tab}
+              draft={draft}
+              onChange={setDraft}
+              disabled={locked}
+              workspaceId={props.workspaceId}
+              userId={props.userId}
+              onAvatarActivity={(value) => avatarEdits.set('profile', value)}
+              onAvatarChange={(patch) => {
+                avatarEdits.markChanged();
+                setDraft((current) => ({ ...current, ...patch }));
+              }}
+            />
             <div className="dialog-actions">
               <button
                 type="button"

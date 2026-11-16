@@ -8,7 +8,9 @@ type RoutingContext = Partial<Pick<Bootstrap, 'messages' | 'runningRequests'>> &
 
 /** Match known dispatch targets. An unpublished active target must not produce a false setup hint. */
 export function composerModelConfigured(
-  draft: Partial<Pick<ComposerState, 'agentId' | 'mentions' | 'text' | 'replyTo'>>,
+  draft: Partial<Pick<ComposerState, 'agentId' | 'mentions' | 'text'>> & {
+    replyTo?: Pick<NonNullable<ComposerState['replyTo']>, 'id' | 'agentId'>;
+  },
   members: BotAgent[],
   conversation: Conversation | undefined,
   workspaceConfigured: boolean,

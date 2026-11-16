@@ -126,6 +126,18 @@ export interface Routine {
   nextRunAt: string;
   lastRunAt?: string;
 }
+export interface AgentSkillFrontmatter {
+  license?: string;
+  compatibility?: string;
+  metadata?: Record<string, string>;
+  'allowed-tools'?: string;
+}
+export interface AgentSkillPackage {
+  format: 'agent-skills';
+  root: string;
+  frontmatter: AgentSkillFrontmatter & { name: string; description: string };
+  files: { path: string; size: number; sha256: string }[];
+}
 export interface Skill {
   id: string;
   agentId: string;
@@ -140,6 +152,7 @@ export interface Skill {
   activatedAt?: string;
   deactivatedAt?: string;
   teamSource?: import('./team-skills.js').TeamSkillSource;
+  skillPackage?: AgentSkillPackage;
 }
 export interface WorkspaceFile {
   id: string;
@@ -216,12 +229,15 @@ export interface ComputerState {
   name: string;
   platform: string;
   mode: 'local' | 'remote';
-  surface: 'browser' | 'desktop';
+  surface: 'browser' | 'desktop' | 'accessibility';
   desktop?: {
     kind?: 'host' | 'virtual';
     session?: { id: string; generation: string };
     available: boolean;
     authorized: boolean;
+    accessibilityAvailable?: boolean;
+    accessibilityPermission?: 'granted' | 'denied' | 'unknown';
+    accessibilityReady?: boolean;
     enabled: boolean;
     reason?: string;
     width: number;

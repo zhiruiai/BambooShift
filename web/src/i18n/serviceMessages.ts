@@ -67,8 +67,37 @@ export const serviceMessages: Readonly<Record<string, string>> = {
   '服务已重启，原审批已失效。':
     'The service restarted and the previous approval is no longer valid.',
   '正在人工接管 · Bot 电脑操作暂停': 'Manual takeover active · Bot computer actions paused',
+  整机桌面已启用: 'Desktop enabled',
+  'Mac 原生应用操作已启用': 'Mac apps enabled',
   '整机桌面已启用 · 每次操作需要批准': 'Desktop enabled · Every action requires approval',
   整机桌面权限不可用: 'Desktop permission is unavailable',
+  'Mac 原生应用操作已启用 · 点击控件需要批准': 'Mac apps enabled · Clicks require approval',
+  'Mac 原生应用操作已启用 · 控件操作需要批准': 'Mac apps enabled · Actions require approval',
+  'macOS 辅助功能尚不可用': 'macOS Accessibility is unavailable',
+  '应用未确认文字已填写，请重新查看应用。':
+    'The app did not confirm the text replacement. Check the field in the app before retrying.',
+  '应用窗口或控件已变化，请重新查看应用后操作。':
+    'The app window or control changed. Inspect the app again before continuing.',
+  '找不到唯一的目标应用，请确认应用已安装或已打开。':
+    'Could not identify one matching app. Check that the app is installed or open.',
+  '此应用还没有可读取的窗口，请确认窗口已打开。':
+    'There is no readable window yet. Check that the app has an open window.',
+  '应用窗口或控件已变化或过期，请重新读取后申请操作。':
+    'The window or control changed or expired. Inspect the app again and request approval.',
+  '当前无法操作该控件，请重新读取应用。': 'This control is unavailable. Inspect the app again.',
+  '应用未确认点按结果，请核对当前界面后再试。':
+    'The app did not confirm the click. Check the window before retrying.',
+  '当前控件无法填写文字。': 'This control does not support text input.',
+  '此 Mac 助手尚不支持打开应用，请先升级。': 'Update the Mac helper to enable opening apps.',
+  '请选择已安装 Mac 应用的有效标识符。': 'Use a valid bundle ID for an installed Mac app.',
+  '无法通过应用控制打开 BambooShift 或其助手。':
+    'BambooShift and its helper cannot be opened through Mac app control.',
+  '无法确认唯一的已安装应用，请检查应用标识符。':
+    'Could not uniquely identify the installed app. Check its bundle ID.',
+  '已安装的应用发生变化，请重新查看并申请打开。':
+    'The installed app changed. Find the app again and request approval to open it.',
+  '未能确认应用已打开，请在本机检查后再试。':
+    'Opening the app could not be confirmed. Check the Mac before trying again.',
   '本机工作区已连接 · 浏览器尚未打开': 'Local workspace connected · Browser not yet opened',
   未连接电脑: 'No computer connected',
   已连接: 'Connected',

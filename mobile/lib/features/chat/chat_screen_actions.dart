@@ -75,6 +75,26 @@ extension _ChatScreenActions on _ChatScreenState {
     inputFocus.requestFocus();
   }
 
+  String? chatSkillsBot(ChatController controller) {
+    if (!current(controller) ||
+        controller.threadRootId != null ||
+        voice.active) {
+      return null;
+    }
+    final scope = controller.scope;
+    final conversation = scope.find('conversations', controller.conversationId);
+    if (conversation == null ||
+        conversation['isGroup'] == true ||
+        conversation['demo'] == true) {
+      return null;
+    }
+    if (conversation['agentIds'] case [final String agentId]) {
+      final bot = scope.find('agents', agentId);
+      if (bot != null && !isManagedBot(bot)) return agentId;
+    }
+    return null;
+  }
+
   List<Widget> chatToolbar(ChatController controller, Json? lead, bool group) {
     final scope = controller.scope;
     final id = controller.conversationId;
@@ -86,7 +106,26 @@ extension _ChatScreenActions on _ChatScreenState {
     final library = mainChat && !voice.active
         ? chatProjectLibraryAction(context, scope, id)
         : null;
+    final skillsBot = chatSkillsBot(controller);
     final actions = <({IconData icon, String label, VoidCallback run})>[
+      if (skillsBot != null)
+        (
+          icon: Icons.auto_awesome_outlined,
+          label: 'mobileChatBotSkills',
+          run: () {
+            if (chatSkillsBot(controller) != skillsBot) return;
+            Navigator.push<void>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => KnowledgeScreen(
+                  scope: scope,
+                  agentId: skillsBot,
+                  kind: 'skills',
+                ),
+              ),
+            );
+          },
+        ),
       if (mainChat)
         (
           icon: Icons.download_outlined,

@@ -48,34 +48,47 @@ export function SmartTeamIntroductionView({
   | 'setGoal'
   | 'mutate'
 >) {
+  const canStart = !opening && (!plan || plan.status === 'error' || plan.status === 'cancelled');
   return (
     <>
-      <p className="field-help">{uiText('bots:text_b268540e886c')}</p>
-      <p className="field-help">
-        {props.modelConfigured
-          ? uiText('bots:text_f34698a518ad', {
-              value0: props.modelLabel || uiText('bots:text_a02720c41642'),
-            })
-          : uiText('bots:text_661a180e5ae6')}
-      </p>
-      {!props.modelConfigured && props.onConfigureModel && (
-        <button
-          type="button"
-          className="secondary-button"
-          disabled={busy || !!props.disabled || avatarEdits.busy}
-          onClick={() => {
-            if (
-              !scope.current(scope.ticket()) ||
-              running.current ||
-              latest.current.props.disabled ||
-              avatarEdits.current().busy
-            )
-              return;
-            latest.current.props.onConfigureModel?.();
-          }}
-        >
-          {uiText('bots:text_dbd3596e4a86')}
-        </button>
+      {canStart && (
+        <TeamStarterPicker
+          disabled={locked || loading || (!!startRequest.current && !plan)}
+          hideHeading={props.templatesOnly}
+          onUse={(starter) => void mutate('start', starter)}
+          onUseAndOpen={(starter, draft) => void mutate('start', starter, draft)}
+        />
+      )}
+      {!props.templatesOnly && (
+        <>
+          <p className="field-help">{uiText('bots:text_b268540e886c')}</p>
+          <p className="field-help">
+            {props.modelConfigured
+              ? uiText('bots:text_f34698a518ad', {
+                  value0: props.modelLabel || uiText('bots:text_a02720c41642'),
+                })
+              : uiText('bots:text_661a180e5ae6')}
+          </p>
+          {!props.modelConfigured && props.onConfigureModel && (
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={busy || !!props.disabled || avatarEdits.busy}
+              onClick={() => {
+                if (
+                  !scope.current(scope.ticket()) ||
+                  running.current ||
+                  latest.current.props.disabled ||
+                  avatarEdits.current().busy
+                )
+                  return;
+                latest.current.props.onConfigureModel?.();
+              }}
+            >
+              {uiText('bots:text_dbd3596e4a86')}
+            </button>
+          )}
+        </>
       )}
       {error && (
         <p className="error-text" role="alert">
@@ -122,12 +135,18 @@ export function SmartTeamIntroductionView({
           </button>
         </div>
       )}
-      {!opening && (!plan || plan.status === 'error' || plan.status === 'cancelled') && (
+      {canStart && props.templatesOnly && startRequest.current?.template && !plan && (
+        <button
+          type="button"
+          className="secondary-button"
+          disabled={locked || loading}
+          onClick={() => void mutate('start')}
+        >
+          {uiText('bots:text_7733cdf31345')}
+        </button>
+      )}
+      {canStart && !props.templatesOnly && (
         <div className="dialog-form">
-          <TeamStarterPicker
-            disabled={locked || loading || (!!startRequest.current && !plan)}
-            onUse={(starter) => void mutate('start', starter)}
-          />
           <label>
             {uiText('bots:text_816a89087df7')}
             <textarea

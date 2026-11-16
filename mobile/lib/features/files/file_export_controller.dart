@@ -54,13 +54,13 @@ class FileExportController extends ChangeNotifier {
       return null;
     }
     if (conversationId == null) {
-      return value['conversationId'] == null ? value : null;
+      return isWorkspaceScopedFile(value) ? value : null;
     }
     if (!_items(data, 'conversations').any((c) => c['id'] == conversationId)) {
       return null;
     }
     if (value['conversationId'] != conversationId &&
-        !(value['conversationId'] == null &&
+        !(isWorkspaceScopedFile(value) &&
             _items(data, 'messages').any(
               (m) =>
                   m['kind'] == 'file' &&

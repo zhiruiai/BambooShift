@@ -1,8 +1,10 @@
-use super::{draft, store};
+use super::{draft, starters, store};
 use crate::{
     db::State,
     error::{ApiError, Result, only_fields},
-    workspace::{Table, WorkspaceAccess, WorkspaceStore, groups, mutations as bots},
+    workspace::{
+        Table, WorkspaceAccess, WorkspaceStore, groups, mutations as bots, starter_skills,
+    },
 };
 use serde_json::{Value, json};
 
@@ -36,6 +38,7 @@ pub async fn revise(
         true,
     )
     .await?;
+    starters::review_skills(&mut saved)?;
     store::stamp(&mut saved);
     let card = store::save(&mut tx, &saved).await?;
     super::live::recheck(state, grant, &agents, &saved["plan"]["draft"]).await?;
@@ -101,6 +104,7 @@ pub async fn commit(
     }
     let agents = super::live::agents(state, grant, &mut tx).await?;
     let proposal = draft::validate(&mut tx, &body["draft"], &agents, None, true, false).await?;
+    let packs = starters::reviewed_packs(&saved, &proposal)?;
     let members = proposal["members"].as_array().unwrap();
     let mut ids = std::collections::HashMap::new();
     let mut created = Vec::new();
@@ -123,6 +127,9 @@ pub async fn commit(
                 profile.as_object_mut().unwrap().remove(k);
             }
             let (agent, _) = bots::create_bot(ws, &mut tx, &profile).await?;
+            if let Some(packs) = packs.get(member["key"].as_str().unwrap()) {
+                starter_skills::install(&mut tx, packs, &agent["id"]).await?;
+            }
             created.push(agent["id"].clone());
             agent
         };
@@ -146,6 +153,9 @@ pub async fn commit(
     chat["teamBrief"] = json!({"goal":saved["plan"]["goal"],"summary":proposal["summary"],"leadAgentId":lead,"assignments":members.iter().map(|m|json!({"agentId":ids[m["key"].as_str().unwrap()],"assignment":m["assignment"]})).collect::<Vec<_>>()});
     WorkspaceStore::put_in(&mut tx, Table::Conversations, &chat).await?;
     saved["plan"]["draft"] = proposal;
+    if saved["starterMembers"].is_array() {
+        saved["plan"]["starterSkills"] = starters::summaries(&packs);
+    }
     saved["plan"]["status"] = json!("committed");
     saved["plan"]["result"] = json!({"conversationId":chat["id"],"createdAgentIds":created,"memberAgentIds":all,"leadAgentId":lead});
     saved["plan"].as_object_mut().unwrap().remove("error");

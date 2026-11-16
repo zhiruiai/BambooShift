@@ -1,6 +1,12 @@
 .bot-template-dialog {
   width: min(680px, calc(100vw - 32px));
 }
+.sidebar-bot-gallery {
+  margin-bottom: 8px;
+}
+.bot-template-dialog > .modal-body > .segmented {
+  flex-wrap: wrap;
+}
 .template-description {
   color: light-dark(#8d7d98, var(--text-secondary));
   font-size: 13px;

@@ -42,8 +42,10 @@ class _FilePreviewScreenState extends State<FilePreviewScreen> {
     final registered = widget.scope.find('files', widget.file.id);
     exportConversationId =
         widget.conversationId ??
-        (registered?['conversationId'] is String
-            ? registered!['conversationId'] as String
+        (registered != null &&
+                !isWorkspaceScopedFile(registered) &&
+                registered['conversationId'] is String
+            ? registered['conversationId'] as String
             : null);
     widget.scope.addListener(_scopeChanged);
     unawaited(load());

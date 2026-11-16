@@ -4,15 +4,29 @@ BambooShift includes five original vector themes: Companions, Pandas, Dinosaurs,
 
 The Web and desktop clients render layered SVG artwork. Flutter uses the same character data with native drawing. A Bot moves through idle, thinking, working, waiting for approval, success and failure. Status text provides the same information when motion is disabled.
 
-The browser and desktop clients draw the eyes in SVG. Flutter draws the matching eye layers over the same original artwork. Both consume the [shared geometry and task poses](../shared/avatar-face-motion.json). Recent task completions transition to their final expression. Historical results open with a static expression. Uploaded images stay static.
+The browser and desktop clients draw the eyes in SVG. Flutter draws the matching eye layers over the same original artwork. Both consume the [shared geometry and task poses](../shared/avatar-face-motion.json). Recent task completions transition to their final expression. Historical results open with a static expression. Uploaded and shared images keep their original artwork, with gentle body motion while working in the browser and desktop clients; no eye layer is added.
 
 Web pauses the eye animation clock when the artwork leaves the viewport or the page is hidden and respects `prefers-reduced-motion`. Flutter respects the platform animation setting, application lifecycle and `TickerMode`. Task text conveys the state at all sizes, including in a compact sidebar. [Web avatar](../web/src/components/Avatar.tsx) · [Flutter avatar](../mobile/lib/widgets/bot_avatar.dart)
+
+Web and desktop keep a working Bot's eyes and gentle body movement active for the
+duration of its task, including tool execution and result finalization after text
+streaming ends. The sidebar, chat header and live message use that Bot's actual
+activity. Historical messages remain still, and group avatars identify the member
+doing the work. Continuous motion pauses offscreen and when the app is hidden;
+reduced-motion preferences retain the status and expression without movement.
 
 Community collections use their own eye geometry, clipped to their native body outlines. The [shared packs](../shared/avatar-packs/README.md) retain their source parameters and notices. Open Bot Avatar supplies three native moods, mapped to the task states; GrokBot supplies 25 expressions and 39 behavior records. BambooShift adapts their timing to its existing lifecycle instead of loading a second animation runtime. The Open Bot Avatar volume-based 3D engine is not included. All required artwork is bundled locally.
 
 ## Design references
 
 xAI describes using recognizable silhouettes and task expressions to communicate activity at sidebar sizes. Its public design article documents the interaction and artwork. Novra separately published an independent Rive concept with state transitions and pointer-driven gaze. [xAI design article](https://x.ai/news/designing-grok-bot#what-are-they-doing) · [Novra case study](https://www.novra.design/case-studies/grokbot)
+
+The [grok-icon-study](https://github.com/blessonism/grok-icon-study) reference shows
+how character state coordinates separate body poses, eye expressions, gaze and
+blinking. BambooShift applies that interaction principle to its existing artwork
+and animation clock. Its work movement lasts as long as the task; completion
+settles into a still expression. The study's extracted artwork and engine code
+are not bundled.
 
 | Project | Verified scope |
 | --- | --- |

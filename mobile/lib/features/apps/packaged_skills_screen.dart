@@ -7,6 +7,8 @@ import '../../l10n/strings.dart';
 import '../../widgets/common.dart';
 import '../bots/knowledge_editor.dart';
 import '../bots/knowledge_screen.dart';
+import '../bots/skill_package_data.dart';
+import '../bots/skill_package_preview.dart';
 import '../bots/skill_recipe_picker.dart';
 import '../chat/chat_markdown.dart';
 
@@ -154,11 +156,7 @@ class _SkillPreviewState extends State<_SkillPreview> {
             scope: _scope,
             agentId: id,
             kind: 'skills',
-            original: {
-              'name': widget.recipe['name'],
-              'description': widget.recipe['description'],
-              'content': widget.recipe['content'],
-            },
+            original: skillRecipeDraft(widget.recipe),
             onSubmitted: () => submitted = true,
           ),
         ),
@@ -215,6 +213,11 @@ class _SkillPreviewState extends State<_SkillPreview> {
                   ChatMarkdown(
                     text: widget.recipe['content'] as String,
                     canOpenLink: () => false,
+                  ),
+                  SkillPackagePreview(
+                    package: SkillPackageDetails.draft(
+                      widget.recipe['packageDraft'] as Json,
+                    ),
                   ),
                 ],
               ),

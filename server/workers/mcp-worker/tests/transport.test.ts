@@ -4,7 +4,7 @@ import { test } from 'node:test';
 
 import { AppTransportError, parseAppEndpoint } from '../transport.js';
 
-import { exampleTool, mcpFixture, until } from './transport.fixture.js';
+import { exampleTool, mcpFixture, modernTool, until } from './transport.fixture.js';
 
 test('transport checks the live grant at actual fetch dispatch and still closes a revoked MCP session', async (t) => {
   const fixture = await mcpFixture(t);
@@ -112,6 +112,72 @@ test('real MCP HTTP supports initialize, tools, JSON and SSE calls without dupli
   );
   await assert.rejects(client.call('create_note', { title: 'after close' }));
   assert.equal(fixture.state.calls, 2);
+});
+
+test('MCP 2026-07-28 negotiates stateless tools with request metadata and authorized dispatch', async (t) => {
+  const fixture = await mcpFixture(t, true);
+  let active = true;
+  let checks = 0;
+  const client = await fixture.factory(
+    { url: 'https://fixture.example/mcp', token: fixture.state.token },
+    new AbortController().signal,
+    {
+      authorize: async () => {
+        checks++;
+        if (!active) throw new Error('Synthetic grant revoked');
+      },
+    },
+  );
+  t.after(() => client.close());
+  assert.deepEqual(await client.tools(), [modernTool()]);
+  fixture.state.sse = true;
+  fixture.state.result = { ...fixture.state.result, structuredContent: false };
+  assert.deepEqual(await client.call('create_note', { title: '中文笔记' }), {
+    isError: false,
+    text: 'Created synthetic note.\nfalse',
+  });
+  active = false;
+  await assert.rejects(client.call('create_note', { title: '未经授权' }));
+  await client.close();
+  assert.equal(checks, 4);
+  assert.equal(fixture.state.calls, 1);
+  assert.equal(fixture.state.deletes, 0);
+  assert.deepEqual(fixture.state.methods, ['POST', 'POST', 'POST']);
+  assert.deepEqual(
+    fixture.state.messages.map((message) => message.method),
+    ['server/discover', 'tools/list', 'tools/call'],
+  );
+  assert.equal(fixture.state.messages[2].params?.arguments.title, '中文笔记');
+});
+
+test('MCP 2026-07-28 input-required results do not resubmit the approved tool call', async (t) => {
+  const fixture = await mcpFixture(t, true);
+  fixture.state.result = { resultType: 'input_required', requestState: 'opaque-synthetic-state' };
+  const client = await fixture.factory(
+    { url: 'https://fixture.example/mcp', token: fixture.state.token },
+    new AbortController().signal,
+  );
+  t.after(() => client.close());
+  await client.tools();
+  await assert.rejects(client.call('create_note', { title: '中文笔记' }));
+  assert.equal(fixture.state.calls, 1);
+});
+
+test('MCP 2026-07-28 header rejection does not refresh and resubmit an approved tool call', async (t) => {
+  const fixture = await mcpFixture(t, true);
+  fixture.state.toolError = { code: -32020, message: 'Synthetic HeaderMismatch' };
+  const client = await fixture.factory(
+    { url: 'https://fixture.example/mcp', token: fixture.state.token },
+    new AbortController().signal,
+  );
+  t.after(() => client.close());
+  await client.tools();
+  await assert.rejects(client.call('create_note', { title: '中文笔记' }));
+  assert.equal(fixture.state.calls, 1);
+  assert.deepEqual(
+    fixture.state.messages.map((message) => message.method),
+    ['server/discover', 'tools/list', 'tools/call'],
+  );
 });
 
 test('real MCP HTTP rejects redirects and authentication errors without replay or secrets', async (t) => {

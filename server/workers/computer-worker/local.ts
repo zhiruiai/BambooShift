@@ -1,9 +1,6 @@
-import { mkdir, appendFile } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { platform } from 'node:os';
 import { randomUUID } from 'node:crypto';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
 import type { BrowserContext, Page } from 'playwright-core';
 import type { ComputerState } from '../../../shared/types.js';
 import type { BrowserScreenSession } from '../computer-runtime/browser-engine.js';
@@ -11,16 +8,15 @@ import { browserEnvironment } from '../computer-runtime/browser-environment.js';
 import { createBrowserTabs } from '../computer-runtime/browser-tabs.js';
 import { executeBrowserPage } from '../computer-runtime/browser-page.js';
 import {
-  listComputerEntries,
-  readComputerText,
-  writeComputerText,
-} from '../computer-runtime/computer-files.js';
+  isAccessibilityAction,
+  type AccessibilityAction,
+} from '../computer-runtime/desktop-accessibility.js';
 import {
   createDesktopAdapter,
   type DesktopAdapter,
   type DesktopInput,
 } from '../computer-runtime/desktop.js';
-import { createBrowserNetworkProxy, resolveBrowserTarget } from './network.js';
+import { createBrowserNetworkProxy } from './network.js';
 import {
   type ComputerSurface,
   type TakeoverState,
@@ -28,14 +24,14 @@ import {
   type ComputerActionInput,
   viewport,
   isSurfaceAction,
-  terminalCommands,
   validateTakeoverInput,
   validateComputerAction,
   pngDimensions,
 } from './protocol.js';
 import { captureDownload } from './download.js';
+import { executeLocalFileAction } from './local-files.js';
 import { localComputerStatus } from './local-status.js';
-const execFileAsync = promisify(execFile);
+import { appendTakeoverAudit, executeBrowserTakeoverInput } from './local-takeover.js';
 export class LocalComputer {
   private readonly browserTabs = createBrowserTabs({
     pages: () => this.context?.pages() ?? [],
@@ -50,6 +46,7 @@ export class LocalComputer {
   private proxy?: Awaited<ReturnType<typeof createBrowserNetworkProxy>>;
   private surface: ComputerSurface = 'browser';
   private readonly desktop: DesktopAdapter;
+  private readonly accessibilityDesktop?: DesktopAdapter;
   private desktopState?: ComputerState['desktop'];
   private browserState?: { available: boolean; reason?: string };
   private takeover?: { id: string; expiresAt: number };
@@ -61,19 +58,45 @@ export class LocalComputer {
       now?: () => number;
       ttlMs?: number;
       desktopAdapter?: DesktopAdapter;
+      accessibilityAdapter?: DesktopAdapter;
       downloadTimeoutMs?: number;
       browserSession?: BrowserScreenSession;
     } = {},
   ) {
     this.desktop = leaseOptions.desktopAdapter ?? createDesktopAdapter();
+    this.accessibilityDesktop = leaseOptions.accessibilityAdapter;
   }
   private dimensions() {
+    if (this.surface === 'accessibility') return { width: 0, height: 0 };
     return this.surface === 'desktop'
       ? { width: this.desktopState?.width ?? 0, height: this.desktopState?.height ?? 0 }
       : viewport;
   }
   async refreshStatus(): Promise<ComputerState> {
-    this.desktopState = await this.desktop.status();
+    const desktopStatus = this.desktop.status();
+    const separate = this.accessibilityDesktop !== this.desktop;
+    const [raw, apps] = await Promise.all([
+      desktopStatus,
+      separate ? this.accessibilityDesktop?.status() : desktopStatus,
+    ]);
+    const { accessibilityAvailable: _available, accessibilityReady: _ready, ...desktop } = raw;
+    this.desktopState = {
+      ...desktop,
+      ...(this.accessibilityDesktop && separate
+        ? {
+            kind: 'host' as const,
+            accessibilityPermission: apps?.permissions.accessibility ?? ('unknown' as const),
+          }
+        : {}),
+      ...(apps?.accessibilityAvailable && this.accessibilityDesktop?.accessibility
+        ? {
+            accessibilityAvailable: true,
+            accessibilityReady: apps.accessibilityReady,
+          }
+        : {}),
+      enabled: this.surface === 'accessibility' ? apps?.enabled === true : desktop.enabled,
+    };
+    if (!this.desktopState.accessibilityReady) this.accessibilityDesktop?.accessibility?.clear();
     this.browserState = await this.leaseOptions.browserSession?.status?.();
     return this.status();
   }
@@ -83,18 +106,27 @@ export class LocalComputer {
     options: { signal?: AbortSignal } = {},
   ): Promise<ComputerState> {
     options.signal?.throwIfAborted();
-    if (!['browser', 'desktop'].includes(surface)) throw new Error('不支持的电脑界面。');
-    if (surface === 'desktop') {
-      if (!confirmed) throw new Error('请明确确认开启整机桌面。');
+    if (!['browser', 'desktop', 'accessibility'].includes(surface))
+      throw new Error('不支持的电脑界面。');
+    if (surface !== 'browser') {
+      if (!confirmed) throw new Error('请明确确认开启原生桌面操作。');
       await this.refreshStatus();
-      if (!this.desktopState?.available || !this.desktopState.authorized)
-        throw new Error(this.desktopState?.reason || '整机桌面权限尚未授予。');
-      await this.leaseOptions.browserSession?.prepareDesktop?.(options);
+      if (surface === 'accessibility') {
+        if (!this.desktopState?.accessibilityReady) throw new Error('macOS 辅助功能尚不可用。');
+      } else {
+        if (!this.desktopState?.available || !this.desktopState.authorized)
+          throw new Error(this.desktopState?.reason || '整机桌面权限尚未授予。');
+        await this.leaseOptions.browserSession?.prepareDesktop?.(options);
+      }
       options.signal?.throwIfAborted();
     }
     await this.cancelBrowserDownload('电脑界面已切换，网页导出已取消。');
-    this.takeover = undefined;
-    this.desktop.setEnabled(surface === 'desktop');
+    this.cancelTakeover();
+    const shared = this.accessibilityDesktop === this.desktop;
+    if (shared && (this.surface === 'accessibility' || surface === 'accessibility'))
+      this.desktop.setEnabled(false);
+    this.desktop.setEnabled(surface === 'desktop' || (shared && surface === 'accessibility'));
+    if (!shared) this.accessibilityDesktop?.setEnabled(surface === 'accessibility');
     this.surface = surface;
     await this.refreshStatus();
     await this.auditTakeover('surface', { surface });
@@ -120,6 +152,7 @@ export class LocalComputer {
   }
   cancelTakeover() {
     this.takeover = undefined;
+    this.accessibilityDesktop?.accessibility?.clear();
   }
   private assertAgentAccess() {
     if (this.takeoverStatus().active)
@@ -129,17 +162,11 @@ export class LocalComputer {
     if (!this.takeoverStatus().active || this.takeover?.id !== id)
       throw new Error('接管凭据已失效或过期，请重新接管电脑。');
   }
-  private async auditTakeover(event: string, detail: Record<string, unknown> = {}) {
-    const dir = resolve(this.workspace, '../computer');
-    await mkdir(dir, { recursive: true, mode: 0o700 });
-    await appendFile(
-      resolve(dir, 'takeover.jsonl'),
-      JSON.stringify({ at: new Date(this.now()).toISOString(), actor: 'human', event, ...detail }) +
-        '\n',
-      { mode: 0o600 },
-    );
+  private auditTakeover(event: string, detail: Record<string, unknown> = {}) {
+    return appendTakeoverAudit(this.workspace, () => this.now(), event, detail);
   }
   async startTakeover(): Promise<TakeoverLease> {
+    if (this.surface === 'accessibility') throw new Error('原生应用模式无需远程接管。');
     if (this.takeoverStatus().active)
       throw new Error('另一端正在接管电脑，请等待本次接管结束或过期。');
     await this.cancelBrowserDownload('用户正在接管电脑，网页导出已取消。');
@@ -176,6 +203,7 @@ export class LocalComputer {
     options: { signal?: AbortSignal } = {},
   ): Promise<{ ok: true; capturedAt: string; width: number; height: number }> {
     options.signal?.throwIfAborted();
+    if (this.surface === 'accessibility') throw new Error('原生应用模式无需远程接管。');
     if (this.surface === 'desktop') await this.assertDesktopReady();
     const input = validateTakeoverInput(raw, this.dimensions(), this.surface);
     this.assertLease(input.leaseId);
@@ -185,31 +213,7 @@ export class LocalComputer {
     } else {
       const page = await this.browser();
       this.assertLease(input.leaseId);
-      if (input.type === 'click')
-        await page.mouse.click(input.x!, input.y!, {
-          button: input.button,
-          clickCount: input.clickCount,
-        });
-      if (input.type === 'type') await page.keyboard.insertText(input.text!);
-      if (input.type === 'key')
-        await page.keyboard.press(
-          input.key === 'ControlOrMeta+A'
-            ? platform() === 'darwin'
-              ? 'Meta+A'
-              : 'Control+A'
-            : input.key!,
-        );
-      if (input.type === 'scroll') await page.mouse.wheel(input.deltaX ?? 0, input.deltaY!);
-      if (input.type === 'navigate') {
-        const url = new URL(input.url!);
-        await resolveBrowserTarget(url);
-        const response = await page.goto(url.href, {
-          waitUntil: 'domcontentloaded',
-          timeout: 30_000,
-        });
-        if (response && response.status() >= 400)
-          throw new Error(`网页请求失败 (${response.status()})。`);
-      }
+      await executeBrowserTakeoverInput(page, input);
     }
     const { leaseId: _lease, text: _text, ...details } = input;
     await this.auditTakeover(input.type, {
@@ -304,6 +308,7 @@ export class LocalComputer {
       leaseId?: string;
     } = {},
   ): Promise<Buffer> {
+    if (this.surface === 'accessibility') throw new Error('原生应用模式通过辅助功能读取控件。');
     const authorize = () => {
       options.signal?.throwIfAborted();
       options.authorize?.();
@@ -375,15 +380,31 @@ export class LocalComputer {
     const action = validateComputerAction(raw);
     if (action.type === 'remote_shell')
       throw new Error('此命令仅支持通过隔离检查的远程电脑，本机不可执行。');
-    if (action.type === 'local_shell')
-      throw new Error('本机命令必须通过已启用整机权限的执行器。');
+    if (action.type === 'local_shell') throw new Error('本机命令必须通过已启用整机权限的执行器。');
     if (['upload_file', 'download_file'].includes(action.type))
       throw new Error('二进制文件传输必须通过已绑定资料库的控制端执行。');
+    if (isAccessibilityAction(action.type)) {
+      this.assertAgentAccess();
+      if (this.surface !== 'accessibility') throw new Error('请先启用 Mac 原生应用操作。');
+      await this.refreshStatus();
+      if (
+        !this.desktopState?.enabled ||
+        !this.desktopState.accessibilityReady ||
+        !this.accessibilityDesktop?.accessibility
+      )
+        throw new Error('macOS 辅助功能尚不可用。');
+      this.assertAgentAccess();
+      return this.accessibilityDesktop.accessibility.execute(
+        action as AccessibilityAction,
+        options.signal,
+      );
+    }
     if (isSurfaceAction(action.type)) {
       this.assertAgentAccess();
+      const mode = { desktop: '整机桌面', browser: '独立浏览器', accessibility: 'Mac 原生应用' };
       if (!action.type.startsWith(this.surface + '_'))
         throw new Error(
-          `当前为 ${this.surface === 'desktop' ? '整机桌面' : '独立浏览器'} 模式，请使用对应操作；模式只能由用户手动切换。`,
+          `当前为 ${mode[this.surface]} 模式，请使用对应操作；模式只能由用户手动切换。`,
         );
     }
     if (['browser_tabs', 'browser_select_tab', 'browser_close_tab'].includes(action.type)) {
@@ -415,32 +436,15 @@ export class LocalComputer {
     switch (action.type) {
       case 'browser_download':
         return this.download(action, options.signal);
-      case 'list_files': {
-        return {
-          path: action.path ?? '.',
-          entries: await listComputerEntries(this.workspace, action.path, options.signal),
-        };
-      }
-      case 'read_file': {
-        return {
-          path: action.path,
-          content: await readComputerText(this.workspace, action.path!, options.signal),
-        };
-      }
-      case 'write_file': {
-        await writeComputerText(this.workspace, action.path!, action.content!, options.signal);
-        return { path: action.path, bytes: Buffer.byteLength(action.content!) };
-      }
-      case 'terminal_command': {
-        const [command, args] = terminalCommands[action.command!];
-        const { stdout, stderr } = await execFileAsync(command, args, {
-          cwd: this.workspace,
-          timeout: 5_000,
-          maxBuffer: 100_000,
-          env: { PATH: '/usr/bin:/bin:/usr/sbin:/sbin', LANG: 'en_US.UTF-8' },
-        });
-        return { command: action.command, stdout, stderr };
-      }
+      case 'list_files':
+      case 'read_file':
+      case 'write_file':
+      case 'terminal_command':
+        return executeLocalFileAction(
+          this.workspace,
+          { ...action, type: action.type },
+          options.signal,
+        );
       case 'desktop_screenshot':
       case 'browser_screenshot': {
         const png = await this.screenshot({ forAgent: true, signal: options.signal });
@@ -464,7 +468,9 @@ export class LocalComputer {
     this.takeover = undefined;
     this.surface = 'browser';
     this.desktop.setEnabled(false);
-    await this.desktop.close();
+    const separate = this.accessibilityDesktop !== this.desktop;
+    if (separate) this.accessibilityDesktop?.setEnabled(false);
+    await Promise.all([this.desktop.close(), separate && this.accessibilityDesktop?.close()]);
     if (this.desktopState) this.desktopState = { ...this.desktopState, enabled: false };
     if (this.leaseOptions.browserSession) {
       await this.leaseOptions.browserSession.close();

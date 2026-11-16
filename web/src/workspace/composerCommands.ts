@@ -1,6 +1,7 @@
 import type { BotAgent, Skill } from '../../../shared/types';
 import { isSharedBot } from '../../../shared/shared-bots';
 import { uiText } from '../i18n';
+import { skillDisplayName } from '../skillVersions';
 
 export type ComposerCommand = {
   id: string;
@@ -79,12 +80,18 @@ export function composerCommands({
         (isSharedBot(agent) && agent.sharedBot?.status !== 'active')
       )
         continue;
+      const title = skillDisplayName(skill);
+      const summary = skill.description?.trim();
       commands.push({
         id: `skill:${skill.id}`,
         kind: 'skill',
-        title: skill.name,
-        description: uiText('workspace:composerSkillOwner', { name: agent.name }),
-        keywords: `${skill.name} ${skill.description} ${agent.name}`,
+        title,
+        description: summary
+          ? `${agent.name} · ${summary}`
+          : uiText('workspace:composerSkillOwner', { name: agent.name }),
+        keywords: [title, title !== skill.name && skill.name, skill.description, agent.name]
+          .filter(Boolean)
+          .join(' '),
         agentId: agent.id,
         skillName: skill.name,
         ...(!isSharedBot(agent) ? { skillId: skill.id } : {}),

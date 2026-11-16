@@ -1,5 +1,6 @@
 import { uiText, currentLanguage } from './i18n';
 import { ApiError } from './api';
+import { MACOS_ACCESSIBILITY_CAPABILITY } from '../../shared/computer-screens';
 import type { ComputerState } from '../../shared/types';
 
 export type BotScreenInventory = {
@@ -8,6 +9,14 @@ export type BotScreenInventory = {
   shared?: boolean;
   reason?: string;
 };
+
+export function supportsMacApps(computer: ComputerState) {
+  return (
+    computer.surface === 'accessibility' ||
+    computer.desktop?.accessibilityAvailable === true ||
+    computer.capabilities?.includes(MACOS_ACCESSIBILITY_CAPABILITY) === true
+  );
+}
 
 export function screenIdentity(state: ComputerState) {
   return JSON.stringify([

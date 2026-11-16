@@ -84,12 +84,12 @@ export function SkillFileImport({
         type="button"
         className="add-detail-row"
         disabled={disabled || reading}
+        title={uiText('common:skillFileHelp')}
         onClick={() => picker.current?.click()}
       >
         {reading ? <Loader2 size={17} className="spin" /> : <FileUp size={17} />}
         {uiText(reading ? 'common:skillFileReading' : 'common:skillFileImport')}
       </button>
-      <p className="field-help">{uiText('common:skillFileHelp')}</p>
       {error && (
         <div className="inline-save-error" role="alert" tabIndex={-1} ref={feedback}>
           <Info size={15} />

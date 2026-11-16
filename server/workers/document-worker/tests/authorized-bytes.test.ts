@@ -33,3 +33,15 @@ test('authorized byte parsing preserves text contracts and rejects all caller fi
   assert.equal(long.truncated, true);
   if (long.kind === 'text') assert.equal(long.text.length, ATTACHMENT_LIMITS.textCharacters);
 });
+
+test('reads delivered website modules and manifests as editable UTF-8 source', async () => {
+  for (const [name, source] of [
+    ['app.mjs', 'export const label = "站点";'],
+    ['site.webmanifest', '{"name":"站点","start_url":"./index.html"}'],
+  ]) {
+    const result = await parseAuthorizedBytes(name, Buffer.from(source));
+    assert.ok(result.kind === 'text', name);
+    assert.equal(result.text, source, name);
+    await assert.rejects(parseAuthorizedBytes(name, Buffer.from([0, 255, 1, 2])), /UTF-8|二进制/);
+  }
+});

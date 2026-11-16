@@ -35,6 +35,7 @@ const compiled = Promise.all([
   compile('web/src/components/RemoteShellDetails.tsx'),
   compile('web/src/components/computer/ComputerActionEntry.tsx', ''),
   compile('web/src/components/ChatComputerCard.tsx'),
+  compile('web/src/components/computer/chatApproval.ts'),
 ]);
 const render = (Component: any, props: Record<string, unknown>) =>
   renderToStaticMarkup(React.createElement(Component, props)) as string;
@@ -325,7 +326,7 @@ test('chat records and approval history use the same shell details and do not ma
       assert.doesNotMatch(html, /允许本次操作|工作环境示意/);
     }
     assert.match(card, /原来的工作说明/);
-    assert.match(card, /打开电脑面板/);
+    assert.match(card, /打开当前电脑/);
   }
   assert.equal(opened, 0);
 });
@@ -352,7 +353,7 @@ test('chat computer cards state who may approve without presenting another perso
   });
   assert.match(own, /等待你批准/);
   assert.match(own, /允许一次/);
-  assert.match(own, /打开电脑面板/);
+  assert.match(own, /打开当前电脑/);
   const other = render(app.ComputerRecord, {
     message,
     userId: 'owner-b',
@@ -361,13 +362,12 @@ test('chat computer cards state who may approve without presenting another perso
     onClick() {},
   });
   assert.match(other, /等待林批准/);
-  assert.match(other, /打开电脑面板/);
+  assert.match(other, /打开当前电脑/);
   assert.doesNotMatch(other, /允许一次/);
   assert.match(other, /拥有者不能代为审批/);
   assert.doesNotMatch(other, /电脑操作等待你批准/);
   assert.doesNotMatch(own, /电脑操作等待你批准/);
 });
-
 
 test('avatar reacts to the actual command outcome after shell transport settles', async () => {
   const { messageAvatarMotion } = await compile('web/src/workspace/ChatAvatar.tsx');
@@ -388,4 +388,101 @@ test('avatar reacts to the actual command outcome after shell transport settles'
       assert.equal(messageAvatarMotion(message, false, actor), expected);
     }
   }
+});
+
+test('local skill receipts show the exact attachment and arguments before exposing real output', async () => {
+  const [, dialog, app] = await compiled;
+  const script = {
+    ...action,
+    type: 'local_skill_script',
+    payload: {
+      skillId: 'skill-a',
+      skillName: 'data-quality-review',
+      skillVersion: 2,
+      path: 'scripts/profile_csv.py',
+      args: ['__SKILL_INPUT__', '--key', 'order_id'],
+      manifestSha256: 'a'.repeat(64),
+      input: { fileId: 'file-a', name: 'orders.csv', sha256: 'b'.repeat(64), bytes: 131 },
+    },
+  };
+  const props = {
+    action: script,
+    busy: false,
+    controlled: false,
+    owner: true,
+    onApprove() {},
+    onReject() {},
+  };
+  const pending = render(dialog.ComputerActionEntry, props);
+  assert.match(pending, /data-quality-review · v2/);
+  assert.match(pending, /scripts\/profile_csv\.py/);
+  assert.match(pending, /orders\.csv/);
+  assert.match(pending, /&quot;__SKILL_INPUT__&quot;/);
+  assert.match(pending, /&quot;--key&quot;/);
+  const malformed = dialog.ComputerActionEntry({
+    ...props,
+    action: { ...script, payload: { ...script.payload, args: [] } },
+  });
+  assert.equal(
+    find(malformed, (node) => node.type === 'button' && node.props.className === 'primary-button')
+      .props.disabled,
+    true,
+  );
+  const receipt = render(app.ComputerRecord, {
+    message: {
+      id: 'script-result',
+      conversationId: 'chat',
+      role: 'assistant',
+      status: 'done',
+      content: '',
+      metadata: {
+        action: { ...script, status: 'done', result: { ...success, stdout: '{"rows":10}' } },
+      },
+      createdAt: action.createdAt,
+    },
+    onOpenCurrentComputer() {},
+  });
+  assert.match(receipt, /remote-shell-result" open=""/);
+  assert.match(receipt, /&quot;rows&quot;:10/);
+});
+
+test('full-authorized shell receipts show automatic execution and never offer one-time approval', async () => {
+  const [, dialog, app, approval] = await compiled;
+  const automatic = {
+    ...action,
+    type: 'local_shell',
+    authorization: {
+      mode: 'full',
+      scope: 'current-user-current-computer',
+      grantedAt: '2026-11-16T00:00:00Z',
+    },
+  };
+  const html = render(dialog.ComputerActionEntry, {
+    action: automatic,
+    busy: false,
+    controlled: false,
+    owner: true,
+    onApprove() {
+      throw Error('already authorized');
+    },
+    onReject() {},
+  });
+  assert.match(html, /完全授权 · 自动执行/);
+  assert.doesNotMatch(html, /批准仅适用于本次操作|允许本次操作|approval-actions/);
+  assert.equal(app.computerRecordStatus({ status: 'running' }, automatic).kind, 'starting');
+  assert.equal(app.computerRecordStatus({ status: 'running' }, action).kind, 'pending');
+  const message = {
+    role: 'assistant',
+    kind: 'computer',
+    status: 'running',
+    agentId: 'bot-1',
+    conversationId: 'chat-1',
+  };
+  const scoped = { agentId: 'bot-1', conversationId: 'chat-1' };
+  const owner = { userId: 'owner', isOwner: true };
+  assert.equal(approval.mayDecideComputerAction(message, { ...action, ...scoped }, owner), true);
+  assert.equal(
+    approval.mayDecideComputerAction(message, { ...automatic, ...scoped }, owner),
+    false,
+  );
 });

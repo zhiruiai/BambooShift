@@ -9,6 +9,6 @@ export default {
   newChatEmpty: '还没有可打开的聊天。可以先创建 Bot 或工作组。',
   newChatCreateBot: '创建 Bot',
   newChatCreateGroup: '创建工作组',
-  newChatPlanTeam: '智能组队',
+  newChatPlanTeam: '团队模板与组队',
   newChatKeyboardHint: '↑ ↓ 选择 · Enter 打开 · Esc 关闭',
 };

@@ -2,6 +2,20 @@
 
 本页核对用户提供的 19 张截图、[教程视频](https://www.youtube.com/watch?v=q1IwR88mhaA)的章节、字幕与关键画面，记录当前源码的真实范围。视频与截图用于分析交互；BambooShift 使用自己的品牌、头像与实现，不分发参考媒体。当前仍处于整合验收阶段，不能将某个模块通过等同于整个版本已完成。
 
+## Grok Bot 1.0 对齐（2026 年 11 月 15 日）
+
+用 [Grok Bot 官方演示](https://x.ai/bot)、[1.0 发布说明](https://x.ai/news/grok-bot-1-0)和[审批交互文档](https://docs.x.ai/grok-bot/approvals-security-and-privacy#review-an-action)核对最新公开流程。官方 YouTube 播放页本次加载超时，发布片的部分界面通过[分镜记录](https://launchscene.app/v/xai-grok-bot-introducing-grok-bot-now-in-early-beta-bots-are)复核。电脑状态、审批目标和结果应能从原对话读到。
+
+| 目标流程 | BambooShift 核对范围 |
+| --- | --- |
+| 本机应用操作 | macOS 内置运行环境可以直接从聊天的「电脑 → Mac 应用」启用本机助手，也可使用专用配对 Worker。已验证本机运行环境首次连接、独立授权、拒绝截图，以及明确断开后重启保留选择。真实模型和 Rust 实测从关闭状态打开系统计算器，切回 BambooShift 审批点按 7，最后读回 7。切换窗口时有一次控件引用失效，Bot 在同一对话重新读取并申请后完成操作，回执没有屏幕画面。AppKit 表单也已实测，批准后替换文字并读回确认。 |
+| 聊天审批和电脑回执 | 待批准的控件不可见时，当前请求者可以从聊天输入区跳转到原卡片或回复线程。新回执保留创建操作时的执行位置、界面和分配身份。切换当前电脑后，旧回执继续显示原位置，电脑面板链接明确指向当前电脑。已验证跨线程跳转、他人的审批隔离及释放后重新分配画面。 |
+| 对话交付与继续修改 | 桌面并排预览的输入区显示当前网站及版本。跨线程切换会打开交付所在的线程，保留各自草稿，旧卡片可直达最新交付。真实模型从引用的历史源码读出准确校验值，并在原线程交付了新版。 |
+| 资料库 | 网站、文件、媒体和链接可筛选。桌面按日期分组和逐批展开。置顶按成员和会话保存，网站置顶跟随项目的最新交付。已用真实 Rust 服务验证两窗口实时同步置顶和取消置顶，刷新后仍可打开最新版。 |
+| 持续任务与外部团队协作 | 现有服务具备例行任务、Webhook、群聊协作与 MCP。Slack 或 Teams 会话入口、会议 Bot、凭据库以及通用审批规则属于待核验的独立流程。 |
+
+开源实现参考使用 [OpenMausBot 公共核心](https://github.com/milind-soni/OpenMausBot/tree/f413f5217e5ca51648751f78ffdb2bd9e5397546)。它用[内容区和可切换的侧栏](https://github.com/milind-soni/OpenMausBot/blob/f413f5217e5ca51648751f78ffdb2bd9e5397546/src/App.tsx)组织工作，用[活动聚合](https://github.com/milind-soni/OpenMausBot/blob/f413f5217e5ca51648751f78ffdb2bd9e5397546/src/lib/activity-runs.ts)收拢已完成的普通工具步骤，同时保留失败、交接和审批的可见性。其[本机授权](https://github.com/milind-soni/OpenMausBot/blob/f413f5217e5ca51648751f78ffdb2bd9e5397546/server/your-computer-consent.ts)随会话和运行代次约束。BambooShift 沿用自身的 Rust 审批及任务管理，通过 Mac 助手独立实现辅助功能操作。[上游许可范围](https://github.com/milind-soni/OpenMausBot/blob/f413f5217e5ca51648751f78ffdb2bd9e5397546/LICENSING.md)
+
 ## YouTube 实操复核（2026 年 11 月 10 日）
 
 核对对象是独立产品 Grok Bot。下面的时间点来自讲座字幕和创作者发布的章节，部分流程用作者的实操截图和官方文档交叉核验。录屏中的账户配置和权限只代表该演示。当前产品行为以官方说明为准。

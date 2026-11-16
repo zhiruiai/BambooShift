@@ -257,7 +257,7 @@ test('outside click, Escape and focus wrapping close safely and restore the invo
     f.focusClose();
     const wrapped = f.docKey('Tab', { shiftKey: true });
     assert.equal(wrapped.defaultPrevented, true);
-    assert.equal(text({ props: f.document.activeElement.props }), '智能组队');
+    assert.equal(text({ props: f.document.activeElement.props }), '团队模板与组队');
     f.docKey('Tab');
     assert.equal(f.document.activeElement.props['aria-label'], '关闭聊天选择器');
     const overlay = all(f.ui.tree, (node) => node.props?.className === 'new-chat-overlay')[0];
@@ -280,7 +280,7 @@ test('creation actions only enter the existing explicit flow, with member role r
   for (const [label, mode] of [
     ['创建 Bot', 'bot'],
     ['创建工作组', 'group'],
-    ['智能组队', 'team'],
+    ['团队模板与组队', 'team'],
   ]) {
     const f = await fixture();
     try {
@@ -298,7 +298,7 @@ test('creation actions only enter the existing explicit flow, with member role r
     assert.equal(
       all(
         member.ui.tree,
-        (node) => node.type === 'button' && ['创建 Bot', '智能组队'].includes(text(node)),
+        (node) => node.type === 'button' && ['创建 Bot', '团队模板与组队'].includes(text(node)),
       ).length,
       0,
     );

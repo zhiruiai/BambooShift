@@ -13,6 +13,27 @@ export default {
   skillFileInvalidDescription: 'description must be nonempty text of at most 1,000 characters.',
   skillFileInvalidContent: 'The skill body must be nonempty and at most 16,000 characters.',
   skillFileReadFailed: 'Could not read the file. Choose it again.',
+  skillPackageImport: 'Import skill folder',
+  skillPackageHelp:
+    'Choose the Agent Skills folder that contains SKILL.md and its supporting files.',
+  skillPackageInvalidFolder: 'Choose one skill folder with SKILL.md at its root.',
+  skillPackageInvalidName:
+    'The name in SKILL.md must match the folder name. Use up to 64 lowercase letters, numbers and single hyphens.',
+  skillPackageInvalidPaths: 'Use unique relative paths without trailing spaces or periods.',
+  skillPackageTooLarge:
+    'A skill package can contain up to 63 supporting files, at most 256 KiB each and 1 MiB in total.',
+  skillPackageInvalidFrontmatter:
+    'Check the YAML fields at the start of SKILL.md. Metadata keys and values must be text.',
+  skillPackageInvalidDescription: 'description must be nonempty text of at most 1,024 characters.',
+  skillPackageInvalidContent: 'The skill instructions must use valid text and fit within 64 KiB.',
+  skillPackageTitle: 'Agent Skills package',
+  skillPackageMetadata: 'Package details',
+  skillPackageLicense: 'License',
+  skillPackageCompatibility: 'Compatibility',
+  skillPackageTools: 'Declared tools',
+  skillPackageFiles: 'Files ({{count}})',
+  skillPackageFileSize: '{{size}} bytes',
+  skillPackageDownload: 'Download skill ZIP',
   loadingWorkspace: 'Opening workspace…',
   save: 'Save',
   cancel: 'Cancel',

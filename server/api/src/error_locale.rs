@@ -72,6 +72,12 @@ pub async fn translate(response: Response) -> Response {
 }
 fn message_en(message: &str, code: &str) -> &'static str {
     match message {
+        "请重新查看当前技能版本后安装。" => {
+            "Review the current skill version before installing."
+        }
+        "当前技能版本已变化，请重新查看后安装。" => {
+            "The current skill version changed. Review it before installing."
+        }
         "本机免登录模式未启用。" => "Personal desktop mode is not enabled.",
         "请从本机客户端打开这个工作空间。" => {
             "Open this workspace from the desktop app on this computer."

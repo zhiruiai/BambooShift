@@ -24,7 +24,7 @@ export function ComputerSettingsPanel({
     onClose: onWatch,
     onSelectBot: () => {},
   });
-  const changing = model.inputBusy || model.connectionPending !== null;
+  const changing = model.inputBusy || model.authorizationBusy || model.connectionPending !== null;
   useEffect(() => {
     onBusyChange(changing);
   }, [changing, onBusyChange]);
@@ -34,7 +34,7 @@ export function ComputerSettingsPanel({
 
 export function ComputerDialog(props: ComputerDialogProps) {
   const model = useComputerDialog(props);
-  const { agent, isDesktop, desktopScreenLabel, finish } = model;
+  const { agent, isDesktop, isAccessibility, desktopScreenLabel, finish } = model;
   return (
     <Dialog
       title={
@@ -43,9 +43,11 @@ export function ComputerDialog(props: ComputerDialogProps) {
           : uiText('computer:text_6205c8a9a2b9')
       }
       subtitle={
-        isDesktop
-          ? uiText('computer:text_3c131ec4b8fe', { value0: desktopScreenLabel })
-          : uiText('computer:text_d7640e570704')
+        isAccessibility
+          ? uiText('computer:macAppsSurface')
+          : isDesktop
+            ? uiText('computer:text_3c131ec4b8fe', { value0: desktopScreenLabel })
+            : uiText('computer:text_d7640e570704')
       }
       onClose={() => {
         void finish(true);

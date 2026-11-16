@@ -213,6 +213,47 @@ test(
       null,
     );
 
+    await select('Working');
+    await page.locator('#uploaded').scrollIntoViewIfNeeded();
+    await page.waitForFunction(
+      () =>
+        document.querySelector('#uploaded .avatar')?.getAttribute('data-avatar-visible') === 'true',
+    );
+    const imageTransform = () =>
+      page.locator('#uploaded img').evaluate((image) => getComputedStyle(image).transform);
+    await page.waitForTimeout(1900);
+    const imageFrame = await imageTransform();
+    await page.waitForTimeout(180);
+    assert.notEqual(await imageTransform(), imageFrame, 'uploaded avatars keep moving during work');
+    assert.equal(await page.locator('#uploaded [data-avatar-expression]').count(), 0);
+    const hideImage = await page.addStyleTag({
+      content: '#uploaded { transform: translateX(-200vw) }',
+    });
+    await page.waitForFunction(
+      () =>
+        document.querySelector('#uploaded .avatar')?.getAttribute('data-avatar-visible') ===
+        'false',
+    );
+    await page.waitForTimeout(100);
+    const hiddenImage = await imageTransform();
+    await page.waitForTimeout(180);
+    assert.equal(await imageTransform(), hiddenImage, 'offscreen image motion pauses');
+    await hideImage.evaluate((style) => style.parentNode?.removeChild(style));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    assert.equal(await imageTransform(), 'none', 'reduced motion also applies to uploaded avatars');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await select('Completed');
+    await page.waitForTimeout(750);
+    assert.equal(
+      await page.locator('#uploaded .avatar').getAttribute('data-avatar-sustained'),
+      null,
+    );
+    assert.equal(
+      await imageTransform(),
+      'none',
+      'uploaded avatars settle after the task completes',
+    );
+
     await page.getByRole('button', { name: 'Add test avatars' }).click();
     assert.equal(await page.locator('#stress [data-avatar-expression]').count(), 50);
     const ids = await page

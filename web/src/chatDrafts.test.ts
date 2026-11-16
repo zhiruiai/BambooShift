@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createPendingSubmissions } from './pendingSubmissions';
 import { clearSubmittedDraft, emptyComposer, makeSendAttempt, submissionKey } from './chatDrafts';
 
 test('explicit recipients are captured in send attempts and changes create a distinct request identity', () => {
@@ -51,4 +52,65 @@ test('the selected application revision participates in retries without sending 
   assert.notEqual(makeSendAttempt('chat-a', changed, attempt).clientId, attempt.clientId);
   assert.equal(clearSubmittedDraft(draft, draft).appContext, undefined);
   assert.deepEqual(clearSubmittedDraft(changed, draft).appContext, changed.appContext);
+});
+
+test('a viewed website version pins the send and leaves the actual draft available for clearing', () => {
+  const draft = { ...emptyComposer(), text: 'Change the heading.' };
+  const first = makeSendAttempt('chat-a', draft, undefined, 'thread-a', 'delivery-a');
+  const retry = makeSendAttempt('chat-a', draft, first, 'thread-a', 'delivery-a');
+  const next = makeSendAttempt('chat-a', draft, first, 'thread-a', 'delivery-b');
+  assert.equal(retry, first);
+  assert.equal(first.replyToMessageId, 'delivery-a');
+  assert.equal(next.replyToMessageId, 'delivery-b');
+  assert.notEqual(next.clientId, first.clientId);
+  assert.equal(first.snapshot, draft);
+  assert.equal(clearSubmittedDraft(draft, first.snapshot).text, '');
+
+  const quoted = { ...draft, replyTo: { id: 'chosen', author: 'Bot', content: 'Reference' } };
+  assert.equal(
+    makeSendAttempt('chat-a', quoted, next, 'thread-a', 'delivery-b').replyToMessageId,
+    'chosen',
+  );
+});
+
+test('website preview retries recover per quoted version and confirm only an exact quote', async () => {
+  const values = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+  };
+  const registry = () =>
+    createPendingSubmissions({ userId: 'person-a', workspaceId: 'space-a', storage });
+  const compose = { ...emptyComposer(), text: 'Change the heading.' };
+  const first = await registry().prepare(
+    makeSendAttempt('conversation-a', compose, undefined, 'thread-a', 'website-delivery-a'),
+  );
+  const reloaded = registry();
+  const recovery = await reloaded.prepare(
+    makeSendAttempt('conversation-a', compose, undefined, 'thread-a', 'website-delivery-a'),
+  );
+  const different = await reloaded.prepare(
+    makeSendAttempt('conversation-a', compose, undefined, 'thread-a', 'website-delivery-b'),
+  );
+  assert.equal(first.clientId, recovery.clientId);
+  assert.notEqual(first.clientId, different.clientId);
+  assert.doesNotMatch([...values.values()].join(''), /website-delivery-a|website-delivery-b/);
+  const receipt = {
+    id: 'persisted',
+    role: 'user' as const,
+    userId: 'person-a',
+    content: compose.text,
+    conversationId: 'conversation-a',
+    threadRootId: 'thread-a',
+    createdAt: '',
+    delivery: { state: 'delivered' as const, mode: 'steer' as const, clientId: recovery.clientId },
+  };
+  const quote = { id: 'website-delivery-b', author: 'Bot', content: 'Website' };
+  assert.equal(reloaded.confirm({ ...receipt, replyTo: quote }), undefined);
+  assert.equal(
+    reloaded.confirm({ ...receipt, replyTo: { ...quote, id: 'website-delivery-a' } }),
+    recovery,
+  );
 });

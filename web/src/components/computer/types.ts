@@ -33,6 +33,7 @@ export const labels: Record<string, string> = localizedData(() => ({
   terminal_command: uiText('computer:text_e53f35dc006b'),
   remote_shell: uiText('computer:text_2da33b1cff3a'),
   local_shell: uiText('computer:local_shell'),
+  local_skill_script: uiText('computer:local_skill_script'),
   browser_scroll: uiText('computer:text_449dfbcab15f'),
   browser_back: uiText('computer:text_b6050ccef309'),
   list_files: uiText('computer:text_ba2f52ed2e4d'),
@@ -45,6 +46,10 @@ export const labels: Record<string, string> = localizedData(() => ({
   desktop_key: uiText('computer:text_662b79a3437e'),
   desktop_scroll: uiText('computer:text_1c073c3f680c'),
   desktop_drag: uiText('computer:text_82d8c46e6499'),
+  desktop_ax_press: uiText('computer:macAppsPress'),
+  desktop_ax_set_text: uiText('computer:macAppsSetText'),
+  desktop_ax_inspect: uiText('computer:macAppsInspect'),
+  desktop_ax_open: uiText('computer:macAppsOpen'),
 }));
 export type ComputerDialogProps = {
   data: Bootstrap;

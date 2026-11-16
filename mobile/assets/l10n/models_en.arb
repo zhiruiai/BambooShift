@@ -42,5 +42,7 @@
   "mobileBotModelMissingHelp": "The assigned model is unavailable. Choose another saved model or use the workspace default.",
   "mobileBotSkillsEnabled": "Enabled",
   "mobileBotSkillsReview": "Awaiting review",
-  "mobileBotSkillsHelp": "Enabled skills guide this Bot’s tasks. Choose a workflow, review its instructions, then enable it for this Bot."
+  "mobileBotSkillsHelp": "Workflow templates start as drafts. Approve a draft to enable it for this Bot.",
+  "mobileBotSkillsEmpty": "This Bot has no enabled skills.",
+  "mobileBotSkillsHistory": "Disabled and previous versions"
 }

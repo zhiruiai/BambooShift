@@ -107,10 +107,11 @@ pub(super) async fn apply(
                 ));
             }
         }
-        let snapshot = blueprint::capture(tx, &agent).await?;
+        let mut snapshot = blueprint::capture(tx, &agent).await?;
         if body["expectedSourceRevision"] != snapshot.revision {
             return Err(ApiError::new(409, "Bot 配置已变化，请重新预览。"));
         }
+        snapshot.blueprint = blueprint::validate(&snapshot.blueprint, snapshot.avatar.as_deref())?;
         Some(snapshot)
     } else {
         None

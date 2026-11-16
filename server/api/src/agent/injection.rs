@@ -9,7 +9,7 @@ use crate::{
     error::{ApiError, Result},
     workspace::{Table, WorkspaceStore},
 };
-use serde_json::json;
+use serde_json::{Value, json};
 use std::sync::atomic::Ordering;
 
 pub(crate) async fn inject(
@@ -53,7 +53,7 @@ pub(crate) async fn delivered(
     store: &WorkspaceStore,
     active: &ActiveRun,
     input_id: &str,
-) -> Result<Option<u64>> {
+) -> Result<(Value, Option<u64>)> {
     let key = AgentRegistry::key(grant.workspace_id(), &active.conversation_id);
     let Some(pending) = state.agent_runs.queues.delivered(&key, input_id).await else {
         return Err(ApiError::new(502, "执行进程返回了未知补充消息。"));
@@ -76,6 +76,6 @@ pub(crate) async fn delivered(
     pending.access.authorize(state).await?;
     grant.authorize(state).await?;
     tx.commit().await?;
-    store.emit("message", input);
-    Ok(pending.generation)
+    store.emit("message", input.clone());
+    Ok((input, pending.generation))
 }

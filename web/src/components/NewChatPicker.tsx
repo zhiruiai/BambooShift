@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { ArrowUpRight, Bot, EyeOff, Search, Sparkles, Users, X } from 'lucide-react';
+import { ArrowUpRight, Bot, EyeOff, LayoutGrid, Search, Sparkles, Users, X } from 'lucide-react';
 import type { Conversation } from '../../../shared/types';
 import { uiText } from '../i18n';
 import { newChatChoices, type NewChatSnapshot } from '../newChatPicker';
@@ -12,6 +12,7 @@ export interface NewChatPickerProps {
   isCurrent: () => boolean;
   onOpen: (conversation: Conversation) => void;
   onCreate: (mode: 'bot' | 'group' | 'team') => void;
+  onOpenGallery?: () => void;
   onClose: () => void;
 }
 
@@ -201,6 +202,21 @@ export function NewChatPicker(props: NewChatPickerProps) {
           </p>
         )}
         <div className="new-chat-actions">
+          {props.onOpenGallery && (
+            <button
+              type="button"
+              onClick={() => {
+                if (!current()) return;
+                active.current = false;
+                restoreFocus.current = false;
+                latest.current.onClose();
+                latest.current.onOpenGallery?.();
+              }}
+            >
+              <LayoutGrid size={18} aria-hidden="true" />
+              <span>{uiText('workspace:botGalleryTitle')}</span>
+            </button>
+          )}
           {props.canCreateBot && (
             <button type="button" onClick={() => create('bot')}>
               <Bot size={18} />

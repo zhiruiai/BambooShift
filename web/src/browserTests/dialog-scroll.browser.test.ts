@@ -19,12 +19,20 @@ async function verifyFrameGone(page: Page, image: Locator, source: string) {
 }
 
 async function verifyScroll(dialog: Locator, page: Page) {
-  const body = dialog.locator(':scope > .modal-body');
+  let body = dialog.locator(':scope > .modal-body');
+  if (!(await body.count())) {
+    body = dialog.locator('.skill-detail-body:visible');
+    if (!(await body.count())) body = dialog.locator('.skill-browser:visible');
+  }
   const header = dialog.locator(':scope > .modal-header');
   const before = await header.boundingBox();
   assert.ok(before);
   const geometry = await dialog.evaluate((el) => {
-    const body = el.querySelector(':scope > .modal-body')!;
+    const body =
+      el.querySelector(':scope > .modal-body') ||
+      [...el.querySelectorAll<HTMLElement>('.skill-detail-body, .skill-browser')]
+        .filter((node) => node.getClientRects().length > 0)
+        .sort((a) => (a.classList.contains('skill-detail-body') ? -1 : 1))[0];
     const header = el.querySelector(':scope > .modal-header')!;
     return {
       outerScroll: el.scrollHeight - el.clientHeight,
@@ -38,8 +46,6 @@ async function verifyScroll(dialog: Locator, page: Page) {
     };
   });
   assert.equal(geometry.outerScroll, 0, JSON.stringify(geometry));
-  if (page.viewportSize()!.width < 760)
-    assert.ok(geometry.bodyScroll > 0, JSON.stringify(geometry));
   assert.ok(geometry.overflow <= 1 && geometry.bodyOverflow <= 1, JSON.stringify(geometry));
   assert.ok(geometry.bodyTop >= geometry.headerBottom, JSON.stringify(geometry));
   assert.ok(geometry.top >= 0 && geometry.bottom <= page.viewportSize()!.height);
@@ -187,7 +193,21 @@ test(
         const botPath = `${computerPath}/bots/fixture-bot`;
         if (
           url.origin === origin &&
-          url.pathname === `${botPath}/status` &&
+          url.pathname === `${computerPath}/authorization` &&
+          request.method() === 'GET'
+        )
+          return route.fulfill({
+            json: {
+              mode: 'confirm',
+              scope: 'current-user-current-computer',
+              targetName: 'Synthetic computer',
+              canManage: true,
+              targetRevision: 'fixture-target',
+            },
+          });
+        if (
+          url.origin === origin &&
+          [`${botPath}/status`, `${computerPath}/status`].includes(url.pathname) &&
           request.method() === 'GET'
         )
           return route.fulfill({

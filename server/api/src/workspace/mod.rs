@@ -15,6 +15,8 @@ pub(crate) mod file_storage;
 mod files;
 pub(crate) mod groups;
 mod knowledge;
+mod library_links;
+mod library_pins;
 pub mod model;
 pub(crate) mod mutations;
 mod overview;
@@ -22,11 +24,16 @@ pub(crate) mod primary;
 mod private_skills;
 pub(crate) mod profiles;
 mod recovery;
+mod recruiter;
 mod registry;
 mod roster;
 mod seed;
 mod session;
+mod skill_install;
+pub(crate) mod skill_packages;
 mod snapshot;
+mod starter_bots;
+pub(crate) mod starter_skills;
 mod store;
 mod team_skill_catalog;
 mod team_skill_policy;
@@ -101,6 +108,11 @@ pub fn router() -> axum::Router<crate::db::State> {
             get(avatars::source).delete(avatars::drop_source),
         )
         .route("/api/workspaces/{wid}/agents", post(mutations::add_agent))
+        .route("/api/workspaces/{wid}/recruiter", post(recruiter::post))
+        .route(
+            "/api/workspaces/{wid}/starter-bots",
+            post(starter_bots::post),
+        )
         .route(
             "/api/workspaces/{wid}/creation-preview",
             post(creation_preview::post),
@@ -134,6 +146,10 @@ pub fn router() -> axum::Router<crate::db::State> {
             "/api/workspaces/{wid}/conversations/{id}/settings",
             get(groups::settings).patch(groups::edit_settings),
         )
+        .route(
+            "/api/workspaces/{wid}/conversations/{id}/library/pins",
+            get(library_pins::get).put(library_pins::put),
+        )
         .route("/api/workspaces/{wid}/settings", put(model::put_settings))
         .route(
             "/api/workspaces/{wid}/model-profiles",
@@ -156,6 +172,14 @@ pub fn router() -> axum::Router<crate::db::State> {
             patch(knowledge::edit_memory).delete(knowledge::delete_memory),
         )
         .route("/api/workspaces/{wid}/skills", post(knowledge::add_skill))
+        .route(
+            "/api/workspaces/{wid}/skills/install",
+            post(skill_install::install),
+        )
+        .route(
+            "/api/workspaces/{wid}/skills/{id}/package",
+            get(skill_packages::download),
+        )
         .route(
             "/api/workspaces/{wid}/skills/{id}",
             delete(knowledge::delete_skill),

@@ -34,6 +34,7 @@ mod selected_skill;
 
 mod admission_gate;
 mod computer_tools;
+mod mac_app_launch;
 mod document_worker;
 mod exa_transport;
 mod file_delivery;

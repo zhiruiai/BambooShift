@@ -2,6 +2,11 @@ import { spawn } from 'node:child_process';
 import { access } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import {
+  createDesktopAccessibility,
+  nativeAccessibilityError,
+  type DesktopAccessibility,
+} from './desktop-accessibility.js';
 
 export type DesktopPermission = 'granted' | 'denied' | 'unknown';
 export interface DesktopDisplay {
@@ -18,6 +23,8 @@ export interface DesktopStatus {
   session?: { id: string; generation: string };
   available: boolean;
   authorized: boolean;
+  accessibilityAvailable?: boolean;
+  accessibilityReady?: boolean;
   enabled: boolean;
   reason?: string;
   width: number;
@@ -39,6 +46,8 @@ export interface DesktopCapture {
   capturedAt: string;
 }
 export interface DesktopAdapter {
+  accessibility?: DesktopAccessibility;
+  readonly appLaunchAvailable?: boolean;
   status(): Promise<DesktopStatus>;
   capture(options?: { signal?: AbortSignal }): Promise<DesktopCapture>;
   execute(input: DesktopInput, options?: { signal?: AbortSignal }): Promise<{ ok: true }>;
@@ -187,6 +196,7 @@ export function createDesktopAdapter(options: DesktopAdapterOptions = {}): Deskt
   const helperPath = options.helperPath ?? DEFAULT_DESKTOP_HELPER;
   const platform = options.platform ?? process.platform;
   let enabled = options.enabled ?? false;
+  let appLaunchAvailable = false;
   let frame: Frame | undefined;
   let generation = 0;
   let inputRunning = false;
@@ -219,20 +229,33 @@ export function createDesktopAdapter(options: DesktopAdapterOptions = {}): Deskt
   function disable() {
     enabled = false;
     frame = undefined;
+    accessibility.clear();
     generation++;
     for (const [controller, operation] of active) if (operation.mutation) controller.abort();
   }
+  function noStatus(reason: string) {
+    appLaunchAvailable = false;
+    return unavailable(enabled, reason);
+  }
+  const accessibility = createDesktopAccessibility(
+    request,
+    requireEnabled,
+    () => appLaunchAvailable,
+  );
   const adapter: DesktopAdapter = {
+    accessibility,
+    get appLaunchAvailable() {
+      return appLaunchAvailable;
+    },
     async status() {
-      if (platform !== 'darwin')
-        return unavailable(enabled, '整机桌面目前仅支持 macOS 14 或更新版本。');
+      if (platform !== 'darwin') return noStatus('整机桌面目前仅支持 macOS 14 或更新版本。');
       const started = generation;
       try {
         await access(helperPath, constants.X_OK);
       } catch {
-        return unavailable(enabled, '桌面助手尚未构建，请运行 node scripts/build-desktop.mjs。');
+        return noStatus('桌面助手尚未构建，请运行 node scripts/build-desktop.mjs。');
       }
-      if (started !== generation) return unavailable(enabled, '桌面状态读取已取消。');
+      if (started !== generation) return noStatus('桌面状态读取已取消。');
       try {
         const result = await request({ op: 'status' });
         const permission = (value: unknown): DesktopPermission =>
@@ -252,12 +275,21 @@ export function createDesktopAdapter(options: DesktopAdapterOptions = {}): Deskt
           screenRecording: permission(result.permissions?.screenRecording),
           accessibility: permission(result.permissions?.accessibility),
         };
+        appLaunchAvailable =
+          result.accessibilityAvailable === true && result.appLaunchAvailable === true;
         return {
           available: result.available,
           authorized:
             result.available &&
             permissions.screenRecording === 'granted' &&
             permissions.accessibility === 'granted',
+          ...(result.accessibilityAvailable === true
+            ? {
+                accessibilityAvailable: true,
+                accessibilityReady:
+                  result.accessibilityReady === true && permissions.accessibility === 'granted',
+              }
+            : {}),
           enabled,
           width: result.width,
           height: result.height,
@@ -276,10 +308,7 @@ export function createDesktopAdapter(options: DesktopAdapterOptions = {}): Deskt
               : undefined,
         };
       } catch (error) {
-        return unavailable(
-          enabled,
-          error instanceof Error ? error.message : '无法读取桌面助手状态。',
-        );
+        return noStatus(error instanceof Error ? error.message : '无法读取桌面助手状态。');
       }
     },
     async capture({ signal } = {}) {
@@ -416,18 +445,25 @@ function runHelper(
         reject(new Error('桌面助手意外退出。'));
         return;
       }
+      let reply;
       try {
-        const reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-        if (reply?.ok !== true)
-          throw new Error(
-            typeof reply?.error?.message === 'string'
-              ? reply.error.message.slice(0, 1000)
-              : '桌面操作失败。',
-          );
-        resolve(reply.result);
-      } catch (failure) {
-        reject(failure instanceof Error ? failure : new Error('桌面助手返回无效响应。'));
+        reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      } catch {
+        reject(new Error('桌面助手返回无效响应。'));
+        return;
       }
+      if (reply?.ok !== true) {
+        reject(
+          nativeAccessibilityError(payload.op, reply?.error) ??
+            new Error(
+              typeof reply?.error?.message === 'string'
+                ? reply.error.message.slice(0, 1000)
+                : '桌面操作失败。',
+            ),
+        );
+        return;
+      }
+      resolve(reply.result);
     });
     child.stdin.end(JSON.stringify(payload));
   });

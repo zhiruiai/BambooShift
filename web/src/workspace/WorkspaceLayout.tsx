@@ -11,11 +11,21 @@ import { WorkspaceSharingDialogs } from './WorkspaceSharingDialogs';
 import { WorkspaceSidebar } from './WorkspaceSidebar';
 import { WorkspaceTaskDialogs } from './WorkspaceTaskDialogs';
 import { useWorkspaceWebsite } from './WorkspaceWebsite';
+import { useRecruiterShortcut } from './useRecruiterShortcut';
 import { useVoiceCall } from '../useVoiceCall';
 import { ActiveVoiceCall } from '../components/VoiceCallControls';
 export function WorkspaceLayout(model: WorkspaceModel) {
   const website = useWorkspaceWebsite(model);
   const call = useVoiceCall(model);
+  const recruiter = useRecruiterShortcut({
+    model,
+    blocked: call.active || (model.mobileHome && !model.mobileChat),
+  });
+  const recruiterFromCreate = useRecruiterShortcut({
+    model,
+    entry: 'create',
+    blocked: call.active,
+  });
   const {
     mobileChat,
     showDetail,
@@ -96,6 +106,8 @@ export function WorkspaceLayout(model: WorkspaceModel) {
         />
         <ChatComposer
           {...model}
+          recruiter={recruiter}
+          websiteEdit={website.editContext}
           voiceCall={call}
           voiceCallPanel={
             <ActiveVoiceCall
@@ -117,7 +129,7 @@ export function WorkspaceLayout(model: WorkspaceModel) {
           </button>
         </div>
       )}
-      <WorkspacePeopleDialogs {...model} />
+      <WorkspacePeopleDialogs {...model} recruiterShortcut={recruiterFromCreate} />
       <WorkspaceResourceDialogs {...model} openWebsiteSearchResult={website.openSearchResult} />
       <WorkspaceSharingDialogs {...model} />
       <WorkspaceTaskDialogs {...model} />

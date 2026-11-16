@@ -172,7 +172,7 @@ test('an unconfirmed process group disables the runner instead of acknowledging 
     }
     await access(join(dir, 'process-group'));
     t.mock.method(process, 'kill', (pid: number, signal?: NodeJS.Signals | number) => {
-      if (pid < 0 && signal === 0)
+      if (pid < 0 && (signal === 0 || signal === 'SIGKILL'))
         throw Object.assign(Error('Cannot inspect group'), { code: 'EPERM' });
       return kill(pid, signal);
     });

@@ -96,6 +96,7 @@ pub(super) async fn read(state: &State, link: &str, user: Option<&str>) -> Resul
             blueprint,
             avatar,
             revision: version,
+            skill_sources: Vec::new(),
         },
     })
 }

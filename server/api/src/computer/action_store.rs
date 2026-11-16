@@ -105,6 +105,8 @@ pub async fn persist(store: &WorkspaceStore, saved: &Value) -> Result<()> {
                 "done"
             });
             message["content"] = json!(match action["status"].as_str() {
+                Some("pending") if action["authorization"]["mode"] == "full" =>
+                    "电脑已完整授权，正在准备执行。",
                 Some("pending") => "电脑操作等待发起人批准。",
                 Some("running") => "正在执行电脑操作。",
                 Some("done") => "电脑操作已完成。",

@@ -15,9 +15,13 @@ import {
   Play,
   Square,
 } from 'lucide-react';
-import { HOST_DESKTOP_CAPABILITY } from '../../../../shared/computer-screens';
+import {
+  HOST_DESKTOP_CAPABILITY,
+  MACOS_APP_LAUNCH_CAPABILITY,
+} from '../../../../shared/computer-screens';
+import { supportsMacApps } from '../../computerScope';
 import { ComputerFiles } from '../ComputerFiles';
-import { ComputerSurface } from '../ComputerSurface';
+import { ComputerSurface, MacAppsStatus } from '../ComputerSurface';
 import { ComputerActionEntry } from './ComputerActionEntry';
 import { ComputerManualControlsView } from './ComputerManualControlsView';
 import { type ComputerDialogModel } from './types';
@@ -43,6 +47,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
     selectSurface,
     agent,
     isDesktop,
+    isAccessibility,
     desktopLabel,
     remaining,
     virtualDesktop,
@@ -81,35 +86,109 @@ export function ComputerScreenView(model: ComputerDialogModel) {
     decideAction,
   } = model;
   const privateControlsPaused = controlled && model.privateFramesPaused.current;
+  const tabs = (
+    <div
+      className="computer-panel-tabs"
+      role="tablist"
+      aria-label={uiText('computer:text_5802516f1e10')}
+    >
+      <button
+        type="button"
+        role="tab"
+        aria-selected={panel === 'screen'}
+        disabled={lifecyclePending}
+        onClick={() => setPanel('screen')}
+      >
+        <Monitor size={15} />
+        {uiText('computer:text_fd9f1c90bafd')}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={panel === 'files'}
+        disabled={lifecyclePending}
+        onClick={() => setPanel('files')}
+      >
+        <FolderOpen size={15} />
+        {uiText('computer:text_39932f24fe11')}
+      </button>
+    </div>
+  );
+  const surfacePicker =
+    screenReady &&
+    canManage &&
+    (!computer.botScreen?.shared ||
+      computer.desktop?.kind === 'virtual' ||
+      computer.capabilities?.includes(HOST_DESKTOP_CAPABILITY) ||
+      supportsMacApps(computer)) ? (
+      <ComputerSurface
+        computer={computer}
+        busy={busy || inputBusy || otherControlled}
+        checking={permissionBusy}
+        onCheck={() => void checkComputer()}
+        onSelect={(surface) => void selectSurface(surface)}
+      />
+    ) : !computer.botScreen?.shared ? (
+      <p className="field-help">{uiText('computer:text_ed1e4dc0d3d2')}</p>
+    ) : null;
+  const activity = (
+    <div className="computer-activity">
+      <div className="section-label">
+        {panel === 'files'
+          ? uiText('computer:text_3664a60c71b4')
+          : uiText('computer:text_c9cf30817de5')}
+        {panel === 'screen' && controlled && <small>{uiText('computer:text_c857393e5358')}</small>}
+      </div>
+      {!visibleActions.length ? (
+        <p className="field-help">
+          {panel === 'files'
+            ? uiText('computer:text_7e98d07f81a5')
+            : uiText('computer:text_d7eb35977617')}
+        </p>
+      ) : (
+        visibleActions
+          .slice()
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 12)
+          .map((a) => (
+            <ComputerActionEntry
+              key={a.id}
+              action={a}
+              owner={canManage}
+              userId={identity.current.userId}
+              busy={busy || inputBusy || preparing}
+              controlled={controlled || otherControlled || (panel === 'screen' && !screenReady)}
+              onReject={() => void decideAction(a.id, false)}
+              onApprove={() => void decideAction(a.id, true)}
+            />
+          ))
+      )}
+    </div>
+  );
+  const error = controlError ? (
+    <div className="screenshot-error" role="alert">
+      <Info size={14} />
+      <span>{controlError}</span>
+    </div>
+  ) : null;
+
+  if (isAccessibility && panel === 'screen')
+    return (
+      <div className="computer-main">
+        {tabs}
+        {surfacePicker}
+        <MacAppsStatus
+          ready={computer.desktop?.accessibilityReady === true}
+          canOpenApp={computer.capabilities?.includes(MACOS_APP_LAUNCH_CAPABILITY) === true}
+        />
+        {error}
+        {activity}
+      </div>
+    );
   return (
     <>
       <div className="computer-main">
-        <div
-          className="computer-panel-tabs"
-          role="tablist"
-          aria-label={uiText('computer:text_5802516f1e10')}
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={panel === 'screen'}
-            disabled={lifecyclePending}
-            onClick={() => setPanel('screen')}
-          >
-            <Monitor size={15} />
-            {uiText('computer:text_fd9f1c90bafd')}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={panel === 'files'}
-            disabled={lifecyclePending}
-            onClick={() => setPanel('files')}
-          >
-            <FolderOpen size={15} />
-            {uiText('computer:text_39932f24fe11')}
-          </button>
-        </div>
+        {tabs}
         {panel === 'files' ? (
           <>
             <ComputerFiles
@@ -122,21 +201,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
           </>
         ) : (
           <>
-            {screenReady &&
-            canManage &&
-            (!computer.botScreen?.shared ||
-              computer.desktop?.kind === 'virtual' ||
-              computer.capabilities?.includes(HOST_DESKTOP_CAPABILITY)) ? (
-              <ComputerSurface
-                computer={computer}
-                busy={busy || inputBusy || otherControlled}
-                checking={permissionBusy}
-                onCheck={() => void checkComputer()}
-                onSelect={(surface) => void selectSurface(surface)}
-              />
-            ) : !computer.botScreen?.shared ? (
-              <p className="field-help">{uiText('computer:text_ed1e4dc0d3d2')}</p>
-            ) : null}
+            {surfacePicker}
             <div className={`takeover-bar ${controlled ? 'active' : ''}`}>
               <div>
                 <span className="takeover-icon">
@@ -310,12 +375,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
                 </span>
               </div>
             )}
-            {controlError && (
-              <div className="screenshot-error" role="alert">
-                <Info size={14} />
-                <span>{controlError}</span>
-              </div>
-            )}
+            {error}
             {shotAt && (
               <p className="screenshot-timestamp">
                 {uiText('computer:text_e3576b511c1d')}
@@ -425,40 +485,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
             )}
           </>
         )}
-        <div className="computer-activity">
-          <div className="section-label">
-            {panel === 'files'
-              ? uiText('computer:text_3664a60c71b4')
-              : uiText('computer:text_c9cf30817de5')}
-            {panel === 'screen' && controlled && (
-              <small>{uiText('computer:text_c857393e5358')}</small>
-            )}
-          </div>
-          {!visibleActions.length ? (
-            <p className="field-help">
-              {panel === 'files'
-                ? uiText('computer:text_7e98d07f81a5')
-                : uiText('computer:text_d7eb35977617')}
-            </p>
-          ) : (
-            visibleActions
-              .slice()
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-              .slice(0, 12)
-              .map((a) => (
-                <ComputerActionEntry
-                  key={a.id}
-                  action={a}
-                  owner={canManage}
-                  userId={identity.current.userId}
-                  busy={busy || inputBusy || preparing}
-                  controlled={controlled || otherControlled || (panel === 'screen' && !screenReady)}
-                  onReject={() => void decideAction(a.id, false)}
-                  onApprove={() => void decideAction(a.id, true)}
-                />
-              ))
-          )}
-        </div>
+        {activity}
       </div>
     </>
   );

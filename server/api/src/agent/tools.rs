@@ -25,6 +25,7 @@ pub(crate) fn definitions() -> Value {
     definitions
 }
 pub(super) fn definitions_for(
+    state: &State,
     access: &ExecutionAccess,
     active: &ActiveRun,
     system: &mut String,
@@ -54,6 +55,12 @@ pub(super) fn definitions_for(
             .unwrap()
             .extend(super::run_knowledge::skill_definitions());
     }
+    if super::computer_tools::skill_script_allowed(state, access, active) {
+        definitions
+            .as_array_mut()
+            .unwrap()
+            .push(super::computer_tools::skill_script_definition());
+    }
     definitions
 }
 fn knowledge_read_allowed(active: &ActiveRun, name: &str) -> bool {
@@ -61,7 +68,9 @@ fn knowledge_read_allowed(active: &ActiveRun, name: &str) -> bool {
         return false;
     };
     match name {
-        "list_skills" | "read_skill" => active.kind != "memory_import" && knowledge.lazy_skills,
+        "list_skills" | "read_skill" | "read_skill_resource" => {
+            active.kind != "memory_import" && knowledge.lazy_skills
+        }
         "recall" => {
             active.kind != "webhook"
                 && (active.kind != "primary_checkin" || knowledge.lazy_memories)
@@ -167,7 +176,10 @@ pub(crate) async fn execute(
     access.authorize(state).await?;
     active.family.authorize(state).await?;
     authorize_membership(store, active).await?;
-    if matches!(name, "list_skills" | "read_skill" | "recall") {
+    if matches!(
+        name,
+        "list_skills" | "read_skill" | "read_skill_resource" | "recall"
+    ) {
         if !knowledge_read_allowed(active, name) {
             return Err(ApiError::new(403, "此任务未授予该知识读取工具。"));
         }
@@ -175,6 +187,10 @@ pub(crate) async fn execute(
         let output = match name {
             "list_skills" => super::run_knowledge::list_skills(&knowledge.skills, args)?,
             "read_skill" => super::run_knowledge::read_skill(&knowledge.skills, args)?,
+            "read_skill_resource" => {
+                crate::workspace::skill_packages::read_resource(store, &knowledge.skills, args)
+                    .await?
+            }
             _ => {
                 let memories = if active.kind == "primary_checkin" {
                     knowledge.checkin_memories.clone()
@@ -236,7 +252,7 @@ pub(crate) async fn execute(
         return super::import_memory::remember(state, access, store, active, generation, args)
             .await;
     }
-    if name.starts_with("computer_") {
+    if name.starts_with("computer_") || name == super::computer_tools::RUN_SKILL_SCRIPT {
         return super::computer_tools::execute(state, access, store, context, name, args).await;
     }
     if name.starts_with("routine_") {
@@ -323,8 +339,8 @@ pub(crate) async fn execute(
                 .max()
                 .unwrap_or(0)
                 + 1;
-            let skill = json!({"id":Uuid::new_v4().to_string(),"agentId":agent_id,"name":title,"description":args["description"].as_str().unwrap_or(""),"content":content,"version":version,"status":"proposed","createdAt":iso(now())});
-            WorkspaceStore::put_in(&mut tx, Table::Skills, &skill).await?;
+            let mut skill = json!({"id":Uuid::new_v4().to_string(),"agentId":agent_id,"name":title,"description":args["description"].as_str().unwrap_or(""),"content":content,"version":version,"status":"proposed","createdAt":iso(now())});
+            crate::workspace::skill_packages::persist_text(&mut tx, &mut skill).await?;
             skill
         }
         _ => return Err(ApiError::new(403, "此任务未授予该工具。")),

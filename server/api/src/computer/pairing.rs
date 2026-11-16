@@ -54,7 +54,7 @@ pub async fn check(
 fn capabilities(health: &model::Health) -> Value {
     let pool = health.saved.has(model::SCREEN_POOL);
     let desktop = &health.state["desktop"];
-    json!({
+    let mut result = json!({
         "topology": if pool {
             "pool"
         } else if health.saved.has(model::SHARED_SCREEN) {
@@ -80,5 +80,13 @@ fn capabilities(health: &model::Health) -> Value {
         } else {
             "unavailable"
         },
-    })
+    });
+    if health.saved.has(model::MACOS_ACCESSIBILITY) {
+        result["accessibility"] = json!(if desktop["accessibilityReady"] == true {
+            "ready"
+        } else {
+            "notReady"
+        });
+    }
+    result
 }

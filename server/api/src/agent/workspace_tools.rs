@@ -23,6 +23,7 @@ pub(crate) fn definitions() -> Vec<Value> {
         json!({"name":"workspace_edit","description":"Replace exactly one occurrence of oldText in a UTF-8 file. Missing or ambiguous matches leave the file unchanged. Prefer expectedSha256 to detect intervening edits.","parameters":object(json!({"path":path,"oldText":{"type":"string","minLength":1,"maxLength":1_000_000},"newText":content,"expectedSha256":hash}),json!(["path","oldText","newText"]))}),
         json!({"name":"workspace_deliver","description":"When a final workspace file is ready, send its reviewed version as a real file card in this conversation. Requires its exact SHA256 from the latest read/write result. Copies the registered file without changing the source. Repeated delivery of the same version in this run reuses its original receipt; writing alone does not send a file card.","parameters":object(json!({"path":path,"expectedSha256":hash}),json!(["path","expectedSha256"]))}),
         super::website_delivery::definition(),
+        super::website_delivery::read_definition(),
     ]
 }
 fn path(args: &Value) -> Result<String> {
@@ -147,6 +148,9 @@ pub(crate) async fn execute(
                     .model_profile(&context.active.agent_id)
                     .is_some_and(|m| m["vision"] == true),
             )
+        }
+        super::website_delivery::READ_TOOL => {
+            super::website_delivery::read_quoted(state, access, store, context, args).await
         }
         "workspace_write"
         | "workspace_append"

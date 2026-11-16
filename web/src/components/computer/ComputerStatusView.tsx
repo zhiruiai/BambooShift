@@ -63,15 +63,17 @@ export function ComputerStatusView(model: ComputerDialogModel) {
               <p role="status">{botTaskLabel(computer.botScreen)}</p>
             )}
             <p>
-              {computer.botScreen?.shared
-                ? uiText(
-                    computer.surface === 'desktop'
-                      ? 'computer:shared_desktop_description'
-                      : computer.mode === 'local'
-                        ? 'computer:local_shared_browser'
-                        : 'computer:remote_shared_browser',
-                  )
-                : uiText('computer:text_e01450c21d66')}
+              {computer.surface === 'accessibility'
+                ? uiText('computer:macAppsSurface')
+                : computer.botScreen?.shared
+                  ? uiText(
+                      computer.surface === 'desktop'
+                        ? 'computer:shared_desktop_description'
+                        : computer.mode === 'local'
+                          ? 'computer:local_shared_browser'
+                          : 'computer:remote_shared_browser',
+                    )
+                  : uiText('computer:text_e01450c21d66')}
             </p>
           </div>
           {canManage && agent && computer.botScreen?.status === 'unassigned' && (

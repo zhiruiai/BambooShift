@@ -17,13 +17,13 @@ pub async fn initialize(conn: &mut SqliteConnection) -> Result<()> {
     sqlx::query("CREATE TABLE IF NOT EXISTS creation_request_cancellations(actor_id TEXT NOT NULL,request_id TEXT NOT NULL,PRIMARY KEY(actor_id,request_id))").execute(&mut *conn).await?;
     Ok(())
 }
-fn valid_id(id: &str) -> Result<()> {
+pub(super) fn valid_id(id: &str) -> Result<()> {
     if uuid::Uuid::parse_str(id).is_err() {
         return Err(ApiError::bad("创建请求标识无效。"));
     }
     Ok(())
 }
-async fn saved(
+pub(super) async fn saved(
     conn: &mut SqliteConnection,
     actor: &str,
     id: &str,
@@ -46,7 +46,7 @@ async fn saved(
     })
     .transpose()
 }
-async fn closed(conn: &mut SqliteConnection, actor: &str, id: &str) -> Result<bool> {
+pub(super) async fn closed(conn: &mut SqliteConnection, actor: &str, id: &str) -> Result<bool> {
     Ok(sqlx::query(
         "SELECT 1 FROM creation_request_cancellations WHERE actor_id=? AND request_id=?",
     )
@@ -56,7 +56,7 @@ async fn closed(conn: &mut SqliteConnection, actor: &str, id: &str) -> Result<bo
     .await?
     .is_some())
 }
-async fn view(conn: &mut SqliteConnection, mut receipt: Value) -> Result<Value> {
+pub(super) async fn view(conn: &mut SqliteConnection, mut receipt: Value) -> Result<Value> {
     let chat = WorkspaceStore::get_in(
         conn,
         Table::Conversations,
@@ -92,6 +92,24 @@ async fn view(conn: &mut SqliteConnection, mut receipt: Value) -> Result<Value> 
     receipt["agents"] = json!(agents);
     Ok(receipt)
 }
+
+pub(super) async fn save(
+    conn: &mut SqliteConnection,
+    actor: &str,
+    request_id: &str,
+    digest: &str,
+    receipt: &Value,
+) -> Result<()> {
+    sqlx::query("INSERT INTO creation_requests(actor_id,request_id,digest,data) VALUES(?,?,?,?)")
+        .bind(actor)
+        .bind(request_id)
+        .bind(digest)
+        .bind(receipt.to_string())
+        .execute(conn)
+        .await?;
+    Ok(())
+}
+
 pub async fn get(
     Extract(state): Extract<State>,
     Path((wid, id)): Path<(String, String)>,
@@ -168,13 +186,7 @@ pub async fn post(
         _ => return Err(ApiError::bad("创建类型无效。")),
     };
     let receipt = json!({"requestId":request_id,"kind":kind,"agentIds":ids,"conversationId":chat["id"],"createdAt":iso(now()),"userId":grant.user_id,"workspaceId":wid});
-    sqlx::query("INSERT INTO creation_requests(actor_id,request_id,digest,data) VALUES(?,?,?,?)")
-        .bind(&actor)
-        .bind(request_id)
-        .bind(digest)
-        .bind(receipt.to_string())
-        .execute(&mut *tx)
-        .await?;
+    save(&mut tx, &actor, request_id, &digest, &receipt).await?;
     let result = view(&mut tx, receipt).await?;
     if kind == "bot" {
         grant.authorize_owner(&state).await?;

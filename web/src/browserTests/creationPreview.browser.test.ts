@@ -102,6 +102,12 @@ test(
       } else if (script && request.method === 'GET') {
         response.setHeader('Content-Type', 'text/javascript; charset=utf-8');
         response.end(script);
+      } else if (
+        path === `/api/workspaces/${workspaceId}/model-profiles` &&
+        request.method === 'GET'
+      ) {
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ activeProfileId: '', profiles: [] }));
       } else if (path === apiPath && request.method === 'POST') {
         let source = '';
         try {
@@ -173,6 +179,20 @@ test(
       const dialog = page.getByRole('dialog');
       const botName = dialog.getByLabel('Bot name', { exact: true });
       await dialog.waitFor();
+      await page.setViewportSize({ width: 340, height: 720 });
+      await dialog.getByRole('button', { name: 'Start from a template' }).waitFor();
+      const recruiter = dialog.getByRole('button', { name: 'Ask the recruiting assistant' });
+      await recruiter.waitFor();
+      const core = dialog.locator('.bot-create-identity');
+      const options = dialog.locator('details.bot-create-options');
+      await core.getByLabel('Work role', { exact: true }).waitFor();
+      await dialog.getByLabel('Persistent instructions').waitFor();
+      assert.equal(await options.getAttribute('open'), null);
+      await options.getByText('Avatar, description and model', { exact: true }).click();
+      assert.equal(await options.getAttribute('open'), '');
+      assert.ok(await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth + 1));
+      await options.getByText('Avatar, description and model', { exact: true }).click();
+      await page.setViewportSize({ width: 1100, height: 850 });
       t.diagnostic('Creation dialog rendered from the synthetic origin.');
       await dialog.getByRole('button', { name: 'Design a Bot with AI' }).press('Enter');
       const botBrief = dialog.getByLabel('What should this Bot do?');
@@ -192,6 +212,9 @@ test(
       );
       await botName.fill('Edited research Bot');
       assert.equal(await botName.inputValue(), 'Edited research Bot');
+      await recruiter.click();
+      await dialog.getByRole('button', { name: 'Discard changes and continue' }).press('Enter');
+      await page.getByRole('heading', { name: 'Recruiting assistant chat' }).waitFor();
       t.diagnostic('Bot draft reached the editable profile.');
 
       await page.goto(`${origin}${pagePath}?surface=theme`, { waitUntil: 'domcontentloaded' });

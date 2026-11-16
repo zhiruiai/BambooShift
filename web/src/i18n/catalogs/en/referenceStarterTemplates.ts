@@ -1,9 +1,15 @@
 export default {
   teamStarterTitle: 'Team templates',
   teamStarterHelp:
-    'Preview the roles, then edit the team name, members, and lead. Loading a plan needs no model.',
-  teamStarterUse: 'Load plan and edit',
+    'Review the roles, then create the group or edit its name and members. Templates work without a model.',
+  teamStarterLead: 'Team lead',
+  teamStarterUse: 'Edit first',
+  teamStarterUseAndOpen: 'Use template and open chat',
+  teamStarterChanged: 'The saved template has changed. Review the team before creating the group.',
+  creationAskRecruiter: 'Ask the recruiting assistant',
+  creationBotOptions: 'Avatar, description and model',
   starterTitle: 'BambooShift starter templates',
+  botGalleryTitle: 'Bot Gallery',
   starterIntro:
     'Choose a way of working, review its standing instructions, then edit and create your Bot.',
   starterOriginal: 'BambooShift originals',
@@ -16,6 +22,12 @@ export default {
   starterEmpty: 'No starter templates match. Try another keyword or category.',
   starterReview: 'Review standing instructions',
   starterUse: 'Use template and edit',
+  starterInstall: 'Use directly',
+  starterInstalling: 'Creating Bot…',
+  starterIncludedSkills: 'Included skills · {{names}}',
+  starterInstallFailed: 'The Bot could not be confirmed. Select Use directly again to retry.',
+  starterInstallNotice:
+    'Use directly creates a Bot with the listed skills enabled and opens its chat. Use template and edit opens a custom profile.',
   starterBack: 'Back to profile editor',
   starterChoose: 'Choose a template',
   starterOwner: 'You can browse templates. Only the workspace owner can create a Bot.',

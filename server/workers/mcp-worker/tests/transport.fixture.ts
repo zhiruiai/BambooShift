@@ -28,13 +28,48 @@ type RpcMessage = {
   params?: Record<string, any>;
 };
 
+const modernVersion = '2026-07-28';
+
+function modernTool(): ConnectedAppTool {
+  return {
+    ...exampleTool(),
+    inputSchema: {
+      type: 'object',
+      properties: { title: { type: 'string', 'x-mcp-header': 'Title' } },
+      required: ['title'],
+      additionalProperties: false,
+    },
+  };
+}
+
+function modernRequestMatches(headers: IncomingMessage['headers'], message: RpcMessage) {
+  const meta = message.params?._meta;
+  const title = message.params?.arguments?.title;
+  const expectedTitle =
+    typeof title === 'string' ? `=?base64?${Buffer.from(title).toString('base64')}?=` : undefined;
+  return Boolean(
+    message.jsonrpc === '2.0' &&
+    message.id !== undefined &&
+    headers.accept?.includes('application/json') &&
+    headers.accept.includes('text/event-stream') &&
+    headers['mcp-protocol-version'] === modernVersion &&
+    headers['mcp-method'] === message.method &&
+    headers['mcp-session-id'] === undefined &&
+    meta?.['io.modelcontextprotocol/protocolVersion'] === modernVersion &&
+    meta['io.modelcontextprotocol/clientInfo']?.name === 'openbot' &&
+    (message.method !== 'tools/call' ||
+      (headers['mcp-name'] === message.params?.name &&
+        headers['mcp-param-title'] === expectedTitle)),
+  );
+}
+
 /** An actual local MCP endpoint. No product server, real credentials, or remote service. */
-async function mcpFixture(t: TestContext) {
+async function mcpFixture(t: TestContext, modern = false) {
   const state = {
     token: 'synthetic-fixture-credential',
     authStatus: 0,
     redirect: '',
-    tools: [exampleTool()],
+    tools: [modern ? modernTool() : exampleTool()],
     nextCursor: undefined as string | undefined,
     result: { content: [{ type: 'text', text: 'Created synthetic note.' }], isError: false } as any,
     sse: false,
@@ -42,16 +77,19 @@ async function mcpFixture(t: TestContext) {
     holdCall: false,
     messages: [] as RpcMessage[],
     headers: [] as IncomingMessage['headers'][],
+    methods: [] as (string | undefined)[],
     callResponses: [] as ServerResponse[],
     reverseRequest: false,
     reverseResponses: [] as Record<string, unknown>[],
     calls: 0,
     deletes: 0,
     abortedCalls: 0,
+    toolError: undefined as { code: number; message: string } | undefined,
   };
   const server = createServer(async (req, res) => {
     try {
       state.headers.push(req.headers);
+      state.methods.push(req.method);
       if (req.url !== '/mcp') {
         res.writeHead(404).end();
         return;
@@ -67,7 +105,7 @@ async function mcpFixture(t: TestContext) {
       }
       if (req.method === 'DELETE') {
         state.deletes++;
-        res.writeHead(200).end();
+        res.writeHead(modern ? 405 : 200).end();
         return;
       }
       if (req.method !== 'POST') {
@@ -77,6 +115,17 @@ async function mcpFixture(t: TestContext) {
       const chunks: Buffer[] = [];
       for await (const chunk of req) chunks.push(Buffer.from(chunk));
       const message = JSON.parse(Buffer.concat(chunks).toString('utf8')) as RpcMessage;
+      if (modern && !modernRequestMatches(req.headers, message)) {
+        res.writeHead(400, { 'content-type': 'application/json' });
+        res.end(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: message.id ?? null,
+            error: { code: -32020, message: 'Modern request metadata or headers did not match' },
+          }),
+        );
+        return;
+      }
       if (!message.method) {
         state.reverseResponses.push(message as unknown as Record<string, unknown>);
         res.writeHead(202).end();
@@ -87,13 +136,28 @@ async function mcpFixture(t: TestContext) {
         res.writeHead(202).end();
         return;
       }
-      const send = (result: unknown, error?: unknown) => {
+      const send = (result: unknown, error?: unknown, status = 200) => {
         const body = JSON.stringify({
           jsonrpc: '2.0',
           id: message.id,
-          ...(error ? { error } : { result }),
+          ...(error
+            ? { error }
+            : {
+                result: modern
+                  ? {
+                      resultType: 'complete',
+                      _meta: {
+                        'io.modelcontextprotocol/serverInfo': {
+                          name: 'modern-fixture',
+                          version: '1.0.0',
+                        },
+                      },
+                      ...(result as Record<string, unknown>),
+                    }
+                  : result,
+              }),
         });
-        res.setHeader('Mcp-Session-Id', 'synthetic-session');
+        if (!modern) res.setHeader('Mcp-Session-Id', 'synthetic-session');
         if (state.sse && message.method === 'tools/call') {
           res.writeHead(200, { 'content-type': 'text/event-stream' });
           if (state.reverseRequest)
@@ -112,12 +176,24 @@ async function mcpFixture(t: TestContext) {
             );
           res.end(`event: message\ndata: ${body}\n\n`);
         } else {
-          res.writeHead(200, { 'content-type': 'application/json' });
+          res.writeHead(status, { 'content-type': 'application/json' });
           res.end(body);
         }
       };
       switch (message.method) {
+        case 'server/discover':
+          if (modern) {
+            send({
+              supportedVersions: [modernVersion],
+              capabilities: { tools: {} },
+              ttlMs: 0,
+              cacheScope: 'private',
+            });
+            return;
+          }
+          break;
         case 'initialize':
+          if (modern) break;
           send({
             protocolVersion: '2025-11-25',
             capabilities: { tools: {} },
@@ -128,6 +204,7 @@ async function mcpFixture(t: TestContext) {
           send({
             tools: state.tools,
             ...(state.nextCursor ? { nextCursor: state.nextCursor } : {}),
+            ...(modern ? { ttlMs: 0, cacheScope: 'private' } : {}),
           });
           return;
         case 'tools/call':
@@ -144,11 +221,10 @@ async function mcpFixture(t: TestContext) {
             res.end('x'.repeat(1024 * 1024 + 128));
             return;
           }
-          send(state.result);
+          send(state.result, state.toolError, state.toolError ? 400 : 200);
           return;
-        default:
-          send(undefined, { code: -32601, message: 'Method not found' });
       }
+      send(undefined, { code: -32601, message: 'Method not found' });
     } catch {
       if (!res.destroyed) res.writeHead(500).end();
     }
@@ -178,4 +254,4 @@ async function until(check: () => boolean, message: string) {
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
 }
-export { mcpFixture, exampleTool, until };
+export { mcpFixture, exampleTool, modernTool, until };

@@ -1,4 +1,4 @@
-import { Clock3, Link2, Monitor, Settings, Sparkles, Users } from 'lucide-react';
+import { Clock3, Link2, Monitor, Settings, Sparkles, UserPlus, Users } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { Avatar } from '../components/Avatar';
 import { uiText } from '../i18n';
@@ -6,8 +6,7 @@ import type { WorkspaceModel } from './types';
 import { useComposerCommands, type CommandProps } from './useComposerCommands';
 import './composerCommands.css';
 
-export type ComposerInputProps = CommandProps &
-  Pick<
+export type ComposerInputProps = CommandProps & { websitePrompt?: string } & Pick<
     WorkspaceModel,
     | 'appearance'
     | 'setDraft'
@@ -25,7 +24,10 @@ export function ComposerInput(props: ComposerInputProps) {
   const imeEnding = useRef(false);
   const { mentionOpen, active } = commands;
   const activeId = active
-    ? active.kind === 'mention' || active.kind === 'appMention' || active.kind === 'everyoneMention'
+    ? active.kind === 'mention' ||
+      active.kind === 'appMention' ||
+      active.kind === 'everyoneMention' ||
+      active.kind === 'recruiterNavigation'
       ? mentionOpen
         ? `mention-option-${active.id}`
         : undefined
@@ -102,6 +104,11 @@ export function ComposerInput(props: ComposerInputProps) {
                 id={`mention-option-${mention.id}`}
                 type="button"
                 role="option"
+                aria-disabled={
+                  mention.kind === 'recruiterNavigation' && props.recruiter?.pending
+                    ? true
+                    : undefined
+                }
                 aria-selected={active?.id === mention.id}
                 className={active?.id === mention.id ? 'active' : ''}
                 onPointerDown={(event) => event.preventDefault()}
@@ -119,6 +126,18 @@ export function ComposerInput(props: ComposerInputProps) {
                     <Users size={20} aria-hidden="true" />
                     <span>@everyone</span>
                     <small>{uiText('workspace:composerEveryone')}</small>
+                  </>
+                ) : mention.kind === 'recruiterNavigation' ? (
+                  <>
+                    <UserPlus size={20} aria-hidden="true" />
+                    <span>{uiText('workspace:composerRecruiterTitle')}</span>
+                    <small>
+                      {uiText(
+                        props.recruiter?.pending
+                          ? 'workspace:composerRecruiterOpening'
+                          : 'workspace:composerRecruiterOpen',
+                      )}
+                    </small>
                   </>
                 ) : (
                   <>
@@ -202,18 +221,21 @@ export function ComposerInput(props: ComposerInputProps) {
           }
         }}
         placeholder={
-          props.currentComposer.skillId
-            ? uiText('workspace:composerSkillTaskPlaceholder')
-            : props.threadRootId
-              ? uiText('workspace:threadComposer')
-              : uiText('workspace:text_97c58dddcb9f', {
-                  value0: props.conversation?.title || 'Bot',
-                })
+          props.websitePrompt
+            ? uiText('workspace:websiteComposerPlaceholder')
+            : props.currentComposer.skillId
+              ? uiText('workspace:composerSkillTaskPlaceholder')
+              : props.threadRootId
+                ? uiText('workspace:threadComposer')
+                : uiText('workspace:text_97c58dddcb9f', {
+                    value0: props.conversation?.title || 'Bot',
+                  })
         }
         rows={1}
-        aria-label={uiText(
-          props.threadRootId ? 'workspace:threadComposer' : 'workspace:text_387278213e79',
-        )}
+        aria-label={
+          props.websitePrompt ??
+          uiText(props.threadRootId ? 'workspace:threadComposer' : 'workspace:text_387278213e79')
+        }
       />
     </>
   );

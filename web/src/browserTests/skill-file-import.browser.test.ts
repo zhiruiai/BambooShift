@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { build } from 'esbuild';
 import { chromium } from 'playwright-core';
 
 test(
-  'SKILL.md import preserves drafts and requires separate save and approval',
-  { skip: process.env.OPENBOT_BROWSER_TEST !== '1', timeout: 40_000 },
+  'SKILL.md and skill folder imports preserve drafts and require separate approvals',
+  { skip: process.env.OPENBOT_BROWSER_TEST !== '1', timeout: 75_000 },
   async (t) => {
     const { outputFiles } = await build({
       stdin: {
@@ -54,6 +57,7 @@ test(
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     page.setDefaultTimeout(8000);
     const writes: { path: string; body: unknown }[] = [];
+    let saved: Record<string, unknown> = {};
     const errors: string[] = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.route('**/*', async (route) => {
@@ -68,10 +72,33 @@ test(
       if (url.pathname === '/fixture.js')
         return route.fulfill({ contentType: 'text/javascript', body: js });
       assert.equal(request.method(), 'POST');
-      writes.push({ path: url.pathname, body: request.postDataJSON() });
+      const body = request.postDataJSON();
+      writes.push({ path: url.pathname, body });
+      if (url.pathname === '/skills') {
+        saved = body;
+        if (body.skillPackage) {
+          const { root, frontmatter, files } = body.skillPackage;
+          saved = {
+            ...body,
+            skillPackage: {
+              format: 'agent-skills',
+              root,
+              frontmatter: { ...frontmatter, name: body.name, description: body.description },
+              files: [
+                { path: 'SKILL.md', size: 50, sha256: 'a'.repeat(64) },
+                ...files.map(({ path, base64 }: { path: string; base64: string }) => ({
+                  path,
+                  size: Buffer.from(base64, 'base64').length,
+                  sha256: 'b'.repeat(64),
+                })),
+              ],
+            },
+          };
+        }
+      }
       return route.fulfill({
         json: {
-          ...(writes[0].body as object),
+          ...saved,
           id: 'skill-a',
           version: 1,
           status: url.pathname === '/skills' ? 'proposed' : 'active',
@@ -81,8 +108,8 @@ test(
     });
     await page.goto('https://skill-import.example.test');
     const dialog = page.getByRole('dialog');
-    const add = dialog.getByRole('button', { name: 'Add skill', exact: true });
-    const picker = dialog.locator('input[type=file]');
+    const add = dialog.getByRole('button', { name: 'Create a skill package', exact: true });
+    const picker = dialog.locator('input[type=file][accept=".md"]');
     await dialog.getByRole('button', { name: 'Import SKILL.md', exact: true }).waitFor();
     assert.equal(await picker.getAttribute('accept'), '.md');
     await add.click();
@@ -173,6 +200,7 @@ test(
     await dialog.getByRole('combobox', { name: 'Assigned Bot' }).selectOption('two');
     await dialog.getByRole('textbox', { name: 'Steps' }).fill('Reviewed imported instructions.');
     await dialog.getByRole('button', { name: 'Save skill draft', exact: true }).click();
+    await dialog.locator('.skill-picker').first().click();
     await dialog.getByRole('button', { name: 'View and confirm', exact: true }).click();
     assert.deepEqual(writes, [
       {
@@ -202,6 +230,71 @@ test(
       0,
     );
     assert.equal(writes.length, 2);
+
+    await t.test('folder resources remain attached through draft, review and enable', async () => {
+      const staging = await mkdtemp(join(tmpdir(), 'bambooshift-skill-folder-'));
+      const folder = join(staging, 'review-pdf');
+      const resource = Buffer.from([0, 1, 128, 255]);
+      await mkdir(join(folder, 'assets'), { recursive: true });
+      try {
+        await Promise.all([
+          writeFile(
+            join(folder, 'SKILL.md'),
+            '---\nname: review-pdf\ndescription: Review a PDF\nlicense: MIT\nmetadata: {team: QA}\nallowed-tools: Read\n---\n',
+          ),
+          writeFile(join(folder, 'assets', 'sample.bin'), resource),
+        ]);
+        assert.equal(await dialog.getByRole('button', { name: 'Import skill folder' }).count(), 0);
+        const workspaceId = '11111111-1111-4111-8111-111111111111';
+        await page.goto(`https://skill-import.example.test/w/${workspaceId}/`);
+        await dialog.getByRole('button', { name: 'Import skill folder' }).waitFor();
+        await dialog.locator('input[webkitdirectory]').setInputFiles(folder);
+        const draftName = dialog.getByRole('textbox', { name: 'Skill name' });
+        await draftName.waitFor();
+        assert.equal(await draftName.inputValue(), 'review-pdf');
+        assert.equal(await draftName.getAttribute('readonly'), '');
+        const details = dialog.getByRole('region', { name: 'Agent Skills package' });
+        await details.getByText('MIT', { exact: true }).waitFor();
+        await details.getByText('Files (2)', { exact: true }).click();
+        await details.getByText('assets/sample.bin', { exact: true }).waitFor();
+        assert.equal(writes.length, 2);
+        await dialog.getByRole('button', { name: 'Save skill draft', exact: true }).click();
+        await dialog.locator('.skill-picker').first().click();
+        await dialog.getByRole('button', { name: 'View and confirm', exact: true }).click();
+        assert.deepEqual(writes[2], {
+          path: '/skills',
+          body: {
+            agentId: 'one',
+            name: 'review-pdf',
+            description: 'Review a PDF',
+            content: '',
+            skillPackage: {
+              root: 'review-pdf',
+              frontmatter: { license: 'MIT', metadata: { team: 'QA' }, 'allowed-tools': 'Read' },
+              files: [{ path: 'assets/sample.bin', base64: resource.toString('base64') }],
+            },
+          },
+        });
+        const reviewed = dialog.getByRole('region', { name: 'Confirm skill version' });
+        await reviewed.getByText('Declared tools', { exact: true }).waitFor();
+        assert.equal(
+          await reviewed.getByRole('link', { name: 'Download skill ZIP' }).getAttribute('href'),
+          `/api/workspaces/${workspaceId}/skills/skill-a/package`,
+        );
+        assert.equal(writes.length, 3);
+        await reviewed.getByRole('button', { name: 'Confirm and enable' }).click();
+        await reviewed.waitFor({ state: 'hidden' });
+        assert.deepEqual(writes[3], {
+          path: '/skills/skill-a/approve',
+          body: { expectedActiveId: null },
+        });
+        assert.ok(
+          await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth + 1),
+        );
+      } finally {
+        await rm(staging, { recursive: true, force: true });
+      }
+    });
     assert.deepEqual(errors, []);
   },
 );

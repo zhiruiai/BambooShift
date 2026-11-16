@@ -26,6 +26,7 @@ export interface ComputerLifecycleActionsContext {
   setInventory: import('react').Dispatch<
     import('react').SetStateAction<BotScreenInventory | undefined>
   >;
+  setMachine: import('react').Dispatch<import('react').SetStateAction<ComputerState>>;
   applyScreen: (state: ComputerState) => void;
   setControlError: import('react').Dispatch<import('react').SetStateAction<string>>;
   canManage: boolean;

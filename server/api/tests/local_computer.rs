@@ -16,6 +16,7 @@ async fn personal_commands_require_host_opt_in_and_explicit_approval() {
             bootstrap_token: "a".repeat(64),
             host_control: enabled,
             desktop_driver: None,
+            accessibility_helper: None,
         });
         let state = State::open(config).await.unwrap();
         let app = product_router(state.clone());

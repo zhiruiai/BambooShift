@@ -6,6 +6,7 @@ import { PrimaryBotDialog } from '../components/PrimaryBotDialog';
 import { RosterManagementDialog } from '../components/SidebarRoster';
 import { currentWorkspaceId } from '../workspace-scope';
 import type { WorkspaceModel } from './types';
+import type { RecruiterShortcut } from './useRecruiterShortcut';
 
 export function WorkspacePeopleDialogs({
   modal,
@@ -36,6 +37,7 @@ export function WorkspacePeopleDialogs({
   submitAttempt,
   personalSpace,
   primaryMode,
+  recruiterShortcut,
 }: Pick<
   WorkspaceModel,
   | 'modal'
@@ -66,7 +68,7 @@ export function WorkspacePeopleDialogs({
   | 'submitAttempt'
   | 'personalSpace'
   | 'primaryMode'
->) {
+> & { recruiterShortcut?: RecruiterShortcut }) {
   return (
     <>
       {modal === 'roster' && (
@@ -123,6 +125,7 @@ export function WorkspacePeopleDialogs({
           initialPlanId={teamPlanToOpen}
           initialMode={createMode}
           initialProfile={createProfile}
+          recruiterShortcut={recruiterShortcut}
           modelConfigured={data.settings.configured}
           modelLabel={data.settings.profileName || data.settings.model}
           settings={data.settings}

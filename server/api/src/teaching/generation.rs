@@ -233,8 +233,9 @@ async fn run(live: Arc<Live>, saved: Value, profile: Value, bot: Value) {
                 if digest(&selected)!=digest(&profile){return Err(ApiError::new(409,"所选模型配置已变化。"));}
                 let versions=WorkspaceStore::list_in(&mut tx,Table::Skills).await?;
                 let version=versions.iter().filter(|v|v["agentId"]==live.agent&&v["name"]==proposal["name"]).filter_map(|v|v["version"].as_u64()).max().unwrap_or(0)+1;
-                let skill=json!({"id":uuid::Uuid::new_v4().to_string(),"agentId":live.agent,"name":proposal["name"],"description":proposal["description"],"content":proposal["content"],"version":version,"status":"proposed","createdAt":iso(now()),"teachingSessionId":live.id});
-                WorkspaceStore::put_in(&mut tx,Table::Skills,&skill).await?;current["skillId"]=skill["id"].clone();current["status"]=json!("proposed");
+                let mut skill=json!({"id":uuid::Uuid::new_v4().to_string(),"agentId":live.agent,"name":proposal["name"],"description":proposal["description"],"content":proposal["content"],"version":version,"status":"proposed","createdAt":iso(now()),"teachingSessionId":live.id});
+                crate::workspace::skill_packages::persist_text(&mut tx, &mut skill).await?;
+                current["skillId"]=skill["id"].clone();current["status"]=json!("proposed");
                 live.actor.authorize_owner(&live.state).await?;live.check()?;
             },
             Err(_)=>{current["status"]=json!("error");current["reason"]=json!((*live.reason.lock().unwrap()).unwrap_or("generation_failed"));},

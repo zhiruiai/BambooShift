@@ -6,7 +6,7 @@ use super::{
 use crate::{
     db::State,
     error::{ApiError, Result},
-    workspace::{WorkspaceAccess, WorkspaceStore},
+    workspace::WorkspaceStore,
 };
 use serde_json::{Value, json};
 use std::{
@@ -39,8 +39,13 @@ impl ComputerRuntime {
         if let Some(controller) = all.get(&store.workspace_id) {
             return Ok(controller.clone());
         }
-        let controller =
-            Controller::open(store, state.config.clone(), state.teaching.clone()).await?;
+        let controller = Controller::open(
+            store,
+            state.config.clone(),
+            state.teaching.clone(),
+            state.pool.clone(),
+        )
+        .await?;
         all.insert(controller.store.workspace_id.clone(), controller.clone());
         Ok(controller)
     }
@@ -53,6 +58,9 @@ impl ComputerRuntime {
     }
 }
 pub struct Controller {
+    pub(crate) identity_pool: sqlx::SqlitePool,
+    pub(crate) authorization: Mutex<super::authorization::Journal>,
+    pub(crate) local_host_identity: String,
     pub store: Arc<WorkspaceStore>,
     pub(crate) teaching: Arc<crate::teaching::TeachingRuntime>,
     pub(crate) management: Mutex<()>,
@@ -64,7 +72,7 @@ pub struct Controller {
     pub(crate) jobs: Mutex<HashMap<String, Arc<super::approvals::Job>>>,
     pub(crate) takeovers: Mutex<HashMap<String, super::controls::Lease>>,
     pub(crate) origin: Option<String>,
-    runtime: Arc<crate::config::Config>,
+    pub(crate) runtime: Arc<crate::config::Config>,
     pub tasks: super::tasks::Tasks,
     pub cloud: Arc<super::cloud::Cloud>,
     closed: AtomicBool,
@@ -74,8 +82,17 @@ impl Controller {
         store: Arc<WorkspaceStore>,
         runtime: Arc<crate::config::Config>,
         teaching: Arc<crate::teaching::TeachingRuntime>,
+        identity_pool: sqlx::SqlitePool,
     ) -> Result<Arc<Self>> {
-        let saved = private_config::read(&store.directory)?;
+        let saved = private_config::read(&store.directory)?.or_else(|| {
+            runtime
+                .local_desktop
+                .as_ref()?
+                .accessibility_helper
+                .as_ref()?;
+            Some(SavedConnection::local(None))
+        });
+        let authorization = super::authorization::load(&store)?;
         let bindings = super::screen_bindings::load(&store)?;
         let recovered = super::action_store::initialize(&store).await?;
         let tasks = super::tasks::Tasks::default();
@@ -84,6 +101,9 @@ impl Controller {
         }
         let cloud = super::cloud::Cloud::open(&store.directory, &store.workspace_id);
         Ok(Arc::new(Self {
+            identity_pool,
+            authorization: Mutex::new(authorization),
+            local_host_identity: super::authorization::local_host_identity(),
             store,
             teaching,
             management: Mutex::new(()),
@@ -187,6 +207,7 @@ impl Controller {
                 authorize.clone(),
             )
             .await?;
+            super::local_surface::restore(self, &target, authorize.clone()).await?;
             authorize().await?;
             self.active()?;
             *self.local.lock().await = Some(executor);
@@ -292,12 +313,9 @@ impl Controller {
             authorize.clone(),
         )
         .await?;
+        super::local_surface::restore(self, &target, authorize.clone()).await?;
         authorize().await?;
-        let saved = SavedConnection {
-            version: 1,
-            selection: "local".into(),
-            remote: self.configured_remote().await,
-        };
+        let saved = SavedConnection::local(self.configured_remote().await);
         private_config::write(&self.store.directory, &saved)?;
         let previous = current.replace(target);
         *self.local.lock().await = Some(executor);
@@ -379,9 +397,6 @@ impl Controller {
                 .await
                 .as_ref()
                 .is_some_and(|t| t.active_count() > 0)
-    }
-    pub(crate) fn changed(&self) {
-        self.store.emit("update", json!({}));
     }
     pub async fn deletion_guard(&self, agent: &str) -> Result<tokio::sync::MutexGuard<'_, ()>> {
         let guard = self.management.lock().await;
@@ -482,12 +497,4 @@ impl Controller {
         Ok(target)
     }
 }
-pub fn user_authority(state: &State, actor: &WorkspaceAccess) -> Authority {
-    let state = state.clone();
-    let actor = actor.clone();
-    Arc::new(move || {
-        let state = state.clone();
-        let actor = actor.clone();
-        Box::pin(async move { actor.authorize(&state).await })
-    })
-}
+pub use super::authorization::user_authority;

@@ -5,7 +5,7 @@ import { ApiError } from '../api';
 import { PRIVATE_FRAME_DENIED, readScreenFrame } from '../computerFrameMedia';
 import { createComputerScope, screenIdentity } from '../computerScope';
 import { useEffect, useState } from 'react';
-import { ChevronRight, Maximize2, Monitor } from 'lucide-react';
+import { AppWindow, ChevronRight, Maximize2, Monitor } from 'lucide-react';
 import type { ComputerState } from '../../../shared/types';
 
 type Frame = { scopeKey: string; url: string; capturedAt: string };
@@ -30,6 +30,7 @@ export function ComputerPreview({
     [masked, setMasked] = useState(false),
     [loading, setLoading] = useState(false);
   const identity = screenIdentity(computer);
+  const isAccessibility = computer.surface === 'accessibility';
   const scopeKey = JSON.stringify([workspaceId, userId, computer.botScreen?.agentId, identity]);
   const frame = active && savedFrame?.scopeKey === scopeKey ? savedFrame : null;
   useEffect(() => {
@@ -46,6 +47,7 @@ export function ComputerPreview({
   );
   useEffect(() => {
     if (
+      isAccessibility ||
       !computer.connected ||
       computer.botScreen?.status !== 'ready' ||
       computer.botScreen.lifecycle?.operation ||
@@ -125,6 +127,23 @@ export function ComputerPreview({
   const capturedTime = frame
     ? new Date(frame.capturedAt).toLocaleTimeString(currentLanguage(), { hour12: false })
     : '';
+  if (isAccessibility)
+    return (
+      <button type="button" className="computer-preview" onClick={onOpen}>
+        <span className="computer-caption">
+          <AppWindow size={15} aria-hidden="true" />
+          <span>{uiText('computer:macAppsSurface')}</span>
+          <ChevronRight size={13} aria-hidden="true" />
+        </span>
+        <span className="preview-frame-status">
+          {uiText(
+            computer.desktop?.accessibilityReady
+              ? 'computer:macAppsReady'
+              : 'computer:macAppsNeedsPermission',
+          )}
+        </span>
+      </button>
+    );
   return (
     <button
       type="button"

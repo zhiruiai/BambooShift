@@ -91,7 +91,7 @@ test('local menu reads the active mode in both languages without stopping or gra
       const permissionText = language === 'en' ? /still require OS permission/ : /仍需系统授权/;
       if (hostControl) {
         assert.match(options.detail, permissionText);
-        assert.match(options.detail, language === 'en' ? /approval rules/ : /仍需审批/);
+        assert.match(options.detail, language === 'en' ? /Choose Full access/ : /完全授权/);
       } else assert.doesNotMatch(options.detail, permissionText);
       assert.match(options.detail, language === 'en' ? /stops local tasks/ : /停止本机任务/);
       assert.match(

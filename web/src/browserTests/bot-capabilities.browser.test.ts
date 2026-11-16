@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { build } from 'esbuild';
 import { chromium, type Page } from 'playwright-core';
-import { skillWorkflowTemplates } from '../skillWorkflowTemplates';
+import { skillPackageUpload } from '../skillPackageImport';
+import { skillWorkflowPackage, skillWorkflowTemplates } from '../skillWorkflowTemplates';
 
 const origin = 'https://bot-capabilities.example.test';
 const workspaceId = '11111111-1111-4111-8111-111111111111';
@@ -13,6 +15,7 @@ const modelC = '55555555-5555-4555-8555-555555555555';
 const base = `/api/workspaces/${workspaceId}`;
 const home = `${origin}/w/${workspaceId}`;
 const recipe = skillWorkflowTemplates.en.find(({ id }) => id === 'frontend-design')!;
+const { draft: packageDraft } = skillWorkflowPackage(recipe, 'en');
 
 async function assertLayout(page: Page) {
   const metrics = await page.getByRole('dialog').evaluate((dialog) => {
@@ -41,7 +44,7 @@ async function assertLayout(page: Page) {
 }
 
 test(
-  'each Bot chooses a model and reviewed skills across desktop and narrow layouts',
+  'each Bot chooses a model and installs skills across desktop and narrow layouts',
   {
     skip: process.env.OPENBOT_BROWSER_TEST !== '1',
     timeout: 80_000,
@@ -137,12 +140,31 @@ test(
         });
       }
       assert.equal(request.method(), 'POST');
-      if (url.pathname === `${base}/skills`) {
+      if (url.pathname === `${base}/skills/install`) {
         skill = {
           ...body,
           id: 'skill-a',
           version: 1,
-          status: 'proposed',
+          status: 'active',
+          skillPackage: {
+            ...body.skillPackage,
+            format: 'agent-skills',
+            frontmatter: {
+              ...body.skillPackage.frontmatter,
+              name: body.name,
+              description: body.description,
+            },
+            files: body.skillPackage.files.map(
+              ({ path, base64 }: { path: string; base64: string }) => {
+                const bytes = Buffer.from(base64, 'base64');
+                return {
+                  path,
+                  size: bytes.length,
+                  sha256: createHash('sha256').update(bytes).digest('hex'),
+                };
+              },
+            ),
+          },
           createdAt: '2030-01-01T00:00:00Z',
         };
       } else {
@@ -189,29 +211,62 @@ test(
     assert.equal(writes[1].body.modelProfileId, null);
 
     await page.getByRole('button', { name: 'Choose and manage skills' }).click();
+    if (process.env.BAMBOOSHIFT_CAPTURE_UI === '1')
+      await page.screenshot({ path: '.local/skill-manager-320.png', animations: 'disabled' });
     await page.getByRole('button', { name: 'Choose from skill library' }).click();
+    await page.getByRole('searchbox', { name: 'Search packaged skills' }).waitFor();
+    for (const width of [1440, 320]) {
+      await page.setViewportSize({ width, height: width < 500 ? 640 : 900 });
+      await assertLayout(page);
+      assert.equal(
+        await page
+          .locator('.packaged-skill-grid')
+          .evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length),
+        width === 1440 ? 2 : 1,
+      );
+      if (process.env.BAMBOOSHIFT_CAPTURE_UI === '1')
+        await page.screenshot({
+          path: `.local/skill-library-${width}.png`,
+          animations: 'disabled',
+        });
+    }
     await page.getByRole('searchbox', { name: 'Search packaged skills' }).fill(recipe.id);
-    await page.getByRole('button', { name: `Preview instructions for ${recipe.name}` }).click();
-    assert.equal(await page.getByRole('combobox', { name: 'Choose a Bot' }).inputValue(), 'bot-a');
+    await page.getByRole('button', { name: `Preview package for ${recipe.name}` }).click();
+    await page.getByText('For Synthetic Designer', { exact: true }).waitFor();
+    const install = page.getByRole('button', { name: 'Install skill', exact: true });
+    await install.waitFor();
+    const buttonBounds = (await install.boundingBox())!;
+    assert.ok(buttonBounds.y >= 0 && buttonBounds.y + buttonBounds.height <= 640);
+    assert.ok(
+      await install.evaluate((button) => {
+        const { x, y, width, height } = button.getBoundingClientRect();
+        return button.contains(document.elementFromPoint(x + width / 2, y + height / 2));
+      }),
+    );
     await assertLayout(page);
-    await page.getByRole('button', { name: 'Edit skill draft' }).click();
-    assert.equal(await page.getByRole('combobox', { name: 'Assigned Bot' }).inputValue(), 'bot-a');
-    assert.equal(writes.length, 2, 'preview and selection do not activate a skill');
-    await page.getByRole('button', { name: 'Save skill draft' }).click();
-    await page.getByRole('button', { name: 'View and confirm' }).click();
-    await page.getByRole('button', { name: 'Confirm and enable' }).click();
-    await page.getByRole('region', { name: 'Confirm skill version' }).waitFor({ state: 'hidden' });
+    if (process.env.BAMBOOSHIFT_CAPTURE_UI === '1') {
+      await page.screenshot({ path: '.local/skill-preview-320.png', animations: 'disabled' });
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.screenshot({ path: '.local/skill-preview-1440.png', animations: 'disabled' });
+      await page.setViewportSize({ width: 320, height: 640 });
+    }
+    await install.click();
+    await page.getByText('Enabled for Synthetic Designer and ready to use.').waitFor();
+    await page.getByRole('button', { name: 'Done', exact: true }).click();
     assert.equal(writes[2].body.agentId, 'bot-a');
-    assert.equal(writes[2].body.content, recipe.content);
-    assert.deepEqual(writes[3], {
-      path: `${base}/skills/skill-a/approve`,
-      body: { expectedActiveId: null },
-    });
+    assert.equal(writes[2].body.name, recipe.id);
+    assert.equal(writes[2].body.content, packageDraft.content);
+    assert.deepEqual(
+      writes[2].body.skillPackage,
+      skillPackageUpload(packageDraft, packageDraft.skillPackage),
+    );
+    assert.equal(writes[2].path, `${base}/skills/install`);
+    assert.equal(writes[2].body.expectedActiveId, null);
     await page.getByRole('button', { name: /^In use/ }).click();
     await page.getByRole('button', { name: 'Manage current version' }).click();
     await page.getByRole('button', { name: 'Disable this skill', exact: true }).click();
     await page.getByRole('region', { name: 'Confirm skill version' }).waitFor({ state: 'hidden' });
-    assert.deepEqual(writes[4], {
+    assert.deepEqual(writes[3], {
       path: `${base}/skills/skill-a/disable`,
       body: { expectedActiveId: 'skill-a' },
     });
@@ -219,10 +274,21 @@ test(
     await page.locator('.approve-skill').click();
     await page.getByRole('button', { name: 'Restore this version', exact: true }).click();
     await page.getByRole('region', { name: 'Confirm skill version' }).waitFor({ state: 'hidden' });
-    assert.deepEqual(writes[5], {
+    assert.deepEqual(writes[4], {
       path: `${base}/skills/skill-a/restore`,
       body: { expectedActiveId: null },
     });
+    await page.getByRole('button', { name: 'Choose from skill library' }).click();
+    await page.getByRole('searchbox', { name: 'Search packaged skills' }).fill(recipe.id);
+    const installed = page.getByRole('button', { name: `Preview package for ${recipe.name}` });
+    await installed.getByText('In use', { exact: true }).waitFor();
+    await installed.click();
+    await page.getByRole('button', { name: 'Installed', exact: true }).waitFor();
+    assert.equal(
+      await page.getByRole('button', { name: 'Installed', exact: true }).isEnabled(),
+      false,
+    );
+    assert.equal(writes.length, 5);
     await page.getByRole('button', { name: 'Close', exact: true }).click();
     const summary = page.getByRole('region', { name: 'Skills for this Bot' });
     await summary.getByText('1 enabled', { exact: true }).waitFor();
@@ -233,7 +299,7 @@ test(
     await page.getByText('This model is no longer available.', { exact: false }).waitFor();
     assert.equal(await missing.inputValue(), '99999999-9999-4999-8999-999999999999');
     assert.equal(await missing.getAttribute('aria-invalid'), 'true');
-    assert.equal(writes.length, 6);
+    assert.equal(writes.length, 5);
 
     failModels = true;
     await page.goto(`${home}?zh`);
@@ -255,7 +321,7 @@ test(
       beforeReadOnly,
       'read-only Bot view does not fetch model management data',
     );
-    assert.equal(writes.length, 6);
+    assert.equal(writes.length, 5);
     assert.deepEqual(errors, []);
   },
 );

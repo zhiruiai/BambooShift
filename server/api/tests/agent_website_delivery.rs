@@ -1,4 +1,8 @@
 mod agent_delegation_support;
+#[path = "agent_website_delivery/archive_integrity.rs"]
+mod archive_integrity;
+#[path = "agent_website_delivery/quoted_review.rs"]
+mod quoted_review;
 mod workspace_support;
 
 use agent_delegation_support::{Fixture, Group, Model, call, finish, has_tool_result};
@@ -55,7 +59,7 @@ fn writes(path: &str, content: &str) -> axum::http::Response<Body> {
     )
 }
 
-fn tool_result(body: &Value) -> Value {
+fn tool_output(body: &Value) -> &str {
     let result = body["messages"]
         .as_array()
         .unwrap()
@@ -63,7 +67,11 @@ fn tool_result(body: &Value) -> Value {
         .rev()
         .find(|m| m["role"] == "tool")
         .unwrap();
-    serde_json::from_str(result["content"].as_str().unwrap()).unwrap()
+    result["content"].as_str().unwrap()
+}
+
+fn tool_result(body: &Value) -> Value {
+    serde_json::from_str(tool_output(body)).unwrap()
 }
 
 fn cards(messages: &[Value]) -> Vec<&Value> {
@@ -250,6 +258,7 @@ async fn website_cards_publish_exact_bytes_and_keep_earlier_versions() {
             ("assets/logo.png".into(), logo()),
         ])
     );
+    archive_integrity::verify(&group, &old_id, &bytes).await;
     for path in [&root, &zip, &format!("{root}/files/index.html")] {
         assert_eq!(get(&group.f, path, None).await.0, 403);
         assert_eq!(get(&group.f, path, Some(&group.f.member)).await.0, 403);
@@ -276,6 +285,9 @@ async fn website_cards_publish_exact_bytes_and_keep_earlier_versions() {
             let old_id = old_id.clone();
             Box::pin(async move {
                 if has_tool_result(&body) {
+                    if tool_output(&body).contains("源文件已变化") {
+                        return call(TOOL, request(UPDATED));
+                    }
                     assert_eq!(tool_result(&body)["delivered"], true);
                     finish("The updated version is ready.")
                 } else {
@@ -285,7 +297,7 @@ async fn website_cards_publish_exact_bytes_and_keep_earlier_versions() {
                             && wire.contains(&old_id)
                             && wire.contains("synthetic-site")
                     );
-                    call(TOOL, request(UPDATED))
+                    call(TOOL, request(ENTRY))
                 }
             })
         }
@@ -302,6 +314,7 @@ async fn website_cards_publish_exact_bytes_and_keep_earlier_versions() {
     let second = group.done().await;
     let second = cards(&second);
     assert_eq!(second.len(), 2);
+    assert_eq!(model.calls.lock().await.len(), 3);
     let new = second
         .iter()
         .map(|m| &m["metadata"]["websiteProject"])
@@ -339,6 +352,7 @@ async fn website_cards_publish_exact_bytes_and_keep_earlier_versions() {
         .2,
         ENTRY.as_bytes()
     );
+    quoted_review::verify(&group, first[0], &manifest, new).await;
     group.close().await;
 }
 

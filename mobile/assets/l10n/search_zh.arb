@@ -16,5 +16,16 @@
   "mobileChatLibraryOpenLink": "在浏览器中打开链接",
   "mobileChatLibraryMoreFiles": "查看更多文件",
   "mobileChatLibraryMoreLinks": "查看更多链接",
-  "mobileChatLibrarySourceHint": "打开原消息"
+  "mobileChatLibrarySourceHint": "打开原消息",
+  "mobileChatLibraryAll": "全部",
+  "mobileChatLibraryWebsites": "网站",
+  "mobileChatLibraryMedia": "媒体",
+  "mobileChatLibraryMoreItems": "查看更多项目",
+  "mobileChatLibraryPinnedItems": "置顶项目",
+  "mobileChatLibraryPin": "在资料库置顶",
+  "mobileChatLibraryUnpin": "取消资料库置顶",
+  "mobileChatLibraryPinsLoadError": "无法加载置顶项目。",
+  "mobileChatLibraryPinSaveError": "未能保存置顶状态，请重试。",
+  "mobileChatLibraryNoPins": "还没有置顶项目。",
+  "mobileChatLibraryEmpty": "此分类暂无内容。"
 }

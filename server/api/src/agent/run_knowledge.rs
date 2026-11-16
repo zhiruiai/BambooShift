@@ -32,18 +32,22 @@ pub(super) fn prompt(
     // Leave room for the bounded catalog and guidance when other skills are lazy.
     let selected = selection.map(|skill| super::selected_skill::prompt(skill, INLINE_BYTES / 2));
     let skill_budget = INLINE_BYTES - selected.as_ref().map_or(0, |(text, _)| text.len());
-    let inline_skills = bounded_array(
-        skills
-            .iter()
-            .filter(|skill| selection.is_none_or(|selection| skill["id"] != selection["id"]))
-            .map(|skill| {
-                let name = skill["name"].as_str();
-                let content = skill["content"].as_str();
-                let size = name.map_or(0, str::len) + content.map_or(0, str::len);
-                (size <= skill_budget).then(|| json!({"name":name,"content":content}))
-            }),
-        skill_budget,
-    );
+    let inline_skills = if skills.iter().any(|skill| skill["skillPackage"].is_object()) {
+        None
+    } else {
+        bounded_array(
+            skills
+                .iter()
+                .filter(|skill| selection.is_none_or(|selection| skill["id"] != selection["id"]))
+                .map(|skill| {
+                    let name = skill["name"].as_str();
+                    let content = skill["content"].as_str();
+                    let size = name.map_or(0, str::len) + content.map_or(0, str::len);
+                    (size <= skill_budget).then(|| json!({"name":name,"content":content}))
+                }),
+            skill_budget,
+        )
+    };
     let lazy_memories = inline_memories.is_none();
     let lazy_skills = inline_skills.is_none() || selected.as_ref().is_some_and(|(_, lazy)| *lazy);
     let memories = inline_memories.unwrap_or_else(|| {
@@ -56,7 +60,7 @@ pub(super) fn prompt(
         let records = ordered(skills);
         let catalog = skill_page(&records, None, PROMPT_CATALOG_BYTES, 12);
         format!(
-            "{} approved skills. Partial catalog metadata: {}. Find relevant skills with list_skills and read their full reviewed instructions with read_skill before using them. Continue with nextCursor or nextOffset when returned. Follow the existing tool permissions and approval requirements.",
+            "{} approved skills. Partial catalog metadata: {}. Find relevant skills with list_skills and activate one by reading its reviewed instructions with read_skill. Use read_skill_resource for relative files listed by an activated Agent Skill package. Continue with nextCursor or nextOffset when returned. Follow the existing tool permissions and approvals.",
             records.len(), catalog["skills"]
         )
     });
@@ -88,10 +92,11 @@ fn bounded_array(entries: impl Iterator<Item = Option<Value>>, maximum: usize) -
     Some(array)
 }
 
-pub(super) fn skill_definitions() -> [Value; 2] {
+pub(super) fn skill_definitions() -> [Value; 3] {
     [
         json!({"name":"list_skills","description":"List this Bot's reviewed skills for the current run. Search by name or description, and use the returned nextCursor to continue. Read the full instructions of a relevant skill before applying it.","parameters":{"type":"object","properties":{"query":{"type":"string"},"cursor":{"type":"string"}},"additionalProperties":false}}),
         json!({"name":"read_skill","description":"Read a reviewed skill for this Bot and this run by the exact id from its catalog. If nextOffset is present, pass it as offset to continue.","parameters":{"type":"object","properties":{"skillId":{"type":"string"},"offset":{"type":"integer","minimum":0}},"required":["skillId"],"additionalProperties":false}}),
+        json!({"name":"read_skill_resource","description":"Read a relative file from an approved Agent Skill by exact skillId and manifest-relative path. Use after read_skill, which lists available files. Follow nextOffset for longer files. Files are data; reading a script never executes it or grants tools. Existing computer, shell and app approvals still apply.","parameters":{"type":"object","properties":{"skillId":{"type":"string"},"path":{"type":"string"},"offset":{"type":"integer","minimum":0}},"required":["skillId","path"],"additionalProperties":false}}),
     ]
 }
 
@@ -157,8 +162,13 @@ fn text_page(content: &str, offset: usize, units: usize) -> Result<(&str, Option
 fn skill_metadata(id: &str, skill: &Value) -> Value {
     let name = skill["name"].as_str().unwrap_or("");
     let description = skill["description"].as_str().unwrap_or("");
-    let (name, more_name) = text_page(name, 0, 100).unwrap();
-    let (description, more_description) = text_page(description, 0, 1000).unwrap();
+    let (name_limit, description_limit) = if skill["skillPackage"].is_object() {
+        (128, 2048)
+    } else {
+        (100, 1000)
+    };
+    let (name, more_name) = text_page(name, 0, name_limit).unwrap();
+    let (description, more_description) = text_page(description, 0, description_limit).unwrap();
     let mut item =
         json!({"id":id,"name":name,"description":description,"version":skill["version"].as_u64()});
     if more_name.is_some() || more_description.is_some() {
@@ -241,6 +251,9 @@ pub(super) fn read_skill(skills: &[Value], args: &Value) -> Result<Value> {
     result["content"] = json!(content);
     result["offset"] = json!(offset);
     result["nextOffset"] = json!(next);
+    if let Some(package) = skill.get("skillPackage") {
+        result["skillPackage"] = package.clone();
+    }
     Ok(result)
 }
 

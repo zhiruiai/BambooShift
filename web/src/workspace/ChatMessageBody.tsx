@@ -44,7 +44,7 @@ type MessageBodyActions = Pick<
   | 'sendScope'
   | 'sync'
   | 'refresh'
->;
+> & { websiteUpdates?: ReadonlyMap<string, Message> };
 
 function submittedQuestionOptions(message: Message, messages: readonly Message[]) {
   const marker = message.metadata?.questionAnswer;
@@ -149,7 +149,11 @@ export function ChatMessageBody({
           }}
         />
       ) : m.kind === 'website_project' ? (
-        <WebsiteProjectCard message={m} onOpen={openWebsiteProject} />
+        <WebsiteProjectCard
+          message={m}
+          latest={actions.websiteUpdates?.get(m.id)}
+          onOpen={openWebsiteProject}
+        />
       ) : m.kind === 'creation_preview' ? (
         <CreationDraftCard
           message={m}
@@ -223,7 +227,7 @@ export function ChatMessageBody({
             sync.written();
             await refresh();
           }}
-          onClick={() => openComputer(m.agentId || null)}
+          onOpenCurrentComputer={() => openComputer(m.agentId || null)}
         />
       ) : memo ? (
         <VoiceMemoCard

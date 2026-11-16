@@ -1,28 +1,14 @@
 import { uiText } from '../i18n';
-import {
-  BookOpen,
-  ChevronRight,
-  FolderOpen,
-  Monitor,
-  Plus,
-  ShieldCheck,
-  Sparkles,
-  X,
-} from 'lucide-react';
-import { isSharedBot } from '../../../shared/shared-bots';
+import { BookOpen, ChevronRight, Plus, ShieldCheck, Sparkles, X } from 'lucide-react';
 import { conversationVisibility } from '../approvalUi';
 import { Avatar, GroupAvatar } from '../components/Avatar';
 import { BotTeamBrief } from '../components/BotTeamBrief';
-import { FileCard } from '../components/FileCard';
-import { SharedBotFiles } from '../components/SharedBotFiles';
-import { WebsiteProjectLibrary } from '../components/WebsiteProjectCard';
 import type { OpenWebsiteProject } from '../websiteProjects';
 import { IconButton } from '../components/UI';
-import { workspaceApiUrl } from '../workspace-scope';
 import type { WorkspaceModel } from './types';
 import { DetailTabs } from './details/DetailTabs';
 import { ConversationComputer } from './details/ConversationComputer';
-import { ConversationLinks } from './details/ConversationLinks';
+import { ConversationLibraryView } from './details/ConversationLibraryView';
 import { ConversationRoutines } from './details/ConversationRoutines';
 
 export function ConversationDetails({
@@ -60,7 +46,6 @@ export function ConversationDetails({
   uploading,
   fileRef,
   setTransferFile,
-  messages,
   jumpToMessage,
   openWebsiteProject,
 }: Pick<
@@ -99,7 +84,6 @@ export function ConversationDetails({
   | 'uploading'
   | 'fileRef'
   | 'setTransferFile'
-  | 'messages'
   | 'jumpToMessage'
 > & { openWebsiteProject?: OpenWebsiteProject }) {
   return (
@@ -233,94 +217,25 @@ export function ConversationDetails({
                 openComputer={openComputer}
               />
             ) : detailTab === 'files' ? (
-              <>
-                {openWebsiteProject && (
-                  <WebsiteProjectLibrary messages={messages} onOpen={openWebsiteProject} />
-                )}
-                <ConversationLinks
-                  key={`${navigationScope}:${conversation.id}`}
-                  conversationId={conversation.id}
-                  messages={data.messages}
-                  onJump={(id) => {
-                    if (sendScope.current(sendScope.ticket())) jumpToMessage(conversation.id, id);
-                  }}
-                />
-                {currentUserId &&
-                  members
-                    .filter((agent) => isSharedBot(agent) && agent.sharedBot?.shareId)
-                    .map((agent) => (
-                      <SharedBotFiles
-                        key={`${navigationScope}:${agent.id}`}
-                        agent={agent}
-                        userId={currentUserId}
-                      />
-                    ))}
-                <div className="section-label">
-                  <span>
-                    {account?.workspace.kind === 'personal'
-                      ? uiText('workspace:text_e8ba8d100ae5')
-                      : uiText('workspace:text_6d4624ac777e')}{' '}
-                    · {files.length}
-                  </span>
-                  <IconButton
-                    label={uiText('workspace:text_19e48687c67d')}
-                    disabled={uploading.has(selected)}
-                    onClick={() => fileRef.current?.click()}
-                  >
-                    <Plus size={15} />
-                  </IconButton>
-                </div>
-                <p className="section-help">{uiText('workspace:text_180b5dd570bd')}</p>
-                <button
-                  className="library-computer-link"
-                  onClick={() => openComputer(undefined, 'files')}
-                >
-                  <FolderOpen size={14} />
-                  {uiText('workspace:text_920b2b450375')}
-                  <ChevronRight size={13} />
-                </button>
-                {files.length ? (
-                  files.map((f) => (
-                    <div className="library-file" key={f.id}>
-                      <FileCard
-                        name={f.name}
-                        size={f.size}
-                        href={workspaceApiUrl(`/api/files/${f.id}/download`)}
-                      />
-                      {f.source?.kind === 'computer' && (
-                        <p className="library-file-source">
-                          {uiText('workspace:text_df6e36f75c22')}
-                          {f.source.computerName} · {f.source.path}
-                        </p>
-                      )}
-                      <button
-                        type="button"
-                        className="library-file-send"
-                        onClick={() => {
-                          setTransferFile({
-                            file: f,
-                            conversationId: selected,
-                            conversationTitle:
-                              conversation?.title || uiText('workspace:text_9800a458c16b'),
-                          });
-                          setModal('file-transfer');
-                        }}
-                      >
-                        <Monitor size={12} />
-                        {uiText('workspace:text_8272cf0a0f36')}
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <div className="detail-empty">
-                    <FolderOpen size={30} />
-                    <p>{uiText('workspace:text_b9a42d9cc233')}</p>
-                    <button className="secondary-button" onClick={() => fileRef.current?.click()}>
-                      {uiText('workspace:text_ad9daebe00dc')}
-                    </button>
-                  </div>
-                )}
-              </>
+              <ConversationLibraryView
+                key={`${navigationScope}:${conversation.id}`}
+                {...{
+                  api,
+                  conversation,
+                  currentUserId,
+                  data,
+                  fileRef,
+                  files,
+                  jumpToMessage,
+                  members,
+                  openComputer,
+                  openWebsiteProject,
+                  sendScope,
+                  setModal,
+                  setTransferFile,
+                  uploading,
+                }}
+              />
             ) : conversation?.isGroup ? (
               <>
                 <BotTeamBrief

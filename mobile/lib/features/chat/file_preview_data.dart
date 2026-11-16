@@ -5,6 +5,9 @@ import '../../core/api.dart';
 import '../../core/byte_read.dart';
 import '../../core/workspace_controller.dart';
 
+bool isWorkspaceScopedFile(Json file) =>
+    file['conversationId'] == null || file['conversationId'] == '';
+
 class ChatFile {
   const ChatFile(this.id, this.name, this.size);
   final String id, name;
@@ -24,7 +27,7 @@ class ChatFile {
     if (id is! String) return null;
     final file = scope.find('files', id);
     if (file == null ||
-        (file['conversationId'] != null &&
+        (!isWorkspaceScopedFile(file) &&
             file['conversationId'] != message['conversationId'])) {
       return null;
     }

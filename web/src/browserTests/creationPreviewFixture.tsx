@@ -89,6 +89,7 @@ function Fixture() {
   const [draft, setDraft] = useState<BotProfileDraft>();
   const [stage, setStage] = useState(0);
   const [groupHeader, setGroupHeader] = useState(false);
+  const [recruiterOpened, setRecruiterOpened] = useState(false);
   const [owner, setOwner] = useState(true);
   const userId = owner ? ownerId : 'synthetic-member';
   const scope = useMemo(() => createAppConnectionScope({ workspaceId, userId }), [userId]);
@@ -140,6 +141,13 @@ function Fixture() {
           </button>
           <button onClick={() => setGroupHeader((value) => !value)}>Toggle group header</button>
           <ChatHeader
+            data={
+              {
+                agents: [agent],
+                conversations: [conversation],
+                messages: chatMessages,
+              } as ChatProps['data']
+            }
             sendScope={scope as ChatProps['sendScope']}
             draggingFiles={false}
             uploading={new Set()}
@@ -183,7 +191,13 @@ function Fixture() {
             conversation={conversation}
             sidebar={{ total: 1, visible: [] } as unknown as ChatProps['sidebar']}
             openRoster={noOp}
-            data={{ agents: [agent], conversations: [conversation] } as ChatProps['data']}
+            data={
+              {
+                agents: [agent],
+                conversations: [conversation],
+                messages: chatMessages,
+              } as ChatProps['data']
+            }
             openPrimary={noOp}
             messages={chatMessages}
             lead={agent}
@@ -227,12 +241,20 @@ function Fixture() {
           />
         </>
       )}
+      {recruiterOpened && <h1>Recruiting assistant chat</h1>}
       {dialog && (
         <CreateDialog
           agents={[agent]}
           canCreateBot={owner}
           initialMode="bot"
           initialProfile={draft}
+          recruiterShortcut={{
+            pending: false,
+            open: async () => {
+              setDialog(false);
+              setRecruiterOpened(true);
+            },
+          }}
           modelConfigured
           workspaceId={workspaceId}
           userId={userId}

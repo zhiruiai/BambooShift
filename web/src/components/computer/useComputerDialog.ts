@@ -101,7 +101,8 @@ export function useComputerDialog({
     lifecycleRecoveryRef = useRef<ComputerLifecycleIntent | null>(null);
   lifecycleConfirmationRef.current = lifecycleConfirmation;
   lifecycleUnknownRef.current = lifecycleUnknown;
-  const busy = externalBusy || lifecyclePending;
+  const [authorizationBusy, setAuthorizationBusy] = useState(false);
+  const busy = externalBusy || lifecyclePending || authorizationBusy;
 
   const [cloudState, setCloudState] = useState<CloudComputerState | null>(null);
   const [panel, setPanelState] = useState<'screen' | 'files'>(initialPanel);
@@ -124,8 +125,11 @@ export function useComputerDialog({
     computer.botScreen.lifecycle?.state !== 'changing' &&
     computer.botScreen.lifecycle?.state !== 'blocked';
   const currentScreenIdentity = screenIdentity(computer);
+  const isAccessibility = computer.surface === 'accessibility';
   const takeoverSupported =
-    !!identity.current.userId && !!computer.capabilities?.includes(PRIVATE_FRAME_CAPABILITY);
+    !isAccessibility &&
+    !!identity.current.userId &&
+    !!computer.capabilities?.includes(PRIVATE_FRAME_CAPABILITY);
   const isDesktop = computer.surface === 'desktop';
   const virtualDesktop = computer.desktop?.kind === 'virtual';
   const desktopLabel = virtualDesktop
@@ -170,6 +174,7 @@ export function useComputerDialog({
   const visibleFrame =
     scope.current(scope.ticket()) &&
     screenReady &&
+    !isAccessibility &&
     panel === 'screen' &&
     (frame?.access === 'takeover'
       ? lease && !privateFramesPaused.current && Date.parse(lease.expiresAt) > Date.now()
@@ -299,7 +304,7 @@ export function useComputerDialog({
     void loadActions();
   }, [screenReady]);
   const observingWork = useComputerFramePolling(
-    watch && screenReady && panel === 'screen',
+    watch && screenReady && !isAccessibility && panel === 'screen',
     currentScreenIdentity,
     lease?.leaseId,
     otherControlled,
@@ -416,6 +421,9 @@ export function useComputerDialog({
   };
   return {
     ...actionContext,
+    authorizationBusy,
+    setAuthorizationBusy,
+    isAccessibility,
     teachingEligible,
     updateTeachingBlocked,
     teachingBlocked: teachingEligible && teachingBlocked,

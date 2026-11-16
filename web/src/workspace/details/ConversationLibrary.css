@@ -1,0 +1,107 @@
+.conversation-library {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  padding-bottom: 16px;
+}
+.conversation-library-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.conversation-library-file-tools {
+  display: grid;
+  gap: 4px;
+}
+.conversation-library-file-tools > .library-computer-link {
+  min-height: 34px;
+  margin: 0;
+  padding: 4px 0;
+}
+.conversation-library-filters button {
+  min-height: 34px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.conversation-library-filters button:hover,
+.conversation-library-pin:not(:disabled, [aria-disabled='true']):hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.conversation-library-filters button[aria-pressed='true'],
+.conversation-library-pin[data-pinned='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.conversation-library-filters button[aria-pressed='true'] {
+  font-weight: 600;
+}
+.conversation-library-filters button:focus-visible,
+.conversation-library-pin:focus-visible,
+.conversation-library-more:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.conversation-library-group {
+  min-width: 0;
+}
+.conversation-library-group h3 {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 550;
+}
+.conversation-library-group ul {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.conversation-library-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  align-items: start;
+  gap: 5px;
+}
+.conversation-library-row-content {
+  min-width: 0;
+}
+.conversation-library-row-content > .file-card,
+.conversation-library-row-content .library-file > .file-card {
+  margin-block: 0;
+}
+.conversation-library-pin {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  color: var(--text-muted);
+}
+.conversation-library-pin:disabled,
+.conversation-library-pin[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.55;
+}
+.conversation-library-more {
+  min-height: 32px;
+}
+.conversation-library-notice {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.conversation-library-pin-error {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  column-gap: 8px;
+}

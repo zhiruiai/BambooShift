@@ -1,4 +1,5 @@
 import { type ConfirmedBotInstall, type TemplateScope } from '../../botTemplates';
+import type { SmartTeamProps } from '../team/types';
 import '../BotTemplates.css';
 export type BotTemplateDialogRequest =
   | { kind: 'copy' | 'share'; agentId: string; conversationId: string }
@@ -14,7 +15,7 @@ export type Props = {
   onCreated: (value: ConfirmedBotInstall) => void;
   onChanged: () => void;
   onOpenPublic: (path: string) => void;
-  onTeamTemplates?: () => void;
+  teamTemplates?: Pick<SmartTeamProps, 'agents' | 'modelConfigured' | 'modelLabel' | 'onCreated'>;
 };
 export type Common = Props & {
   scope: TemplateScope;

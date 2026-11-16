@@ -163,6 +163,7 @@ impl WorkspaceStore {
             let mut tx = store.begin().await?;
             super::unread::initialize(&mut tx).await?;
             super::team_skills::initialize(&mut tx).await?;
+            super::skill_packages::initialize(&mut tx).await?;
             crate::speech::calls::initialize(&mut tx).await?;
             tx.commit().await?;
             crate::apps::store::initialize(&store).await?;

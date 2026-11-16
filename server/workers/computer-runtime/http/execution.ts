@@ -1,6 +1,8 @@
 import { appendFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import type { Request, Response } from 'express';
 import { operationCleanupUnknown } from '../computer-operations.js';
+import { isAccessibilityAction } from '../desktop-accessibility.js';
 import { validateComputerAction } from '../../computer-worker/index.js';
 import {
   MAX_COMPUTER_FRAME_INPUT_BYTES,
@@ -50,60 +52,73 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
       res.status(409).json({ error: error.message });
     }
   });
-  app.post('/execute', async (req, res) => {
-    if (req.body?.type === 'remote_shell' || req.body?.type === 'local_shell') {
-      let job: ShellJob | undefined;
-      try {
-        const action = validateComputerAction(req.body);
-        const runner = action.type === 'local_shell' ? hostShell : shell;
-        job = reserveShell(req.get('X-OpenBot-Action-Id'));
-        const reserved = job;
-        const result = await transfer(
-          req,
-          res,
-          async (signal) => {
-            const combined = AbortSignal.any([signal, reserved.abort.signal]);
-            combined.throwIfAborted();
-            if (runtime.takeoverPending || computer.takeoverStatus().active)
-              throw new Error('用户正在接管电脑，远程命令已取消。');
-            if (!(await runner.available())) throw new Error('此电脑未启用所请求的命令执行能力。');
-            combined.throwIfAborted();
-            reserved.provenStopped = false;
-            const result = await runner.run(action.command, action.path, combined);
-            reserved.result = result;
-            reserved.provenStopped = true;
-            return result;
-          },
-          false,
-        );
-        res.json(result);
-      } catch (error: any) {
-        if (job && error?.cleanupConfirmed === true) job.provenStopped = true;
-        if (!res.destroyed) res.status(400).json({ error: error.message });
-      } finally {
-        if (job) {
-          if (!job.provenStopped) runtime.shellCleanupUnknown = true;
-          seenShellIds.set(req.get('X-OpenBot-Action-Id')!, job.provenStopped);
-          job.settled = true;
-          job.finish();
-        }
+  const executeShell = async (req: Request, res: Response, skillScript: boolean) => {
+    let job: ShellJob | undefined;
+    try {
+      const action = skillScript ? undefined : validateComputerAction(req.body);
+      const runner = action?.type === 'remote_shell' ? shell : hostShell;
+      job = reserveShell(req.get('X-OpenBot-Action-Id'));
+      const reserved = job;
+      const result = await transfer(
+        req,
+        res,
+        async (signal) => {
+          const combined = AbortSignal.any([signal, reserved.abort.signal]);
+          combined.throwIfAborted();
+          if (runtime.takeoverPending || computer.takeoverStatus().active)
+            throw new Error('用户正在接管电脑，远程命令已取消。');
+          if (!(await runner.available())) throw new Error('此电脑未启用所请求的命令执行能力。');
+          combined.throwIfAborted();
+          reserved.provenStopped = false;
+          const result = action
+            ? await runner.run(action.command, action.path, combined)
+            : await hostShell.runSkillScript(req.body, combined);
+          reserved.result = result;
+          reserved.provenStopped = true;
+          return result;
+        },
+        false,
+      );
+      res.json(result);
+    } catch (error: any) {
+      if (job && error?.cleanupConfirmed === true) job.provenStopped = true;
+      if (!res.destroyed) res.status(400).json({ error: error.message });
+    } finally {
+      if (job) {
+        if (!job.provenStopped) runtime.shellCleanupUnknown = true;
+        seenShellIds.set(req.get('X-OpenBot-Action-Id')!, job.provenStopped);
+        job.settled = true;
+        job.finish();
       }
-      return;
     }
+  };
+  app.post('/execute-skill-script', (req, res) => executeShell(req, res, true));
+  app.post('/execute', async (req, res) => {
+    if (req.body?.type === 'remote_shell' || req.body?.type === 'local_shell')
+      return executeShell(req, res, false);
+    if (req.body?.type === 'local_skill_script')
+      return res.status(400).json({ error: '技能脚本必须通过已审批的技能执行路径。' });
     // The control plane already obtained approval. Bearer token possession grants execution.
     const operation = transfer(req, res, async (signal) => {
       signal.throwIfAborted();
-      const { content: _content, text: _text, ...summary } = req.body;
+      const nativeAccessibility = isAccessibilityAction(req.body?.type);
+      const action = nativeAccessibility ? validateComputerAction(req.body) : req.body;
+      const { content: _content, text: _text, ...summary } = action;
       const dir = resolve(options.workspaceDir, '../audit');
       await mkdir(dir, { recursive: true, mode: 0o700 });
       await appendFile(
         resolve(dir, 'computer.jsonl'),
-        JSON.stringify({ at: new Date().toISOString(), action: summary }) + '\n',
+        JSON.stringify({
+          at: new Date().toISOString(),
+          action: nativeAccessibility ? { type: action.type } : summary,
+        }) + '\n',
         { mode: 0o600 },
       );
-      if (req.body.type === 'browser_download' && runtime.takeoverPending)
+      if (action.type === 'browser_download' && runtime.takeoverPending)
         throw new Error('用户正在接管电脑，网页导出已取消。');
-      return computer.execute(req.body, { signal });
+      if (nativeAccessibility && runtime.takeoverPending)
+        throw new Error('用户正在接管电脑，请稍后再执行。');
+      return computer.execute(action, { signal });
     });
     try {
       res.json(await operation);

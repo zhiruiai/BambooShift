@@ -66,6 +66,7 @@ export interface BotTeamPlan {
   goal: string;
   status: 'generating' | 'ready' | 'error' | 'cancelled' | 'committed';
   draft?: BotTeamDraft;
+  starterSkills?: Record<string, { id: string; name: string; description: string }[]>;
   error?: string;
   result?: BotTeamResult;
   source?: BotTeamPlanSource;

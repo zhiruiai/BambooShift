@@ -19,6 +19,7 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
       agentId,
       current,
       setInventory,
+      setMachine,
       applyScreen,
       setControlError,
     } = read();
@@ -27,13 +28,19 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
       const version = scope.ticket();
       setPermissionBusy(true);
       try {
-        const [inventory, state] = await Promise.all([
+        const [machine, inventory, state] = await Promise.allSettled([
+          scope.request<ComputerState>('/status', 'GET', undefined, true),
           scope.request<BotScreenInventory>('/bots', 'GET', undefined, true),
           agentId ? scope.request<ComputerState>('/status') : undefined,
         ]);
         if (!current(version)) return;
-        setInventory(inventory);
-        if (state) applyScreen(state);
+        // Bootstrap can precede restoration of a saved local computer. Update the
+        // connection even if this Bot's screen is still unavailable.
+        if (machine.status === 'fulfilled') setMachine(machine.value);
+        if (inventory.status === 'fulfilled') setInventory(inventory.value);
+        const failed = [machine, inventory, state].find((result) => result.status === 'rejected');
+        if (failed?.status === 'rejected') setControlError((failed.reason as Error).message);
+        if (state.status === 'fulfilled' && state.value) applyScreen(state.value);
       } catch (error) {
         if (current(version)) setControlError((error as Error).message);
       } finally {
@@ -191,7 +198,7 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
       if (mounted.current) setPreparing(false);
     }
   }
-  async function selectSurface(surface: 'browser' | 'desktop') {
+  async function selectSurface(surface: ComputerState['surface']) {
     const {
       screenReady,
       inputBusy,

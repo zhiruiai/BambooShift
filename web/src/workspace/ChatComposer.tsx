@@ -1,6 +1,6 @@
 import { serviceText } from '../i18n/serviceText';
 import { uiText } from '../i18n';
-import { ArrowDown, ArrowUp, FileText, Loader2, Plus, Square, X } from 'lucide-react';
+import { ArrowUp, FileText, Loader2, Plus, Square, X } from 'lucide-react';
 import { isSharedBot } from '../../../shared/shared-bots';
 import { composerContent, type ComposerState } from '../chatDrafts';
 import { groupMentionsUnavailable, removeMention } from '../composerMentions';
@@ -8,6 +8,7 @@ import { ComposerInput, type ComposerInputProps } from './ComposerInput';
 import { ComposerContexts, composerSkill } from './ComposerContexts';
 import { composerModelConfigured } from './composerModel';
 import { ComposerModelNoticeView } from './ComposerModelNotice';
+import { ChatJumpNotice } from './ChatJumpNotice';
 import { DictationButton, DictationStatus } from '../components/DictationControls';
 import { VoiceControls } from '../components/VoiceControls';
 import { VoiceCallStart } from '../components/VoiceCallControls';
@@ -16,6 +17,8 @@ import type { WorkspaceVoiceCall } from '../useVoiceCall';
 import { ComposerReply } from '../components/MessageExtras';
 import { IconButton } from '../components/UI';
 import type { WorkspaceModel } from './types';
+import type { WebsiteEditContext } from './WorkspaceWebsite';
+import { WebsiteComposerContext } from './WebsiteComposerContext';
 
 export function ChatComposer(
   props: Pick<
@@ -27,6 +30,8 @@ export function ChatComposer(
     | 'scrollRef'
     | 'nearBottom'
     | 'setUnreadBelow'
+    | 'modal'
+    | 'sendScope'
     | 'data'
     | 'canManage'
     | 'openSettings'
@@ -63,15 +68,14 @@ export function ChatComposer(
     | 'stopCurrentTask'
     | 'upload'
   > &
-    ComposerInputProps & { voiceCall?: WorkspaceVoiceCall; voiceCallPanel?: React.ReactNode },
+    ComposerInputProps & {
+      voiceCall?: WorkspaceVoiceCall;
+      voiceCallPanel?: React.ReactNode;
+      websiteEdit?: WebsiteEditContext;
+    },
 ) {
   const {
     conversation,
-    unreadBelow,
-    setHighlightedMessage,
-    scrollRef,
-    nearBottom,
-    setUnreadBelow,
     data,
     canManage,
     openSettings,
@@ -112,8 +116,16 @@ export function ChatComposer(
   const skillId = currentComposer.skillId;
   const { skill, skillUnavailable } = composerSkill(currentComposer, data.skills, members);
   const mentions = currentComposer.mentions;
+  const websiteEdit = props.websiteEdit;
+  const websitePrompt =
+    websiteEdit && uiText('workspace:websiteComposerPrompt', { name: websiteEdit.title });
+  const effectiveReply =
+    replyTo ??
+    (websiteEdit?.fromPreview
+      ? { id: websiteEdit.message.id, agentId: websiteEdit.message.agentId }
+      : undefined);
   const modelConfigured = composerModelConfigured(
-    { ...currentComposer, text: composerContent(currentComposer) },
+    { ...currentComposer, text: composerContent(currentComposer), replyTo: effectiveReply },
     members,
     conversation,
     data.settings.configured,
@@ -132,7 +144,7 @@ export function ChatComposer(
     !!lead &&
     !isSharedBot(lead) &&
     !threadRootId &&
-    !replyTo &&
+    !effectiveReply &&
     !currentComposer.agentId &&
     !appContext &&
     !mentions &&
@@ -177,27 +189,15 @@ export function ChatComposer(
     : currentComposer.agentId
       ? [currentComposer.agentId]
       : [];
+  const sendCurrent: ComposerInputProps['send'] = async (event) => {
+    if (!canSubmit) return event?.preventDefault();
+    await send(event, websiteEdit?.fromPreview ? websiteEdit.message : undefined);
+  };
   return (
     <>
       {conversation && (
         <div className="composer-area">
-          {unreadBelow && (
-            <button
-              className="jump-bottom"
-              onClick={() => {
-                setHighlightedMessage('');
-                scrollRef.current?.scrollTo({
-                  top: scrollRef.current.scrollHeight,
-                  behavior: 'smooth',
-                });
-                nearBottom.current = true;
-                setUnreadBelow(false);
-              }}
-            >
-              <ArrowDown size={16} />
-              {uiText('workspace:text_d34db9bc67fb')}
-            </button>
-          )}
+          <ChatJumpNotice {...props} />
           <ComposerModelNoticeView
             configured={modelConfigured}
             canManage={canManage}
@@ -215,14 +215,18 @@ export function ChatComposer(
                 : uiText('workspace:text_652067e42c7c')}
             </div>
           )}
-          {replyTo && (
-            <ComposerReply
-              quote={replyTo}
-              onJump={() => jumpToMessage(selected, replyTo.id)}
-              onCancel={() =>
-                updateComposer(composerKey, (current) => ({ ...current, replyTo: undefined }))
-              }
-            />
+          {websiteEdit ? (
+            <WebsiteComposerContext target={websiteEdit} />
+          ) : (
+            replyTo && (
+              <ComposerReply
+                quote={replyTo}
+                onJump={() => jumpToMessage(selected, replyTo.id)}
+                onCancel={() =>
+                  updateComposer(composerKey, (current) => ({ ...current, replyTo: undefined }))
+                }
+              />
+            )
           )}
           {sendErrors[composerKey] && (
             <div className="send-error" role="status">
@@ -367,17 +371,12 @@ export function ChatComposer(
           {voiceMemoRequested && (
             <VoiceMemoSelection eligible={voiceMemoEligible} queued={working} />
           )}
-          <form
-            className="composer composer-with-voice"
-            onSubmit={(event) => {
-              if (canSubmit) void send(event);
-              else event.preventDefault();
-            }}
-          >
+          <form className="composer composer-with-voice" onSubmit={sendCurrent}>
             <ComposerInput
               key={composerKey}
               {...props}
-              send={(event) => (canSubmit ? send(event) : Promise.resolve())}
+              send={sendCurrent}
+              websitePrompt={websitePrompt}
               toggleDictation={() => {
                 if (props.voiceCall?.active) return;
                 voice.stopReading();

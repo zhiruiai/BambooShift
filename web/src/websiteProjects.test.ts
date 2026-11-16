@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
-import { parseWebsiteProject, websiteProjectClient } from './websiteProjects';
+import type { Message } from '../../shared/types';
+import { latestWebsiteUpdates, WebsiteProjectCard } from './components/WebsiteProjectCard';
+import { websiteVersionNumber } from './components/WebsiteVersionHistory';
+import { all } from './testSupport/appsFixture';
+import {
+  parseWebsiteProject,
+  websiteProjectClient,
+  websiteProjectHistory,
+} from './websiteProjects';
 
 const workspace = '11111111-1111-4111-8111-111111111111';
 const body = '<h1>Synthetic site</h1>';
@@ -71,4 +79,83 @@ test('loads verified bytes through the exact version and actor scope, rejects mi
   staleOnFile = true;
   await assert.rejects(load, { name: 'AbortError' });
   assert.equal(parseWebsiteProject({ ...project, id: 'bad' }), undefined);
+});
+
+test('older delivery cards preserve the original and link only to a distinct latest snapshot in their chat', () => {
+  function delivery(id: string, version: string, conversationId = 'chat'): Message {
+    return {
+      id,
+      conversationId,
+      role: 'assistant',
+      kind: 'website_project',
+      content: project.title,
+      createdAt: '2026-11-15T12:00:00.000Z',
+      metadata: { websiteProject: { ...project, id: version.repeat(64) } },
+    };
+  }
+  const original = delivery('original', 'a');
+  const repeatBeforeUpdate = delivery('original-repeat', 'a');
+  const newer = { ...delivery('newer', 'c'), threadRootId: 'reply-thread' };
+  const latest = { ...delivery('newer-repeat', 'c'), threadRootId: 'reply-thread' };
+  const otherChat = delivery('other-chat', 'd', 'another-chat');
+  assert.equal(latestWebsiteUpdates([original, repeatBeforeUpdate], 'chat').size, 0);
+  const updates = latestWebsiteUpdates(
+    [original, repeatBeforeUpdate, newer, latest, otherChat],
+    'chat',
+  );
+  assert.deepEqual([...updates.keys()].sort(), [original.id, repeatBeforeUpdate.id].sort());
+  assert.equal(updates.get(original.id), latest);
+  const opened: Message[] = [];
+  const card = WebsiteProjectCard({
+    message: original,
+    latest: updates.get(original.id),
+    onOpen: (message) => opened.push(message),
+  });
+  const buttons = all(card, (node) => node.type === 'button');
+  assert.equal(buttons.length, 2);
+  buttons.forEach((button) => button.props.onClick());
+  assert.deepEqual(opened, [original, latest]);
+});
+
+test('re-delivering old contents preserves version numbers and uses the latest delivery thread', () => {
+  const delivery = (id: string, digit: string, threadRootId?: string): Message => ({
+    id,
+    conversationId: 'chat',
+    threadRootId,
+    role: 'assistant',
+    kind: 'website_project',
+    content: project.title,
+    createdAt: '2026-11-16T12:00:00.000Z',
+    metadata: { websiteProject: { ...project, id: digit.repeat(64) } },
+  });
+  const original = delivery('first', 'a');
+  const revision = delivery('second', 'c');
+  const duplicate = delivery('second-again', 'c', 'revision-thread');
+  const restored = delivery('first-again', 'a', 'restore-thread');
+  const history = (messages: Message[]) =>
+    websiteProjectHistory(messages, 'chat', project.projectKey);
+  const before = history([original, revision, duplicate]);
+  assert.deepEqual(
+    before.map(({ number }) => number),
+    [2, 1],
+  );
+  const after = history([
+    original,
+    revision,
+    duplicate,
+    { ...delivery('unrelated', 'd'), conversationId: 'another-chat' },
+    restored,
+  ]);
+  assert.deepEqual(
+    after.map(({ number }) => number),
+    [1, 2],
+  );
+  assert.equal(after[0].message, restored);
+  assert.equal(after[1].message, duplicate);
+  for (const version of before)
+    assert.equal(websiteVersionNumber(after, version.project.id), version.number);
+  assert.deepEqual(
+    history([original, revision, restored, delivery('third', 'e')]).map(({ number }) => number),
+    [3, 1, 2],
+  );
 });

@@ -23,9 +23,14 @@ templates do not carry model bindings.
 
 ## Choose skills
 
-The Bot's settings show enabled skills and drafts awaiting review. Open **Choose
-skills**, preview a workflow, edit its instructions and save the draft for that Bot.
-Approve it to enable it. Disabling a skill removes it from future task context;
+In the Web and desktop clients, the Bot's settings show enabled skills and drafts
+awaiting review. Open **Choose skills**, select a package and its target Bot, then
+choose **Install**. The complete
+package is saved and enabled together. The page confirms which Bot can now use it.
+Instructions and files remain available in the package preview. A repeated install
+of the same package reuses the existing version. An update explicitly replaces the
+reviewed active version and retains the old version in history.
+Disabling a skill removes it from future task context;
 restoring it uses the existing review and version checks. In chat, type `/` to
 explicitly select an enabled skill for a task.
 
@@ -33,12 +38,66 @@ Enabled skills are filtered by Bot identity before reaching the model. A propose
 disabled or foreign Bot's skill cannot be selected for execution. Skills describe
 how to work; they do not install plugins, provide credentials or expand tool access.
 
-The bundled English and Chinese catalog contains 17 workflows. Web app testing,
+### Import an Agent Skills package
+
+From a Bot's skills, select **Import Agent Skill folder** and choose the directory
+that contains `SKILL.md`. Review the manifest and accompanying files, then choose
+**Install** to enable the complete package for the selected Bot. Custom authored
+drafts and Bot-proposed changes retain their separate review step. The required
+`name` matches the directory. The package
+keeps the standard optional metadata and relative resources, including files under
+`scripts/`, `references/` and `assets/`. Each version can be downloaded as a ZIP
+with its directory structure. [Agent Skills specification](https://agentskills.io/specification)
+
+An installed package starts with name and description in the run catalog. The Bot
+loads the approved instructions with `read_skill`, then loads individual resources
+with `read_skill_resource`. Resource reads target the approved version captured for
+the run. The experimental `allowed-tools` field is retained as portable metadata.
+[Integration guide](https://agentskills.io/client-implementation/adding-skills-support)
+
+### Run a bundled script on this Mac
+
+A local Bot in the macOS desktop app can request `run_skill_script` in the owner's
+direct task when local command access is enabled. The request names the reviewed
+skill version, a `.py` or `.mjs` path under `scripts/`, the exact arguments and any
+CSV attachment from that chat. The attachment can be up to 256 KiB. With **Ask
+each time**, approve that request in the chat. With **Full access** for this
+computer, it runs under the saved authorization without another confirmation.
+The executor verifies the package and runs it from its skill
+directory on this Mac. The receipt includes the exit code and output.
+
+Open **Computer → Default computer permissions** to choose **Full access** or
+**Ask each time**. All Bots use this default for tasks requested by the
+granting workspace owner on that computer, including app operations, file actions,
+commands and skill scripts. It survives a normal restart on the same Mac. Execution
+receipts remain visible. Selecting **Ask each time** revokes the grant, including
+while a command is running. Operating-system permissions and stop controls still
+apply.
+
+When local control is enabled, the same owner's saved full grant and ready OS
+permissions allow a restarted local executor to restore its saved app or desktop
+surface. An explicit browser choice remains in effect. Opening an installed app
+can use an audited local `/usr/bin/open` command when the native control surface
+is unavailable; inspecting or editing app controls still requires Accessibility.
+Re-signing an ad-hoc development app can invalidate its OS permission without
+removing BambooShift's saved grant. See [desktop permissions and signing](desktop-client.md).
+
+For **Data quality review**, attach a CSV and ask the Bot to check it. Specify
+the key column if you want duplicate-key counts. The bundled script reports
+record count, malformed widths, blanks and duplicate-key rows. A Python 3 runtime
+is required for this script.
+
+The English and Chinese library contains 20 skill packages. Each includes a
+reference checklist and a working template. Data quality review and spreadsheet
+analysis also include a Python script for profiling CSV files. Web app testing,
 code security review and product documentation are adapted from GitHub Awesome
-Copilot. The team decision brief helps compare options for an authorized decision
-owner. Debugging and verification are adapted from Superpowers. Product
-specifications and team handoffs are adapted from Matt Pocock. See the pinned
-[source inventory and licenses](../legal/third-party/community-skills/SOURCES.json).
+Copilot. Debugging and verification are adapted from Superpowers. Product
+specifications and team handoffs are adapted from Matt Pocock. Adapted packages
+carry their pinned source and license. [Source inventory](../legal/third-party/community-skills/SOURCES.json)
+
+The Bot Gallery's starter packages include working files tailored to each role.
+The research Bot includes a claims spreadsheet template, and the recruiter has a
+structured Bot brief. [Bot Gallery](bot-templates.md)
 
 ## Agent Desktop
 

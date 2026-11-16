@@ -5,11 +5,131 @@ import ApplicationServices
 import ScreenCaptureKit
 import Darwin
 
+private struct AppLaunchTarget: Encodable {
+    struct App: Encodable {
+        let bundleId: String
+        let name: String
+    }
+
+    let app: App
+    let identity: String
+}
+
+private struct LaunchFileIdentity: Encodable {
+    let path: String
+    let device: dev_t
+    let inode: ino_t
+    let size: off_t
+    let modified: [Int]
+    let changed: [Int]
+
+    init?(url: URL, kind: mode_t) {
+        var value = stat()
+        guard lstat(url.path, &value) == 0, value.st_mode & mode_t(S_IFMT) == kind else { return nil }
+        path = url.path
+        device = value.st_dev
+        inode = value.st_ino
+        size = value.st_size
+        modified = [value.st_mtimespec.tv_sec, value.st_mtimespec.tv_nsec]
+        changed = [value.st_ctimespec.tv_sec, value.st_ctimespec.tv_nsec]
+    }
+}
+
+private struct LaunchIdentity: Encodable {
+    let app: AppLaunchTarget.App
+    let files: [LaunchFileIdentity]
+}
+
+private enum DesktopAppLaunch {
+    @MainActor static func openTarget(app bundleId: String) throws -> AppLaunchTarget {
+        try installedApp(bundleId).target
+    }
+
+    @MainActor static func open(app bundleId: String, identity: String) async throws {
+        guard validDigest(identity) else {
+            throw DesktopFailure("INVALID_REQUEST", "应用打开请求的身份无效。")
+        }
+        let candidate = try installedApp(bundleId)
+        guard candidate.target.identity == identity else {
+            throw DesktopFailure("AX_STALE_APP", "已安装的应用发生变化，请重新查看并申请打开。")
+        }
+        let configuration = NSWorkspace.OpenConfiguration()
+        // Some apps expose controls but reject AX actions until their first activation.
+        configuration.activates = true
+        configuration.addsToRecentItems = false
+        configuration.promptsUserIfNeeded = false
+        configuration.allowsRunningApplicationSubstitution = false
+        let unconfirmed = DesktopFailure("AX_OPEN_UNCONFIRMED", "未能确认应用已打开，请在本机检查后再试。")
+        let running: NSRunningApplication
+        do {
+            running = try await NSWorkspace.shared.openApplication(at: candidate.url, configuration: configuration)
+        } catch { throw unconfirmed }
+        guard !running.isTerminated,
+              running.bundleIdentifier?.caseInsensitiveCompare(candidate.target.app.bundleId) == .orderedSame,
+              let openedUrl = running.bundleURL, canonicalPath(openedUrl) == candidate.url.path else {
+            throw unconfirmed
+        }
+    }
+
+    @MainActor private static func installedApp(_ requestedId: String) throws -> (url: URL, target: AppLaunchTarget) {
+        guard validLaunchBundleId(requestedId) else {
+            throw DesktopFailure("INVALID_REQUEST", "请使用准确的应用标识符。")
+        }
+        guard !requestedId.lowercased().hasPrefix("com.openbot.") else {
+            throw DesktopFailure("AX_APP_PROTECTED", "无法通过应用控制打开 BambooShift 或其助手。")
+        }
+        let paths = Set(NSWorkspace.shared.urlsForApplications(withBundleIdentifier: requestedId)
+            .filter(\.isFileURL).map(canonicalPath))
+        let unavailable = DesktopFailure("AX_APP_UNAVAILABLE", "无法确认唯一的已安装应用，请检查应用标识符。")
+        guard paths.count == 1, let path = paths.first, path.lowercased().hasSuffix(".app") else { throw unavailable }
+        let url = URL(fileURLWithPath: path, isDirectory: true)
+        guard let bundle = Bundle(url: url), let bundleId = bundle.bundleIdentifier,
+              bundleId.caseInsensitiveCompare(requestedId) == .orderedSame,
+              bundle.object(forInfoDictionaryKey: "CFBundlePackageType") as? String == "APPL",
+              let executable = bundle.executableURL, executable.isFileURL else { throw unavailable }
+        let infoPath = canonicalPath(url.appendingPathComponent("Contents/Info.plist"))
+        let executablePath = canonicalPath(executable)
+        let prefix = path + "/"
+        guard infoPath.hasPrefix(prefix), executablePath.hasPrefix(prefix),
+              let appIdentity = LaunchFileIdentity(url: url, kind: mode_t(S_IFDIR)),
+              let infoIdentity = LaunchFileIdentity(url: URL(fileURLWithPath: infoPath), kind: mode_t(S_IFREG)),
+              let executableIdentity = LaunchFileIdentity(url: URL(fileURLWithPath: executablePath), kind: mode_t(S_IFREG)),
+              access(executablePath, X_OK) == 0 else { throw unavailable }
+        let displayName = ["CFBundleDisplayName", "CFBundleName"].lazy.compactMap { key in
+            (bundle.object(forInfoDictionaryKey: key) as? String).map(accessibilityText)
+        }.first { !$0.isEmpty && $0.utf8.count <= 512 } ?? bundleId
+        let app = AppLaunchTarget.App(bundleId: bundleId, name: displayName)
+        let identity = try encodedDigest(LaunchIdentity(app: app, files: [appIdentity, infoIdentity, executableIdentity]))
+        return (url, AppLaunchTarget(app: app, identity: identity))
+    }
+}
+
+private func validLaunchBundleId(_ value: String) -> Bool {
+    let labels = value.split(separator: ".", omittingEmptySubsequences: false)
+    return value.utf8.count <= 300 && labels.count >= 2 && labels.allSatisfy { label in
+        !label.isEmpty && label.utf8.allSatisfy { byte in
+            byte == 45 || (48...57).contains(byte) || (65...90).contains(byte) || (97...122).contains(byte)
+        }
+    }
+}
+
+private func canonicalPath(_ url: URL) -> String {
+    url.resolvingSymlinksInPath().standardizedFileURL.path
+}
+
 private struct Request: Decodable {
     let op: String
     let enabled: Bool?
     let input: DesktopInput?
     let frame: DesktopFrame?
+    let app: String?
+    let appPid: pid_t?
+    let appBundleId: String?
+    let snapshotToken: String?
+    let elementId: String?
+    let elementToken: String?
+    let text: String?
+    let appIdentity: String?
 }
 
 private func geometry(_ id: CGDirectDisplayID) -> DisplayGeometry {
@@ -108,6 +228,18 @@ private struct DesktopHelper {
                 guard bytes.count <= 128 * 1024 else { throw DesktopFailure("INVALID_REQUEST", "桌面请求过大。") }
             }
             let request = try JSONDecoder().decode(Request.self, from: bytes)
+            if request.op == "ax_open_target" || request.op == "ax_open" {
+                let fields = request.op == "ax_open_target" ? ["op", "enabled", "app"] : ["op", "enabled", "app", "appIdentity"]
+                guard let object = try JSONSerialization.jsonObject(with: bytes) as? [String: Any],
+                      Set(object.keys) == Set(fields) else {
+                    throw DesktopFailure("INVALID_REQUEST", "应用打开请求只能指定应用及已批准的身份。")
+                }
+            }
+            if ["ax_press", "ax_set_text"].contains(request.op), request.elementToken == nil,
+               let object = try JSONSerialization.jsonObject(with: bytes) as? [String: Any],
+               object.keys.contains("elementToken") {
+                throw DesktopFailure("INVALID_REQUEST", "应用控件身份无效。")
+            }
             let result = try await run(request)
             respond(["ok": true, "result": result])
         } catch let error as DesktopFailure {
@@ -120,7 +252,52 @@ private struct DesktopHelper {
     static func respond(_ value: [String: Any]) {
         if let data = try? JSONSerialization.data(withJSONObject: value) { FileHandle.standardOutput.write(data); FileHandle.standardOutput.write(Data([10])) }
     }
-    static func run(_ request: Request) async throws -> [String: Any] {
+    @MainActor static func run(_ request: Request) async throws -> [String: Any] {
+        if ["ax_inspect", "ax_press", "ax_set_text", "ax_open_target", "ax_open"].contains(request.op) {
+            guard request.enabled == true else { throw DesktopFailure("DISABLED", "应用操作尚未由用户启用。") }
+            guard AXIsProcessTrusted() else {
+                throw DesktopFailure("PERMISSION_REQUIRED", "请在 macOS 系统设置中授予辅助功能权限。")
+            }
+            if request.op == "ax_open_target" || request.op == "ax_open" {
+                guard let app = request.app else {
+                    throw DesktopFailure("INVALID_REQUEST", "应用打开请求缺少应用标识符。")
+                }
+                if request.op == "ax_open_target",
+                   let target = try dictionary(DesktopAppLaunch.openTarget(app: app)) as? [String: Any] {
+                    return target
+                }
+                guard let identity = request.appIdentity else {
+                    throw DesktopFailure("INVALID_REQUEST", "应用打开请求缺少已批准的身份。")
+                }
+                try await DesktopAppLaunch.open(app: app, identity: identity)
+                return ["ok": true]
+            }
+            guard request.input == nil, request.frame == nil, request.appIdentity == nil else {
+                throw DesktopFailure("INVALID_REQUEST", "应用操作需要使用控件引用。")
+            }
+            if request.op == "ax_inspect" {
+                guard request.appPid == nil, request.appBundleId == nil,
+                      request.snapshotToken == nil, request.elementId == nil, request.elementToken == nil, request.text == nil,
+                      let result = try dictionary(DesktopAccessibility.inspect(app: request.app)) as? [String: Any] else {
+                    throw DesktopFailure("INVALID_REQUEST", "应用查看请求无效。")
+                }
+                return result
+            }
+            guard request.app == nil, let pid = request.appPid, let bundleId = request.appBundleId,
+                  let snapshot = request.snapshotToken, let element = request.elementId else {
+                throw DesktopFailure("INVALID_REQUEST", "应用操作缺少控件引用。")
+            }
+            if request.op == "ax_set_text" {
+                guard let text = request.text else { throw DesktopFailure("INVALID_REQUEST", "应用操作缺少输入文本。") }
+                try DesktopAccessibility.setText(pid: pid, bundleId: bundleId, snapshotToken: snapshot,
+                                                 elementId: element, elementToken: request.elementToken, text: text)
+            } else {
+                guard request.text == nil else { throw DesktopFailure("INVALID_REQUEST", "点按操作不接受输入文本。") }
+                try DesktopAccessibility.press(pid: pid, bundleId: bundleId, snapshotToken: snapshot,
+                                               elementId: element, elementToken: request.elementToken)
+            }
+            return ["ok": true]
+        }
         let primary = geometry(CGMainDisplayID())
         if request.op == "status" {
             let permissions = permissionStatus()
@@ -130,6 +307,9 @@ private struct DesktopHelper {
             let available = supported && hasDisplay
             let reason = !supported ? "整机控制需要 macOS 14 或更新版本。" : (!hasDisplay ? "当前进程无法访问主显示器，请在已登录的 macOS 桌面会话中启动服务。" : (permissions.0 && permissions.1 ? "" : "请在系统设置 > 隐私与安全性中人工授予屏幕录制和辅助功能权限。"))
             return ["available": available, "authorized": available && permissions.0 && permissions.1,
+                    "accessibilityAvailable": supported,
+                    "accessibilityReady": supported && DesktopAccessibility.ready,
+                    "appLaunchAvailable": supported,
                     "width": hasDisplay ? primary.frameWidth : 0, "height": hasDisplay ? primary.frameHeight : 0, "displayId": primary.id,
                     "permissions": ["screenRecording": permissions.0 ? "granted" : "denied", "accessibility": permissions.1 ? "granted" : "denied"],
                     "displays": try dictionary(allDisplays()),

@@ -124,6 +124,7 @@ pub async fn refresh(
         saved["catalog"][member["agentId"].as_str().unwrap()] = member["version"].clone();
     }
     saved["plan"]["draft"] = proposal;
+    super::starters::review_skills(&mut saved)?;
     store::stamp(&mut saved);
     let card = store::save(&mut tx, &saved).await?;
     sqlx::query("INSERT INTO bot_team_catalog_refreshes VALUES(?,?,?,?)")

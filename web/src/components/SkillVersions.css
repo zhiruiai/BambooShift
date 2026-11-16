@@ -1,13 +1,42 @@
+.modal.bot-skills-dialog {
+  width: min(1000px, 100%);
+}
+.modal.skill-manager-dialog {
+  display: flex;
+  flex-direction: column;
+  height: min(720px, calc(100dvh - 48px));
+  overflow: hidden;
+  padding: 20px;
+}
+.skill-manager-dialog > .modal-header,
+.skill-manager-dialog > .modal-body > .skill-add-actions,
+.skill-manager-dialog > .modal-body > .skill-secondary-actions,
+.skill-manager-dialog > .modal-body > .team-skill-entry {
+  flex: none;
+}
+.skill-manager-dialog > .modal-body > .skill-add-actions {
+  margin-bottom: 14px;
+}
+.bot-skills-dialog > .modal-header {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
 .skill-version-tabs {
   display: flex;
   gap: 6px;
-  margin: 18px 0 14px;
+  margin: 12px 0 11px;
   padding: 4px;
   background: light-dark(#f5f1f8, var(--surface-subtle));
   border-radius: 9px;
 }
 .skill-version-tabs button {
+  display: flex;
   flex: 1;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3px 6px;
   min-height: 38px;
   padding: 7px;
   border-radius: 6px;
@@ -20,8 +49,11 @@
   box-shadow: 0 1px 3px light-dark(#5e3e6712, var(--shadow-soft));
 }
 .skill-version-tabs small {
-  margin-left: 5px;
-  color: light-dark(#9d87ad, var(--text-muted));
+  min-width: 18px;
+  padding: 1px 4px;
+  border-radius: 5px;
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
 }
 .skill-version-review > p {
   font-size: 12px;
@@ -73,6 +105,84 @@
 .team-skill-entry {
   margin-top: 12px;
 }
+.skill-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+.skill-add-actions button {
+  min-height: 40px;
+}
+.skill-folder-import:has(.inline-save-error) {
+  flex-basis: 100%;
+}
+.skill-secondary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+  margin-top: 12px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.skill-secondary-actions .add-detail-row {
+  width: auto;
+  color: var(--text-secondary);
+}
+.skill-manager-empty {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 16px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.skill-manager-empty p {
+  margin: 0;
+}
+.skill-manager-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skill-manager-list .skill-card {
+  margin: 0;
+  padding: 10px 12px;
+}
+.skill-manager-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.skill-manager-row .skill-heading {
+  flex: 1 1 225px;
+}
+.skill-manager-row .skill-heading span:nth-child(2) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.skill-manager-row .skill-heading strong {
+  font-weight: 650;
+}
+.skill-manager-row .approve-skill {
+  margin: 0;
+}
+.skill-manager-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skill-manager-list .skill-content,
+.bot-skills-dialog .skill-review-content {
+  max-height: none;
+  overflow: visible;
+  overflow-wrap: anywhere;
+}
 .team-skills {
   display: grid;
   gap: 12px;
@@ -106,7 +216,58 @@
   display: grid;
   gap: 6px;
 }
+.skill-package {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.skill-package dl,
+.skill-package dd,
+.skill-package ul {
+  margin: 0;
+}
+.skill-package dt,
+.skill-package small {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.skill-package dd {
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+}
+.skill-package summary {
+  padding-block: 6px;
+  cursor: pointer;
+}
+.skill-package ul {
+  display: grid;
+  gap: 5px;
+  padding-inline-start: 18px;
+}
+.skill-package li small {
+  margin-inline-start: 7px;
+}
+.skill-package-file pre {
+  margin: 0;
+  padding: 8px;
+  background: var(--surface-subtle);
+  border-radius: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.skill-package > a {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+}
 @media (max-width: 760px) {
+  .skill-add-actions button,
+  .skill-secondary-actions .add-detail-row,
   .skill-version-tabs button,
   .skill-review-back,
   .skill-version-review .dialog-actions button,

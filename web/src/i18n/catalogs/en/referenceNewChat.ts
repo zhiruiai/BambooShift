@@ -9,6 +9,6 @@ export default {
   newChatEmpty: 'No chats are available yet. Create a Bot or group to begin.',
   newChatCreateBot: 'Create a Bot',
   newChatCreateGroup: 'Create a group',
-  newChatPlanTeam: 'Plan a team',
+  newChatPlanTeam: 'Team templates and planning',
   newChatKeyboardHint: '↑ ↓ Choose · Enter Open · Esc Close',
 };

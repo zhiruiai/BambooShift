@@ -15,6 +15,7 @@ initializeLanguage().setLanguage('en');
 const workspaceId = '11111111-1111-4111-8111-111111111111';
 const createdAt = '2026-11-07T00:00:00Z';
 const scenario = new URLSearchParams(window.location.search);
+const managedMac = scenario.has('managed-mac');
 const workspace = {
   id: workspaceId,
   name: 'Fixture workspace',
@@ -79,7 +80,21 @@ const data: Bootstrap = {
     surface: 'browser',
     platform: 'test',
     status: scenario.has('unconnected') ? '未连接电脑' : 'Connected',
-    capabilities: [],
+    capabilities: managedMac ? ['macos-accessibility-v1'] : [],
+    desktop: managedMac
+      ? {
+          kind: 'host',
+          available: false,
+          authorized: false,
+          enabled: false,
+          accessibilityAvailable: true,
+          accessibilityPermission: 'denied',
+          accessibilityReady: false,
+          width: 0,
+          height: 0,
+          permissions: { screenRecording: 'denied', accessibility: 'granted' },
+        }
+      : undefined,
     targetRevision: 'fixture-target',
   },
 };

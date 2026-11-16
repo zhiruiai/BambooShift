@@ -29,6 +29,7 @@
   "text_d158d1543e4d": "A message is unconfirmed",
   "text_d301bc125833": "Dismiss notice",
   "text_d34db9bc67fb": "Latest messages",
+  "computerApprovalJump": "Action needs approval",
   "text_d468845e5d84": "Select the assigned Bot ",
   "text_d48f1dcf88d2": "Computer",
   "text_d516034aa424": "Independent Bot created",
@@ -69,5 +70,10 @@
   "text_fcff8ee2ea11": "Retry original message",
   "text_fd4e0ab45e27": "Shared Bot · ",
   "text_fd748c59afe2": "↑ ↓ to select · Enter to confirm",
-  "text_fdc61c8e2914": "Could not confirm whether the task stopped. Refresh its status and check."
+  "text_fdc61c8e2914": "Could not confirm whether the task stopped. Refresh its status and check.",
+  "websiteComposerPrompt": "Message about {{name}}",
+  "websiteComposerPlaceholder": "Describe the change…",
+  "websiteComposerDetach": "Remove website from this message",
+  "websiteComposerReceiptUnknown": "Could not confirm which version the message refers to. Check the conversation before retrying.",
+  "avatarWaiting": "Waiting for a response"
 }

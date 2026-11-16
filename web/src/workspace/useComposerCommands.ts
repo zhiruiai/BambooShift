@@ -18,6 +18,8 @@ import {
   replaceCommand,
   type ComposerCommand,
 } from './composerCommands';
+import { recruiterMentionToken } from './recruiterMention';
+import type { RecruiterShortcut } from './useRecruiterShortcut';
 
 export type CommandProps = Pick<
   WorkspaceModel,
@@ -41,12 +43,14 @@ export type CommandProps = Pick<
   | 'setRoutineToEdit'
   | 'setModal'
   | 'sharedUnavailable'
-> & { composerKey?: string; threadRootId?: string };
+> & { composerKey?: string; threadRootId?: string; recruiter?: RecruiterShortcut };
 
 type Mention = { id: string; kind: 'mention'; agent: BotAgent };
 type AppMention = { id: string; kind: 'appMention'; app: ConnectedApp };
 type EveryoneMention = { id: 'group-everyone'; kind: 'everyoneMention' };
-type Choice = ComposerCommand | Mention | AppMention | EveryoneMention;
+type RecruiterMention = { id: 'recruiter-navigation'; kind: 'recruiterNavigation' };
+type MentionChoice = Mention | AppMention | EveryoneMention | RecruiterMention;
+type Choice = ComposerCommand | MentionChoice;
 
 export function useComposerCommands(props: CommandProps) {
   const [focused, setFocused] = useState(false);
@@ -59,7 +63,11 @@ export function useComposerCommands(props: CommandProps) {
   const ticket = props.sendScope.ticket();
   const command = commandToken(props.draft, selection.start, selection.end);
   const mention = command ? undefined : mentionToken(props.draft, selection.start, selection.end);
-  const token = command || mention;
+  const recruiter =
+    !command && props.canManage && props.recruiter
+      ? recruiterMentionToken(props.draft, selection.start, selection.end)
+      : undefined;
+  const token = command || recruiter || mention;
   const group = props.conversation?.isGroup === true;
   const audience = props.currentComposer.mentions;
   const everyone = audience && 'everyone' in audience;
@@ -78,7 +86,7 @@ export function useComposerCommands(props: CommandProps) {
         command.query,
       )
     : [];
-  const mentions: Array<Mention | AppMention | EveryoneMention> =
+  const mentions: MentionChoice[] =
     mention && !props.sharedUnavailable && !everyone
       ? props.members
           .filter(
@@ -120,6 +128,7 @@ export function useComposerCommands(props: CommandProps) {
         .map((app): AppMention => ({ id: `app-${app.id}`, kind: 'appMention', app })),
     );
   }
+  if (recruiter) mentions.push({ id: 'recruiter-navigation', kind: 'recruiterNavigation' });
   const items: Choice[] = command ? commands : mentions;
   const open =
     focused &&
@@ -194,7 +203,15 @@ export function useComposerCommands(props: CommandProps) {
       choice.app.revision !== selected.app.revision
     )
       return;
-    const following = props.draft[token.end];
+    if (selected.kind === 'recruiterNavigation') {
+      const shortcut = current.props.recruiter;
+      const brief = recruiter && replaceCommand(props.draft, recruiter);
+      if (shortcut && !shortcut.pending && brief) void shortcut.open(brief.text);
+      return;
+    }
+    const selectedToken = command || mention;
+    if (!selectedToken) return;
+    const following = props.draft[selectedToken.end];
     const insertion =
       selected.kind === 'skill'
         ? selected.skillId
@@ -205,7 +222,7 @@ export function useComposerCommands(props: CommandProps) {
           : selected.kind === 'everyoneMention'
             ? `@everyone${following ? '' : ' '}`
             : '';
-    const next = replaceCommand(props.draft, token, insertion);
+    const next = replaceCommand(props.draft, selectedToken, insertion);
     if (!next) return;
     if ((selected.kind === 'mention' || selected.kind === 'everyoneMention') && following === ' ')
       next.caret++;
@@ -284,7 +301,7 @@ export function useComposerCommands(props: CommandProps) {
   }
   return {
     open: open && !!command,
-    mentionOpen: open && !!mention,
+    mentionOpen: open && (!!mention || !!recruiter),
     active,
     commands,
     mentions,

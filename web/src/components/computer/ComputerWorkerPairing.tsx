@@ -9,6 +9,7 @@ type PairingCheck = {
   topology: 'shared' | 'pool' | 'legacy';
   browser: 'supported' | 'unavailable' | 'perScreen';
   desktop: 'ready' | 'notReady' | 'unavailable' | 'perScreen';
+  accessibility?: 'ready' | 'notReady';
 };
 
 const setupGuide =
@@ -214,7 +215,13 @@ export function ComputerWorkerPairing({
           <p>
             {check.browser === 'perScreen' && check.desktop === 'perScreen'
               ? uiText('computer:pair_per_screen')
-              : `${uiText(browserState[check.browser])} · ${uiText(desktopState[check.desktop])}`}
+              : `${uiText(browserState[check.browser])} · ${uiText(
+                  check.accessibility
+                    ? check.accessibility === 'ready'
+                      ? 'computer:macAppsReady'
+                      : 'computer:macAppsNeedsPermission'
+                    : desktopState[check.desktop],
+                )}`}
           </p>
         </div>
       )}

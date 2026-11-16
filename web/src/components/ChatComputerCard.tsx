@@ -12,12 +12,20 @@ import {
 } from './computer/useChatComputerApproval';
 import { ChatComputerApprovalView } from './computer/ChatComputerApprovalView';
 import { ChatComputerRequestView } from './computer/ChatComputerRequestView';
-import { computerActionNeedsApproval, hasAssignedComputerScreen } from './computer/chatApproval';
+import {
+  computerActionNeedsApproval,
+  computerActionFullyAuthorized,
+  computerReceiptExecution,
+  hasAssignedComputerScreen,
+  isMacAppsTargetAction,
+  macAppsActionTarget,
+} from './computer/chatApproval';
 import {
   RemoteShellDetails,
   RemoteShellResult,
   remoteShellResultStatus,
 } from './RemoteShellDetails';
+import { SkillScriptDetails } from './SkillScriptDetails';
 
 export function ComputerCard({
   message,
@@ -25,7 +33,7 @@ export function ComputerCard({
   userId,
   workspaceId,
   onChanged,
-  onClick,
+  onOpenCurrentComputer,
   demo = false,
 }: {
   message: Message;
@@ -33,7 +41,7 @@ export function ComputerCard({
   userId?: string;
   workspaceId?: string;
   onChanged?: () => Promise<unknown>;
-  onClick: () => void;
+  onOpenCurrentComputer: () => void;
   demo?: boolean;
 }) {
   if (!demo)
@@ -41,7 +49,7 @@ export function ComputerCard({
       <ComputerRecord
         key={`${userId}:${workspaceId}:${message.id}:${message.agentId}`}
         message={message}
-        onClick={onClick}
+        onOpenCurrentComputer={onOpenCurrentComputer}
         owner={owner}
         userId={userId}
         workspaceId={workspaceId}
@@ -68,7 +76,7 @@ export function ComputerCard({
         </span>
       </div>
       <Markdown text={message.content} />
-      <button className="work-preview" onClick={onClick}>
+      <button className="work-preview" onClick={onOpenCurrentComputer}>
         <div className="work-preview-window">
           <div className="work-preview-bar">
             <i />
@@ -128,6 +136,10 @@ export const computerActionLabels: Record<string, string> = localizedData(() => 
   desktop_key: uiText('computer:text_4fc34a4651bd'),
   desktop_scroll: uiText('computer:text_1c073c3f680c'),
   desktop_drag: uiText('computer:text_82d8c46e6499'),
+  desktop_ax_press: uiText('computer:macAppsPress'),
+  desktop_ax_set_text: uiText('computer:macAppsSetText'),
+  desktop_ax_inspect: uiText('computer:macAppsInspect'),
+  desktop_ax_open: uiText('computer:macAppsOpen'),
   list_files: uiText('computer:text_430994d77e18'),
   read_file: uiText('computer:text_407dd16f938f'),
   write_file: uiText('computer:text_4d8dc23ed6e1'),
@@ -136,6 +148,7 @@ export const computerActionLabels: Record<string, string> = localizedData(() => 
   terminal_command: uiText('computer:text_c5cb1328d49b'),
   remote_shell: uiText('computer:text_2da33b1cff3a'),
   local_shell: uiText('computer:local_shell'),
+  local_skill_script: uiText('computer:local_skill_script'),
 }));
 
 export function objectValue(value: unknown): Record<string, unknown> {
@@ -161,12 +174,12 @@ export function computerRecordStatus(
   if (message.status === 'error' && (status === 'pending' || status === 'running'))
     return { label: uiText('computer:text_a4dcd29d3cc4'), kind: 'cancelled' };
   if (status === 'pending' && typeof action.type === 'string' && action.type)
-    return computerActionNeedsApproval(action.type)
+    return computerActionNeedsApproval(action.type) && !computerActionFullyAuthorized(action)
       ? { label: uiText('computer:text_f755b01e2711'), kind: 'pending' }
       : { label: uiText('computer:receiptStarting'), kind: 'starting' };
   if (status === 'running') return { label: uiText('computer:text_dc9591e56d50'), kind: 'running' };
   if (
-    ['remote_shell', 'local_shell'].includes(String(action.type)) &&
+    ['remote_shell', 'local_shell', 'local_skill_script'].includes(String(action.type)) &&
     (status === 'done' || status === 'error')
   ) {
     const outcome = remoteShellResultStatus(action.result);
@@ -188,16 +201,49 @@ export function computerRecordStatus(
   return { label: uiText('computer:text_e894c7ac3243'), kind: 'record' };
 }
 
-export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () => void }) {
-  const { message, onClick, userId } = props;
+export function ComputerRecord(
+  props: ChatComputerApprovalProps & { onOpenCurrentComputer: () => void },
+) {
+  const { message, onOpenCurrentComputer, userId } = props;
   const approval = useChatComputerApproval(props);
   const action = approval.action || objectValue(message.metadata?.action),
     payload = objectValue(action.payload),
     result = objectValue(action.result),
     status = computerRecordStatus(message, action);
   const type = typeof action.type === 'string' ? action.type : '';
+  const execution = computerReceiptExecution(message, approval.action);
+  const assigned = hasAssignedComputerScreen(message, approval.action);
+  const executionDetails = [
+    execution &&
+      uiText(
+        execution.location === 'server' &&
+          (execution.surface === 'accessibility' || type === 'local_skill_script')
+          ? 'computer:receiptThisMac'
+          : execution.surface === 'accessibility' && execution.location === 'remote'
+            ? 'computer:receiptPairedMac'
+            : `computer:location_${execution.location}`,
+      ),
+    execution &&
+      (type.startsWith('browser_') || type.startsWith('desktop_')) &&
+      uiText(
+        (
+          {
+            browser: 'computer:text_e19c3b9e266c',
+            desktop: 'computer:text_f48d334495f6',
+            accessibility: 'computer:macAppsSurface',
+          } as const
+        )[execution.surface],
+      ),
+    assigned && uiText('computer:receiptAssignedScreen'),
+    computerActionFullyAuthorized(action) && uiText('computer:authorizationAutomaticReceipt'),
+  ].filter(Boolean);
   const isFileTransfer = type === 'upload_file' || type === 'download_file';
   const isRemoteShell = type === 'remote_shell' || type === 'local_shell';
+  const isSkillScript = type === 'local_skill_script';
+  const hasShellOutput = isRemoteShell || isSkillScript;
+  const isMacTarget = isMacAppsTargetAction(type);
+  const opensMacApp = type === 'desktop_ax_open';
+  const replacesMacText = type === 'desktop_ax_set_text';
   const pending = status.kind === 'pending';
   const active = status.kind === 'starting' || status.kind === 'running';
   const showActionResult =
@@ -209,8 +255,9 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
     !(approval.action && isComputerReceiptStatusMessage(message.content))
       ? message.content
       : '';
-  const target =
-    typeof payload.url === 'string'
+  const target = isMacTarget
+    ? macAppsActionTarget(type, action.target, payload)
+    : typeof payload.url === 'string'
       ? recordLocation(payload.url)
       : typeof payload.path === 'string'
         ? uiText('computer:text_828e47d89162', { value0: payload.path })
@@ -260,13 +307,16 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
           {pending ? approvalPendingLabel(action.requester, userId) : status.label}
         </span>
       </div>
-      {hasAssignedComputerScreen(message, approval.action) && (
-        <p className="computer-record-screen">{uiText('computer:receiptAssignedScreen')}</p>
+      {executionDetails.length > 0 && (
+        <p className="computer-record-screen">{executionDetails.join(' · ')}</p>
       )}
-      {isRemoteShell ? (
+      {isSkillScript ? (
+        <SkillScriptDetails payload={payload} pending={pending} />
+      ) : isRemoteShell ? (
         <RemoteShellDetails
           payload={payload}
           execution={type === 'local_shell' ? 'local' : 'isolated'}
+          fullyAuthorized={computerActionFullyAuthorized(action)}
         />
       ) : isFileTransfer ? (
         <ComputerFileSummary
@@ -280,20 +330,28 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
       {(pending || extraMessage) && (
         <div className="computer-record-message">
           {pending ? (
-            <p>{approvalHelp(action.requester, userId)}</p>
+            <p>
+              {isMacTarget && !target
+                ? uiText(
+                    opensMacApp
+                      ? 'computer:macAppsOpenTargetUnavailable'
+                      : 'computer:macAppsTargetUnavailable',
+                  )
+                : approvalHelp(action.requester, userId)}
+            </p>
           ) : (
             <Markdown text={extraMessage} />
           )}
         </div>
       )}
       {error && <p className="computer-record-error">{serviceText(error)}</p>}
-      {showActionResult && (
+      {showActionResult && !isMacTarget && !isSkillScript && (
         <ComputerFrame frame={action.frame} unavailable={action.frameUnavailable} />
       )}
-      {showActionResult && isRemoteShell && Object.keys(result).length > 0 && (
-        <RemoteShellResult result={result} />
+      {showActionResult && hasShellOutput && Object.keys(result).length > 0 && (
+        <RemoteShellResult result={result} expanded={isSkillScript || undefined} />
       )}
-      {showActionResult && !isRemoteShell && !isFileTransfer && hasResult && (
+      {showActionResult && !hasShellOutput && !isFileTransfer && !opensMacApp && hasResult && (
         <div className="computer-record-result">
           <span className="record-result-label">{uiText('computer:receiptResult')}</span>
           {title && <strong>{title}</strong>}
@@ -343,12 +401,15 @@ export function ComputerRecord(props: ChatComputerApprovalProps & { onClick: () 
           )}
         </div>
       )}
-      {pending && !isRemoteShell && !isFileTransfer && (
-        <ChatComputerRequestView payload={payload} />
+      {(replacesMacText || (pending && !hasShellOutput && !isFileTransfer && !isMacTarget)) && (
+        <ChatComputerRequestView
+          payload={replacesMacText ? { text: payload.text } : payload}
+          expanded={replacesMacText && pending ? true : undefined}
+        />
       )}
       <ChatComputerApprovalView model={approval} />
-      <button type="button" className="computer-record-open" onClick={onClick}>
-        {active ? uiText('computer:receiptViewComputer') : uiText('computer:text_510e7927b89b')}
+      <button type="button" className="computer-record-open" onClick={onOpenCurrentComputer}>
+        {uiText('computer:receiptOpenCurrentComputer')}
         <ChevronRight size={14} aria-hidden="true" />
       </button>
     </div>

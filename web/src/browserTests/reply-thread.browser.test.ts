@@ -243,6 +243,53 @@ test(
 
     await page.goto(`${origin}${path}?conversation=chat&message=existing-thread`);
     await page.locator('#message-existing-thread.message-highlighted').waitFor();
+
+    await t.test(
+      'a pending approval jump follows the exact card across threads and scroll',
+      async () => {
+        const approval = (id: string, requesterId: string) =>
+          message(id, 'Approval requested', {
+            kind: 'computer',
+            threadRootId: root.id,
+            metadata: {
+              action: {
+                id,
+                type: 'desktop_ax_press',
+                status: 'pending',
+                payload: {},
+                target: { app: 'Calculator', role: 'AXButton', label: 'Clear' },
+                requester: { userId: requesterId },
+              },
+            },
+          });
+        snapshot.messages.push(
+          ...Array.from({ length: 22 }, (_, index) =>
+            message(`thread-line-${index}`, `Earlier reply ${index}`, { threadRootId: root.id }),
+          ),
+          approval('approval-mine', user.id),
+          approval('approval-other', 'fixture-other-user'),
+        );
+        await page.goto(`${origin}${path}?conversation=chat`);
+        const jump = page.getByRole('button', { name: 'Action needs approval' });
+        await jump.click();
+        await page.getByRole('heading', { name: 'Reply thread' }).waitFor();
+        const card = page.locator('#message-approval-mine.message-highlighted');
+        await card.getByRole('button', { name: 'Allow once' }).waitFor();
+        assert.equal(await card.evaluate((element) => element === document.activeElement), true);
+        await jump.waitFor({ state: 'detached' });
+        await page.locator('.messages-scroll').evaluate((element) => {
+          element.scrollTop = 0;
+        });
+        await jump.click();
+        await card.getByRole('button', { name: 'Allow once' }).waitFor();
+        await jump.waitFor({ state: 'detached' });
+
+        snapshot.messages = snapshot.messages.filter((entry) => entry.id !== 'approval-mine');
+        await page.goto(`${origin}${path}?conversation=chat`);
+        await page.locator('#message-main-quote').waitFor();
+        assert.equal(await jump.count(), 0, 'another requester’s card never shows a jump');
+      },
+    );
     assert.deepEqual(errors, []);
   },
 );

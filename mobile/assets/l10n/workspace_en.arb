@@ -21,6 +21,7 @@
   "chatMessage": "Message",
   "chatMessageActions": "Message actions",
   "chatConversationActions": "Conversation actions",
+  "mobileChatBotSkills": "Bot skills",
   "chatReactionCelebrate": "Celebrate",
   "chatReactionDone": "Done",
   "chatReactionLike": "Like",

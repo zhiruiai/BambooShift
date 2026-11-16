@@ -9,6 +9,7 @@ pub async fn initialize(store: &WorkspaceStore) -> Result<()> {
     super::usage::initialize(&mut tx).await?;
     super::creation::initialize(&mut tx).await?;
     super::website_projects::initialize(&mut tx).await?;
+    super::library_pins::initialize(&mut tx).await?;
     crate::bot_templates::initialize(&mut tx).await?;
     crate::team_builder::initialize(&mut tx).await?;
     super::roster::initialize(&mut tx).await?;
@@ -20,6 +21,7 @@ pub async fn initialize(store: &WorkspaceStore) -> Result<()> {
     crate::memory_imports::initialize(&mut tx).await?;
     crate::teaching::initialize(&mut tx).await?;
     super::credentials::migrate(store, &mut tx).await?;
+    super::skill_packages::backfill_text(&mut tx).await?;
     super::recovery::recover(&mut tx).await?;
     if WorkspaceStore::get_in(&mut tx, Table::Settings, "seeded")
         .await?

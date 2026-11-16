@@ -58,6 +58,13 @@ pub async fn create(conn: &mut SqliteConnection, body: &Value) -> Result<Value> 
     WorkspaceStore::put_in(conn, Table::Conversations, &value).await?;
     Ok(value)
 }
+pub(super) async fn create_direct(conn: &mut SqliteConnection, agent: &Value) -> Result<Value> {
+    create(
+        conn,
+        &json!({"title":agent["name"],"agentIds":[agent["id"]],"isGroup":false}),
+    )
+    .await
+}
 pub fn reconcile(chat: &mut Value) {
     if !chat["teamBrief"].is_object() {
         return;

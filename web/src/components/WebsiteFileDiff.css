@@ -1,0 +1,118 @@
+.website-version-changes .website-diff-files {
+  display: grid;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+.website-diff-file {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+.website-diff-file-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 10px;
+  text-align: start;
+}
+.website-diff-file-toggle:hover,
+.website-diff-file-toggle[aria-expanded='true'] {
+  background: var(--surface-hover);
+}
+.website-diff-file-toggle code {
+  overflow-wrap: anywhere;
+}
+.website-diff-file-toggle svg {
+  flex-shrink: 0;
+}
+.website-file-diff,
+.website-file-diff-status {
+  min-width: 0;
+  padding: 8px 10px 12px;
+}
+.website-file-diff p,
+.website-file-diff-status p {
+  margin: 0 0 8px;
+  font-size: 12px;
+}
+.website-file-diff-summary {
+  color: var(--text-secondary);
+}
+.website-file-diff-scroll {
+  overflow: auto;
+  max-height: 420px;
+  border-radius: 5px;
+}
+.website-file-diff table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.website-file-diff th {
+  text-align: start;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.website-file-diff th:nth-child(-n + 2) {
+  width: 38px;
+}
+.website-file-diff td {
+  vertical-align: top;
+  padding: 0 4px;
+  border: 0;
+}
+.website-diff-number {
+  width: 38px;
+  text-align: end;
+  color: var(--text-secondary);
+  user-select: none;
+}
+.website-diff-sign {
+  width: 18px;
+  text-align: center;
+  user-select: none;
+}
+.website-diff-code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+.website-diff-code code {
+  font-size: inherit;
+  background: none;
+  padding: 0;
+}
+.website-diff-added {
+  background: light-dark(#e7f6ea, #163622);
+  color: light-dark(#18592b, #beebca);
+}
+.website-diff-removed {
+  background: light-dark(#fff0ed, #452321);
+  color: light-dark(#8d352b, #ffc4ba);
+}
+.website-diff-gap {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+.website-diff-gap td {
+  padding-block: 6px;
+}
+@media (max-width: 600px) {
+  .website-diff-file-toggle {
+    min-height: 44px;
+  }
+  .website-file-diff,
+  .website-file-diff-status {
+    padding-inline: 6px;
+  }
+  .website-file-diff th:nth-child(-n + 2),
+  .website-diff-number {
+    width: 30px;
+  }
+}

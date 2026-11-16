@@ -1,21 +1,284 @@
-.packaged-skills .apps-search {
+.modal.apps-packaged-skills-dialog {
+  width: min(900px, 100%);
+}
+.packaged-skills {
+  container-type: inline-size;
+  min-width: 0;
+}
+.packaged-skills-navigation {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+.packaged-skills-navigation .text-button {
+  min-height: 36px;
+}
+.packaged-skills-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
-}
-.packaged-skills-embedded {
   min-width: 0;
-  padding-block: 12px;
+  padding-inline: 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-secondary);
 }
-.packaged-skills-embedded .apps-search input {
+.packaged-skills-search svg {
+  flex-shrink: 0;
+}
+.packaged-skills-search:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.packaged-skills-search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+}
+.packaged-skills-search input:focus {
+  box-shadow: none;
+}
+.packaged-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.packaged-skills-pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  min-height: 40px;
+}
+.packaged-skills-pages > div {
+  display: flex;
+  gap: 4px;
+}
+.packaged-skills-pages button {
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.packaged-skills-pages button:disabled {
+  opacity: 0.35;
+}
+.packaged-skill-tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  gap: 5px 8px;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  text-align: start;
+}
+.packaged-skill-tile:hover,
+.packaged-skill-tile:focus-visible {
+  background: var(--surface-subtle);
+  border-color: var(--accent);
+}
+.packaged-skill-tile > strong {
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.packaged-skill-tile > svg {
+  color: var(--text-secondary);
+}
+.packaged-skill-summary {
+  display: -webkit-box;
+  grid-column: 1 / -1;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.packaged-skill-status {
+  justify-self: start;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.packaged-skill-preview {
+  display: grid;
+  gap: 13px;
+}
+.packaged-skill-preview .packaged-skills-navigation {
+  margin: 0;
+}
+.packaged-skill-heading {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.packaged-skill-icon {
+  display: grid;
+  flex: 0 0 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.packaged-skill-heading > div {
+  min-width: 0;
+  flex: 1 1 185px;
+}
+.packaged-skill-heading h3,
+.packaged-skill-instructions h4,
+.packaged-skill-heading p,
+.packaged-skill-install p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.packaged-skill-heading h3 {
+  font-size: 17px;
+}
+.packaged-skill-heading p,
+.packaged-skill-install p {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.packaged-skill-install {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 7px 10px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-subtle);
+}
+.packaged-skill-install strong {
+  align-self: center;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.packaged-skill-install label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.packaged-skill-install select,
+.packaged-skill-install button {
+  min-width: 0;
+  min-height: 40px;
+}
+.packaged-skill-install p {
+  grid-column: 1 / -1;
+}
+.skill-install-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+.skill-install-summary svg {
+  color: var(--accent);
+}
+.skill-install-feedback,
+.skill-install-done {
+  grid-column: 1 / -1;
+}
+.skill-install-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 6px;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.skill-install-feedback svg {
+  flex-shrink: 0;
+}
+.skill-install-success {
+  color: var(--accent);
+}
+.skill-install-done {
+  justify-self: start;
+}
+.skill-install-details {
+  min-width: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.skill-install-details > summary {
+  cursor: pointer;
+  padding-block: 7px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.skill-install-details[open] > summary {
+  margin-bottom: 10px;
+}
+.packaged-skill-document {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 10px;
+  align-items: start;
+}
+.packaged-skill-instructions {
+  display: grid;
+  gap: 6px;
   min-width: 0;
 }
-
+.packaged-skill-instructions h4 {
+  font-size: 13px;
+}
 .packaged-skills .packaged-skill-content {
   max-height: none;
   margin: 0;
   overflow: visible;
   overflow-wrap: anywhere;
 }
-
-.packaged-skills .private-skill-target button {
-  min-height: 44px;
+@container (max-width: 480px) {
+  .packaged-skill-grid,
+  .packaged-skill-document {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container (max-width: 330px) {
+  .packaged-skill-install {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .modal.apps-packaged-skills-dialog {
+    width: calc(100vw - 24px);
+  }
+  .packaged-skills-navigation .text-button,
+  .packaged-skills-pages button,
+  .packaged-skill-install select,
+  .packaged-skill-install button {
+    min-height: 44px;
+  }
 }

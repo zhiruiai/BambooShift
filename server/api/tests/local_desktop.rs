@@ -14,6 +14,7 @@ fn configured(path: &std::path::Path, token: char) -> Config {
         bootstrap_token: token.to_string().repeat(64),
         host_control: false,
         desktop_driver: None,
+        accessibility_helper: None,
     });
     config
 }

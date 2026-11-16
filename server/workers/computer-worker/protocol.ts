@@ -5,7 +5,12 @@ import type { DesktopSessionRef } from '../../../shared/linux-desktop.js';
 import { validateShellInput } from '../computer-runtime/isolated-shell.js';
 import { validateComputerPath } from '../computer-runtime/computer-files.js';
 import { validateDesktopInput } from '../computer-runtime/desktop.js';
-export type ComputerSurface = 'browser' | 'desktop';
+import {
+  isAccessibilityAction,
+  validateAccessibilityAction,
+  type AccessibilityAction,
+} from '../computer-runtime/desktop-accessibility.js';
+export type ComputerSurface = 'browser' | 'desktop' | 'accessibility';
 export const COMPUTER_WORKER_PROTOCOL = 'openbot-computer-v2';
 /** Canonical declaration shared by the controller and execution-time Worker guard. */
 export function workerControlOrigin(value: unknown): string | null {
@@ -48,9 +53,16 @@ export type ComputerActionType =
   | 'desktop_type'
   | 'desktop_key'
   | 'desktop_scroll'
-  | 'desktop_drag';
+  | 'desktop_drag'
+  | AccessibilityAction['type'];
 export interface ComputerActionInput {
   type: ComputerActionType;
+  app?: string;
+  action?: 'press' | 'setText';
+  snapshotToken?: string;
+  elementId?: string;
+  bundleId?: string;
+  identity?: string;
   tabId?: string;
   fileId?: string;
   sourceName?: string;
@@ -114,6 +126,12 @@ const actionTypes = new Set<ComputerActionType>([
   'desktop_key',
   'desktop_scroll',
   'desktop_drag',
+  'desktop_ax_inspect',
+  'desktop_ax_target',
+  'desktop_ax_press',
+  'desktop_ax_set_text',
+  'desktop_ax_open_target',
+  'desktop_ax_open',
 ]);
 const readOnlyTypes = new Set([
   'browser_tabs',
@@ -123,6 +141,9 @@ const readOnlyTypes = new Set([
   'terminal_command',
   'browser_screenshot',
   'desktop_screenshot',
+  'desktop_ax_inspect',
+  'desktop_ax_target',
+  'desktop_ax_open_target',
 ]);
 export const viewport = { width: 1440, height: 900 };
 const takeoverKeys = new Set([
@@ -285,6 +306,7 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
     throw new Error('需要电脑操作参数。');
   const a = input as ComputerActionInput;
   if (!actionTypes.has(a.type)) throw new Error('不支持的电脑操作。');
+  if (isAccessibilityAction(a.type)) return validateAccessibilityAction(a);
   if (a.type === 'browser_tabs') return { type: a.type };
   if (a.type === 'browser_select_tab' || a.type === 'browser_close_tab') {
     if (

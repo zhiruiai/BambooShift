@@ -17,9 +17,19 @@ npm run desktop:check
 
 `desktop:check` 仅返回权限、主屏尺寸及显示器布局元信息，不枚举窗口标题，不读取屏幕内容。`available` 表示助手/系统可用，`authorized` 表示屏幕录制和辅助功能均已授权；它们不代表产品已启用控制。
 
+## Mac 应用
+
+「Mac 应用」使用 macOS 辅助功能权限。此模式独立于屏幕录制权限，状态通过 `accessibilityReady` 表示。助手通过 `ax_inspect` 读取前台应用的当前窗口，也可按准确的运行中应用名称或标识符选择窗口。它返回有限的控件树，包括角色、标签和可用的点按或填写动作。密码字段使用通用标签，可编辑字段的原值留在助手进程内。
+
+支持打开应用的助手在 `status` 中返回 `appLaunchAvailable`。`ax_open_target` 按标识符查找唯一的已安装应用，供 Rust 生成显示应用名和标识符的审批。助手在批准后处理 `ax_open`，重新核对安装位置、名称和文件身份，再请求 macOS 打开并激活该应用。身份只在执行链路中传递。未能确认打开结果时，回执提示在本机检查后再试。 [Apple 的应用启动接口](https://developer.apple.com/documentation/appkit/nsworkspace/openapplication(at:configuration:completionhandler:))
+
+助手通过 `ax_press` 调用已批准控件的 `AXPress`。新版助手为可操作控件生成独立身份，执行时在原应用进程和窗口中重新确认控件身份、标签和可用动作。其他控件刷新后，原控件仍可执行。同一身份无法唯一匹配，或目标窗口及控件已变化时，需要重新读取并审批。旧版执行器继续使用整窗快照核对。
+
+`ax_set_text` 替换支持写入 `AXValue` 的文本框全文。控件身份包含原值的摘要，助手在写入前复核原值，写入后读回同一控件确认结果，只返回成功状态。应用更改输入文本或无法确认写入结果时，助手返回 `AX_TEXT_UNCONFIRMED`。正文通过 stdin JSON 传入，限 2,000 个 Unicode 标量，可包含换行和制表符。
+
 ## 协议与坐标
 
-Node `createDesktopAdapter()` 默认禁用。产品层完成明确确认后才能调用 `setEnabled(true)`。每次操作启动短生命周期助手，stdin 为一个 JSON，stdout 为一个 JSON，随后退出。支持 `status`、`capture`、`input`，后两项还必须显式 `enabled:true` 并通过原生权限预检查。协议不接受 shell、JavaScript、AppleScript、任意可执行文件或剪贴板命令。
+Node `createDesktopAdapter()` 默认禁用。产品层完成明确确认后才能调用 `setEnabled(true)`。每次操作启动短生命周期助手，stdin 为一个 JSON，stdout 为一个 JSON，随后退出。状态通过 `status` 查询。画面和应用操作都必须显式传入 `enabled:true` 并通过对应的原生权限预检查。协议不接受 shell、JavaScript、AppleScript、任意可执行文件或剪贴板命令。
 
 截图只覆盖主屏，保留宽高比且不超过 1600 × 1000 像素，不落盘。所有输入坐标以返回截图像素为单位；helper 根据主屏 `CGDisplayBounds` 将其映射到 Quartz 左上角原点的逻辑坐标，包含 Retina 缩放及显示器原点偏移。`status.width/height` 为预期截图尺寸；`displays[].logicalWidth/Height` 与 `pixelWidth/Height` 为源屏幕元数据。
 

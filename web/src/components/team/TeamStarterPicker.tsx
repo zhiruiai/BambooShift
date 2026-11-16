@@ -12,6 +12,7 @@ import {
 import type { BotTeamDraft, CreateBotTeamPlan } from '../../../../shared/bot-team-plans';
 import catalog from '../../../../shared/team-starter-templates.json';
 import { currentLanguage, uiText } from '../../i18n';
+import { starterTeamMemberPacks } from '../../starterSkillPacks';
 import '../SmartTeamPanel.css';
 
 const starterIcons = {
@@ -29,9 +30,13 @@ export type TeamStarterSelection = NonNullable<CreateBotTeamPlan['template']> & 
 export function TeamStarterPicker({
   disabled,
   onUse,
+  onUseAndOpen,
+  hideHeading,
 }: {
   disabled: boolean;
-  onUse: (selection: TeamStarterSelection) => void;
+  onUse?: (selection: TeamStarterSelection) => void;
+  onUseAndOpen?: (selection: TeamStarterSelection, reviewedDraft: BotTeamDraft) => void;
+  hideHeading?: boolean;
 }) {
   const [id, setId] = useState('');
   const language = currentLanguage();
@@ -39,11 +44,15 @@ export function TeamStarterPicker({
   const selected = teams.find((team) => team.id === id);
   return (
     <section className="team-starter-picker" aria-label={uiText('workspace:teamStarterTitle')}>
-      <div className="team-starter-heading">
-        <Layers3 size={17} aria-hidden="true" />
-        <h3>{uiText('workspace:teamStarterTitle')}</h3>
-      </div>
-      <p className="field-help">{uiText('workspace:teamStarterHelp')}</p>
+      {!hideHeading && (
+        <div className="team-starter-heading">
+          <Layers3 size={17} aria-hidden="true" />
+          <h3>{uiText('workspace:teamStarterTitle')}</h3>
+        </div>
+      )}
+      {(onUse || onUseAndOpen) && (
+        <p className="field-help">{uiText('workspace:teamStarterHelp')}</p>
+      )}
       <div className="team-starter-options">
         {teams.map((team) => {
           const Icon = starterIcons[team.id as keyof typeof starterIcons] ?? Layers3;
@@ -69,24 +78,59 @@ export function TeamStarterPicker({
         <div className="team-starter-preview" aria-label={selected.draft.title}>
           <p className="team-starter-summary">{selected.draft.summary}</p>
           <ul className="team-starter-roles">
-            {selected.draft.members.map((member) =>
-              member.kind === 'create' ? (
+            {selected.draft.members.map((member) => {
+              if (member.kind !== 'create') return null;
+              const skills = starterTeamMemberPacks(selected.id, member.key, language);
+              return (
                 <li key={member.key}>
                   <strong>{member.name}</strong>
+                  {selected.draft.leadKey === member.key && (
+                    <span>{uiText('workspace:teamStarterLead')}</span>
+                  )}
                   <span>{member.role}</span>
                   <p>{member.assignment}</p>
+                  {skills.length > 0 && (
+                    <p>
+                      {uiText('workspace:starterIncludedSkills', {
+                        names: skills.map((pack) => pack.name).join(' · '),
+                      })}
+                    </p>
+                  )}
                 </li>
-              ) : null,
-            )}
+              );
+            })}
           </ul>
-          <button
-            type="button"
-            className="primary-button"
-            disabled={disabled}
-            onClick={() => onUse({ id: selected.id, language, summary: selected.draft.summary })}
-          >
-            {uiText('workspace:teamStarterUse')}
-          </button>
+          {(onUse || onUseAndOpen) && (
+            <div className="smart-team-actions">
+              {onUseAndOpen && (
+                <button
+                  type="button"
+                  className="primary-button"
+                  disabled={disabled}
+                  onClick={() =>
+                    onUseAndOpen(
+                      { id: selected.id, language, summary: selected.draft.summary },
+                      selected.draft,
+                    )
+                  }
+                >
+                  {uiText('workspace:teamStarterUseAndOpen')}
+                </button>
+              )}
+              {onUse && (
+                <button
+                  type="button"
+                  className="secondary-button"
+                  disabled={disabled}
+                  onClick={() =>
+                    onUse({ id: selected.id, language, summary: selected.draft.summary })
+                  }
+                >
+                  {uiText('workspace:teamStarterUse')}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>

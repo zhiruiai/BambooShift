@@ -21,7 +21,7 @@ import { conversationVisibility } from '../approvalUi';
 import { Avatar, GroupAvatar } from '../components/Avatar';
 import { IconButton } from '../components/UI';
 import type { WorkspaceModel } from './types';
-import { messageAvatarMotion } from './ChatAvatar';
+import { conversationAvatarActivity } from '../avatarActivity';
 
 export function ChatHeader({
   draggingFiles,
@@ -34,6 +34,7 @@ export function ChatHeader({
   lead,
   working,
   messages,
+  data,
   canManage,
   currentUserId,
   account,
@@ -65,6 +66,7 @@ export function ChatHeader({
   | 'lead'
   | 'working'
   | 'messages'
+  | 'data'
   | 'canManage'
   | 'currentUserId'
   | 'account'
@@ -92,26 +94,13 @@ export function ChatHeader({
     () => () => !!exportTarget && sendScope.current(exportTarget.ticket),
     [sendScope, exportTarget],
   );
-  const recent = online
-    ? messages.findLast((message) => message.role === 'user' || message.role === 'assistant')
-    : undefined;
-  const streaming =
-    recent?.status === 'running' &&
-    recent.metadata?.streamEnded !== true &&
-    !!recent.content &&
-    (!recent.kind || recent.kind === 'text');
-  const activity =
-    recent?.role === 'assistant'
-      ? messageAvatarMotion(recent, streaming, { isOwner: canManage, userId: currentUserId })
-      : undefined;
-  const avatarMotion =
-    activity === 'attention' || activity === 'working'
-      ? activity
-      : online && working
-        ? 'thinking'
-        : online && lead?.status === 'idle'
-          ? 'idle'
-          : undefined;
+  const activity = conversationAvatarActivity(
+    messages,
+    working,
+    { isOwner: canManage, userId: currentUserId },
+    data.runningRequests,
+  );
+  const avatarMotion = online ? activity.motion : undefined;
   const title = conversation?.title || uiText('workspace:text_56ca721193c9');
   return (
     <>
@@ -154,24 +143,29 @@ export function ChatHeader({
               <GroupAvatar
                 key={conversation.id}
                 agents={members}
-                size={34}
+                activeAgentId={activity.agentId}
+                size={36}
                 motion={avatarMotion}
-                sustain
+                sustain={online && working}
               />
             ) : (
               <Avatar
                 key={`${conversation.id}:${lead?.id || ''}`}
                 agent={lead}
-                size={34}
+                size={36}
                 motion={avatarMotion}
-                sustain
+                sustain={online && working}
               />
             )}
             <span className="chat-title-copy">
               <strong>{title}</strong>
               <small className={working && online ? 'chat-title-working' : undefined}>
                 {working && online
-                  ? uiText('workspace:text_e556fe53f2b0')
+                  ? uiText(
+                      activity.motion === 'attention'
+                        ? 'workspace:avatarWaiting'
+                        : 'workspace:text_e556fe53f2b0',
+                    )
                   : conversation.isGroup
                     ? uiText('workspace:text_2639e5250a8e', { value0: members.length })
                     : lead?.role || uiText('workspace:text_da8763838968')}

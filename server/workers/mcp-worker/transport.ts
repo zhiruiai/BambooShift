@@ -1,7 +1,7 @@
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import { Agent, fetch as remoteFetch } from 'undici';
-import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
+import { Client, StreamableHTTPClientTransport, type Tool } from '@modelcontextprotocol/client';
 import { isPublicAddress } from './network-policy.js';
 import type { ConnectedAppTool, ConnectedAppResult } from '../../../shared/app-connections.js';
 
@@ -142,8 +142,14 @@ export async function openAppClient(
   const combined = AbortSignal.any([signal, lifetime.signal, AbortSignal.timeout(45000)]);
   const client = new Client(
     { name: 'openbot', version: '0.1.0' },
-    { capabilities: {}, listMaxPages: 4, versionNegotiation: { mode: 'auto' } },
+    {
+      capabilities: {},
+      listMaxPages: 4,
+      versionNegotiation: { mode: 'auto' },
+      inputRequired: { autoFulfill: false },
+    },
   );
+  let toolDefinitions: Tool[] = [];
   let closed = false;
   let terminating: AbortSignal | undefined;
   let transportFailure: AppTransportError | undefined;
@@ -238,6 +244,7 @@ export async function openAppClient(
         try {
           const result = await client.listTools(undefined, { signal: combined, timeout: 15000 });
           if (result.tools.length > 64) throw fail('protocol');
+          toolDefinitions = result.tools;
           return result.tools.map((tool) => ({
             name: tool.name,
             description: tool.description || '',
@@ -256,16 +263,21 @@ export async function openAppClient(
       },
       async call(name, args) {
         try {
+          // Use the discovery snapshot used by the approval check. Otherwise the
+          // modern SDK refreshes and resends automatically on HeaderMismatch.
+          const toolDefinition = toolDefinitions.find((tool) => tool.name === name);
+          if (client.getProtocolEra() === 'modern' && !toolDefinition) throw fail('protocol');
           const result = await client.callTool(
             { name, arguments: args },
-            { signal: combined, timeout: 30000 },
+            { signal: combined, timeout: 30000, toolDefinition },
           );
           const chunks = result.content.flatMap((item) =>
             item.type === 'text'
               ? [item.text]
               : ['[此应用返回了非文本内容，当前连接未读取该内容。]'],
           );
-          if (result.structuredContent) chunks.push(JSON.stringify(result.structuredContent));
+          if (result.structuredContent !== undefined)
+            chunks.push(JSON.stringify(result.structuredContent));
           const full = redactAppCredential(chunks.join('\n'), endpoint.token);
           return {
             isError: result.isError === true,

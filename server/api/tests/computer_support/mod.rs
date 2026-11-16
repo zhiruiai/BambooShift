@@ -17,6 +17,8 @@ use std::{
 };
 use tokio::sync::{Mutex, Semaphore};
 pub const TOKEN: &str = "synthetic-computer-worker-token-only";
+pub const APP_LAUNCH_IDENTITY: &str =
+    "a3456789abcdef01a3456789abcdef01a3456789abcdef01a3456789abcdef01";
 pub struct Worker {
     pub origin: String,
     pub workspace: String,
@@ -33,6 +35,7 @@ pub struct Worker {
     pub cleanup_capable: AtomicBool,
     pub private_takeover_capable: AtomicBool,
     pub browser_tabs_capable: AtomicBool,
+    pub mac_app_launch: AtomicBool,
     pub execute_gate: Mutex<Option<Arc<Semaphore>>>,
     pub cleanup_gate: Mutex<Option<Arc<Semaphore>>>,
     pub png: Vec<u8>,
@@ -57,7 +60,7 @@ impl Server {
                 .unwrap();
             buffer.into_inner()
         };
-        let worker=Arc::new(Worker{origin:format!("http://{}",listener.local_addr().unwrap()),workspace:workspace.into(),instance:uuid::Uuid::new_v4().to_string(),control_origin:Mutex::new(Value::Null),screens:Mutex::new((0..2).map(|_|json!({"id":uuid::Uuid::new_v4().to_string(),"revision":uuid::Uuid::new_v4().to_string(),"session":{"id":uuid::Uuid::new_v4().to_string(),"generation":uuid::Uuid::new_v4().to_string()},"available":true,"lifecycle":{"state":"ready"},"surface":"browser"})).collect()),calls:Mutex::new(vec![]),lifecycle:Mutex::new(HashMap::new()),leases:Mutex::new(HashMap::new()),files:Mutex::new(HashMap::from([("report.txt".into(),b"remote report".to_vec())])),lifecycle_count:AtomicUsize::new(0),lose_lifecycle:AtomicBool::new(false),cleanup_ok:AtomicBool::new(true),cleanup_capable:AtomicBool::new(true),private_takeover_capable:AtomicBool::new(true),browser_tabs_capable:AtomicBool::new(false),execute_gate:Mutex::new(None),cleanup_gate:Mutex::new(None),png:png(24,18),private_png:png(1440,900)});
+        let worker=Arc::new(Worker{origin:format!("http://{}",listener.local_addr().unwrap()),workspace:workspace.into(),instance:uuid::Uuid::new_v4().to_string(),control_origin:Mutex::new(Value::Null),screens:Mutex::new((0..2).map(|_|json!({"id":uuid::Uuid::new_v4().to_string(),"revision":uuid::Uuid::new_v4().to_string(),"session":{"id":uuid::Uuid::new_v4().to_string(),"generation":uuid::Uuid::new_v4().to_string()},"available":true,"lifecycle":{"state":"ready"},"surface":"browser"})).collect()),calls:Mutex::new(vec![]),lifecycle:Mutex::new(HashMap::new()),leases:Mutex::new(HashMap::new()),files:Mutex::new(HashMap::from([("report.txt".into(),b"remote report".to_vec())])),lifecycle_count:AtomicUsize::new(0),lose_lifecycle:AtomicBool::new(false),cleanup_ok:AtomicBool::new(true),cleanup_capable:AtomicBool::new(true),private_takeover_capable:AtomicBool::new(true),browser_tabs_capable:AtomicBool::new(false),mac_app_launch:AtomicBool::new(false),execute_gate:Mutex::new(None),cleanup_gate:Mutex::new(None),png:png(24,18),private_png:png(1440,900)});
         let app = Router::new().fallback(dispatch).with_state(worker.clone());
         let task = tokio::spawn(async move {
             axum::serve(listener, app).await.unwrap();
@@ -125,6 +128,17 @@ async fn dispatch(State(worker): State<Arc<Worker>>, request: Request) -> Respon
                 .as_array_mut()
                 .unwrap()
                 .push(json!("private-takeover-frames-v1"));
+        }
+        if worker.mac_app_launch.load(Ordering::SeqCst) {
+            state["platform"] = json!("darwin");
+            state["surface"] = json!("accessibility");
+            state["capabilities"] = json!([
+                "operation-cleanup-v1",
+                "workspace-shared-screen-v1",
+                "macos-accessibility-v1",
+                "macos-app-launch-v1"
+            ]);
+            state["desktop"] = json!({"kind":"host","accessibilityReady":true,"permissions":{"screenRecording":"denied","accessibility":"granted"}});
         }
         if let Some(screen) = &screen {
             state["screenId"] = screen["id"].clone();
@@ -222,6 +236,10 @@ async fn dispatch(State(worker): State<Arc<Worker>>, request: Request) -> Respon
             ([("content-type","image/png"),("x-computer-surface",surface)], png.clone()).into_response()
         },
         "/execute-with-frame"=>response(200,json!({"result":{"ok":true},"frame":{"mimeType":"image/png","data":STANDARD.encode(&worker.png),"capturedAt":chrono::Utc::now().to_rfc3339()}})),
+        "/execute" if body["type"] == "desktop_ax_open_target" => response(200,json!({"app":"计算器","bundleId":"com.apple.calculator","identity":APP_LAUNCH_IDENTITY})),
+        "/execute" if body["type"] == "desktop_ax_open" => response(200,json!({"ok":body["identity"]==APP_LAUNCH_IDENTITY && body["bundleId"]=="com.apple.calculator"})),
+        "/execute" if body["type"] == "desktop_ax_target" => response(200,json!({"app":"Fixture","role":"AXButton","label":"Save","windowTitle":"Draft Delivery"})),
+        "/execute" if body["type"] == "desktop_ax_press" => response(200,json!({"ok":true})),
         "/execute"=>response(200,json!({"ok":true,"stdout":"fixture","stderr":"","exitCode":0,"truncated":false,"timedOut":false,"cancelled":false,"durationMs":1})),
         "/files/content"=>{
             let path=url::form_urlencoded::parse(query.as_bytes()).find(|(k,_)|k=="path").map(|(_,v)|v.into_owned()).unwrap_or_default();

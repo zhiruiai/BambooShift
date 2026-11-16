@@ -191,6 +191,11 @@
   padding: 6px 10px;
   z-index: 2;
 }
+.approval-jump {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 600;
+}
 .details-panel {
   border-left: 1px solid light-dark(#ececed, var(--border));
   display: flex;

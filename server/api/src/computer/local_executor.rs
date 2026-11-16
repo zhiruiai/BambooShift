@@ -63,7 +63,8 @@ impl LocalExecutor {
         let local = config.local_desktop.as_ref();
         let config = json!({"workspace":directory.join("workspace"),"workspaceId":workspace,
             "publicOrigin":origin,"hostControl":local.is_some_and(|value| value.host_control),
-            "desktopDriver":local.and_then(|value| value.desktop_driver.as_ref())});
+            "desktopDriver":local.and_then(|value| value.desktop_driver.as_ref()),
+            "accessibilityHelper":local.and_then(|value| value.accessibility_helper.as_ref())});
         let startup = async {
             input.write_all(config.to_string().as_bytes()).await?;
             input.write_all(b"\n").await?;
@@ -210,6 +211,7 @@ mod tests {
                 bootstrap_token: "a".repeat(64),
                 host_control,
                 desktop_driver: None,
+                accessibility_helper: None,
             });
             let command =
                 worker_command(&config, |name| supplied.get(name).map(OsString::from)).unwrap();

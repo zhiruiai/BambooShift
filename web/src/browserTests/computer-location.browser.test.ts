@@ -6,7 +6,7 @@ import { chromium } from 'playwright-core';
 test(
   'work computer locations are visible first and switch only on explicit owner actions',
   { timeout: 60_000 },
-  async () => {
+  async (t) => {
     const origin = 'https://computer-location.example.test';
     const workspaceId = '11111111-1111-4111-8111-111111111111';
     const root = `/api/workspaces/${workspaceId}`;
@@ -38,6 +38,10 @@ test(
       let configured = false;
       let localConnected = false;
       let paired = false;
+      let managedMac = false;
+      let nativePermission: 'denied' | 'granted' = 'denied';
+      let surface = 'browser';
+      let accessibilityCaptures = 0;
       let cloudStatusFails = false;
       const machine = () => ({
         connected: localConnected || paired,
@@ -46,12 +50,39 @@ test(
         mode: paired ? 'remote' : 'local',
         platform: 'test',
         status: localConnected || paired ? 'Connected' : 'Disconnected',
-        surface: 'browser',
-        capabilities: [],
+        surface,
+        capabilities: paired
+          ? ['macos-accessibility-v1', 'workspace-host-desktop-v1']
+          : managedMac
+            ? ['macos-accessibility-v1', 'macos-app-launch-v1']
+            : [],
+        desktop:
+          paired || managedMac
+            ? {
+                kind: 'host',
+                available: paired,
+                authorized: false,
+                accessibilityAvailable: true,
+                accessibilityPermission: paired ? 'granted' : nativePermission,
+                accessibilityReady: paired || nativePermission === 'granted',
+                enabled: false,
+                width: 1440,
+                height: 900,
+                permissions: { screenRecording: 'denied', accessibility: 'granted' },
+              }
+            : undefined,
         targetRevision: localConnected || paired ? 'synthetic-target' : undefined,
         savedRemote: paired
           ? { name: 'Synthetic paired computer', url: 'https://paired.example.test' }
           : undefined,
+      });
+      const botComputer = () => ({
+        ...machine(),
+        botScreen: {
+          agentId: 'fixture-bot',
+          status: paired || managedMac ? 'ready' : 'unavailable',
+          shared: paired || managedMac,
+        },
       });
       const cloud = (running = false) => ({
         configured,
@@ -93,8 +124,17 @@ test(
               return route.fulfill({ json: { error: 'Connection rejected' }, status: 502 });
             }
             return route.fulfill({
-              json: { topology: 'shared', browser: 'supported', desktop: 'notReady' },
+              json: {
+                topology: 'shared',
+                browser: 'supported',
+                desktop: 'notReady',
+                accessibility: 'ready',
+              },
             });
+          }
+          if (url.pathname === `${root}/computer/bots/fixture-bot/surface`) {
+            surface = data.surface;
+            return route.fulfill({ json: botComputer() });
           }
           if (url.pathname === `${root}/cloud-computer/start`) {
             return route.fulfill({ json: cloud(true) });
@@ -104,15 +144,32 @@ test(
           return cloudStatusFails
             ? route.fulfill({ json: { error: 'Cloud status unavailable' }, status: 502 })
             : route.fulfill({ json: cloud() });
+        if (url.pathname === `${root}/computer/status`) return route.fulfill({ json: machine() });
+        if (url.pathname === `${root}/computer/authorization`)
+          return route.fulfill({
+            json: {
+              mode: 'confirm',
+              targetRevision: machine().targetRevision,
+              targetName: machine().name,
+              canManage: !new URL(page.url()).searchParams.has('role'),
+              scope: 'current-user-current-computer',
+            },
+          });
         if (url.pathname === `${root}/computer/bots`) {
           return route.fulfill({
             json: { capacity: { max: 1, configured: 1, ready: 0, assigned: 0 }, bots: [] },
           });
         }
         if (url.pathname === `${root}/computer/bots/fixture-bot/status`) {
-          return route.fulfill({
-            json: { ...machine(), botScreen: { agentId: 'fixture-bot', status: 'unavailable' } },
-          });
+          return route.fulfill({ json: botComputer() });
+        }
+        if (url.pathname === `${root}/computer/bots/fixture-bot/takeover/status`)
+          return route.fulfill({ json: { active: false, width: 1440, height: 900, surface } });
+        if (url.pathname === `${root}/computer/bots/fixture-bot/actions`)
+          return route.fulfill({ json: [] });
+        if (url.pathname === `${root}/computer/bots/fixture-bot/screenshot`) {
+          if (surface === 'accessibility') accessibilityCaptures++;
+          return route.fulfill({ json: {}, status: 409 });
         }
         unexpected.push(url.pathname);
         return route.fulfill({ json: {}, status: 404 });
@@ -213,7 +270,7 @@ test(
       await pairing.getByRole('button', { name: 'Pair a computer' }).click();
       assert.equal(await pairing.evaluate((element) => element === document.activeElement), true);
       await pairing.getByText('Set up a Mac, Linux computer, or your own cloud server').click();
-      await pairing.getByRole('checkbox', { name: 'Include native Mac desktop control' }).check();
+      await pairing.getByRole('checkbox', { name: 'Include Mac app control' }).check();
       await pairing
         .getByText(`npm run computer:pair -- --workspace ${workspaceId} --desktop`)
         .waitFor();
@@ -239,9 +296,7 @@ test(
       await token.fill('fixture-token');
       await check.click();
       await pairing.getByText('Computer reached and workspace verified').waitFor();
-      await pairing
-        .getByText('Browser support advertised · Desktop setup or permissions needed')
-        .waitFor();
+      await pairing.getByText('Browser support advertised · Mac app control is ready').waitFor();
       assert.deepEqual(posts.slice(2), [
         {
           path: `${root}/computer/connect/check`,
@@ -260,8 +315,99 @@ test(
       });
       assert.equal(await token.inputValue(), '');
       await settings.getByRole('button', { name: 'Watch Bot’s screen' }).click();
-      await page.getByRole('dialog', { name: "Fixture Bot's computer" }).waitFor();
-      assert.equal(posts.length, 5);
+      const computerDialog = page.getByRole('dialog', { name: "Fixture Bot's computer" });
+      await computerDialog.waitFor();
+      await computerDialog.getByRole('button', { name: 'Mac apps', exact: true }).click();
+      const useMacApps = computerDialog.getByRole('button', { name: 'Use Mac apps' });
+      assert.equal(await useMacApps.isEnabled(), true);
+      assert.equal(posts.length, 5, 'selection alone never changes the control surface');
+      await useMacApps.click();
+      await computerDialog.getByText(/ask it to click Clear in Calculator/).waitFor();
+      assert.equal(await computerDialog.getByText(/App launches require approval/).count(), 0);
+      assert.deepEqual(posts[5], {
+        path: `${root}/computer/bots/fixture-bot/surface`,
+        data: { surface: 'accessibility', confirm: true },
+      });
+      assert.equal(await computerDialog.locator('.computer-screen').count(), 0);
+      assert.equal(accessibilityCaptures, 0);
+
+      await t.test(
+        'managed Mac shows its own Accessibility permission before it is granted',
+        async () => {
+          paired = false;
+          localConnected = true;
+          managedMac = true;
+          surface = 'browser';
+          const before = posts.length;
+          await page.goto(`${origin}/w/${workspaceId}?managed-mac`);
+          await page.locator('#open-computer').click();
+          const dialog = page.getByRole('dialog', { name: "Fixture Bot's computer" });
+          await dialog.getByText(/Execution on this Mac/).waitFor();
+          await dialog.getByText('Mac app control needs Accessibility permission').waitFor();
+          assert.equal(await dialog.getByRole('button', { name: 'Use local browser' }).count(), 0);
+          assert.equal(await dialog.getByLabel('Computer connection token').count(), 0);
+          await dialog.getByRole('button', { name: 'Mac apps', exact: true }).click();
+          await dialog.locator('.desktop-permissions').getByText('Not allowed yet').waitFor();
+          await dialog.getByText(/Enable BambooShift/).waitFor();
+          const selectMacApps = dialog.getByRole('button', { name: 'Use Mac apps' });
+          assert.equal(await selectMacApps.isDisabled(), true);
+          assert.equal(posts.length, before);
+
+          nativePermission = 'granted';
+          await dialog.getByRole('button', { name: 'Check permissions again' }).click();
+          await dialog
+            .locator('.desktop-permissions')
+            .getByText('Allowed', { exact: true })
+            .waitFor();
+          await selectMacApps.click();
+          await dialog.getByText(/Open Calculator.*Full access lets it proceed directly/).waitFor();
+          assert.deepEqual(posts.slice(before), [
+            {
+              path: `${root}/computer/bots/fixture-bot/surface`,
+              data: { surface: 'accessibility', confirm: true },
+            },
+          ]);
+          assert.equal(accessibilityCaptures, 0);
+        },
+      );
+      await t.test(
+        'saved local connection restores authorization from a disconnected bootstrap',
+        async () => {
+          paired = false;
+          localConnected = true;
+          managedMac = true;
+          nativePermission = 'granted';
+          surface = 'browser';
+          const before = posts.length;
+          await page.goto(`${origin}/w/${workspaceId}?unconnected&managed-mac`);
+          await page.locator('#open-computer').click();
+          let dialog = page.getByRole('dialog', { name: "Fixture Bot's computer" });
+          await dialog.getByText(/Execution on this Mac/).waitFor();
+          await dialog
+            .getByRole('region', { name: 'Default computer permissions' })
+            .getByText('Changes require confirmation', { exact: true })
+            .waitFor();
+          assert.equal(
+            await dialog.getByRole('button', { name: /^Full access/ }).isEnabled(),
+            true,
+          );
+          assert.equal(await dialog.getByRole('button', { name: 'Use local browser' }).count(), 0);
+          await page.goto(`${origin}/w/${workspaceId}?unconnected&managed-mac`);
+          await page.locator('#open-workspace-settings').click();
+          dialog = page.getByRole('dialog', { name: 'Settings' });
+          await dialog.getByRole('button', { name: 'Computer', exact: true }).click();
+          await dialog.getByText(/Execution on this Mac/).waitFor();
+          await dialog
+            .getByRole('region', { name: 'Default computer permissions' })
+            .getByText('Changes require confirmation', { exact: true })
+            .waitFor();
+          assert.equal(
+            await dialog.getByRole('button', { name: /^Full access/ }).isEnabled(),
+            true,
+          );
+          assert.equal(posts.length, before, 'restoring the connection never grants authorization');
+        },
+      );
       assert.deepEqual(unexpected, []);
       assert.deepEqual(errors, []);
     } finally {

@@ -1,7 +1,8 @@
 use super::{
     action_store,
     approvals::{self, ActionContext},
-    controller, controls, frames, lifecycle, model, screen_bindings, takeover_frames,
+    authorization, controller, controls, frames, lifecycle, model, screen_bindings,
+    takeover_frames,
     transport::Request as WorkerRequest,
     validation,
 };
@@ -98,7 +99,16 @@ pub async fn dispatch(
     let controller = state.computer.get(&state, store.clone()).await?;
     let authorize = controller::user_authority(&state, &actor);
     if method == Method::GET {
-        let result = match path.as_str() {
+        let mut result = match path.as_str() {
+            "authorization" => {
+                authorization::snapshot(
+                    &controller,
+                    agent.as_deref(),
+                    &actor.user_id,
+                    actor.is_owner,
+                )
+                .await?
+            }
             "status" => match agent.as_deref() {
                 Some(agent) => {
                     screen_bindings::status(&controller, agent, authorize.clone()).await?
@@ -158,6 +168,15 @@ pub async fn dispatch(
             }
             _ => return Err(ApiError::new(404, "电脑接口不存在。")),
         };
+        if path == "status" {
+            result["authorization"] = authorization::snapshot(
+                &controller,
+                agent.as_deref(),
+                &actor.user_id,
+                actor.is_owner,
+            )
+            .await?;
+        }
         actor.authorize(&state).await?;
         return Ok(Json(result).into_response());
     }
@@ -180,6 +199,16 @@ pub async fn dispatch(
             None
         };
     let result = match path.as_str() {
+        "authorization" => {
+            authorization::set(
+                &controller,
+                agent.as_deref(),
+                &actor,
+                &body,
+                authorize.clone(),
+            )
+            .await?
+        }
         "takeover/screenshot" => {
             crate::error::only_fields(&body, &[])?;
             return takeover_frames::private(
@@ -232,7 +261,14 @@ pub async fn dispatch(
             .await?
         }
         "surface" => {
-            controls::surface(&controller, agent.as_deref(), &body, authorize.clone()).await?
+            controls::surface(
+                &controller,
+                &actor.user_id,
+                agent.as_deref(),
+                &body,
+                authorize.clone(),
+            )
+            .await?
         }
         "takeover/start" => {
             crate::error::only_fields(&body, &[])?;

@@ -1,8 +1,10 @@
 mod agent_delegation_support;
 mod agent_primary_support;
+mod knowledge_acceptance_support;
 mod workspace_support;
 
-use agent_delegation_support::{Group, Model, finish};
+use agent_delegation_support::{Group, Model, call, finish};
+use knowledge_acceptance_support::{latest_tool, result, tools};
 use openbot_backend::workspace::Table;
 use serde_json::{Value, json};
 use std::sync::Arc;
@@ -301,8 +303,22 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
         None,
     )
     .await;
-    let model = Model::new(Arc::new(|_| {
-        Box::pin(async { finish("Checked the current approved skills.") })
+    let model = Model::new(Arc::new(move |body| {
+        Box::pin(async move {
+            if !tools(&body).contains(&"list_skills") {
+                return finish("Checked the current approved skills.");
+            }
+            let Some(raw) = latest_tool(&body) else {
+                return call("list_skills", json!({}));
+            };
+            let receipt = result(raw);
+            if let Some(skills) = receipt["skills"].as_array() {
+                assert_eq!(skills.len(), 1);
+                return call("read_skill", json!({"skillId":skills[0]["id"]}));
+            }
+            assert_eq!(receipt["content"], marker);
+            finish("Read the current approved skill.")
+        })
     }))
     .await;
     group.configure(&model).await;
@@ -324,7 +340,8 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
         .await;
     group.done().await;
     let system = agent_primary_support::system(&model.calls.lock().await[1]);
-    assert!(system.contains(marker));
+    assert!(system.contains("Evidence pass"));
+    assert!(!system.contains(marker));
     assert!(!system.contains(newer));
 
     let listing = shelf(&group).await;
@@ -340,8 +357,9 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
         .await;
     group.done().await;
     let records = model.calls.lock().await;
-    assert_eq!(records.len(), 3);
-    let system = agent_primary_support::system(&records[2]);
+    assert_eq!(records.len(), 5);
+    assert_eq!(result(latest_tool(&records[3]).unwrap())["content"], marker);
+    let system = agent_primary_support::system(&records[4]);
     assert!(!system.contains(marker));
     assert!(!system.contains(newer));
     drop(records);

@@ -5,6 +5,7 @@ import { botTeamProblem, confirmTeamConversation } from '../../botTeamDraft';
 import '../SmartTeamPanel.css';
 import type { TeamPlanActionsContext } from './createTeamPlanActions.types';
 import type { TeamStarterSelection } from './TeamStarterPicker';
+import { matchesReviewedTeamStarter } from './reviewedTeamStarter';
 export function createTeamPlanActions(readContext: () => TeamPlanActionsContext) {
   function accept(value: BotTeamPlan, replace = false, keepNewMemberDrafts = false) {
     const {
@@ -97,7 +98,11 @@ export function createTeamPlanActions(readContext: () => TeamPlanActionsContext)
       if (scope.current(ticket) && order === sequence.current) setLoading(false);
     }
   }
-  async function mutate(kind: 'start' | 'commit' | 'cancel', starter?: TeamStarterSelection) {
+  async function mutate(
+    kind: 'start' | 'commit' | 'cancel',
+    starter?: TeamStarterSelection,
+    reviewedStarter?: BotTeamDraft,
+  ) {
     const {
       scope,
       latest,
@@ -180,26 +185,69 @@ export function createTeamPlanActions(readContext: () => TeamPlanActionsContext)
     setError('');
     setNotice('');
     value.props.onBusy(true);
+    let pendingStep: typeof kind | 'open' = kind;
+    let staged: BotTeamPlan | undefined;
     try {
-      const result = await scope.request<BotTeamPlan>(
+      let result = await scope.request<BotTeamPlan>(
         kind === 'start' ? '/bot-team-plans' : `/bot-team-plans/${value.plan!.id}/${kind}`,
         'POST',
         kind === 'start' ? startRequest.current : kind === 'commit' ? commitRequest.current : {},
       );
       if (!scope.current(ticket)) return;
+      if (kind === 'start' && starter && reviewedStarter) {
+        if (result.requestId !== startRequest.current?.requestId)
+          throw new Error(uiText('bots:text_ebfa2d1c5168'));
+        if (
+          result.status === 'ready' &&
+          matchesReviewedTeamStarter(reviewedStarter, result.draft)
+        ) {
+          if (latest.current.props.disabled) {
+            accept(result, true);
+            return;
+          }
+          staged = result;
+          pendingStep = 'commit';
+          commitRequest.current = {
+            requestId: crypto.randomUUID(),
+            expectedRevision: result.revision,
+            draft: structuredClone(result.draft),
+          };
+          result = await scope.request<BotTeamPlan>(
+            `/bot-team-plans/${encodeURIComponent(staged.id)}/commit`,
+            'POST',
+            commitRequest.current,
+          );
+          if (!scope.current(ticket)) return;
+          if (result.id !== staged.id || result.status !== 'committed' || !result.result)
+            throw new Error(uiText('bots:text_ebfa2d1c5168'));
+        } else if (result.status === 'ready') {
+          setNotice(uiText('workspace:teamStarterChanged'));
+        }
+      }
       accept(result, true);
       setShowHistory(false);
+      if (staged && result.result) {
+        pendingStep = 'open';
+        const confirmed = await confirmTeamConversation(scope, result.result.conversationId);
+        if (scope.current(ticket) && !latest.current.props.disabled)
+          latest.current.props.onCreated(result, false, confirmed);
+      }
     } catch (cause) {
       if (!scope.current(ticket)) return;
       setError((cause as Error).message);
+      if (pendingStep === 'open') return;
+      if (staged) {
+        accept(staged, true);
+        setShowHistory(false);
+      }
       if (
         cause instanceof ApiError &&
         cause.status >= 400 &&
         cause.status < 500 &&
         cause.status !== 408
       ) {
-        if (kind === 'start') startRequest.current = undefined;
-        if (kind === 'commit') commitRequest.current = undefined;
+        if (pendingStep === 'start') startRequest.current = undefined;
+        if (pendingStep === 'commit') commitRequest.current = undefined;
       } else {
         uncertainRef.current = true;
         setUncertain(true);
@@ -409,7 +457,11 @@ export function createTeamPlanActions(readContext: () => TeamPlanActionsContext)
         latest.current.plan.status !== 'committed'
       )
         return;
-      latest.current.props.onCreated(confirmedPlan, start, confirmed);
+      latest.current.props.onCreated(
+        confirmedPlan,
+        start && !latest.current.props.openOnly,
+        confirmed,
+      );
     } catch (cause) {
       if (scope.current(ticket)) {
         entered.current = false;
