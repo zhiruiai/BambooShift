@@ -43,7 +43,7 @@ Widget _scene({
         offstage: offstage,
         child: BotAvatar(
           bot: {'avatar': 'orb', if (uploaded) 'avatarImageId': 'synthetic'},
-          family: defaultAvatarTheme,
+          family: classicAvatarTheme,
           blinkWhenIdle: active,
           sustainMotion: active,
           motion: motion,
@@ -72,24 +72,24 @@ void main() {
       int.parse('ff${shared['color'].substring(1)}', radix: 16),
     );
     expect(classicAvatarShapes, shared['shapes']);
-    expect(defaultAvatarTheme, classicAvatarTheme);
+    expect(defaultAvatarTheme, colorfulAvatarTheme);
     expect(originalAvatarThemes, hasLength(5));
     expect(originalAvatarThemes, isNot(contains(classicAvatarTheme)));
-    expect(avatarThemes, hasLength(46));
-    expect(avatarThemes.toSet(), hasLength(46));
+    expect(avatarThemes, hasLength(47));
+    expect(avatarThemes.toSet(), hasLength(47));
     expect(
       classicAvatarShapes.values.every(communityAvatarThemes.contains),
       true,
     );
-    expect(validAvatarTheme(null), classicAvatarTheme);
-    expect(validAvatarTheme('missing-theme'), classicAvatarTheme);
+    expect(validAvatarTheme(null), colorfulAvatarTheme);
+    expect(validAvatarTheme('missing-theme'), colorfulAvatarTheme);
     for (final value in [...originalAvatarThemes, ...communityAvatarThemes]) {
       expect(validAvatarTheme(value), value);
     }
   });
 
   test(
-    'fresh sessions use classic while explicit saved themes survive restart',
+    'fresh sessions use colorful characters while explicit saved themes survive restart',
     () async {
       for (final saved in [
         null,
@@ -255,7 +255,7 @@ void main() {
 
   for (final (language, label) in [('en', 'Classic black'), ('zh', '经典黑')]) {
     testWidgets(
-      '$language classic is the first selectable theme on a narrow phone',
+      '$language classic remains a selectable theme on a narrow phone',
       (tester) async {
         tester.view
           ..devicePixelRatio = 1
@@ -279,7 +279,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(
           tester.widget<BotAvatar>(find.byType(BotAvatar).first).family,
-          'classic',
+          'colorful',
         );
         expect(find.text(label), findsOneWidget);
         await tester.tap(find.text(label));

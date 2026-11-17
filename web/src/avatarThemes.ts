@@ -1,5 +1,6 @@
 import catalog from '../../shared/avatar-packs/catalog.json';
 import classic from '../../shared/avatar-classic.json';
+import colorful from '../../shared/avatar-colorful.json';
 import { AVATAR_ROLE_COLORS, displayAvatarColor } from '../../shared/avatar-palette';
 import { uiText, localizedData, currentLanguage } from './i18n';
 
@@ -12,16 +13,22 @@ export const ORIGINAL_AVATAR_THEMES = [
 ] as const;
 export type OriginalAvatarTheme = (typeof ORIGINAL_AVATAR_THEMES)[number];
 export type CommunityAvatarTheme = `open-avatar-${string}` | `grokbot-${string}`;
-export const DEFAULT_AVATAR_THEME = 'classic' as const;
+export const DEFAULT_AVATAR_THEME = 'colorful' as const;
 export const CLASSIC_AVATAR = classic;
-export type AvatarTheme = OriginalAvatarTheme | CommunityAvatarTheme | typeof DEFAULT_AVATAR_THEME;
-export const BUILTIN_AVATAR_THEMES = [DEFAULT_AVATAR_THEME, ...ORIGINAL_AVATAR_THEMES] as const;
+export type AvatarTheme =
+  OriginalAvatarTheme | CommunityAvatarTheme | 'classic' | typeof DEFAULT_AVATAR_THEME;
+export const BUILTIN_AVATAR_THEMES = [
+  DEFAULT_AVATAR_THEME,
+  'classic',
+  ...ORIGINAL_AVATAR_THEMES,
+] as const;
 export const COMMUNITY_AVATAR_PACKS = catalog.packs;
 export const AVATAR_THEMES: readonly AvatarTheme[] = [
   ...BUILTIN_AVATAR_THEMES,
   ...catalog.packs.flatMap((pack) => pack.themes.map((theme) => theme.id as CommunityAvatarTheme)),
 ];
 export const AVATAR_THEME_NAMES: Record<AvatarTheme, string> = localizedData(() => ({
+  colorful: currentLanguage() === 'en' ? colorful.label.en : colorful.label.zh,
   classic: currentLanguage() === 'en' ? classic.label.en : classic.label.zh,
   companions: uiText('common:text_ae47ea41c651'),
   pandas: uiText('common:text_e9f782e9c2b6'),

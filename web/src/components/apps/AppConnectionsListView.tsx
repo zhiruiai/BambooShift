@@ -7,6 +7,7 @@ import {
   Link2,
   Loader2,
   Monitor,
+  MessageCircle,
   Plus,
   RefreshCw,
   Search,
@@ -96,8 +97,18 @@ export function AppConnectionsListView({
       </div>
       <div className="apps-scroll" ref={listScroll}>
         {feedback}
-        {(props.packagedSkills || model.personalOwner) && (
+        {
           <div className="apps-private-tools">
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={busy}
+              onClick={() => navigate('channels')}
+            >
+              <MessageCircle size={16} aria-hidden="true" />
+              {uiText('workspace:messageChannelsTitle')}
+              <ChevronRight size={14} aria-hidden="true" />
+            </button>
             {props.packagedSkills && (
               <button
                 type="button"
@@ -135,7 +146,7 @@ export function AppConnectionsListView({
               </>
             )}
           </div>
-        )}
+        }
         {props.initialSharedBotId && publisher}
         <AppProviderCatalog
           apps={apps}
@@ -220,7 +231,7 @@ export function AppConnectionsListView({
             title={uiText('apps:text_23a052718902')}
             text={
               props.modelConfigured
-                ? props.modelLabel
+                ? uiText('workspace:environmentModelReady')
                 : props.canManage
                   ? uiText('apps:text_512212d52261')
                   : uiText('apps:text_c81d5f0c9971')

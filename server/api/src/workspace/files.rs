@@ -105,6 +105,7 @@ pub async fn upload(
             .ok_or_else(|| ApiError::new(404, "会话不存在。"))?;
     }
     let directory = Directory::open(&store.directory, true)?;
+    let display_name = name;
     let (name, uploaded) = directory.upload(name, &bytes, &id)?;
     let mut file =
         json!({"id":id,"name":name,"size":bytes.len(),"type":file_type,"createdAt":iso(now())});
@@ -113,7 +114,7 @@ pub async fn upload(
     }
     WorkspaceStore::put_in(&mut tx, Table::Files, &file).await?;
     let message = if let Some(cid) = conversation {
-        let message = json!({"id":uuid::Uuid::new_v4().to_string(),"conversationId":cid,"role":"user","kind":"file","userId":grant.user_id,"content":name,"createdAt":file["createdAt"],"metadata":{"fileId":id,"size":bytes.len(),"author":{"id":grant.user_id,"name":grant.user_name,"kind":"user"}}});
+        let message = json!({"id":uuid::Uuid::new_v4().to_string(),"conversationId":cid,"role":"user","kind":"file","userId":grant.user_id,"content":display_name,"createdAt":file["createdAt"],"metadata":{"fileId":id,"name":display_name,"size":bytes.len(),"author":{"id":grant.user_id,"name":grant.user_name,"kind":"user"}}});
         WorkspaceStore::put_in(&mut tx, Table::Messages, &message).await?;
         Some(message)
     } else {

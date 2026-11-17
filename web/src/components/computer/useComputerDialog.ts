@@ -166,6 +166,7 @@ export function useComputerDialog({
     privateFramesPaused = useRef(true),
     mounted = useRef(true),
     statusSequence = useRef(0),
+    computerStatusSequence = useRef(0),
     controlTransition = useRef(false),
     cloudPreparing = useRef(false),
     observationRequests = useRef(new Map<string, Promise<void>>());
@@ -225,7 +226,6 @@ export function useComputerDialog({
     screenshot,
   } = createComputerObservation(readActionContext);
   const loadActions = watch ? observeActions : () => Promise.resolve();
-
   const { prepareCloudStart, run, decideAction, connection } =
     createComputerConnectionActions(readActionContext);
 
@@ -322,8 +322,9 @@ export function useComputerDialog({
     setPanelState(next);
   };
 
+  const lifecycleActions = createComputerLifecycleActions(readActionContext);
   const { checkComputer, chooseLifecycle, submitLifecycle, prepareScreen, selectSurface } =
-    createComputerLifecycleActions(readActionContext);
+    lifecycleActions;
   const lifecycleLocalBlock =
     controlled || otherControlled
       ? uiText('computer:text_231bcfee98d9')
@@ -337,6 +338,7 @@ export function useComputerDialog({
   );
 
   const actionContext = {
+    machine,
     get teachingBlocked() {
       return teachingEligible && teachingBlockRef.current;
     },
@@ -374,6 +376,7 @@ export function useComputerDialog({
     setControlError,
     controlTransition,
     statusSequence,
+    computerStatusSequence,
     screenReady,
     takeoverSupported,
     usableLease,
@@ -421,6 +424,7 @@ export function useComputerDialog({
   };
   return {
     ...actionContext,
+    refreshPermissions: lifecycleActions.refreshPermissions,
     authorizationBusy,
     setAuthorizationBusy,
     isAccessibility,
@@ -441,7 +445,6 @@ export function useComputerDialog({
         : undefined,
     desktopScreenLabel,
     finish,
-    machine,
     account,
     cloudState,
     connectionPending,

@@ -46,7 +46,7 @@ const base: Message = {
   status: 'running',
   createdAt: '2026-11-16T10:00:00Z',
 };
-initializeAppearance().update({ avatarTheme: 'classic', useCustomAvatarTheme: false });
+initializeAppearance().update({ avatarTheme: 'colorful', useCustomAvatarTheme: false });
 
 function Fixture() {
   const [scene, setScene] = useState('thinking');

@@ -109,7 +109,7 @@
   "locationThisMac": "Execution on this Mac",
   "locationHelpMac": "Use the isolated browser on this Mac or choose Mac apps in the computer panel.",
   "macAppsScope": "Use Accessibility to identify controls in open Mac apps. Clicks and text replacements follow this computer’s authorization setting.",
-  "macAppsHelp": "On the Mac, open System Settings → Privacy & Security → Accessibility. Enable BambooShift or its listed helper or launcher, then refresh.",
+  "macAppsHelp": "On the Mac, open System Settings → Privacy & Security → Accessibility. Enable BambooShift or its listed helper or launcher, then choose Check permissions again. Your saved full access remains in place; no new grant or client restart is needed.",
   "macAppsUse": "Use Mac apps",
   "macAppsReady": "Mac app control is ready",
   "macAppsNeedsPermission": "Mac app control needs Accessibility permission",

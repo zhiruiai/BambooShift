@@ -34,6 +34,7 @@ async fn failed(t: &Teaching) -> Value {
 #[tokio::test]
 async fn revoked_owner_session_cancels_an_actual_model_request_and_never_commits_a_skill() {
     let t = Teaching::new().await;
+    let baseline = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let saved = t.review().await;
     let gate = Arc::new(Semaphore::new(0));
@@ -55,7 +56,7 @@ async fn revoked_owner_session_cancels_an_actual_model_request_and_never_commits
             .get(&t.f.workspace, &t.f.workspace)
             .await
             .unwrap();
-    assert!(ws.list(Table::Skills).await.unwrap().is_empty());
+    assert_eq!(json!(ws.list(Table::Skills).await.unwrap()), baseline);
     assert_eq!(calls.lock().await.len(), 1);
     assert!(matches!(t.request("GET", "", None).await.0, 401 | 403));
     task.abort();
@@ -66,6 +67,7 @@ async fn revoked_owner_session_cancels_an_actual_model_request_and_never_commits
 #[tokio::test]
 async fn changing_the_selected_model_while_generating_fences_the_late_result() {
     let t = Teaching::new().await;
+    let baseline = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let saved = t.review().await;
     let gate = Arc::new(Semaphore::new(0));
@@ -76,12 +78,7 @@ async fn changing_the_selected_model_while_generating_fences_the_late_result() {
     assert_eq!(status, 200, "{body}");
     assert_eq!(failed(&t).await["status"], "error");
     gate.add_permits(1);
-    assert!(
-        t.f.bootstrap().await["skills"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
+    assert_eq!(t.f.bootstrap().await["skills"], baseline);
     assert_eq!(calls.lock().await.len(), 1);
     task.abort();
     t.f.close().await;

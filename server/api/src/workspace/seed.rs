@@ -41,6 +41,9 @@ pub async fn initialize(store: &WorkspaceStore) -> Result<()> {
         )
         .await?;
     }
+    for agent in WorkspaceStore::list_in(&mut tx, Table::Agents).await? {
+        super::workflow_skills::ensure_foundation(&mut tx, &agent).await?;
+    }
     tx.commit().await?;
     super::credentials::collect(store).await?;
     Ok(())

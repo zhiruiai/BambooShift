@@ -171,7 +171,7 @@ test('actual child edits protect parent close without a parent rerender between 
   }
 });
 
-test('actual smart team shows its model, blocks unconfigured generation and retains failed goals for an explicit new request', async () => {
+test('actual smart team shows readiness without the model label, blocks unconfigured generation and retains failed goals for an explicit new request', async () => {
   const writes: any[] = [],
     env = environment();
   const ui = await harness(
@@ -196,7 +196,8 @@ test('actual smart team shows its model, blocks unconfigured generation and reta
     assert.equal(writes.length, 0);
     ui.setProps({ modelConfigured: true });
     await ui.flush();
-    assert.match(ui.copy, /GLM 工作模型/);
+    assert.match(ui.copy, /已配置，可开始工作/);
+    assert.doesNotMatch(ui.copy, /GLM 工作模型/);
     ui.button('生成组队方案').props.onClick();
     await ui.flush();
     assert.equal(ui.field('希望团队').props.value, team.goal);

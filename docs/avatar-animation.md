@@ -2,6 +2,8 @@
 
 BambooShift includes five original vector themes: Companions, Pandas, Dinosaurs, Chicks and Elephants, plus 22 Open Bot Avatar characters and 18 community GrokBot shapes. Settings groups the collections into a compact, scrollable picker. Each Bot keeps its role color; choosing a community character applies that silhouette across the workspace. Uploaded images remain unchanged.
 
+New workspaces default to Colorful characters: six distinct community GrokBot silhouettes retain each Bot's role color and task animation. Classic black remains optional. Explicit saved theme choices and uploaded avatars are preserved.
+
 The Web and desktop clients render layered SVG artwork. Flutter uses the same character data with native drawing. A Bot moves through idle, thinking, working, waiting for approval, success and failure. Status text provides the same information when motion is disabled.
 
 The browser and desktop clients draw the eyes in SVG. Flutter draws the matching eye layers over the same original artwork. Both consume the [shared geometry and task poses](../shared/avatar-face-motion.json). Recent task completions transition to their final expression. Historical results open with a static expression. Uploaded and shared images keep their original artwork, with gentle body motion while working in the browser and desktop clients; no eye layer is added.

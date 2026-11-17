@@ -109,7 +109,7 @@
   "locationThisMac": "执行位置 · 这台 Mac",
   "locationHelpMac": "可以使用这台 Mac 上的隔离浏览器，或在电脑面板中选择「Mac 应用」。",
   "macAppsScope": "使用辅助功能读取已打开的 Mac 应用控件。点击控件和替换文字按此电脑的授权设置执行。",
-  "macAppsHelp": "在 Mac 的「系统设置 → 隐私与安全性 → 辅助功能」中，为列表里的 BambooShift、桌面助手或启动程序授权，然后刷新状态。",
+  "macAppsHelp": "在 Mac 的「系统设置 → 隐私与安全性 → 辅助功能」中，为列表里的 BambooShift、桌面助手或启动程序授权，然后点击「重新检查权限」。已有的完全授权会保留，无需重新设置或重启客户端。",
   "macAppsUse": "使用 Mac 应用",
   "macAppsReady": "Mac 应用控制已就绪",
   "macAppsNeedsPermission": "Mac 应用控制需要辅助功能权限",

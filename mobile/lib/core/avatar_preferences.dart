@@ -1,7 +1,12 @@
 import 'classic_avatar.g.dart';
 import 'community_avatar_catalog.g.dart';
 
-const defaultAvatarTheme = classicAvatarTheme;
+const defaultAvatarTheme = colorfulAvatarTheme;
+const builtinAvatarThemes = [
+  defaultAvatarTheme,
+  classicAvatarTheme,
+  ...originalAvatarThemes,
+];
 const originalAvatarThemes = [
   'companions',
   'pandas',
@@ -10,8 +15,7 @@ const originalAvatarThemes = [
   'elephants',
 ];
 const avatarThemes = [
-  defaultAvatarTheme,
-  ...originalAvatarThemes,
+  ...builtinAvatarThemes,
   ...communityAvatarThemes,
 ];
 

@@ -12,8 +12,10 @@ export type CreationBotProfile = Pick<
   | 'modelProfileId'
 >;
 export type CreationRequest =
-  | { kind: 'bot'; requestId: string; profile: CreationBotProfile }
+  | { kind: 'bot'; requestId: string; profile: CreationBotProfile; starter?: CreationStarter }
   | { kind: 'group'; requestId: string; title: string; agentIds: string[] };
+
+export type CreationStarter = { id: string; language: 'zh-CN' | 'en' };
 
 export interface CreationReceipt {
   requestId: string;

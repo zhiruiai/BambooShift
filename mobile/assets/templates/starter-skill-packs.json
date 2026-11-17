@@ -1,0 +1,572 @@
+{
+  "bots": {
+    "research": ["evidence-review"],
+    "writing": ["editorial-review"],
+    "coordination": ["work-coordination"],
+    "engineering": ["code-delivery", "superpowers-engineering"],
+    "organization": ["knowledge-index"],
+    "briefing": ["decision-brief"],
+    "support": ["issue-triage"],
+    "analysis": ["data-quality"],
+    "recruitment": ["bot-design"],
+    "skill-curator": ["skill-discovery", "skill-creation"],
+    "connector-builder": ["connector-development"],
+    "engineering-lead": ["superpowers-engineering"],
+    "frontend-designer": ["frontend-design"],
+    "feishu-assistant": ["connector-development"],
+    "dingtalk-assistant": ["connector-development"],
+    "wecom-assistant": ["connector-development"]
+  },
+  "teams": {
+    "launch": {
+      "brief": ["work-coordination"],
+      "copy": ["editorial-review"],
+      "review": ["release-review"]
+    },
+    "close": {
+      "invoices": ["reconciliation"],
+      "expenses": ["reconciliation"],
+      "review": ["data-quality"]
+    },
+    "support": {
+      "triage": ["issue-triage"],
+      "repro": ["scenario-testing"],
+      "docs": ["editorial-review"]
+    },
+    "study": {
+      "guide": ["guided-learning"],
+      "lab": ["guided-learning"],
+      "review": ["editorial-review"]
+    },
+    "creator": {
+      "producer": ["content-production"],
+      "script": ["content-production"],
+      "review": ["evidence-review"]
+    },
+    "office": {
+      "coordinator": ["work-coordination"],
+      "tracker": ["work-coordination"],
+      "editor": ["decision-brief"]
+    },
+    "account-health": {
+      "signals": ["customer-review"],
+      "context": ["evidence-review"],
+      "followup": ["customer-review"]
+    },
+    "software-product": {
+      "lead": ["work-coordination"],
+      "product": ["requirements-review"],
+      "backend": ["api-contract", "superpowers-engineering"],
+      "frontend": ["ui-flow-review", "frontend-design"],
+      "qa": ["scenario-testing"],
+      "release": ["release-review"]
+    }
+  },
+  "packs": {
+    "evidence-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "证据核查",
+          "description": "核对关键主张、原始来源和证据差异。",
+          "instructions": "把问题拆成可核查的主张，优先采用有日期和适用范围的一手来源。逐条记录主张、出处、能支持的结论和不确定性。来源冲突时比较方法和范围，再给出可执行结论。",
+          "checklist": [
+            "每个关键主张都有可回查的链接或文档位置。",
+            "标记推断、相互矛盾的来源、缺失和过期证据。",
+            "说明当前结论能支持什么决定，以及什么新证据可能改变它。"
+          ]
+        },
+        "en": {
+          "name": "Evidence review",
+          "description": "Check consequential claims, primary sources, and conflicting evidence.",
+          "instructions": "Break the question into verifiable claims and prioritize dated primary sources with a clear scope. Record each claim, source, supported conclusion, and uncertainty. Compare method and scope when sources disagree before drawing an actionable conclusion.",
+          "checklist": [
+            "Every material claim links to a source or document location.",
+            "Label inference, conflicting sources, missing evidence and outdated information.",
+            "State the decision supported by the evidence and what could change it."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/claims.csv",
+        "content": "claim,source_url,location,date_utc,version,scope,confidence,open_question\n"
+      }
+    },
+    "editorial-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "写作与编辑复核",
+          "description": "按受众、事实和交付渠道完成文章或编辑稿。",
+          "instructions": "先确定受众、发布渠道和希望读者采取的行动。提炼主张和支持材料，再按读者需要安排结构。用清晰直接的语言起草并逐条核对事实。",
+          "checklist": [
+            "开头交代读者需要知道或做到什么。",
+            "检查术语、引文、数字、链接和格式。",
+            "交出可直接使用的版本，单独列出仍需确认的内容。"
+          ]
+        },
+        "en": {
+          "name": "Editorial review",
+          "description": "Draft or edit against an audience, evidence and delivery format.",
+          "instructions": "Identify the reader, publishing channel and desired action. Determine the core claim and support, arrange the piece for the reader, and draft in direct language. Verify each factual statement.",
+          "checklist": [
+            "Lead with what the reader needs to know or do.",
+            "Check terms, quotes, figures, links and formatting.",
+            "Deliver a usable version and list outstanding confirmations separately."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/task-guide.md",
+        "content": "# Task guide\n\n## Outcome and intended reader\n\n## Prerequisites\n\n## Steps\n\n## Check the result\n\n## If a step fails\n\n## Support and version\n"
+      }
+    },
+    "work-coordination": {
+      "locales": {
+        "zh-CN": {
+          "name": "协作计划",
+          "description": "将目标转为有负责人、依赖和验收信号的计划。",
+          "instructions": "明确成果和时间边界。按交付物拆分工作，只有经确认的人或 Bot 才标为负责人。对每项工作记录所需输入、输出、阻塞及交接方式。",
+          "checklist": [
+            "目标写明谁使用成果、何时用、怎样算完成。",
+            "每项任务有明确输出或显式待定项。",
+            "列出依赖顺序、当前阻塞和下一个检查点。"
+          ]
+        },
+        "en": {
+          "name": "Work coordination",
+          "description": "Turn a goal into owned deliverables, dependencies and acceptance checks.",
+          "instructions": "Identify the outcome and timing. Break the work into deliverables and use confirmed people or Bots as owners. For each item record required inputs, output, blockers and handoff.",
+          "checklist": [
+            "Say who will use the result, when and how success is checked.",
+            "Give each task a concrete output or an explicitly unresolved item.",
+            "List dependencies in order, current blockers and the next check-in."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/actions.csv",
+        "content": "kind,summary,owner,due_date,time_zone,status,follow_up,evidence\n"
+      }
+    },
+    "code-delivery": {
+      "locales": {
+        "zh-CN": {
+          "name": "代码交付核查",
+          "description": "从现有代码和回归证据交付可复查的变更。",
+          "instructions": "找到真实入口、已有行为和可复现的问题。沿现在的边界调整代码，验证用户路径和一个直接相关的失败或重试情形。给出改动入口、实际运行的命令及已知缺口。",
+          "checklist": [
+            "复现步骤指向实际入口并说明预期结果。",
+            "验证正常路径和相关错误、重试或兼容分支。",
+            "记录代码位置、运行命令及观察到的结果。"
+          ]
+        },
+        "en": {
+          "name": "Code delivery review",
+          "description": "Deliver a reviewable change from repository context and regression evidence.",
+          "instructions": "Locate the real entry point, existing behavior and a reproducible issue. Work within the current architecture, and verify the user flow and a directly relevant failure or retry. Record changed entry points, commands run and remaining gaps.",
+          "checklist": [
+            "Reproduction steps use the actual entry point and an expected result.",
+            "Verify the happy path and a relevant error, retry or compatibility branch.",
+            "Record code locations, commands and observed results."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/verification.json",
+        "content": "{\n  \"revision\": \"\",\n  \"environment\": \"\",\n  \"checks\": [\n    {\n      \"flow\": \"\",\n      \"expected\": \"\",\n      \"observed\": \"\",\n      \"status\": \"unrun\",\n      \"evidence\": \"\"\n    }\n  ]\n}\n"
+      }
+    },
+    "knowledge-index": {
+      "locales": {
+        "zh-CN": {
+          "name": "资料索引与交接",
+          "description": "按来源、版本和用途组织资料，交付可维护的索引。",
+          "instructions": "盘点素材并记录原始位置、所有者、日期、版本和访问边界。按实际查找方式确定栏目，用链接和明确状态表达关联或重叠。涉及归档、共享和移动时先让用户确认。",
+          "checklist": [
+            "每条索引可追溯到原件及版本。",
+            "区分现行、历史、重复和来源不足的条目。",
+            "说明接手人从何处查询、更新和核对索引。"
+          ]
+        },
+        "en": {
+          "name": "Knowledge index",
+          "description": "Organize source material into a maintainable index and handoff.",
+          "instructions": "Inventory files with their source, owner, date, revision and access boundaries. Group them by retrieval needs and represent relationships or duplicates with links and explicit status. Ask before archiving, sharing or moving files.",
+          "checklist": [
+            "Each entry traces to the source and revision.",
+            "Distinguish current, historical, duplicate and unverified items.",
+            "Explain where a successor searches, updates and verifies the index."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/index.csv",
+        "content": "source,title,topic,scope,last_verified,owner,canonical_reference\n"
+      }
+    },
+    "decision-brief": {
+      "locales": {
+        "zh-CN": {
+          "name": "决策简报",
+          "description": "整理一页决策简报、取舍和待核实事项。",
+          "instructions": "确认需要谁作出什么决定以及时间要求。把相关证据整理成结论、备选方案、影响和推荐下一步。把有决策影响的未知项和复查时间写明。",
+          "checklist": [
+            "首段写清要作出的决定和截止时间。",
+            "按相同标准比较可执行方案，引用关键证据。",
+            "列明未知项、负责人和后续检查点。"
+          ]
+        },
+        "en": {
+          "name": "Decision brief",
+          "description": "Produce a one-page decision brief with tradeoffs and open checks.",
+          "instructions": "Identify who must decide, the decision and its timing. Arrange relevant evidence into the conclusion, viable options, consequences and the next action. State material unknowns and the review date.",
+          "checklist": [
+            "Start with the decision and its deadline.",
+            "Compare viable options against consistent criteria and cite key facts.",
+            "Record open questions, owners and the next review."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/options.csv",
+        "content": "option,criterion,scope,value,evidence,tradeoff,reversible,open_question\n"
+      }
+    },
+    "issue-triage": {
+      "locales": {
+        "zh-CN": {
+          "name": "问题分流与复现",
+          "description": "按影响和证据路由问题，交付可用的复现单。",
+          "instructions": "收集受影响用户、环境、版本、发生时间、复现步骤、预期和实际结果。用已验证的影响确定优先级，补充安全的规避办法，并说明由谁继续调查。",
+          "checklist": [
+            "现象、影响、优先级与证据相符。",
+            "复现步骤足以供接手人运行，敏感信息已摘除。",
+            "写明已验证的规避办法和建议的处理队列。"
+          ]
+        },
+        "en": {
+          "name": "Issue triage",
+          "description": "Route issues by impact and evidence with a reproducible handoff.",
+          "instructions": "Collect affected users, environment, version, timing, reproduction, expected and actual results. Set priority based on verified impact. Include a verified workaround and identify who can investigate.",
+          "checklist": [
+            "Symptoms, impact and priority reflect the evidence.",
+            "Reproduction steps can be run by the recipient and omit private data.",
+            "Record a verified workaround and the next owning queue."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/issue.md",
+        "content": "# Issue\n\n## Impact and scope\n\n## Build and environment\n\n## Reproduction\n\n## Expected and observed\n\n## Evidence and related work\n\n## Suggested owner and next action\n"
+      }
+    },
+    "data-quality": {
+      "locales": {
+        "zh-CN": {
+          "name": "数据分析质量检查",
+          "description": "在统计前核对来源、粒度、缺失值和计算规则。",
+          "instructions": "确定分析对应的决定、时间范围、单位和观察粒度。记录实际读取的数据，先检查主键、缺失值、重复项和单位，再说明过滤条件、分母及计算方法。用独立汇总核对结果。",
+          "checklist": [
+            "写清数据覆盖范围和抽样限制。",
+            "检查主键、缺失值、时区、单位和分母。",
+            "用明细与总计相互核对，并保留复算步骤。"
+          ]
+        },
+        "en": {
+          "name": "Data quality review",
+          "description": "Check sources, granularity, missingness and calculations before reporting.",
+          "instructions": "Define the decision, time window, units and grain. Record what you read, then check keys, nulls, duplicates and units. Document filters, denominators and calculation methods, and reconcile with independent totals.",
+          "checklist": [
+            "State the data coverage and sampling limits.",
+            "Check keys, missingness, time zones, units and denominators.",
+            "Reconcile totals with detail rows and retain reproduction steps."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/exceptions.csv",
+        "content": "check,record_reference,expected,observed,affected_count,severity,next_step\n"
+      }
+    },
+    "bot-design": {
+      "locales": {
+        "zh-CN": {
+          "name": "Bot 招募检查表",
+          "description": "限定 Bot 职责、权限和可检验输出，形成待确认草案。",
+          "instructions": "优先检查可复用的 Bot，根据已知工作和可观察交付物识别职责缺口。缺少决定性信息时问一个具体问题。已有足够资料时调用当前可用的创建草案工具，交由拥有者审核。",
+          "checklist": [
+            "职责对应实际工作，不与已知 Bot 重复。",
+            "草案含明确输入、交付物和验收办法。",
+            "如需文件、账户或电脑，写成使用前提并通过正常授权处理。"
+          ]
+        },
+        "en": {
+          "name": "Bot design checklist",
+          "description": "Define a candidate Bot’s responsibilities, permissions and verifiable output.",
+          "instructions": "Check for suitable existing Bots and identify gaps from the actual work and observable deliverables. Ask one concrete question if an essential detail is missing. When actionable, use the available proposal tool for owner review.",
+          "checklist": [
+            "Tie the role to real work and check overlap with known Bots.",
+            "Describe inputs, deliverables and acceptance criteria.",
+            "State file, account or computer dependencies as prerequisites subject to normal authorization."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/bot-brief.json",
+        "content": "{\n  \"goal\": \"\",\n  \"role\": \"\",\n  \"inputs\": [],\n  \"deliverables\": [],\n  \"skills\": [],\n  \"tools_required\": [],\n  \"acceptance\": [],\n  \"open_questions\": []\n}\n"
+      }
+    },
+    "release-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "发布验收",
+          "description": "复核候选交付物、已运行检查、回退路径与发布决定。",
+          "instructions": "按用户目标核对候选交付物及准确版本。审查已执行的端到端检查和外部依赖。记录可复现步骤、开放缺陷、发布权限和回退触发条件，给出带证据的决定。",
+          "checklist": [
+            "能够定位要交付的版本、产物和可访问地址。",
+            "关键用户路径实际运行，结果可以独立复查。",
+            "交代已知问题、回退负责人和触发条件。"
+          ]
+        },
+        "en": {
+          "name": "Release review",
+          "description": "Review a candidate release, executed checks, rollback and the release decision.",
+          "instructions": "Confirm the candidate artifact and its exact version against the user goal. Review executed end-to-end checks and external dependencies. Record reproducible steps, open defects, release authority and rollback triggers before giving a decision.",
+          "checklist": [
+            "Locate the exact version, artifact and usable destination.",
+            "Run key user flows and retain independently reviewable results.",
+            "Record known defects, the rollback owner and trigger."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/release-gates.csv",
+        "content": "gate,applicable,owner,status,evidence,rollback_signal,notes\n"
+      }
+    },
+    "reconciliation": {
+      "locales": {
+        "zh-CN": {
+          "name": "对账复核",
+          "description": "对齐来源、期间和金额，复核差异并交接。",
+          "instructions": "确认期间、币种、金额口径和各账表完成状态。按可复核的对应键匹配记录，分别列出金额、时间和重复异常。重新合计已对及未对金额，保留原件和差异依据。",
+          "checklist": [
+            "固定期间、币种和对账所用的来源版本。",
+            "每项差异能回查两侧记录及匹配规则。",
+            "总额与明细一致，待办有负责人和复查日期。"
+          ]
+        },
+        "en": {
+          "name": "Reconciliation review",
+          "description": "Reconcile versions, periods and amounts, and hand off discrepancies.",
+          "instructions": "Confirm period, currency, amount conventions and source readiness. Match rows with documented keys, separate amount, timing and duplicate exceptions, and reconcile matched and unmatched totals. Retain source references.",
+          "checklist": [
+            "Record period, currency and source versions.",
+            "Every discrepancy traces to entries on both sides and the matching rule.",
+            "Totals reconcile to details and open items have owners and review dates."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/reconciliation.csv",
+        "content": "source,period,key,reported,calculated,currency,difference,reason,reviewer\n"
+      }
+    },
+    "requirements-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "需求与验收设计",
+          "description": "定义用户结果、边界条件和可执行的验收例。",
+          "instructions": "确定目标用户、要完成的操作、预期结果及现有摩擦。用真实场景写出最小可交付范围和可观察的验收行为。把需要跨实现或由拥有者选择的决定显式列出。",
+          "checklist": [
+            "明确主要用户路径和没有上下文的新用户入口。",
+            "为成功、失败和恢复各写可执行验收步骤。",
+            "列出影响范围的依赖、决定、风险和验收人。"
+          ]
+        },
+        "en": {
+          "name": "Requirements and acceptance",
+          "description": "Define user outcomes, boundaries and executable acceptance examples.",
+          "instructions": "Identify the user, task, desired result and current friction. Use real scenarios to define the smallest coherent scope and observable acceptance behavior. Record decisions that require owner input or cross-implementation agreement.",
+          "checklist": [
+            "Describe the primary path and the entry point for a new user.",
+            "Write executable checks for success, failure and recovery.",
+            "List scope-changing dependencies, decisions, risks and reviewer."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/acceptance.yaml",
+        "content": "goal: \"\"\nconstraints: []\nrequirements:\n  - id: \"\"\n    user_story: \"\"\n    given: \"\"\n    when: \"\"\n    then: \"\"\n    evidence: \"\"\nopen_decisions: []\n"
+      }
+    },
+    "api-contract": {
+      "locales": {
+        "zh-CN": {
+          "name": "后端契约与验证",
+          "description": "检查鉴权、数据边界、兼容性和持久化恢复。",
+          "instructions": "记录 API 请求、响应、授权主体、数据边界和权威存储。分析旧数据、并发、失败与重试，按业务事务边界验证普通请求和无权限请求。总结对调用方的影响。",
+          "checklist": [
+            "检查实际路由与授权主体，包括跨租户拒绝。",
+            "核对兼容字段、并发去重、回滚和恢复读。",
+            "列出可复测的请求与响应样例。"
+          ]
+        },
+        "en": {
+          "name": "API contract review",
+          "description": "Review authorization, data boundaries, compatibility and persistence recovery.",
+          "instructions": "Document requests, responses, authenticated actors, data boundaries and the source of truth. Consider existing records, concurrency, failure and retry. Verify authorized and unauthorized traffic at the transaction boundary.",
+          "checklist": [
+            "Check the real route and authenticated actor, including cross-tenant denial.",
+            "Verify compatibility fields, duplicate concurrent requests, rollback and recovery.",
+            "Provide reproducible request and response examples."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/contract-checks.json",
+        "content": "{\n  \"endpoint\": \"\",\n  \"method\": \"\",\n  \"owner\": \"\",\n  \"cases\": [\n    {\n      \"input\": \"\",\n      \"authorization\": \"\",\n      \"status\": 200,\n      \"expected_shape\": {},\n      \"retry_behavior\": \"\"\n    }\n  ]\n}\n"
+      }
+    },
+    "ui-flow-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "界面流程验收",
+          "description": "从正常入口验证操作、空态、错误和恢复。",
+          "instructions": "从用户常用入口进入，逐步检查操作和可观察反馈。对同一流程验证加载、空态、失败和重试。使用键盘、缩窄窗口并确认局部更新不会丢掉焦点或输入。",
+          "checklist": [
+            "从常用入口验证完整用户任务。",
+            "检查键盘、焦点、状态提示和窄窗口布局。",
+            "失败后能回到可操作状态，保留用户可复用的输入。"
+          ]
+        },
+        "en": {
+          "name": "UI flow review",
+          "description": "Verify actions, empty and error states, and recovery through the normal entry point.",
+          "instructions": "Start where the user normally enters and verify each action and observable feedback. Exercise loading, empty, error and retry states. Use the keyboard and a narrow viewport, and check focus and input after updates.",
+          "checklist": [
+            "Complete the task via its normal entry point.",
+            "Check keyboard access, focus, feedback and narrow layouts.",
+            "Verify recoverable errors preserve useful user input."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/ui-review.csv",
+        "content": "viewport,task,control,keyboard,expected_state,observed_state,evidence\n"
+      }
+    },
+    "scenario-testing": {
+      "locales": {
+        "zh-CN": {
+          "name": "场景验证",
+          "description": "把风险和验收标准转为可复现的用例与证据。",
+          "instructions": "按风险优先验证主路径、边界条件、失败恢复与权限。记录最小准备、步骤、预期和实际结果。对失败给出复现证据并在修复后先复测原用例。",
+          "checklist": [
+            "高风险行为和核心用户流程均有可执行用例。",
+            "每个结果有环境、版本、步骤和证据。",
+            "缺陷有影响、复现、负责人和复测结果。"
+          ]
+        },
+        "en": {
+          "name": "Scenario testing",
+          "description": "Turn risks and acceptance criteria into reproducible checks and evidence.",
+          "instructions": "Prioritize the main flow, boundary cases, recovery and authorization by risk. Record minimal setup, steps, expected behavior and observed outcomes. Attach reproduction evidence to failures and retest the original case after a fix.",
+          "checklist": [
+            "Cover high-risk behavior and the core user flow.",
+            "Every result includes environment, version, steps and evidence.",
+            "Defects record impact, reproduction, ownership and retest outcome."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/test-cases.csv",
+        "content": "case,viewport,entry,steps,expected,observed,status,evidence\n"
+      }
+    },
+    "guided-learning": {
+      "locales": {
+        "zh-CN": {
+          "name": "探究学习循环",
+          "description": "按问题、观察和复述组织一次可复盘的学习过程。",
+          "instructions": "从学习者能理解的一个问题开始。让对方先提出猜想，再选择安全且可观察的活动。记录观察与解释的区别，最后请学习者复述并用迁移问题检查理解。",
+          "checklist": [
+            "活动目标、材料和安全边界清楚。",
+            "保留猜想、观察、解释与新问题。",
+            "最后有自己的复述和一个迁移练习。"
+          ]
+        },
+        "en": {
+          "name": "Guided learning cycle",
+          "description": "Organize a learning activity around a question, observation and explanation.",
+          "instructions": "Start with one question the learner can understand. Ask for a prediction, then select a safe observable activity. Distinguish observations from explanations and end with a learner explanation and a transfer question.",
+          "checklist": [
+            "State the activity goal, materials and safety boundaries.",
+            "Record predictions, observations, explanations and new questions.",
+            "End with a learner explanation and a transfer exercise."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/exercise.md",
+        "content": "# Practice exercise\n\n- Goal and prerequisite\n- Example\n- Task and time limit\n- Hint\n- Expected evidence\n- Reflection question\n"
+      }
+    },
+    "content-production": {
+      "locales": {
+        "zh-CN": {
+          "name": "内容制作检查表",
+          "description": "把创意目标转成清晰分镜、素材需求和可验收成片。",
+          "instructions": "明确受众、渠道、时长和想传达的信息。按段落记录画面、声音、所需素材与来源。把未核实事实、授权不足和制作卡点留给复查人确认，交付版本与检查说明。",
+          "checklist": [
+            "分镜时长、画面与音频一致，主信息可理解。",
+            "关键说法有依据，每项外部素材有已知来源和授权状态。",
+            "说明输出尺寸、文件格式、交付位置和需要复查的事项。"
+          ]
+        },
+        "en": {
+          "name": "Content production checklist",
+          "description": "Turn a creative brief into a storyboard, asset list and reviewable output.",
+          "instructions": "Set the audience, channel, duration and intended message. For each segment specify visuals, sound, asset needs and sources. Flag unchecked claims, rights and production blockers before delivering a version for review.",
+          "checklist": [
+            "Check duration, visuals, audio and whether the main message comes through.",
+            "Record sources for claims and rights status for third-party assets.",
+            "State dimensions, format, delivery location and review items."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/production.csv",
+        "content": "segment,audience_intent,script,visual,source,duration_seconds,review_status\n"
+      }
+    },
+    "customer-review": {
+      "locales": {
+        "zh-CN": {
+          "name": "客户健康复盘",
+          "description": "将可核查的客户信号转为带依据的后续行动。",
+          "instructions": "明确复盘期间和合法使用的数据。按账户梳理使用、支持、续约和沟通信号，保留每条证据的时间及来源。说明风险判断的可信程度，并拟定由负责人确认的后续行动。",
+          "checklist": [
+            "每个客户信号有日期、来源和适用范围。",
+            "把实际迹象与解释分开，主动标记数据缺口。",
+            "跟进记录目的、负责人和时点，外发前取得授权。"
+          ]
+        },
+        "en": {
+          "name": "Customer health review",
+          "description": "Turn verifiable account signals into supported follow-up actions.",
+          "instructions": "Set the review period and authorized data sources. Summarize usage, support, renewal and communication signals with their dates and sources. State confidence in risk assessments and prepare follow-up for the responsible owner to confirm.",
+          "checklist": [
+            "Each account signal has a date, source and scope.",
+            "Separate observed signals from interpretation and flag missing data.",
+            "Record the purpose, owner and timing of follow-up, and authorize any external send."
+          ]
+        }
+      },
+      "artifact": {
+        "path": "assets/account-signals.csv",
+        "content": "account_reference,observed_at,metric,baseline,value,criterion,evidence,followup\n"
+      }
+    }
+  },
+  "foundation": ["web-research", "browser-use", "computer-use", "agent-desktop"]
+}

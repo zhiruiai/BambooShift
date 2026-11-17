@@ -219,9 +219,14 @@ export function SkillsDialog({
             current={currentSkillVersion(skills, reviewing)}
             busy={busy}
             onBack={() => setReviewId('')}
-            onApply={(transition, expectedActiveId) =>
-              onTransition(reviewing.id, transition, expectedActiveId)
-            }
+            onApply={async (transition, expectedActiveId) => {
+              const result = await onTransition(reviewing.id, transition, expectedActiveId);
+              if (result.ok) {
+                setView(transition === 'disable' ? 'history' : 'current');
+                setSelectedSkillId(reviewing.id);
+              }
+              return result;
+            }}
           />
         ) : (
           <>

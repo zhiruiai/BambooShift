@@ -149,7 +149,7 @@ pub(crate) async fn prepare(
         .map(|id| {
             id.as_str()
                 .filter(|id| model::opaque(id))
-                .ok_or_else(invalid)
+                .ok_or_else(|| ApiError::bad("fileId 必须使用当前聊天附件的精确 ID，不能填写文件名或路径。请读取聊天历史的 attachment.fileId，或从 workspace_list 获取 fileId 后重试。").with_code("INVALID_SKILL_SCRIPT"))
         })
         .transpose()?;
     if argv.iter().filter(|arg| *arg == INPUT_ARG).count() != usize::from(input_id.is_some()) {

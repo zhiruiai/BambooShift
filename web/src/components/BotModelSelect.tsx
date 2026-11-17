@@ -25,7 +25,6 @@ export function BotModelSelect(props: Props) {
   const sequence = useRef(0);
   const helpId = useId();
   const selected = profiles?.profiles.find((profile) => profile.id === props.value);
-  const active = profiles?.profiles.find((profile) => profile.id === profiles.activeProfileId);
   const unavailable = !!props.value && !!profiles && !selected?.configured;
 
   async function load() {
@@ -75,10 +74,7 @@ export function BotModelSelect(props: Props) {
             latest.current.onChange(id || null);
           }}
         >
-          <option value="">
-            {uiText('settings:botModelDefault')}
-            {active?.configured ? ` · ${active.name} · ${active.model}` : ''}
-          </option>
+          <option value="">{uiText('settings:botModelDefault')}</option>
           {props.value && !selected && (
             <option value={props.value} disabled>
               {uiText(loading ? 'settings:botModelLoading' : 'settings:botModelUnavailable')}
@@ -86,7 +82,7 @@ export function BotModelSelect(props: Props) {
           )}
           {profiles?.profiles.map((profile) => (
             <option key={profile.id} value={profile.id} disabled={!profile.configured}>
-              {profile.name} · {profile.provider} · {profile.model}
+              {profile.name}
               {!profile.configured ? ` · ${uiText('settings:botModelNotConfigured')}` : ''}
             </option>
           ))}

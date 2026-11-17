@@ -50,8 +50,13 @@ async fn real_pi_reads_all_paged_memories_and_the_captured_approved_skill() {
         let record = add_memory(&group.f, &group.ids[0], &body).await;
         expected_memories.insert(record["id"].as_str().unwrap().to_owned(), body);
     }
-    let expected_ids = skills
+    let expected_ids = group
+        .store
+        .list(openbot_backend::workspace::Table::Skills)
+        .await
+        .unwrap()
         .iter()
+        .filter(|record| record["agentId"] == group.ids[0] && record["status"] == "active")
         .map(|record| record["id"].as_str().unwrap().to_owned())
         .collect::<BTreeSet<_>>();
     let reached = Arc::new(Semaphore::new(0));
@@ -95,15 +100,31 @@ async fn real_pi_reads_all_paged_memories_and_the_captured_approved_skill() {
                 }
                 1 => {
                     let catalog = result(latest_tool(&body).unwrap());
-                    assert_eq!(catalog["total"], 8);
-                    assert_eq!(catalog["matched"], 8);
+                    assert_eq!(catalog["total"], json!(expected_ids.len()));
+                    assert_eq!(catalog["matched"], json!(expected_ids.len()));
                     assert!(catalog["nextCursor"].is_null());
                     let entries = catalog["skills"].as_array().unwrap();
                     let ids = entries
                         .iter()
                         .map(|row| {
                             assert_eq!(row["version"], 1);
-                            assert_eq!(row["description"], "Synthetic workflow description.");
+                            if row["name"]
+                                .as_str()
+                                .unwrap()
+                                .starts_with("Synthetic method")
+                            {
+                                assert_eq!(row["description"], "Synthetic workflow description.");
+                            } else {
+                                assert!(
+                                    [
+                                        "web-research",
+                                        "browser-use",
+                                        "computer-use",
+                                        "agent-desktop"
+                                    ]
+                                    .contains(&row["name"].as_str().unwrap())
+                                );
+                            }
                             assert!(row.get("content").is_none());
                             row["id"].as_str().unwrap().to_owned()
                         })

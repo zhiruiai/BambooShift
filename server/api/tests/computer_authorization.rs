@@ -36,6 +36,21 @@ async fn full_grant_runs_existing_and_future_actions_and_revoke_restores_approva
     let f = Fixture::new().await;
     let s = Server::start(&f.workspace).await;
     let connection = connect(&f, &s.worker).await;
+    for (member, expected, status) in [(true, &f.member, 403), (false, &f.owner, 409)] {
+        let (code, _) = f
+            .request(
+                "POST",
+                &f.path("/computer/permissions/refresh"),
+                Some(json!({"expectedTargetRevision":connection["targetRevision"]})),
+                member,
+                Some(expected),
+            )
+            .await;
+        assert_eq!(
+            code, status,
+            "native defaults must be owner-only and local-only"
+        );
+    }
     let pending = action(&f, false).await;
     assert_eq!(pending["status"], "pending");
     let member_pending = action(&f, true).await;

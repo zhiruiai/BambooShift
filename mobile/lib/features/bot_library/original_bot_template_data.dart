@@ -5,10 +5,12 @@ import 'package:flutter/services.dart';
 import '../../core/api.dart';
 
 class OriginalBotTemplate {
-  const OriginalBotTemplate(this.id, this.category, this.profile);
+  const OriginalBotTemplate(this.id, this.category, this.profile,
+      {this.foundationSkills = const []});
 
   final String id, category;
   final Json profile;
+  final List<String> foundationSkills;
 }
 
 Future<List<OriginalBotTemplate>> loadOriginalBotTemplates(
@@ -19,16 +21,29 @@ Future<List<OriginalBotTemplate>> loadOriginalBotTemplates(
   );
   final catalog = jsonDecode(source) as Json;
   final locale = language == 'en' ? 'en' : 'zh-CN';
+  final packs = jsonDecode(await rootBundle
+      .loadString('assets/templates/starter-skill-packs.json')) as Json;
+  final workflows = jsonDecode(await rootBundle.loadString(
+      'assets/skills/${locale == 'en' ? 'en' : 'zh'}.json')) as List;
+  final foundation = (packs['foundation'] as List)
+      .map((id) => (workflows
+          .cast<Json>()
+          .firstWhere((item) => item['id'] == id)['name'] as String))
+      .toList();
   return catalog.entries.map((entry) {
     final template = entry.value as Json;
     final localized = template['locales'][locale] as Json;
-    return OriginalBotTemplate(entry.key, localized['category'] as String, {
-      for (final field in ['name', 'role', 'description', 'instructions'])
-        field: localized[field] as String,
-      'avatar': template['avatar'] as String,
-      'color': template['color'] as String,
-      'avatarImageId': null,
-    });
+    return OriginalBotTemplate(
+        entry.key,
+        localized['category'] as String,
+        {
+          for (final field in ['name', 'role', 'description', 'instructions'])
+            field: localized[field] as String,
+          'avatar': template['avatar'] as String,
+          'color': template['color'] as String,
+          'avatarImageId': null,
+        },
+        foundationSkills: foundation);
   }).toList();
 }
 

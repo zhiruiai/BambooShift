@@ -1,4 +1,35 @@
 export default {
+  messageChannelsTitle: 'Messaging channels',
+  messageChannelsIntro:
+    'Start work from enterprise chat and return results to the original conversation. Choose a channel to review its setup.',
+  messageChannelsChoose: 'Choose a messaging channel',
+  messageChannelsNeedsSetup: 'Setup required',
+  messageChannelsConnect: 'Connect {{name}} with a Bot',
+  messageChannelsFlow: 'Enterprise message → dedicated Bot chat → original-message reply',
+  messageChannelsDeveloper: 'Developer setup',
+  messageChannelsStep1: 'Prepare an enterprise bot',
+  messageChannelsCredentials_feishu:
+    'Prepare the app ID, app secret and bot Open ID, then enable the persistent message connection.',
+  messageChannelsCredentials_dingtalk:
+    'Prepare the enterprise app AppKey and AppSecret, then enable bot Stream mode.',
+  messageChannelsCredentials_wecom:
+    'Prepare the AI bot Bot ID and Secret for its official persistent connection.',
+  messageChannelsStep2: 'Bind employees and dedicated chats',
+  messageChannelsBinding:
+    'Specify allowed employees, chats and threads. Bind each to a separate Bot chat using the corresponding user’s actual permissions.',
+  messageChannelsStep3: 'Check configuration and verify both directions',
+  messageChannelsVerification:
+    'Check the configuration offline, then start the separate bridge. Send a test in the enterprise app and verify the reply reaches its original conversation.',
+  messageChannelsBoundary:
+    'Templates do not connect enterprise accounts automatically. Text messages are supported; approvals stay in BambooShift and external messages cannot increase permissions.',
+  messageChannelsGuide: 'Read the setup guide',
+  messageChannelsCopy: 'Copy check command',
+  messageChannelsCopied: 'Check command copied',
+  messageChannelsTechnical: 'Protocol and open-source dependencies',
+  messageChannelsProtocol:
+    'Uses each platform’s official messaging protocol. The bridge runs separately from MCP tool connections and A2A agent communication.',
+  messageChannelsUpstream: 'View the official SDK',
+  environmentModelReady: 'Configured and ready to work',
   composerApps: 'Connect apps',
   composerAppsHint: 'Browse providers and review your workspace connections.',
   composerAppsKeywords:

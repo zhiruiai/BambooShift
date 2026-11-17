@@ -148,12 +148,6 @@ html[data-openbot-desktop='true'] .app-shell {
   border-radius: 0;
   box-shadow: none;
 }
-html[data-openbot-desktop='true'] .window-dots {
-  display: none;
-}
-html[data-openbot-desktop='true'] .app-wordmark {
-  display: block;
-}
 
 /* Existing chat actions keep keyboard and drag interactions inside the conversation. */
 .mention-menu > span {

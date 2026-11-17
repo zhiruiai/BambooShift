@@ -66,8 +66,10 @@ async fn owner_pi_drafts_are_exact_persistent_and_deduplicated() {
             let motifs = theme_schema["function"]["parameters"]["properties"]["motif"]["enum"]
                 .as_array()
                 .unwrap();
-            assert_eq!(motifs.len(), 45);
+            assert_eq!(motifs.len(), 47);
             for motif in [
+                "classic",
+                "colorful",
                 "companions",
                 "pandas",
                 "dinosaurs",

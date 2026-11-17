@@ -73,6 +73,8 @@ export const WEBSITE_WORKER_RUNTIME = String.raw`
       if (handles.has(row.key)) return handles.get(row.key);
       const item = new EventTarget();
       const classes = new Set(row.classes);
+      const attributes = Object.freeze(row.attributes || {});
+      let hasClass = Object.hasOwn(attributes, 'class') || classes.size > 0;
       let text = row.text;
       let value = row.value;
       const classList = {
@@ -84,7 +86,16 @@ export const WEBSITE_WORKER_RUNTIME = String.raw`
           return classes.has(name);
         },
       };
-      function updateClass() { emit('class', row.key, Array.from(classes).slice(0, 40).join(' ')); }
+      function updateClass() { hasClass = true; emit('class', row.key, Array.from(classes).slice(0, 40).join(' ')); }
+      // Read only the bounded attributes copied from this project's sanitized
+      // frame. The handle never receives a live Element or a mutation API.
+      function getAttribute(name) {
+        if (typeof name !== 'string' || name.length > 80) return null;
+        name = name.toLowerCase();
+        if (name.startsWith('data-ob-project')) return null;
+        if (name === 'class') return hasClass ? Array.from(classes).slice(0, 40).join(' ') : null;
+        return Object.hasOwn(attributes, name) ? attributes[name] : null;
+      }
       Object.defineProperties(item, {
         id: { value: row.id },
         tagName: { value: row.tag.toUpperCase() },
@@ -94,6 +105,8 @@ export const WEBSITE_WORKER_RUNTIME = String.raw`
         innerText: { get: () => text, set: (next) => { item.textContent = next; } },
         value: { get: () => value, set: (next) => { value = String(next).slice(0, 1000); emit('value', row.key, value); } },
         dataset: { value: Object.freeze(row.data) },
+        getAttribute: { value: getAttribute },
+        hasAttribute: { value: (name) => getAttribute(name) !== null },
         appendChild: { value: mount(row.key) },
       });
       for (const type of ['click', 'input', 'change']) {
@@ -297,6 +310,12 @@ export const WEBSITE_FRAME_RUNTIME = String.raw`
       key, id: node.id, tag: node.localName, classes: Array.from(node.classList).slice(0, 40),
       text: node.textContent.slice(0, 4000), value: typeof node.value === 'string' ? node.value.slice(0, 1000) : '',
       data: Object.fromEntries(Object.entries(node.dataset).filter(([name]) => !name.startsWith('obProject')).slice(0, 30)),
+      attributes: Object.fromEntries(Array.from(node.attributes)
+        .filter(({ name, value }) => value.length <= 1024 && !name.startsWith('data-ob-project') &&
+          (/^(?:data|aria)-[a-z0-9_-]{1,50}$/.test(name) ||
+            ['id', 'class', 'title', 'role', 'lang', 'dir', 'hidden', 'open', 'tabindex',
+              'type', 'value', 'checked', 'disabled', 'min', 'max', 'step', 'width', 'height'].includes(name)))
+        .slice(0, 50).map(({ name, value }) => [name, value])),
     }));
     const size = () => ({ width: Math.min(2048, Math.max(1, innerWidth)), height: Math.min(2048, Math.max(1, innerHeight)) });
     let offscreen;

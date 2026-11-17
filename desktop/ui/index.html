@@ -27,115 +27,121 @@
     </header>
     <main class="setup-layout">
       <section class="connection-panel" aria-labelledby="page-title">
-        <div class="identity">
-          <img
-            class="orb"
-            src="./logo.svg"
-            width="144"
-            height="144"
-            alt="BambooShift 吉祥物"
-            data-i18n-alt="mascot"
-          />
-        </div>
-        <h1 id="page-title" data-i18n="heading">连接你的工作空间</h1>
-        <p class="intro" data-i18n="intro">
-          在这台电脑创建工作空间，或连接已有的 BambooShift 服务。
-        </p>
-        <section class="local-workspace" aria-labelledby="start-local">
-          <button id="start-local" class="primary-button" type="button" disabled>
-            <span id="local-spinner" class="spinner" aria-hidden="true" hidden></span>
-            <span id="start-local-label" data-i18n="startLocal">在这台电脑开始</span>
-          </button>
-          <p id="local-description" class="local-description" data-i18n="localWorkspaceNote">
-            无需注册或登录，配置自己的模型后即可使用。对话和文件保存在这台电脑，退出应用会停止本机任务。
-          </p>
-          <label id="host-control-option" class="host-control-option" hidden>
-            <input id="host-control" type="checkbox" aria-describedby="host-control-help" />
-            <span>
-              <strong data-i18n="hostControl">允许整机操作</strong>
-              <small id="host-control-help" data-i18n="hostControlHelp">
-                开启整机桌面和本机终端。整机桌面需要录屏和辅助功能权限。只需点按控件或填表时，打开聊天里的「电脑
-                → Mac 应用」。
-              </small>
-            </span>
-          </label>
-          <p id="local-error" class="local-error" role="alert" hidden></p>
-          <button
-            id="cancel-local"
-            class="change-address"
-            type="button"
-            data-i18n="cancelLocal"
-            hidden
-          >
-            取消启动
-          </button>
-        </section>
-        <h2 class="existing-workspace" data-i18n="existingWorkspace">连接已有工作空间</h2>
-        <form id="connect-form" novalidate aria-busy="true">
-          <label class="field-label" for="workspace-url" data-i18n="address">工作空间地址</label>
-          <input
-            id="workspace-url"
-            name="workspace-url"
-            type="url"
-            inputmode="url"
-            autocomplete="url"
-            autocapitalize="off"
-            spellcheck="false"
-            value="http://127.0.0.1:3001"
-            placeholder="https://你的工作空间地址"
-            data-i18n-placeholder="addressPlaceholder"
-            aria-describedby="address-help"
-            maxlength="2048"
-            required
-            disabled
-          />
-          <div class="address-help" id="address-help">
-            <span data-i18n="secureAddress">远程工作空间请使用 https:// 地址。</span>
-            <button id="use-local" data-i18n="useLocal" type="button" disabled>填入本机地址</button>
+        <div class="setup-introduction">
+          <div class="identity">
+            <img
+              class="orb"
+              src="./logo.svg"
+              width="144"
+              height="144"
+              alt="BambooShift 吉祥物"
+              data-i18n-alt="mascot"
+            />
           </div>
-          <div id="error-panel" class="error-panel" role="alert" hidden>
-            <span class="error-symbol" aria-hidden="true">!</span>
+          <h1 id="page-title" data-i18n="heading">连接你的工作空间</h1>
+          <p class="intro" data-i18n="intro">
+            在这台电脑创建工作空间，或连接已有的 BambooShift 服务。
+          </p>
+          <div class="workspace-note">
+            <span class="note-icon" aria-hidden="true"></span>
             <div>
-              <strong data-i18n="unavailable">暂时无法连接</strong>
-              <p id="error-message"></p>
-              <p class="error-help" data-i18n="errorHelp">
-                请检查地址与网络，并确认工作空间正在运行。
+              <p data-i18n="accountLogin">
+                连接已有服务时，使用该服务的 BambooShift 账户登录；首次使用可在登录页注册。
+              </p>
+              <p data-i18n="returnHelp">
+                任务在服务端运行。只要服务仍在线，关闭客户端后任务也可以继续。
               </p>
             </div>
           </div>
-          <button id="connect-button" class="primary-button" type="submit" disabled>
-            <span id="connect-spinner" class="spinner" aria-hidden="true"></span>
-            <span id="connect-label">正在准备…</span>
-            <span id="connect-arrow" class="arrow" aria-hidden="true" hidden>↗</span>
-          </button>
-          <button
-            id="change-address"
-            data-i18n="changeAddress"
-            class="change-address"
-            type="button"
-            hidden
-          >
-            更换工作空间地址
-          </button>
-          <p id="connection-status" class="connection-status" role="status" aria-live="polite">
-            正在读取连接信息…
+          <p id="language-help" class="language-help" data-i18n="languageHelp">
+            仅保存于此客户端；工作空间内的语言可在其设置中选择。
           </p>
-        </form>
-        <div class="workspace-note">
-          <span class="note-icon" aria-hidden="true"></span>
-          <div>
-            <p data-i18n="accountLogin">
-              连接已有服务时，使用该服务的 BambooShift 账户登录；首次使用可在登录页注册。
-            </p>
-            <p data-i18n="returnHelp">
-              任务在服务端运行。只要服务仍在线，关闭客户端后任务也可以继续。
-            </p>
-          </div>
+          <p id="language-status" class="language-help" role="status" hidden></p>
         </div>
-        <p id="language-help" class="language-help" data-i18n="languageHelp">
-          仅保存于此客户端；工作空间内的语言可在其设置中选择。
-        </p>
-        <p id="language-status" class="language-help" role="status" hidden></p>
+        <div class="setup-actions">
+          <section class="local-workspace" aria-labelledby="start-local">
+            <button id="start-local" class="primary-button" type="button" disabled>
+              <span id="local-spinner" class="spinner" aria-hidden="true" hidden></span>
+              <span id="start-local-label" data-i18n="startLocal">在这台电脑开始</span>
+            </button>
+            <p id="local-description" class="local-description" data-i18n="localWorkspaceNote">
+              无需注册或登录，配置自己的模型后即可使用。对话和文件保存在这台电脑，退出应用会停止本机任务。
+            </p>
+            <label id="host-control-option" class="host-control-option" hidden>
+              <input id="host-control" type="checkbox" aria-describedby="host-control-help" />
+              <span>
+                <strong data-i18n="hostControl">允许整机操作</strong>
+                <small id="host-control-help" data-i18n="hostControlHelp">
+                  开启整机桌面和本机终端。整机桌面需要录屏和辅助功能权限。只需点按控件或填表时，打开聊天里的「电脑
+                  → Mac 应用」。
+                </small>
+              </span>
+            </label>
+            <p id="local-error" class="local-error" role="alert" hidden></p>
+            <button
+              id="cancel-local"
+              class="change-address"
+              type="button"
+              data-i18n="cancelLocal"
+              hidden
+            >
+              取消启动
+            </button>
+          </section>
+          <h2 class="existing-workspace" data-i18n="existingWorkspace">连接已有工作空间</h2>
+          <form id="connect-form" novalidate aria-busy="true">
+            <label class="field-label" for="workspace-url" data-i18n="address">工作空间地址</label>
+            <input
+              id="workspace-url"
+              name="workspace-url"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              autocapitalize="off"
+              spellcheck="false"
+              value="http://127.0.0.1:3001"
+              placeholder="https://你的工作空间地址"
+              data-i18n-placeholder="addressPlaceholder"
+              aria-describedby="address-help"
+              maxlength="2048"
+              required
+              disabled
+            />
+            <div class="address-help" id="address-help">
+              <span data-i18n="secureAddress">远程工作空间请使用 https:// 地址。</span>
+              <button id="use-local" data-i18n="useLocal" type="button" disabled>
+                填入本机地址
+              </button>
+            </div>
+            <div id="error-panel" class="error-panel" role="alert" hidden>
+              <span class="error-symbol" aria-hidden="true">!</span>
+              <div>
+                <strong data-i18n="unavailable">暂时无法连接</strong>
+                <p id="error-message"></p>
+                <p class="error-help" data-i18n="errorHelp">
+                  请检查地址与网络，并确认工作空间正在运行。
+                </p>
+              </div>
+            </div>
+            <button id="connect-button" class="primary-button" type="submit" disabled>
+              <span id="connect-spinner" class="spinner" aria-hidden="true"></span>
+              <span id="connect-label">正在准备…</span>
+              <span id="connect-arrow" class="arrow" aria-hidden="true" hidden>↗</span>
+            </button>
+            <button
+              id="change-address"
+              data-i18n="changeAddress"
+              class="change-address"
+              type="button"
+              hidden
+            >
+              更换工作空间地址
+            </button>
+            <p id="connection-status" class="connection-status" role="status" aria-live="polite">
+              正在读取连接信息…
+            </p>
+          </form>
+        </div>
       </section>
     </main>
   </body>

@@ -31,13 +31,14 @@ mod run_context;
 mod run_deadline;
 mod run_knowledge;
 mod selected_skill;
+mod skill_authoring;
 
 mod admission_gate;
 mod computer_tools;
-mod mac_app_launch;
 mod document_worker;
 mod exa_transport;
 mod file_delivery;
+mod mac_app_launch;
 mod persistence;
 mod routine_definitions;
 mod routine_tools;

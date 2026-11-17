@@ -24,9 +24,6 @@
   .message-content {
     max-width: min(91%, calc(100% - 40px));
   }
-  .app-wordmark {
-    display: none;
-  }
 }
 @media (min-width: 761px) and (max-width: 980px) {
   .app-shell.with-detail {
@@ -58,9 +55,6 @@
   .sidebar-toolbar {
     height: 73px;
     padding: 0 21px;
-  }
-  .window-dots {
-    display: none;
   }
   .app-wordmark {
     display: block;

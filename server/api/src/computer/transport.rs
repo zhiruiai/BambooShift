@@ -31,6 +31,7 @@ pub struct Target {
     closed: watch::Sender<bool>,
     queue: Mutex<()>,
     in_flight: AtomicUsize,
+    active_controls: AtomicUsize,
     drained: Notify,
     probe: Mutex<Option<Authority>>,
 }
@@ -59,6 +60,13 @@ pub struct Request {
     pub(super) legacy_frame_checked: bool,
 }
 impl Request {
+    fn is_observation(&self) -> bool {
+        self.method == Method::GET
+            && matches!(
+                self.path.as_str(),
+                "/health" | "/takeover/status" | "/screenshot"
+            )
+    }
     pub fn get(path: impl Into<String>) -> Self {
         Self {
             method: Method::GET,
@@ -116,6 +124,7 @@ impl Target {
             closed,
             queue: Mutex::new(()),
             in_flight: AtomicUsize::new(0),
+            active_controls: AtomicUsize::new(0),
             drained: Notify::new(),
             probe: Mutex::new(None),
         }))
@@ -131,6 +140,9 @@ impl Target {
     }
     pub fn active_count(&self) -> usize {
         self.in_flight.load(Ordering::Acquire)
+    }
+    pub(crate) fn active_control_count(&self) -> usize {
+        self.active_controls.load(Ordering::Acquire)
     }
     pub fn active(&self) -> Result<()> {
         if self.is_blocked() {
@@ -316,6 +328,10 @@ impl Target {
         {
             return Err(ApiError::bad("电脑请求无效。"));
         }
+        let control = !request.is_observation();
+        if control {
+            self.active_controls.fetch_add(1, Ordering::AcqRel);
+        }
         self.in_flight.fetch_add(1, Ordering::AcqRel);
         let target = self.clone();
         let (mut sender, receiver) = oneshot::channel();
@@ -323,6 +339,9 @@ impl Target {
             let result = target.supervise(request, authorize, &mut sender).await;
             let _ = sender.send(result);
             target.in_flight.fetch_sub(1, Ordering::AcqRel);
+            if control {
+                target.active_controls.fetch_sub(1, Ordering::AcqRel);
+            }
             target.drained.notify_waiters();
         });
         receiver.await.map_err(|_| model::blocked())?

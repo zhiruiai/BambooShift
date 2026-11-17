@@ -49,6 +49,9 @@ export default {
   storageUnavailable:
     'Preferences cannot be saved on this device right now. Changes still apply to this page.',
   appearance: 'Appearance',
+  avatarThemePages: 'Avatar pages',
+  avatarPreviousPage: 'Previous avatar page',
+  avatarNextPage: 'Next avatar page',
   avatarSyncTitle: 'Sync avatar theme',
   avatarSyncHelp:
     'Save the selected theme and any custom design for your account in this workspace.',

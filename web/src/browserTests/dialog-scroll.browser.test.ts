@@ -23,6 +23,13 @@ async function verifyScroll(dialog: Locator, page: Page) {
   if (!(await body.count())) {
     body = dialog.locator('.skill-detail-body:visible');
     if (!(await body.count())) body = dialog.locator('.skill-browser:visible');
+    if (!(await body.count())) {
+      const catalog = dialog.locator(':scope > .starter-catalog');
+      body =
+        (await catalog.evaluate((el) => getComputedStyle(el).overflowY)) === 'auto'
+          ? catalog
+          : dialog.locator('.starter-selected-scroll');
+    }
   }
   const header = dialog.locator(':scope > .modal-header');
   const before = await header.boundingBox();
@@ -32,7 +39,10 @@ async function verifyScroll(dialog: Locator, page: Page) {
       el.querySelector(':scope > .modal-body') ||
       [...el.querySelectorAll<HTMLElement>('.skill-detail-body, .skill-browser')]
         .filter((node) => node.getClientRects().length > 0)
-        .sort((a) => (a.classList.contains('skill-detail-body') ? -1 : 1))[0];
+        .sort((a) => (a.classList.contains('skill-detail-body') ? -1 : 1))[0] ||
+      [...el.querySelectorAll<HTMLElement>('.starter-catalog, .starter-selected-scroll')].find(
+        (node) => getComputedStyle(node).overflowY === 'auto',
+      )!;
     const header = el.querySelector(':scope > .modal-header')!;
     return {
       outerScroll: el.scrollHeight - el.clientHeight,
@@ -63,7 +73,7 @@ async function verifyScroll(dialog: Locator, page: Page) {
       const close = header.querySelector('button')!;
       const button = close.getBoundingClientRect();
       return {
-        noBleed: !gap?.closest('.modal-body'),
+        noBleed: !gap?.closest('.modal-body, .starter-catalog'),
         title: !!title?.closest('.modal-header'),
         close: close.contains(
           document.elementFromPoint(button.x + button.width / 2, button.y + button.height / 2),

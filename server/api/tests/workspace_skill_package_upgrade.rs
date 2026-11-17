@@ -33,7 +33,15 @@ async fn old_text_versions_get_real_packages_without_changing_their_workflow_rec
     let config = (*f.state.config).clone();
     f.state.close().await;
     f.state = State::open(config.clone()).await.unwrap();
-    let migrated = f.bootstrap().await["skills"].as_array().unwrap().clone();
+    let migrated_all = f.bootstrap().await["skills"].clone();
+    let migrated: Vec<_> = migrated_all
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|s| s["name"] == "月度 Audit")
+        .cloned()
+        .collect();
+    assert_eq!(migrated.len(), originals.len());
     let store = f
         .state
         .workspace
@@ -71,7 +79,7 @@ async fn old_text_versions_get_real_packages_without_changing_their_workflow_rec
     }
     f.state.close().await;
     f.state = State::open(config).await.unwrap();
-    assert_eq!(f.bootstrap().await["skills"], json!(migrated));
+    assert_eq!(f.bootstrap().await["skills"], migrated_all);
     let (code, new) = post(&f, "/skills", json!({
         "agentId":agent,"name":"月度 Audit","description":"","content":"Verify the current data."
     })).await;
@@ -104,13 +112,14 @@ async fn a_plain_text_update_cannot_discard_a_reviewed_version_with_package_reso
     )
     .await;
     assert_eq!(status, 200, "{active}");
+    let before_rejected_update = f.bootstrap().await["skills"].clone();
     let mut blind_update = draft.clone();
     blind_update.as_object_mut().unwrap().remove("skillPackage");
     blind_update["content"] = json!("Update text without the package.");
     let (status, rejected) = post(&f, "/skills", blind_update).await;
     assert_eq!(status, 409, "{rejected}");
     assert_eq!(rejected["code"], "SKILL_PACKAGE_REQUIRED");
-    assert_eq!(f.bootstrap().await["skills"], json!([active]));
+    assert_eq!(f.bootstrap().await["skills"], before_rejected_update);
     draft["content"] = json!("Read the new details in references/checklist.md.");
     let (status, replacement) = post(&f, "/skills", draft).await;
     assert_eq!(status, 201, "{replacement}");

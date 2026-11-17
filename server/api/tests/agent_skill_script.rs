@@ -138,7 +138,7 @@ async fn managed_skill_runs_only_after_approval_with_exact_package_and_attached_
     let file_id = file.value["id"].as_str().unwrap();
     let file_name = file.value["name"].as_str().unwrap();
     let tool_args = Arc::new(json!({"skillId":skill_id,"path":"scripts/profile.py",
-        "args":["__SKILL_INPUT__"],"fileId":file_id}));
+        "args":["__SKILL_INPUT__"]}));
     let model = Model::new(Arc::new(move |body| {
         let args = tool_args.clone();
         Box::pin(async move {
@@ -153,7 +153,31 @@ async fn managed_skill_runs_only_after_approval_with_exact_package_and_attached_
                     .iter()
                     .any(|tool| tool["function"]["name"] == "run_skill_script")
             );
-            call("run_skill_script", (*args).clone())
+            let prompt: Value = messages
+                .iter()
+                .filter(|message| message["role"] == "user")
+                .flat_map(|message| {
+                    let content = &message["content"];
+                    content.as_str().into_iter().chain(
+                        content
+                            .as_array()
+                            .into_iter()
+                            .flatten()
+                            .filter(|block| block["type"] == "text")
+                            .filter_map(|block| block["text"].as_str()),
+                    )
+                })
+                .find_map(|content| serde_json::from_str::<Value>(content).ok())
+                .unwrap();
+            let attachment = prompt["history"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find_map(|message| message.get("attachment"))
+                .expect("The real model context must include the server-issued file ID");
+            let mut args = (*args).clone();
+            args["fileId"] = attachment["fileId"].clone();
+            call("run_skill_script", args)
         })
     }))
     .await;

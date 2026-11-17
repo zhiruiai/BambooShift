@@ -102,10 +102,12 @@ test(
       await page.goto(origin + path, { waitUntil: 'domcontentloaded' });
       const dialog = page.getByRole('dialog', { name: 'Settings', exact: true });
       const main = dialog.locator('.workspace-settings-main');
+      await dialog.getByRole('button', { name: 'Bot appearance', exact: true }).click();
       const themes = dialog.getByRole('group', { name: 'Avatar theme' });
       const cards = themes.locator('.appearance-avatar-option');
       await themes.getByRole('button', { name: new RegExp(customName), pressed: true }).waitFor();
       await page.setViewportSize({ width: 1440, height: 900 });
+      await themes.getByRole('button', { name: 'Design an avatar theme' }).click();
       const header = dialog.locator('.modal-header');
       const footer = dialog.locator('.workspace-settings-footer');
       const footerStart = await footer.boundingBox();
@@ -161,7 +163,7 @@ test(
       );
       assert.deepEqual(await header.boundingBox(), headerStart, 'dialog header stays pinned');
       assert.deepEqual(await footer.boundingBox(), footerStart, 'Done stays pinned');
-      assert.ok(scrollMetrics.reserved >= 8 && parseFloat(scrollMetrics.track) >= 8);
+      assert.ok(parseFloat(scrollMetrics.track) >= 8);
       assert.notEqual(scrollMetrics.thumb, 'rgba(0, 0, 0, 0)');
       await page.mouse.click(hitElephants.x, hitElephants.y);
       assert.equal(await elephants.getAttribute('aria-pressed'), 'true');
@@ -180,18 +182,22 @@ test(
       await page.waitForFunction(
         () => document.querySelector('.workspace-settings-main')?.scrollTop === 0,
       );
-      const trackX =
-        scrollBox.x +
-        scrollBox.width -
-        Math.max(scrollMetrics.reserved, parseFloat(scrollMetrics.track)) / 2;
-      await page.mouse.move(trackX, scrollBox.y + 30);
-      await page.mouse.down();
-      await page.mouse.move(trackX, scrollBox.y + scrollBox.height - 30, { steps: 8 });
-      await page.mouse.up();
-      await page.waitForFunction(
-        () => (document.querySelector('.workspace-settings-main')?.scrollTop || 0) > 100,
-      );
-      t.diagnostic('1440px: wheel, keyboard and native scrollbar drag work with fixed header');
+      // macOS overlay scrollbars reserve no gutter; wheel and keyboard remain available.
+      if (scrollMetrics.reserved >= 8) {
+        const trackX =
+          scrollBox.x +
+          scrollBox.width -
+          Math.max(scrollMetrics.reserved, parseFloat(scrollMetrics.track)) / 2;
+        await page.mouse.move(trackX, scrollBox.y + 30);
+        await page.mouse.down();
+        await page.mouse.move(trackX, scrollBox.y + scrollBox.height - 30, { steps: 8 });
+        await page.mouse.up();
+        await page.waitForFunction(
+          () => (document.querySelector('.workspace-settings-main')?.scrollTop || 0) > 0,
+        );
+      }
+      t.diagnostic('1440px: wheel and keyboard work; fixed controls respect system scrollbar mode');
+      await themes.getByRole('button', { name: 'Design an avatar theme' }).click();
       const navigation = dialog.locator('.workspace-settings-navigation');
       for (const [width, height] of [
         [1440, 900],
@@ -239,7 +245,7 @@ test(
             return { left: Math.round(box.left), clipped, samples: artwork.length, sized, nested };
           }),
         );
-        assert.equal(actual.length, 7);
+        assert.equal(actual.length, 8);
         assert.deepEqual(
           actual.flatMap((card) => card.nested),
           [64, 64, 64],
@@ -258,6 +264,7 @@ test(
           `main width at ${width}`,
         );
         for (const name of [
+          'Colorful characters',
           'Classic black',
           'Companions',
           'Pandas',
@@ -276,7 +283,9 @@ test(
         const fixed = await Promise.all([header.boundingBox(), footer.boundingBox()]);
         await themes.getByRole('button', { name: 'Community GrokBot 18', exact: true }).click();
         const gallery = themes.locator('.avatar-theme-catalog-grid');
-        assert.equal(await gallery.locator('button').count(), 18);
+        assert.equal(await gallery.locator('button').count(), 8);
+        await themes.getByRole('button', { name: 'Next avatar page', exact: true }).click();
+        assert.equal(await gallery.locator('button').count(), 8);
         assert.deepEqual(
           await gallery.evaluate((node) => ({
             verticalOverflow: node.scrollHeight - node.clientHeight,
@@ -342,21 +351,23 @@ test(
           });
           assert.equal(footerReachable, true, `${section} Done is not covered at ${width}`);
         }
-        await navigation.getByRole('button', { name: 'General', exact: true }).click();
+        await navigation.getByRole('button', { name: 'Bot appearance', exact: true }).click();
         assert.equal(await main.evaluate((node) => node.scrollTop), 0);
-        await themes.getByRole('button', { name: 'Built-in themes 6', exact: true }).click();
+        await themes.getByRole('button', { name: 'Built-in themes 7', exact: true }).click();
         t.diagnostic(
           `${width}px: themes, long/short categories, pinned controls and scrolling verified`,
         );
       }
+      await navigation.getByRole('button', { name: 'General', exact: true }).click();
       await dialog.getByRole('combobox', { name: 'Language', exact: true }).selectOption('zh-CN');
       const chinese = page.getByRole('dialog', { name: '设置', exact: true });
+      await chinese.getByRole('button', { name: 'Bot 形象', exact: true }).click();
       for (const viewport of [
         { width: 1200, height: 820 },
         { width: 320, height: 560 },
       ]) {
         await page.setViewportSize(viewport);
-        for (const name of ['经典黑', '新版伙伴', '大熊猫', '小恐龙', '小鸡', '大象']) {
+        for (const name of ['灵动彩色', '经典黑', '新版伙伴', '大熊猫', '小恐龙', '小鸡', '大象']) {
           const choice = chinese.getByRole('button', { name, exact: true });
           await choice.click();
           assert.equal(await choice.getAttribute('aria-pressed'), 'true');

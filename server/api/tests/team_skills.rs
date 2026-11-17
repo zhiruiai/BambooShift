@@ -69,7 +69,8 @@ async fn a_team_member_imports_only_to_their_personal_bot_and_replays_the_same_r
         .await;
     assert_eq!(status, 200, "{boot}");
     let local_bot = &boot["agents"][0];
-    let team_bot = f.bootstrap().await["agents"][0]["id"].clone();
+    let team_boot = f.bootstrap().await;
+    let team_bot = team_boot["agents"][0]["id"].clone();
     let skill = published(&f, &team_bot, "Use a primary source.", None).await;
     let publication_id = skill["id"].as_str().unwrap();
     let import_path = f.path(&format!("/team-skills/{publication_id}/import"));
@@ -171,8 +172,16 @@ async fn a_team_member_imports_only_to_their_personal_bot_and_replays_the_same_r
     let (_, saved) = f
         .request("GET", &boot_path, None, true, Some(&f.member))
         .await;
-    assert_eq!(saved["skills"], json!([imported]));
-    assert_eq!(f.bootstrap().await["skills"].as_array().unwrap().len(), 1);
+    let mut expected = boot["skills"].as_array().unwrap().clone();
+    expected.push(imported.clone());
+    expected.sort_by_key(|skill| skill["id"].as_str().unwrap().to_owned());
+    let mut actual = saved["skills"].as_array().unwrap().clone();
+    actual.sort_by_key(|skill| skill["id"].as_str().unwrap().to_owned());
+    assert_eq!(actual, expected);
+    assert_eq!(
+        f.bootstrap().await["skills"].as_array().unwrap().len(),
+        team_boot["skills"].as_array().unwrap().len() + 1
+    );
 
     let updated = published(&f, &team_bot, "Compare two primary sources.", Some(&skill)).await;
     assert_ne!(updated["revision"], skill["revision"]);
@@ -246,6 +255,8 @@ async fn a_team_member_imports_only_to_their_personal_bot_and_replays_the_same_r
     let (_, saved) = f
         .request("GET", &boot_path, None, true, Some(&f.member))
         .await;
-    assert_eq!(saved["skills"], json!([imported]));
+    let mut actual = saved["skills"].as_array().unwrap().clone();
+    actual.sort_by_key(|skill| skill["id"].as_str().unwrap().to_owned());
+    assert_eq!(actual, expected);
     f.close().await;
 }

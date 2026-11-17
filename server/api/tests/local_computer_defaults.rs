@@ -1,5 +1,7 @@
 #![cfg(target_os = "macos")]
 mod common;
+#[path = "local_computer_defaults/observation.rs"]
+mod observation;
 use common::{Reply, request};
 use openbot_backend::{
     config::{Config, LocalDesktopConfig},
@@ -108,6 +110,23 @@ json.dump({{'ok': True, 'result': result}}, sys.stdout)
         self.state.close().await;
         self.state = State::open(self.config.clone()).await.unwrap();
     }
+    async fn refresh_permissions(&self) -> Value {
+        let status = self.ok("/status", None).await;
+        self.ok(
+            "/permissions/refresh",
+            Some(json!({
+                "expectedTargetRevision":status["targetRevision"]
+            })),
+        )
+        .await
+    }
+    fn journal(&self) -> Vec<u8> {
+        std::fs::read(self.directory.path().join(format!(
+            "spaces/{}/computer/authorization.json",
+            self.workspace
+        )))
+        .unwrap()
+    }
 }
 
 #[tokio::test]
@@ -115,6 +134,7 @@ async fn local_defaults_survive_restart_and_obey_browser_choice_revocation_and_o
     let mut f = Fixture::new().await;
     f.status("browser", "confirm").await;
     f.grant("full").await;
+    f.status("accessibility", "full").await;
     f.restart().await;
     let restored = f.status("accessibility", "full").await;
     assert_ne!(
@@ -156,6 +176,9 @@ async fn local_defaults_survive_restart_and_obey_browser_choice_revocation_and_o
         Some(json!({"surface":"browser"})),
     )
     .await;
+    f.refresh_permissions().await;
+    f.grant("full").await;
+    f.status("browser", "full").await;
     f.restart().await;
     f.status("browser", "full").await;
     f.ok(
@@ -168,7 +191,10 @@ async fn local_defaults_survive_restart_and_obey_browser_choice_revocation_and_o
     f.grant("confirm").await;
     f.restart().await;
     f.status("browser", "confirm").await;
+    f.refresh_permissions().await;
+    f.status("browser", "confirm").await;
     f.grant("full").await;
+    f.status("accessibility", "full").await;
     f.restart().await;
     f.status("accessibility", "full").await;
 
@@ -183,9 +209,28 @@ async fn local_defaults_survive_restart_and_obey_browser_choice_revocation_and_o
         )
         .await;
     assert_ne!(blocked.status, 200);
+    let journal = f.journal();
     std::fs::remove_file(&f.permission).unwrap();
-    f.restart().await;
+    let ready = f.status("browser", "full").await;
+    assert_eq!(ready["desktop"]["accessibilityReady"], true);
+    let stale = f
+        .call(
+            "/permissions/refresh",
+            Some(json!({
+                "expectedTargetRevision":uuid::Uuid::new_v4().to_string()
+            })),
+        )
+        .await;
+    assert_eq!(stale.status, 409);
+    f.status("browser", "full").await;
+    f.refresh_permissions().await;
     f.status("accessibility", "full").await;
+    f.refresh_permissions().await;
+    assert_eq!(
+        f.journal(),
+        journal,
+        "refresh never rewrites or renews a saved grant"
+    );
     f.config.local_desktop.as_mut().unwrap().host_control = false;
     f.restart().await;
     f.status("browser", "full").await;
@@ -203,5 +248,121 @@ async fn local_defaults_survive_restart_and_obey_browser_choice_revocation_and_o
     f.config.local_desktop.as_mut().unwrap().host_control = true;
     f.state = State::open(f.config.clone()).await.unwrap();
     f.status("browser", "confirm").await;
+    f.refresh_permissions().await;
+    f.status("browser", "confirm").await;
+    f.state.close().await;
+}
+
+#[tokio::test]
+async fn full_grant_and_permission_refresh_do_not_interrupt_active_or_queued_work() {
+    use openbot_backend::{
+        computer::{tasks, transport::Authority},
+        workspace::Table,
+    };
+    use std::{sync::Arc, time::Duration};
+    let f = Fixture::new().await;
+    f.status("browser", "confirm").await;
+    let store = f
+        .state
+        .workspace
+        .get(&f.workspace, &f.workspace)
+        .await
+        .unwrap();
+    let controller = f.state.computer.get(&f.state, store.clone()).await.unwrap();
+    let bot = store.list(Table::Agents).await.unwrap()[0]["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let allowed: Authority = Arc::new(|| Box::pin(async { Ok(()) }));
+    let first = tasks::acquire(
+        &controller,
+        &bot,
+        "synthetic-chat",
+        "first",
+        allowed.clone(),
+    )
+    .await
+    .unwrap();
+    let (control, second_bot) = (controller.clone(), bot.clone());
+    let second = tokio::spawn(async move {
+        tasks::acquire(&control, &second_bot, "synthetic-chat", "second", allowed).await
+    });
+    tokio::time::timeout(Duration::from_secs(3), async {
+        while controller.tasks.state("default")["queued"] != 1 {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .unwrap();
+    f.grant("full").await;
+    let status = f.status("browser", "full").await;
+    let denied = f
+        .call(
+            "/permissions/refresh",
+            Some(json!({
+                "expectedTargetRevision":status["targetRevision"]
+            })),
+        )
+        .await;
+    assert_eq!(denied.status, 409, "{}", denied.value);
+    assert_eq!(controller.tasks.state("default")["status"], "running");
+    assert_eq!(controller.tasks.state("default")["queued"], 1);
+    tokio::time::timeout(Duration::from_secs(1), f.grant("confirm"))
+        .await
+        .expect("revocation must stay immediate");
+    second.abort();
+    let _ = second.await;
+    first.finish().await.unwrap();
+    f.refresh_permissions().await;
+    f.status("browser", "confirm").await;
+    f.grant("full").await;
+    f.status("accessibility", "full").await;
+    f.state.close().await;
+}
+
+#[tokio::test]
+async fn permission_refresh_cannot_inherit_a_previous_owners_full_grant() {
+    let mut f = Fixture::new().await;
+    std::fs::write(&f.permission, "denied").unwrap();
+    f.grant("full").await;
+    f.status("browser", "full").await;
+    f.state.close().await;
+    let db = sqlx::SqlitePool::connect(&format!(
+        "sqlite:{}",
+        f.directory
+            .path()
+            .join("platform/identity.sqlite")
+            .display()
+    ))
+    .await
+    .unwrap();
+    let other = uuid::Uuid::new_v4().to_string();
+    sqlx::query("INSERT INTO users VALUES(?,'other@example.test','Other','synthetic-only','active','user',1)")
+        .bind(&other).execute(&db).await.unwrap();
+    // Each workspace has one owner. A grant left by the previous owner must
+    // never become the current owner's authorization after an ownership change.
+    sqlx::query("INSERT INTO memberships VALUES(?,?,'member',1)")
+        .bind(&f.workspace)
+        .bind(&other)
+        .execute(&db)
+        .await
+        .unwrap();
+    db.close().await;
+    let journal = f.directory.path().join(format!(
+        "spaces/{}/computer/authorization.json",
+        f.workspace
+    ));
+    let mut grants: Value = serde_json::from_slice(&f.journal()).unwrap();
+    grants["grants"][0]["userId"] = json!(other);
+    std::fs::write(&journal, serde_json::to_vec(&grants).unwrap()).unwrap();
+    f.state = State::open(f.config.clone()).await.unwrap();
+    f.status("browser", "confirm").await;
+    std::fs::remove_file(&f.permission).unwrap();
+    f.refresh_permissions().await;
+    f.status("browser", "confirm").await;
+    assert_eq!(
+        serde_json::from_slice::<Value>(&f.journal()).unwrap(),
+        grants
+    );
     f.state.close().await;
 }

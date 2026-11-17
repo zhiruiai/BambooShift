@@ -13,10 +13,10 @@ pub(crate) fn definitions() -> Value {
         {"name":"delegate","description":"Ask an eligible colleague from list_peers for a focused subtask and wait for its real result. A completed status means the run finished, not that its output passed acceptance. Review deliveries.items for server-published file/website receipts from that exact child run; text-only claims are not delivery or test evidence. Read the referenced artifacts and verify acceptance before reporting project completion. Workgroups are limited to existing members. In a personal primary Bot's human-requested DM, eligible local colleagues work in their own existing DMs. Never creates members or grants extra permissions.","parameters":{"type":"object","properties":{"agentId":{"type":"string"},"task":{"type":"string"}},"required":["agentId","task"]}},
         {"name":"propose_team","description":"Propose a team draft for human review. Never creates Bots or starts work automatically. Requires a title, member assignments and lead member in a structured draft.","parameters":{"type":"object","properties":{"goal":{"type":"string"},"draft":{"type":"object"}},"required":["goal","draft"]}},
         {"name":"remember","description":"Save explicitly relevant long-term context for this Bot. Does not change permissions.","parameters":{"type":"object","properties":{"content":{"type":"string"},"category":{"type":"string","enum":["preference","context","learning"]}},"required":["content"]}},
-        {"name":"list_peers","description":"Read eligible colleagues for this task. Groups retain current members; a personal primary Bot's direct human task can list local colleagues with their own DMs. Availability is rechecked on delegation.","parameters":{"type":"object","properties":{}}},
-        {"name":"propose_skill","description":"Save a proposed reusable method for the human owner to review. It is not enabled automatically.","parameters":{"type":"object","properties":{"name":{"type":"string"},"description":{"type":"string"},"content":{"type":"string"}},"required":["name","content"]}}
+        {"name":"list_peers","description":"Read eligible colleagues for this task. Groups retain current members; a personal primary Bot's direct human task can list local colleagues with their own DMs. Availability is rechecked on delegation.","parameters":{"type":"object","properties":{}}}
     ]);
     let all = definitions.as_array_mut().unwrap();
+    all.extend(super::skill_authoring::definitions());
     all.push(super::run_knowledge::recall_definition());
     all.extend(super::apps_tools::definitions());
     all.extend(super::computer_tools::definitions());
@@ -166,16 +166,39 @@ pub(crate) async fn execute(
         return Err(ApiError::new(403, "此任务未授予该工具。"));
     }
     if matches!(name, super::web_tools::SEARCH | super::web_tools::FETCH) {
-        return super::web_tools::execute(state, access, store, context, name, args).await;
+        return Box::pin(super::web_tools::execute(
+            state, access, store, context, name, args,
+        ))
+        .await;
     }
     let active = context.active;
-    let agent_id = active.agent_id.as_str();
-    let conversation_id = active.conversation_id.as_str();
     let generation = context.generation;
     check_fence(active, generation)?;
     access.authorize(state).await?;
     active.family.authorize(state).await?;
     authorize_membership(store, active).await?;
+    if name == "delegate" {
+        return super::delegation::delegate(state, access, store, context, args).await;
+    }
+    // Keep recursive delegation out of the large non-recursive tool poll frame.
+    Box::pin(execute_authorized(
+        state, access, store, context, name, args,
+    ))
+    .await
+}
+
+async fn execute_authorized(
+    state: &State,
+    access: &ExecutionAccess,
+    store: &Arc<WorkspaceStore>,
+    context: &ToolContext<'_>,
+    name: &str,
+    args: &Value,
+) -> Result<Value> {
+    let active = context.active;
+    let agent_id = active.agent_id.as_str();
+    let conversation_id = active.conversation_id.as_str();
+    let generation = context.generation;
     if matches!(
         name,
         "list_skills" | "read_skill" | "read_skill_resource" | "recall"
@@ -223,9 +246,6 @@ pub(crate) async fn execute(
     }
     if let Some(kind) = super::creation_proposals::kind(name) {
         return super::creation_proposals::execute(state, access, store, context, kind, args).await;
-    }
-    if name == "delegate" {
-        return super::delegation::delegate(state, access, store, context, args).await;
     }
     if name == "propose_team" {
         let Some(grant) = access.as_user() else {
@@ -296,6 +316,7 @@ pub(crate) async fn execute(
         return Err(ApiError::new(409, "负责的 Bot 已离开当前会话。"));
     }
     let output = match name {
+        "find_skills" => super::skill_authoring::find(args)?,
         "remember" => {
             let content = text(&args["content"], "记忆", 6000)?;
             let category = args["category"].as_str().unwrap_or("context");
@@ -329,19 +350,7 @@ pub(crate) async fn execute(
             if access.shared().is_some() {
                 return Err(ApiError::new(403, "共享 Bot 的技能由来源拥有者维护。"));
             }
-            let title = text(&args["name"], "技能名称", 100)?;
-            let content = text(&args["content"], "技能内容", 16000)?;
-            let version = WorkspaceStore::list_in(&mut tx, Table::Skills)
-                .await?
-                .iter()
-                .filter(|s| s["agentId"] == agent_id && s["name"] == title)
-                .filter_map(|s| s["version"].as_i64())
-                .max()
-                .unwrap_or(0)
-                + 1;
-            let mut skill = json!({"id":Uuid::new_v4().to_string(),"agentId":agent_id,"name":title,"description":args["description"].as_str().unwrap_or(""),"content":content,"version":version,"status":"proposed","createdAt":iso(now())});
-            crate::workspace::skill_packages::persist_text(&mut tx, &mut skill).await?;
-            skill
+            super::skill_authoring::propose(&mut tx, agent_id, args).await?
         }
         _ => return Err(ApiError::new(403, "此任务未授予该工具。")),
     };

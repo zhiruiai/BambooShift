@@ -13,7 +13,7 @@ async fn exact_copy_is_atomic_durable_and_omits_source_private_resources() {
         .await
         .unwrap()
         .into_iter()
-        .find(|skill| skill["status"] == "active")
+        .find(|skill| skill["name"] == "Accepted method")
         .unwrap();
     t.store
         .delete(Table::Skills, previous["id"].as_str().unwrap())
@@ -45,7 +45,7 @@ async fn exact_copy_is_atomic_durable_and_omits_source_private_resources() {
         .await;
     assert_eq!(status, 200, "{approved}");
     let preview = t.source().await;
-    assert_eq!(preview["blueprint"]["skills"].as_array().unwrap().len(), 1);
+    assert_eq!(preview["blueprint"]["skills"].as_array().unwrap().len(), 5);
     assert!(!preview.to_string().contains("PRIVATE MEMORY"));
     assert!(!preview.to_string().contains("EXACT_LOCAL_PACKAGE_RESOURCE"));
     assert!(
@@ -74,9 +74,33 @@ async fn exact_copy_is_atomic_durable_and_omits_source_private_resources() {
     let skills = t.store.list(Table::Skills).await.unwrap();
     assert_eq!(
         skills.iter().filter(|s| s["agentId"] == bot["id"]).count(),
-        1
+        5
     );
-    let copied = skills.iter().find(|s| s["agentId"] == bot["id"]).unwrap();
+    for name in [
+        "web-research",
+        "browser-use",
+        "computer-use",
+        "agent-desktop",
+    ] {
+        let matching: Vec<_> = skills
+            .iter()
+            .filter(|s| s["agentId"] == bot["id"] && s["name"] == name)
+            .collect();
+        assert_eq!(
+            matching.len(),
+            1,
+            "Foundation copy must not duplicate {name}"
+        );
+        let source = skills
+            .iter()
+            .find(|s| s["agentId"] == t.agent && s["name"] == name)
+            .unwrap();
+        assert_eq!(matching[0]["skillPackage"], source["skillPackage"]);
+    }
+    let copied = skills
+        .iter()
+        .find(|s| s["agentId"] == bot["id"] && s["name"] == "approved-method")
+        .unwrap();
     assert_ne!(copied["id"], approved["id"]);
     assert_eq!(copied["version"], 1);
     assert_eq!(copied["status"], "active");
@@ -169,7 +193,7 @@ async fn source_cas_invalid_input_and_receipt_failure_never_leave_partial_bot() 
     assert_eq!(status, 500);
     assert_eq!(t.store.list(Table::Agents).await.unwrap().len(), 1);
     assert_eq!(t.store.list(Table::Conversations).await.unwrap().len(), 1);
-    assert_eq!(t.store.list(Table::Skills).await.unwrap().len(), 2);
+    assert_eq!(t.store.list(Table::Skills).await.unwrap().len(), 6);
     sqlx::query("DROP TRIGGER fail_install")
         .execute(&t.store.pool)
         .await

@@ -1,0 +1,56 @@
+{
+  "recordedOn": "2026-11-18",
+  "environment": "Real model and Rust service bundled with the local macOS client; fictional workspace and data.",
+  "editing": "Waiting and debugging time omitted. Website recording replays actual saved deliveries; the skill creation recording restores the same reviewed v4 before a new actual execution.",
+  "privacy": "Visible UI and captured frames checked for personal identifiers, credentials and model configuration; no raw OCR text or private configuration published.",
+  "recordings": [
+    {
+      "file": "website-delivery.gif",
+      "scenario": "Replay five real deliveries: preview, compare changes, revisit version 1 and return to the original thread.",
+      "sha256": "7f5702dfb529bbadbad888f8ff8b918f015299e098eb763f7984fbe4b566fb60",
+      "bytes": 1124049,
+      "width": 1280,
+      "height": 800,
+      "capturedFrames": 172,
+      "encodedFrames": 93,
+      "durationMs": 23330,
+      "allCapturedFramesPrivacyChecked": true
+    },
+    {
+      "file": "team-templates.gif",
+      "scenario": "Three independent Bot teammates answer one actual task; working avatars animate.",
+      "sha256": "3d8aba8a2b096223d102187b5c705f7de4dd843ec63dbac0ed8db22e4415ef09",
+      "bytes": 950547,
+      "width": 1280,
+      "height": 800,
+      "capturedFrames": 153,
+      "encodedFrames": 130,
+      "durationMs": 27150,
+      "allCapturedFramesPrivacyChecked": true
+    },
+    {
+      "file": "skill-library.gif",
+      "scenario": "Inspect a four-file package, run its CSV script, and verify 10 rows, 2 duplicate-key rows and 2 malformed rows.",
+      "sha256": "ad10f3f55c2bccf3a018657d7c277a9c3209c65cb31b7b9e0d9ea3a66d316c19",
+      "bytes": 905278,
+      "width": 1280,
+      "height": 800,
+      "capturedFrames": 210,
+      "encodedFrames": 83,
+      "durationMs": 27360,
+      "allCapturedFramesPrivacyChecked": true
+    },
+    {
+      "file": "skill-creation.gif",
+      "scenario": "Inspect a Bot-authored four-file v4 package, restore that reviewed version through the UI, and run its budget example: 3500 / 3010 / 490.",
+      "sha256": "7d6a87610fa09dda6eb8ee4ae9d81daa6dd6b5cf44894aa34a82cb8b8237366b",
+      "bytes": 1301393,
+      "width": 1280,
+      "height": 800,
+      "capturedFrames": 223,
+      "encodedFrames": 102,
+      "durationMs": 28670,
+      "allCapturedFramesPrivacyChecked": true
+    }
+  ]
+}

@@ -76,7 +76,7 @@ test('virtual desktop uses existing surface controls with truthful offline scope
     '仅支持离线应用',
     '删除工作区文件',
     '截图会发送到你配置的模型',
-    'Bot 操作仍需批准',
+    'Bot 按电脑授权设置执行',
     '手动接管立即执行',
     '重新检查桌面',
   ])

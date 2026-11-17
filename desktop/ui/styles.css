@@ -410,3 +410,46 @@ h1 {
   line-height: 1.7;
   color: #797180;
 }
+
+/* Keep both workspace choices visible beside the introduction on desktop. */
+@media (min-width: 760px) {
+  .setup-layout {
+    padding: 36px 40px;
+  }
+  .connection-panel {
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(340px, 440px);
+    gap: 48px;
+    align-items: start;
+  }
+  .setup-introduction {
+    padding-top: 4px;
+  }
+  .orb {
+    width: 96px;
+    height: 96px;
+  }
+  h1 {
+    font-size: 28px;
+    line-height: 1.35;
+  }
+  .intro {
+    max-width: 310px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .setup-actions {
+    border: 1px solid #e8e5eb;
+    border-radius: 16px;
+    background: #ffffff;
+    padding: 24px;
+    box-shadow: 0 12px 36px #26203005;
+  }
+  .workspace-note {
+    margin-top: 22px;
+  }
+  .connection-status:empty {
+    display: none;
+  }
+}

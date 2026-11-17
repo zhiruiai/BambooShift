@@ -60,9 +60,24 @@ Windows 的自动发布检查覆盖启动、语言切换和连接测试工作空
 
 ### macOS 签名
 
-目前发布 ZIP 使用本地 ad-hoc 签名和严格资源校验。Developer ID 签名、Apple 公证和自动更新尚未配置。 [Electron 应用打包](https://www.electronjs.org/docs/latest/tutorial/application-distribution)
+本机开发可以使用保存在当前用户钥匙串中的固定代码签名证书，让重新构建的客户端和原生助手保持各自的系统身份。首次创建后，后续打包自动复用：
 
-ad-hoc 测试包重新构建签名后，macOS 可能不再认可旧的辅助功能授权，需要为系统列出的当前应用重新授权；应用保存的「完全授权」不因此丢失。权限验收必须覆盖正常启动的客户端，不能以从已获权限的开发工具启动进程的结果代替。普通本机命令和打开应用不依赖辅助功能授权。
+```sh
+node scripts/run.mjs scripts/desktop/create-macos-signing-identity.mjs
+npm run client:package -- --with-runtime
+```
+
+创建命令不会修改系统根信任或系统权限数据库。私钥保存在当前用户钥匙串；`~/Library/Application Support/BambooShift/build-signing/identity.json` 只保存证书指纹和应用标识，目录与文件分别限制为 0700 和 0600，不进入源码或安装包。这个身份属于当前系统用户，新克隆的仓库和 worktree 也会复用。不要删除或重新创建已有身份。配置损坏、证书过期或私钥缺失会中止构建，不会静默换用临时签名。
+
+仅在用户级配置目录尚不存在时兼容原仓库的私有 `.local/macos-signing/identity.json`；已有的用户级配置优先，损坏时不能退回旧文件。若配置丢失但钥匙串仍保留 BambooShift 本机签名身份，构建同样会停止并要求恢复原配置。
+
+打包时，主应用和助手都使用同一证书，并分别绑定自己的 bundle ID 与确切证书指纹；主应用的标识不会覆盖 Electron 内嵌组件。签名前后检查助手身份，签名后严格校验完整应用和嵌入的指定要求，拒绝仅依赖版本哈希或仅应用标识的身份。没有配置过固定身份时仍可构建 ad-hoc 预览包，命令会明确提示更新可能需要重新授予系统权限。
+
+从旧的 ad-hoc 包迁移到固定身份时，macOS 仍可能要求为新身份重新授予一次辅助功能权限；应用不能替用户迁移系统授权。之后必须保留原证书、私钥与应用标识，才能让系统识别后续版本属于同一应用。应用保存的「完全授权」不因此丢失。权限验收必须覆盖正常启动的客户端，不能以从已获权限的开发工具启动进程的结果代替。普通本机命令和打开应用不依赖辅助功能授权。
+
+若旧条目的开关已经开启，客户端仍显示未授权，macOS 可能还保留着旧签名要求。请在辅助功能列表移除旧的 BambooShift 条目，通过「+」重新选择当前使用的 BambooShift.app，再回到客户端点击「重新检查权限」。仅切换旧条目的开关可能无法更新身份记录；应用内保存的完全授权无需重建。
+
+这里的本机证书不等于 Apple Developer ID，不能作为公开发行信任。Developer ID 签名、Apple 公证和自动更新尚未配置。 [Electron 应用打包](https://www.electronjs.org/docs/latest/tutorial/application-distribution)
 
 ## 从源码构建与验证
 

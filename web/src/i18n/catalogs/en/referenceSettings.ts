@@ -1,4 +1,5 @@
 export default {
+  settingsAvatars: 'Bot appearance',
   settingsGeneral: 'General',
   settingsBotWork: 'Bot work',
   settingsMemory: 'Import memory',

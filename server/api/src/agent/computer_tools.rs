@@ -48,11 +48,11 @@ pub(super) fn skill_script_allowed(
 }
 
 pub(super) fn skill_script_definition() -> Value {
-    json!({"name":RUN_SKILL_SCRIPT,"description":"Run an exact script from an approved Agent Skill on this Mac under the computer authorization mode. When computer_status.authorization.mode is full, execute without asking for confirmation. Otherwise the runtime asks the original requester once. First read the skill instructions and manifest. Use a scripts/*.py or scripts/*.mjs manifest path and the exact skillId. For a CSV already attached to this chat, pass its fileId and the exact argument __SKILL_INPUT__ once. The Mac must have local-shell-v1 and local-skill-script-v1 enabled. The script runs with the local user’s permissions inside the staged package directory. Read stdout, stderr, exitCode and timeouts before reporting success.",
+    json!({"name":RUN_SKILL_SCRIPT,"description":"Run an exact script from an approved Agent Skill on this Mac under the computer authorization mode. When computer_status.authorization.mode is full, execute without asking for confirmation. Otherwise the runtime asks the original requester once. First read the skill instructions and manifest. Use a scripts/*.py or scripts/*.mjs manifest path and the exact skillId. For a CSV already attached to this chat, copy attachment.fileId from the conversation history, or obtain fileId from workspace_list; never use or infer it from the displayed filename. Pass that exact fileId and the argument __SKILL_INPUT__ once. The Mac must have local-shell-v1 and local-skill-script-v1 enabled. The script runs with the local user’s permissions inside the staged package directory. Read stdout, stderr, exitCode and timeouts before reporting success.",
         "parameters":{"type":"object","properties":{
             "skillId":{"type":"string"},"path":{"type":"string"},
             "args":{"type":"array","maxItems":16,"items":{"type":"string","maxLength":512}},
-            "fileId":{"type":"string"}
+            "fileId":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,128}$","description":"Exact attachment.fileId from chat history or fileId returned by workspace_list. A filename or path is not a fileId; the server verifies that this file belongs to the current chat."}
         },"required":["skillId","path","args"],"additionalProperties":false}})
 }
 

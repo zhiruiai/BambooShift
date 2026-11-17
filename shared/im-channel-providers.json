@@ -1,0 +1,57 @@
+[
+  {
+    "id": "feishu",
+    "name": { "zh-CN": "飞书", "en": "Feishu" },
+    "transport": "official-websocket",
+    "protocol": "feishu-events",
+    "state": "configuration-required",
+    "capabilities": ["receive-text", "reply-to-message", "thread-binding"],
+    "sdk": { "package": "@larksuiteoapi/node-sdk", "version": "1.73.0", "license": "MIT" },
+    "requiredFields": [
+      "appId",
+      "appSecret",
+      "botOpenId",
+      "senderOpenId",
+      "chatId",
+      "bambooShiftIdentity"
+    ],
+    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "upstream": "https://github.com/larksuite/node-sdk"
+  },
+  {
+    "id": "dingtalk",
+    "name": { "zh-CN": "钉钉", "en": "DingTalk" },
+    "transport": "official-stream",
+    "protocol": "dingtalk-stream",
+    "state": "configuration-required",
+    "capabilities": ["receive-text", "reply-to-message"],
+    "sdk": { "package": "dingtalk-stream", "version": "2.1.7-beta.1", "license": "MIT" },
+    "requiredFields": [
+      "clientId",
+      "clientSecret",
+      "senderStaffId",
+      "conversationId",
+      "bambooShiftIdentity"
+    ],
+    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "upstream": "https://github.com/open-dingtalk/dingtalk-stream-sdk-nodejs"
+  },
+  {
+    "id": "wecom",
+    "name": { "zh-CN": "企业微信", "en": "WeCom" },
+    "transport": "official-websocket",
+    "protocol": "wecom-aibot",
+    "state": "configuration-required",
+    "capabilities": ["receive-text", "reply-to-message"],
+    "sdk": {
+      "package": "@wecom/aibot-node-sdk",
+      "version": "1.0.7",
+      "license": "MIT",
+      "licenseEvidence": "package-metadata",
+      "bundled": false
+    },
+    "requiredFields": ["botId", "secret", "senderUserId", "chatId", "bambooShiftIdentity"],
+    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "upstream": "https://github.com/WecomTeam/aibot-node-sdk"
+  }
+]

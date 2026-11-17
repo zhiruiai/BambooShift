@@ -44,6 +44,17 @@ pub async fn create_bot(
     conn: &mut SqliteConnection,
     body: &Value,
 ) -> Result<(Value, Value)> {
+    let (agent, conversation) = create_bot_unprovisioned(store, conn, body).await?;
+    super::workflow_skills::ensure_foundation(conn, &agent).await?;
+    Ok((agent, conversation))
+}
+
+/// Template copying provisions after preserving the reviewed source packages.
+pub(crate) async fn create_bot_unprovisioned(
+    store: &WorkspaceStore,
+    conn: &mut SqliteConnection,
+    body: &Value,
+) -> Result<(Value, Value)> {
     let mut agent = profiles::validate(body, false)?;
     super::model::validate_bot_selection(store, conn, &agent["modelProfileId"]).await?;
     super::avatars::publish(conn, &agent["avatarImageId"]).await?;

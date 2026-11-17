@@ -75,10 +75,10 @@ export function SkillManager({
   const currentPage = Math.min(page, pages - 1);
   const visible = filtered.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
   const selected = filtered.find((skill) => skill.id === selectedId) || visible[0];
+  const selectedIndex = filtered.findIndex((skill) => skill.id === selectedId);
   useEffect(() => {
-    const index = filtered.findIndex((skill) => skill.id === selectedId);
-    if (index >= 0) setPage(Math.floor(index / pageSize));
-  }, [pageSize]);
+    if (selectedIndex >= 0) setPage(Math.floor(selectedIndex / pageSize));
+  }, [pageSize, selectedIndex]);
   const tabs = [
     ['current', uiText('common:text_5ddff4afab27')],
     ['proposals', uiText('common:text_a8b0bd9c65f7')],

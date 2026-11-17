@@ -26,6 +26,7 @@ test('native appearance is bounded UTF-8, validates only non-credential fields a
   const max = value + ' '.repeat(2048 - Buffer.byteLength(value));
   assert.equal(validAppearance(max), true);
   assert.equal(validAppearance(raw('classic')), true);
+  assert.equal(validAppearance(raw('colorful')), true);
   for (const invalid of [
     max + ' ',
     max + '中',

@@ -4,6 +4,11 @@ import {
   macAccessibilityHelperBundle,
   verifyMacAccessibilityHelper,
 } from './macos-accessibility-helper.mjs';
+import {
+  certificateRequirement,
+  resolveMacSigningProfile,
+  verifyStableMacSignature,
+} from './macos-signing-profile.mjs';
 
 export async function signLocalMacClient({
   app,
@@ -11,10 +16,17 @@ export async function signLocalMacClient({
   working,
   bundledRuntime,
   command,
+  sourceRoot,
+  signingProfile,
+  resolveProfile = resolveMacSigningProfile,
+  readRequirements,
+  sign: signOverride,
 }) {
-  const { sign } = await import('@electron/osx-sign');
-  // Ad-hoc code has no Apple Team ID. Permit its bundled Electron libraries while
-  // retaining hardened runtime and V8 JIT. These are app entitlements, not TCC grants.
+  const profile = signingProfile ?? (await resolveProfile({ sourceRoot }));
+  const mainRequirement = profile && certificateRequirement(profile);
+  const sign = signOverride ?? (await import('@electron/osx-sign')).sign;
+  // A local certificate has no Apple Team ID. Permit bundled Electron libraries
+  // while retaining hardened runtime and V8 JIT. These are not TCC grants.
   const entitlements = join(working, 'client-entitlements.plist');
   const pluginEntitlements = join(working, 'client-plugin-entitlements.plist');
   const plist = (plugin) => `<?xml version="1.0" encoding="UTF-8"?>
@@ -31,13 +43,23 @@ export async function signLocalMacClient({
   const helper = bundledRuntime?.accessibilityHelper
     ? resolve(app, 'Contents/Resources/bambooshift-runtime/bin', macAccessibilityHelperBundle)
     : undefined;
-  console.log('正在为本机测试签名并校验 macOS 客户端（ad-hoc）。');
+  if (helper && profile)
+    await verifyStableMacSignature(helper, profile, {
+      command,
+      identifier: 'com.openbot.desktop-helper',
+      readRequirements,
+    });
+  console.log(
+    profile
+      ? '正在使用已保存的本机身份签名并校验 macOS 客户端。'
+      : '正在为本机测试签名并校验 macOS 客户端（ad-hoc，更新可能需要重新授予系统权限）。',
+  );
   // osx-sign signs nested code before its containing bundle. Do not use --deep to sign.
   await sign({
     app,
     platform: 'darwin',
     version: electronVersion,
-    identity: '-',
+    identity: profile?.identity ?? '-',
     identityValidation: false,
     preAutoEntitlements: false,
     preEmbedProvisioningProfile: false,
@@ -48,8 +70,20 @@ export async function signLocalMacClient({
       entitlements: path.includes('(Plugin).app') ? pluginEntitlements : entitlements,
       hardenedRuntime: true,
       timestamp: 'none',
+      ...(profile && resolve(path) === resolve(app)
+        ? { requirements: '=designated => ' + mainRequirement }
+        : {}),
     }),
   });
   await command('/usr/bin/codesign', ['--verify', '--deep', '--strict', app]);
-  if (helper) await verifyMacAccessibilityHelper(helper, { command });
+  if (profile) await verifyStableMacSignature(app, profile, { command, readRequirements });
+  if (helper) {
+    await verifyMacAccessibilityHelper(helper, { command });
+    if (profile)
+      await verifyStableMacSignature(helper, profile, {
+        command,
+        identifier: 'com.openbot.desktop-helper',
+        readRequirements,
+      });
+  }
 }

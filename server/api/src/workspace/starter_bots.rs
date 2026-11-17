@@ -33,6 +33,28 @@ fn invalid() -> ApiError {
     ApiError::bad("内置 Bot 模板无效。").with_code("INVALID_BOT_STARTER")
 }
 
+/// Draft selection is local. Create the edited profile and its reviewed built-in
+/// packages together only when the owner submits the durable creation request.
+pub(super) async fn create_custom(
+    store: &WorkspaceStore,
+    conn: &mut SqliteConnection,
+    edited: &Value,
+    starter: &Value,
+) -> Result<(Value, Value)> {
+    only_fields(starter, &["id", "language"])?;
+    let id = starter["id"].as_str().ok_or_else(invalid)?;
+    let language = starter["language"]
+        .as_str()
+        .filter(|value| matches!(*value, "en" | "zh-CN"))
+        .ok_or_else(invalid)?;
+    profile(id, language).ok_or_else(invalid)?;
+    let packs = starter_skills::bot(id, language)?;
+    // create_bot validates the full profile whitelist, model binding and avatar.
+    let (agent, conversation) = mutations::create_bot(store, conn, edited).await?;
+    starter_skills::install(conn, &packs, &agent["id"]).await?;
+    Ok((agent, conversation))
+}
+
 async fn result(
     store: &WorkspaceStore,
     conn: &mut SqliteConnection,
@@ -55,6 +77,16 @@ async fn result(
                     skills.push(skill);
                 }
             }
+        }
+    }
+    // Older receipts predate foundational packages. Project the actual installed
+    // rows without reactivating or recreating anything on a read/retry.
+    for skill in WorkspaceStore::list_in(conn, Table::Skills).await? {
+        if skill["agentId"] == agent_id
+            && super::workflow_skills::FOUNDATION.contains(&skill["name"].as_str().unwrap_or(""))
+            && !skills.iter().any(|saved| saved["id"] == skill["id"])
+        {
+            skills.push(skill);
         }
     }
     agent["modelConfigured"] = json!(
@@ -107,7 +139,12 @@ pub async fn post(
             let packs = starter_skills::bot(starter, language)?;
             let (agent, conversation) = mutations::create_bot(&store, &mut tx, &profile).await?;
             let skills = starter_skills::install(&mut tx, &packs, &agent["id"]).await?;
-            let skill_ids: Vec<_> = skills.iter().map(|skill| skill["id"].clone()).collect();
+            let mut skill_ids: Vec<_> = skills.iter().map(|skill| skill["id"].clone()).collect();
+            for skill in WorkspaceStore::list_in(&mut tx, Table::Skills).await? {
+                if skill["agentId"] == agent["id"] && !skill_ids.contains(&skill["id"]) {
+                    skill_ids.push(skill["id"].clone());
+                }
+            }
             let receipt = json!({
                 "requestId":request_id,"kind":"bot","agentIds":[agent["id"]],
                 "starterId":starter,"language":language,

@@ -260,6 +260,17 @@ pub(crate) async fn set(
     )?;
     *current = next;
     drop(current);
+    if body["mode"] == "full" {
+        // Full access remains saved when native OS permission is unavailable or
+        // work is active. An explicit permission refresh can replay it when idle.
+        let _ = super::local_surface::reconcile_current(
+            controller,
+            &actor.user_id,
+            &body["expectedTargetRevision"],
+            authorize,
+        )
+        .await;
+    }
     drop(guard);
     controller.changed();
     if body["mode"] == "full" {

@@ -94,10 +94,12 @@ export function BotTemplatePreview({
   routineMode = 'preserve',
   workspaceId,
   userId,
+  compact = false,
 }: {
   blueprint: BotBlueprint;
   avatarPath?: string;
   routineMode?: RoutineInstallMode;
+  compact?: boolean;
 } & TemplateIdentity) {
   return (
     <section className="bot-template-preview" aria-label={uiText('bots:text_f5144e31acdc')}>
@@ -117,11 +119,11 @@ export function BotTemplatePreview({
       <p className="template-description">
         {blueprint.profile.description || uiText('bots:text_4fa5b0911bab')}
       </p>
-      <details className="template-detail" open>
+      <details className="template-detail" open={!compact}>
         <summary>{uiText('bots:text_f34d18b15b71')}</summary>
         <pre>{blueprint.profile.instructions || uiText('bots:text_8879608cfc51')}</pre>
       </details>
-      <details className="template-detail" open>
+      <details className="template-detail" open={!compact}>
         <summary>
           {uiText('bots:text_54df9705548e')}
           {blueprint.skills.length}
@@ -140,34 +142,36 @@ export function BotTemplatePreview({
           <p className="field-help">{uiText('bots:text_952b6d6d2997')}</p>
         )}
       </details>
-      <details className="template-detail" open>
-        <summary>
-          {uiText('bots:text_bca061ff418f')}
-          {blueprint.routines.length}
-          {uiText('bots:text_f9d529eacdf3')}
-        </summary>
-        {blueprint.routines.length ? (
-          blueprint.routines.map((routine, index) => (
-            <details className="template-detail" key={index}>
-              <summary>
-                {routine.title}
-                <span className="pill skill-muted">
-                  {routineMode === 'pause' || !routine.enabled
-                    ? uiText('bots:text_de6c55ae2f15')
-                    : uiText('bots:text_c00922ba3980')}
-                </span>
-              </summary>
-              <p className="field-help">
-                {routineScheduleLabel(routine.schedule, routine.timeZone)}
-              </p>
-              <pre>{routine.prompt}</pre>
-            </details>
-          ))
-        ) : (
-          <p className="field-help">{uiText('bots:text_1211b336c4b4')}</p>
-        )}
-      </details>
-      <p className="bot-form-notice">{uiText('bots:text_f8a304338f45')}</p>
+      {(!compact || blueprint.routines.length > 0) && (
+        <details className="template-detail" open>
+          <summary>
+            {uiText('bots:text_bca061ff418f')}
+            {blueprint.routines.length}
+            {uiText('bots:text_f9d529eacdf3')}
+          </summary>
+          {blueprint.routines.length ? (
+            blueprint.routines.map((routine, index) => (
+              <details className="template-detail" key={index}>
+                <summary>
+                  {routine.title}
+                  <span className="pill skill-muted">
+                    {routineMode === 'pause' || !routine.enabled
+                      ? uiText('bots:text_de6c55ae2f15')
+                      : uiText('bots:text_c00922ba3980')}
+                  </span>
+                </summary>
+                <p className="field-help">
+                  {routineScheduleLabel(routine.schedule, routine.timeZone)}
+                </p>
+                <pre>{routine.prompt}</pre>
+              </details>
+            ))
+          ) : (
+            <p className="field-help">{uiText('bots:text_1211b336c4b4')}</p>
+          )}
+        </details>
+      )}
+      {!compact && <p className="bot-form-notice">{uiText('bots:text_f8a304338f45')}</p>}
     </section>
   );
 }

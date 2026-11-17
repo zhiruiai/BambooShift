@@ -31,7 +31,7 @@ test('existing device preferences preserve page appearance and default only the 
   };
   const store = createAppearanceStore({ storage, storageEvents: events });
   try {
-    assert.equal(store.getSnapshot().avatarTheme, 'classic');
+    assert.equal(store.getSnapshot().avatarTheme, 'colorful');
     store.update({ avatarTheme: 'pandas' });
     assert.deepEqual(JSON.parse(raw), {
       version: 1,
@@ -89,8 +89,8 @@ test('the original SVG families contain six distinct forms and safe Bot colors w
       );
     }
   assert.equal(images.size, 30);
-  assert.equal(avatarTheme(undefined), 'classic');
-  assert.equal(avatarTheme({ toString: () => 'pandas' }), 'classic');
+  assert.equal(avatarTheme(undefined), 'colorful');
+  assert.equal(avatarTheme({ toString: () => 'pandas' }), 'colorful');
   assert.equal(avatarShape('https://untrusted.test'), 'orb');
   assert.equal(avatarColor('url(https://untrusted.test)'), '#1084FE');
   assert.equal(avatarColor('#A1B2C3'), '#A1B2C3');

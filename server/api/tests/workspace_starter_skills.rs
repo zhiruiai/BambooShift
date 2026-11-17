@@ -137,7 +137,7 @@ async fn starter_install_is_owner_only_idempotent_and_saves_real_package_resourc
     for field in ["agents", "conversations", "skills"] {
         assert_eq!(
             after[field].as_array().unwrap().len(),
-            baseline[field].as_array().unwrap().len() + 1
+            baseline[field].as_array().unwrap().len() + if field == "skills" { 5 } else { 1 }
         );
     }
     for field in ["messages", "routines", "apps", "settings"] {
@@ -156,6 +156,10 @@ async fn failed_package_write_rolls_back_everything_and_retry_uses_same_request(
         .get(&f.workspace, &f.workspace)
         .await
         .unwrap();
+    let baseline_files: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM skill_package_files")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
     sqlx::query("CREATE TRIGGER fail_starter_checklist BEFORE INSERT ON skill_package_files WHEN NEW.path='references/checklist.md' BEGIN SELECT RAISE(ABORT,'synthetic package failure'); END")
         .execute(&store.pool).await.unwrap();
     let body = request("engineering", "en");
@@ -169,7 +173,15 @@ async fn failed_package_write_rolls_back_everything_and_retry_uses_same_request(
             .fetch_one(&store.pool)
             .await
             .unwrap();
-        assert_eq!(count, 0, "{table}");
+        assert_eq!(
+            count,
+            if table == "skill_package_files" {
+                baseline_files
+            } else {
+                0
+            },
+            "{table}"
+        );
     }
     sqlx::query("DROP TRIGGER fail_starter_checklist")
         .execute(&store.pool)
@@ -202,7 +214,15 @@ async fn team_commit_provisions_only_reviewed_exact_stock_members() {
         json!({"brief":plan["starterSkills"]["brief"]})
     );
     let after = f.bootstrap().await;
-    let skills = after["skills"].as_array().unwrap();
+    let all_skills = after["skills"].as_array().unwrap();
+    assert_eq!(
+        all_skills.len(),
+        before["skills"].as_array().unwrap().len() + 9
+    );
+    let skills: Vec<_> = all_skills
+        .iter()
+        .filter(|skill| skill["name"] == "work-coordination")
+        .collect();
     assert_eq!(skills.len(), 1);
     assert_eq!(
         skills[0]["agentId"],
@@ -219,6 +239,7 @@ async fn team_commit_provisions_only_reviewed_exact_stock_members() {
 #[tokio::test]
 async fn team_requires_review_again_when_the_bound_package_version_changes() {
     let f = Fixture::new().await;
+    let baseline = f.bootstrap().await["skills"].clone();
     let plan = start_team(&f).await;
     let id = plan["id"].as_str().unwrap();
     let store = f
@@ -250,7 +271,10 @@ async fn team_requires_review_again_when_the_bound_package_version_changes() {
     .await;
     assert_eq!(status, 409, "{rejected}");
     assert_eq!(rejected["code"], "STARTER_SKILL_PLAN_CHANGED");
-    assert!(store.list(Table::Skills).await.unwrap().is_empty());
+    assert_eq!(
+        serde_json::to_value(store.list(Table::Skills).await.unwrap()).unwrap(),
+        baseline
+    );
     let (status, revised) = post(
         &f,
         &format!("/bot-team-plans/{id}/revise"),
@@ -264,6 +288,9 @@ async fn team_requires_review_again_when_the_bound_package_version_changes() {
         json!({"requestId":request_id,"expectedRevision":revised["revision"],"draft":revised["draft"]}),
     ).await;
     assert_eq!(status, 200, "{result}");
-    assert_eq!(store.list(Table::Skills).await.unwrap().len(), 3);
+    assert_eq!(
+        store.list(Table::Skills).await.unwrap().len(),
+        baseline.as_array().unwrap().len() + 15
+    );
     f.close().await;
 }

@@ -35,7 +35,7 @@ Future<void> libraryReach(WidgetTester tester, Finder finder) async {
 }
 
 void main() {
-  testWidgets('bundled originals provide all nine localized profiles', (
+  testWidgets('bundled originals provide all localized profiles with foundational skills', (
     tester,
   ) async {
     final catalogs = await tester.runAsync(
@@ -56,6 +56,13 @@ void main() {
         'support',
         'analysis',
         'recruitment',
+        'skill-curator',
+        'connector-builder',
+        'engineering-lead',
+        'frontend-designer',
+        'feishu-assistant',
+        'dingtalk-assistant',
+        'wecom-assistant',
       ]);
       for (final item in catalog) {
         expect(item.profile.keys.toSet(), {
@@ -68,6 +75,7 @@ void main() {
           'avatarImageId',
         });
         expect(item.profile['avatarImageId'], isNull);
+        expect(item.foundationSkills.length, 4);
       }
     }
     expect(catalogs.first.first.profile['name'], '研究员');

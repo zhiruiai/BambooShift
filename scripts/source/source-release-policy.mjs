@@ -106,6 +106,7 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/short-video-storyboard.gif',
   'docs/demo/skill-library.en.gif',
   'docs/demo/skill-library.gif',
+  'docs/demo/skill-creation.gif',
   'docs/demo/smart-bot.en.gif',
   'docs/demo/smart-bot.gif',
   'docs/demo/smart-theme.en.gif',
@@ -114,6 +115,7 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/team-templates.gif',
   'docs/demo/web-research.en.gif',
   'docs/demo/web-research.gif',
+  'docs/demo/website-delivery.gif',
   'docs/demo/website-preview.en.gif',
   'docs/demo/website-preview.gif',
   'docs/evidence/gui/reference-notifications.png',
@@ -184,7 +186,8 @@ export async function privateReleaseValues(root) {
   };
   add(homedir());
   function endpoint(key, item) {
-    if (!/(?:host|domain|url|origin|endpoint|bind|address|listen)$/i.test(key) || /\s/.test(item)) return;
+    if (!/(?:host|domain|url|origin|endpoint|bind|address|listen)$/i.test(key) || /\s/.test(item))
+      return;
     let url;
     try {
       url = new URL(item.includes('://') ? item : 'http://' + item);
@@ -198,7 +201,8 @@ export async function privateReleaseValues(root) {
       if (url.port && !['3000', '3001', '3002', '5173', '5174'].includes(url.port)) add(url.host);
       return;
     }
-    if (isIP(host) || /^(?:host|domain|sandboxAddress|webOrigin|controlOrigin)$/i.test(key)) add(host);
+    if (isIP(host) || /^(?:host|domain|sandboxAddress|webOrigin|controlOrigin)$/i.test(key))
+      add(host);
     if (url.port) add(url.host);
   }
   function privateFields(value) {

@@ -298,6 +298,17 @@ export function CreateDialogContentView(model: CreateDialogContentModel) {
                 void create();
               }}
             >
+              {mode === 'bot' && model.starterPacks.length > 0 && (
+                <div
+                  className="starter-skill-tags"
+                  aria-label={uiText('workspace:starterSkillsLabel')}
+                >
+                  <strong>{uiText('workspace:starterSkillsLabel')}</strong>
+                  {model.starterPacks.map((pack) => (
+                    <span key={pack.id}>{pack.name}</span>
+                  ))}
+                </div>
+              )}
               {mode === 'bot' ? (
                 <BotProfileFields
                   modelSelection

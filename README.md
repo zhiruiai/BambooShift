@@ -6,11 +6,13 @@ English · [简体中文](README.zh-CN.md)
 
 **[Try the live demo](https://zhiruiai.github.io/BambooShift/)** · **[Download the latest release](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[Supported platforms](#supported-platforms)** · **[Start a workspace](#quick-start)** · **[Contribute](CONTRIBUTING.md)** · [Tech stack and architecture](#tech-stack-and-architecture) · [More demos](#demos) · [Creator kit](#creator-kit)
 
-**One request. A whole AI team. A game you can open and play.** Open Starport Landing from the chat, check its five files in Source, then fly the spacecraft to a soft landing. The browser demo requires no account or API key.
+**From a brief to a working website.** Open the delivery, compare revisions, revisit an earlier version, and continue editing in its original thread.
 
-![Opening a web game from BambooShift chat and landing a spacecraft in its interactive preview](docs/demo/orbital-landing.en.gif)
+![Opening a delivered website, comparing revisions and continuing in the original thread](docs/demo/website-delivery.gif)
 
-These demos were recorded in isolated workspaces using sample conversations, files, and scripted model replies.
+The four featured recordings use a real model and the Rust service bundled with the local desktop client. They use fictional people and data in an isolated workspace, with the Chinese UI; waiting and debugging time is edited out. Older recordings below use sample data and scripted replies.
+
+[Recording notes and file checksums](docs/demo/recordings.json)
 
 ## Supported platforms
 
@@ -18,7 +20,7 @@ These demos were recorded in isolated workspaces using sample conversations, fil
 | --- | --- |
 | **Web / PWA** | Open the workspace in a Windows, macOS, Linux, or mobile browser. Install as a PWA when your browser supports it. |
 | **Windows x64** | Choose a release with a Windows x64 client ZIP. Extract the entire archive and run `BambooShift.exe`. The unsigned portable client connects to a running server. [Windows setup](docs/desktop-client.md#windows-x64) |
-| **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. App-managed personal workspaces are a source preview, not yet a release download. The app uses ad-hoc signing. [Desktop setup](docs/desktop-client.md) |
+| **macOS Apple Silicon** | Download the desktop ZIP and connect to a running server. App-managed personal workspaces are a source preview, not yet a release download. Source builds support a persistent local signing identity; release Developer ID signing and notarization are not configured. [Desktop setup](docs/desktop-client.md) |
 | **Linux x64** | Download the prebuilt server, follow the bundled README, and open the workspace in your browser. [Server deployment](server/api/deployment/README.md) |
 | **Android / iOS** | Use a mobile browser. The native Flutter app is available as source. [Mobile source](mobile/README.md) |
 
@@ -61,26 +63,33 @@ The team still needs to agree on a launch date. Deliver the file in this chat.
 
 ### Add a skill to a Bot
 
-Open a Bot's settings and choose skills, or use **Connect apps → Packaged skills** on the web or desktop. Preview the instructions and save a draft for that Bot. After approval, select it with `/` in the Bot's direct chat. On Flutter, open **+ → Use skill** in the composer. The Bot loads the selected, reviewed instructions for that run.
+Every local Bot starts with four complete packages: web research, browser use, computer use, and Agent Desktop. In the web or desktop Bot settings, open **Choose skills**, preview `SKILL.md` and its files, then choose **Install**. Select an enabled skill with `/` in the Bot's direct chat; on Flutter, open **+ → Use skill** in the composer.
 
-Use **Import SKILL.md** in the Bot’s skill editor to start from a local skill file on Web, desktop, or Flutter. Review the imported instructions in the editor, then save and approve the draft.
+Use **Import Agent Skill folder** to install an existing package with its `SKILL.md`, scripts, references and assets. Custom drafts and Bot-proposed packages require review before activation. A skill curator can search the built-in catalog with `find_skills` and create a multi-file draft with `propose_skill`; neither tool installs dependencies or executes the proposed code.
 
 Each Bot can also use its own configured model or inherit the workspace default,
-including when working in a group. The bilingual skill library includes browser
+including when working in a group. The bilingual library contains **27 skill packages**, and the Bot gallery offers **16 Bot templates** plus team templates. Skills include browser
 flow testing, code security review, product documentation and team decision
 briefs, plus guidance for debugging, handoffs and Agent Desktop. Agent Desktop requires its CLI on an
 authorized execution computer; selecting a skill does not install it or grant
-desktop access. [Per-Bot models, skills and requirements](docs/bot-models-and-skills.md)
+desktop access. [Per-Bot models, skills and requirements](docs/bot-models-and-skills.md) · [Capability and protocol scope](docs/capabilities-and-protocols.md)
 
 ### Choose a local or cloud computer
 
 - **Local browser.** Choose **Settings → Computer → Local** to open an isolated browser on the server machine. It runs on your current device when the client and server are on that same device.
-- **Native Mac apps.** In a macOS build with the bundled runtime, choose **Allow computer control** when opening the personal workspace. Grant Screen Recording and Accessibility and enable desktop control in the chat. A deployed workspace can also connect to a dedicated Worker. [Mac computer control](docs/desktop-client.md#macos-整机操作)
+- **Native Mac apps.** In a macOS build with the bundled runtime, choose **Computer → Mac apps** in a chat and grant Accessibility to the application shown there. Native window controls do not require Screen Recording. Choose full access in the computer permission settings to reuse your grant for tasks you initiate in that workspace. [Mac apps and permissions](docs/desktop-client.md#mac-应用)
 - **Cloud execution.** Use a cloud computer your administrator has linked, or connect a Worker you run on a separate computer or cloud server. [Execution locations](docs/computer.md#选择执行位置)
 
 Star the repo to bookmark it. For release notifications, choose **Watch → Custom → Releases**. Share your first task in [Issues](https://github.com/zhiruiai/BambooShift/issues), or use the [installation and compatibility form](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml).
 
 ## Demos
+
+| Real task | What to watch | Recording |
+| --- | --- | --- |
+| Website delivery | Open a working website, compare changes, revisit an old version, and continue in the same thread. | [Website revisions](docs/demo/website-delivery.gif) |
+| Three Bot teammates | Start from a team template and receive three independent responses to one task; working avatars animate. | [Team collaboration](docs/demo/team-templates.gif) |
+| Execute a skill package | Inspect `SKILL.md` and package files, then check the real CSV script output. | [Data quality check](docs/demo/skill-library.gif) |
+| Create a reusable skill | Inspect a Bot-authored four-file package, enable it, and run its budget example. | [Skill creation and execution](docs/demo/skill-creation.gif) |
 
 ### Learn, create, and get work done
 
@@ -145,6 +154,7 @@ If you have used Grok Bot, start with these familiar workflows. Assign work, rev
 | Approve an action or take over | Review and approve specific requests in chat. Open the Bot’s screen to follow its work. A private takeover pauses Bot input and observation. |
 | Open a finished deliverable | Preview documents, spreadsheets, media, and multi-file sites in chat. Play a delivered site, switch to Source, or download the project. [File previews](docs/file-previews.md) |
 | Reuse skills and automate routines | Review and enable reusable agent skills. Schedule a routine by time zone or trigger it with a webhook, then receive the result in the original chat. [Webhooks](docs/routine-webhooks.md) |
+| Connect enterprise messaging | **Connect apps → Message channels** explains Feishu, DingTalk and WeCom setup. The separate developer bridge uses official SDKs for text round trips; fixtures pass, but enterprise accounts have not been tested. [Setup and limits](docs/im-connectors.md) |
 
 ## Tech stack and architecture
 
@@ -172,7 +182,7 @@ flowchart TB
 | Agent runtime | A supervised Node.js worker uses Cordis to load reviewed engine providers. Pi Coding Agent is the only bundled production provider; its SDK and session lifecycle live behind the engine interface. Rust owns task budgets, delegation and permissions. [Engine contract](server/workers/plugin-runtime/README.md) · [Pi provider](server/workers/engines/pi/) |
 | Tools and execution | Separate workers handle MCP, document parsing, and computer use. Playwright drives isolated browsers. The bundled macOS runtime uses Cua Driver for opted-in native desktop control. Rust still checks approvals and execution targets. [Workers](server/workers/) · [Computer setup](docs/computer.md) |
 
-[Architecture and authorization](docs/architecture.md) · [Desktop and cloud execution](docs/architecture.md#desktop-and-cloud-execution) · [Source releases and verification](docs/source-release.md)
+[Architecture and authorization](docs/architecture.md) · [Capability and protocol scope](docs/capabilities-and-protocols.md) · [Desktop and cloud execution](docs/architecture.md#desktop-and-cloud-execution) · [Source releases and verification](docs/source-release.md)
 
 ## Creator kit
 

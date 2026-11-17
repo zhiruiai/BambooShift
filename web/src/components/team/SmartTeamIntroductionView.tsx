@@ -64,9 +64,7 @@ export function SmartTeamIntroductionView({
           <p className="field-help">{uiText('bots:text_b268540e886c')}</p>
           <p className="field-help">
             {props.modelConfigured
-              ? uiText('bots:text_f34698a518ad', {
-                  value0: props.modelLabel || uiText('bots:text_a02720c41642'),
-                })
+              ? uiText('workspace:environmentModelReady')
               : uiText('bots:text_661a180e5ae6')}
           </p>
           {!props.modelConfigured && props.onConfigureModel && (

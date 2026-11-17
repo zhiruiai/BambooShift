@@ -225,6 +225,12 @@ test('computer status, desktop permission and approval errors translate only the
   assert.doesNotMatch(settings, /saved-computer\.example\.test/);
   const local = { ...machine, mode: 'local', connected: true, targetRevision: 'revision' };
   const sharedStatus = f.render('ComputerConnectionSettingsView', {
+    scope: {
+      key: 'space-a',
+      request: () => {
+        throw Error('Rendering must not request authorization');
+      },
+    },
     machine: local,
     computer: {
       ...local,

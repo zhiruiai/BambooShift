@@ -19,6 +19,7 @@ import { parseClientArguments } from './desktop/options.mjs';
 import { stageDesktopRuntime } from './desktop/runtime-package.mjs';
 import { copyDesktopRuntime } from './desktop/runtime-copy.mjs';
 import { signLocalMacClient } from './desktop/macos-signing.mjs';
+import { resolveMacSigningProfile } from './desktop/macos-signing-profile.mjs';
 export { parseClientArguments } from './desktop/options.mjs';
 import { desktopProductName, readDesktopProductName } from './publishing/package-names.mjs';
 
@@ -239,7 +240,9 @@ export async function packageClient(options) {
     '--arch',
     options.arch,
     ...(options.withRuntime ? ['--with-runtime'] : []),
-    ...(options.nativeImageArtifactsDirectory ? ['--native-image-candidate', options.nativeImageArtifactsDirectory] : []),
+    ...(options.nativeImageArtifactsDirectory
+      ? ['--native-image-candidate', options.nativeImageArtifactsDirectory]
+      : []),
   ]);
   const source = join(projectRoot, 'desktop');
   const { files, manifest } = await collectClientFiles(source);
@@ -268,6 +271,12 @@ export async function packageClient(options) {
   const working = await mkdtemp(join(output, '.build-'));
   let preserveWorking = false;
   try {
+    // Resolve once before building; a configured identity must never silently
+    // change between the native helper and its containing app.
+    const signingProfile =
+      target.platform === 'darwin'
+        ? await resolveMacSigningProfile({ sourceRoot: projectRoot })
+        : undefined;
     const stage = join(working, 'desktop');
     await mkdir(stage);
     for (const file of files) {
@@ -283,6 +292,7 @@ export async function packageClient(options) {
           platform: target.platform,
           arch: target.arch,
           nativeImageArtifactsDirectory: target.nativeImageArtifactsDirectory,
+          signingProfile,
         })
       : undefined;
     const icon = await makeIcon(target.platform, working);
@@ -376,6 +386,8 @@ export async function packageClient(options) {
           working,
           bundledRuntime,
           command,
+          sourceRoot: projectRoot,
+          signingProfile,
         });
       }
     }
@@ -393,10 +405,13 @@ export async function packageClient(options) {
           packagedAt: new Date().toISOString(),
           sourceFiles: [...files, ...licenseFiles],
           bundles: [relative(output, destination)],
-          localSignature: target.platform === 'darwin' ? 'ad-hoc' : null,
+          localSignature:
+            target.platform === 'darwin' ? (signingProfile ? 'local-certificate' : 'ad-hoc') : null,
           signedForDistribution: false,
           serviceIncluded: Boolean(bundledRuntime),
-          ...(target.nativeImageArtifactsDirectory ? { nativeImageCandidate: true, releaseApproval: false } : {}),
+          ...(target.nativeImageArtifactsDirectory
+            ? { nativeImageCandidate: true, releaseApproval: false }
+            : {}),
           ...(bundledRuntime ? { runtime: bundledRuntime } : {}),
         },
         null,
@@ -442,7 +457,9 @@ async function main() {
           source: 'desktop/',
           output: `release/client/${name}-${options.platform}-${options.arch}`,
           includesService: options.withRuntime,
-          ...(options.nativeImageArtifactsDirectory ? { nativeImageCandidate: true, releaseApproval: false } : {}),
+          ...(options.nativeImageArtifactsDirectory
+            ? { nativeImageCandidate: true, releaseApproval: false }
+            : {}),
           startsClient: false,
         },
         null,

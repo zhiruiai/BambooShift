@@ -36,7 +36,7 @@ An engine plugin must register its factory through `ctx.workerEngines.register()
 
 Choose the existing extension point that fits the contribution:
 
-- **Workflow instructions:** use the reviewed skill editor or add a bilingual recipe to `mobile/assets/skills/{en,zh}.json`. Skills do not grant new tools, run package scripts or load a worker plugin.
+- **Workflow instructions:** use the reviewed skill editor or add a bilingual recipe with its resources to `mobile/assets/skills/{en,zh}.json` and `shared/skill-workflow-resources.json`. Reviewed Agent Skills can read their packaged resources and request script execution through Rust's authorized `run_skill_script` tool. A skill does not grant new tools, bypass computer permissions or load a worker plugin.
 - **MCP connectors:** add a documented provider to `shared/app-providers.json`, update both UI languages, and run `npm run sync:app-catalog`. The existing [MCP executor](../mcp-worker/README.md) and [connection service](../../../docs/app-connections.md) retain discovery, authorization and approvals.
 - **Worker or engine behavior:** use the trusted source registry below. An engine example is not another production provider, and a plugin cannot grant itself Rust tool contracts.
 

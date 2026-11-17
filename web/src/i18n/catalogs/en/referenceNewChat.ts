@@ -1,4 +1,6 @@
 export default {
+  searchShortcutMac: '⌘ K',
+  searchShortcutControl: 'Ctrl K',
   newChatTitle: 'Start a chat',
   newChatClose: 'Close chat picker',
   newChatSearch: 'Search Bots or groups',

@@ -202,13 +202,13 @@ function renderArtwork({
   const selected = avatarTheme(theme),
     form = avatarShape(shape),
     fill = color;
-  if (selected === DEFAULT_AVATAR_THEME)
+  if (selected === 'classic' || selected === 'colorful')
     return (
       <CommunityAvatarArtwork
         theme={CLASSIC_AVATAR.shapes[form] as CommunityAvatarTheme}
         displayTheme={selected}
         shape={form}
-        color={CLASSIC_AVATAR.color}
+        color={selected === 'classic' ? CLASSIC_AVATAR.color : fill}
         size={size}
         motion={faceMotion}
       />

@@ -1,6 +1,7 @@
 import type { CommandToken } from './composerCommands';
+import catalog from '../../../shared/bot-starter-templates.json';
 
-const names = ['招聘助理', 'ai 同事招募员', 'ai同事招募员', 'ai staff recruiter', 'recruiter'];
+const names = catalog.recruitment.mentionAliases;
 const boundary = /^[\s@，。！？、：；!?;:,()[\]{}]/u;
 
 /** This shortcut has its own aliases so ordinary @ mentions keep their existing grammar. */

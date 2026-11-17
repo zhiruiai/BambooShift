@@ -7,6 +7,7 @@ pub mod cloud;
 pub mod cloud_config;
 pub mod cloud_provider;
 pub mod controller;
+mod controller_activity;
 pub mod controls;
 mod discovery;
 pub mod frames;

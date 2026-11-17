@@ -5,6 +5,7 @@ import { chromium } from 'playwright-core';
 import type { BotTeamDraft, BotTeamPlan } from '../../../shared/bot-team-plans';
 import catalog from '../../../shared/team-starter-templates.json';
 import skillPacks from '../../../shared/starter-skill-packs.json';
+import workflowRecipes from '../../../mobile/assets/skills/en.json';
 
 test('reviewed team templates open the group directly and recover an uncertain commit', async (t) => {
   const origin = 'https://team-template.example.test';
@@ -13,7 +14,21 @@ test('reviewed team templates open the group directly and recover an uncertain c
   const base = `/api/workspaces/${workspaceId}`;
   const starter = catalog.en.find((item) => item.id === 'launch')!;
   const leadSkill = skillPacks.packs['work-coordination'].locales.en;
-  const leadSkillText = `Included skills · ${leadSkill.name}`;
+  const foundationIds = ['web-research', 'browser-use', 'computer-use', 'agent-desktop'];
+  assert.deepEqual(skillPacks.foundation, foundationIds);
+  const leadSkills = [
+    { id: 'work-coordination', name: leadSkill.name, description: leadSkill.description },
+    ...foundationIds.map((id) => {
+      const recipe = workflowRecipes.find((item) => item.id === id);
+      assert.ok(recipe, `Missing foundation skill ${id}`);
+      return { id, name: recipe.name, description: recipe.description };
+    }),
+  ];
+  assert.deepEqual(
+    leadSkills.map(({ name }) => name),
+    ['Work coordination', 'Web research', 'Browser use', 'Computer use', 'Agent Desktop'],
+  );
+  const leadSkillText = `Included skills · ${leadSkills.map(({ name }) => name).join(' · ')}`;
   const { outputFiles } = await build({
     stdin: {
       contents: `
@@ -97,15 +112,7 @@ test('reviewed team templates open the group directly and recover an uncertain c
                 goal: body.goal,
                 status: 'ready',
                 draft,
-                starterSkills: {
-                  brief: [
-                    {
-                      id: 'work-coordination',
-                      name: leadSkill.name,
-                      description: leadSkill.description,
-                    },
-                  ],
-                },
+                starterSkills: { brief: leadSkills },
                 createdAt: '2026-11-10T09:00:00Z',
                 updatedAt: '2026-11-10T09:00:00Z',
               };

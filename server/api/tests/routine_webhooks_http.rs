@@ -316,7 +316,14 @@ async fn concurrent_delivery_starts_pi_once_and_replays_after_restart_without_re
     let sent = m.calls.lock().await;
     assert_eq!(sent.len(), 1);
     assert!(sent[0]["messages"].to_string().contains(marker));
-    assert!(sent[0]["tools"].as_array().is_none_or(Vec::is_empty));
+    let mut tools: Vec<_> = sent[0]["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|tool| tool["function"]["name"].as_str().unwrap())
+        .collect();
+    tools.sort_unstable();
+    assert_eq!(tools, ["list_skills", "read_skill", "read_skill_resource"]);
     drop(sent);
     let retained: (Option<String>, String) = sqlx::query_as(
         "SELECT idempotency_digest,payload_digest FROM routine_webhook_deliveries WHERE run_id=?",

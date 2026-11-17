@@ -8,6 +8,7 @@ async fn source_profile_and_active_skills_are_live_but_each_run_keeps_its_snapsh
     let s = Shared::new().await;
     let receipt = s.add().await;
     let alias = receipt["agentId"].as_str().unwrap();
+    let source_skill_count = resolve(&s, &receipt).await.skills.len();
     let created = "2026-01-01T00:00:00.000Z";
     s.source.put(Table::Skills,&json!({"id":id(),"agentId":s.agent,"name":"Source Method","description":"Published skill","content":"SOURCE_ACTIVE_RULE","version":1,"status":"active","createdAt":created})).await.unwrap();
     s.source.put(Table::Skills,&json!({"id":id(),"agentId":s.agent,"name":"Unapproved","description":"Private draft","content":"DRAFT_NOT_SHARED","version":1,"status":"proposed","createdAt":created})).await.unwrap();
@@ -20,7 +21,7 @@ async fn source_profile_and_active_skills_are_live_but_each_run_keeps_its_snapsh
         .unwrap();
     let first = resolve(&s, &receipt).await;
     assert_eq!(first.agent["id"], alias);
-    assert_eq!(first.skills.len(), 1);
+    assert_eq!(first.skills.len(), source_skill_count + 1);
     assert!(
         serde_json::to_string(&first.skills)
             .unwrap()
@@ -57,7 +58,13 @@ async fn source_profile_and_active_skills_are_live_but_each_run_keeps_its_snapsh
         "projection must not overwrite raw local cache"
     );
     assert!(raw_target.list(Table::Memories).await.unwrap().is_empty());
-    assert!(raw_target.list(Table::Skills).await.unwrap().is_empty());
+    let local_skills = raw_target.list(Table::Skills).await.unwrap();
+    assert!(local_skills.iter().all(|skill| skill["agentId"] != alias));
+    assert!(
+        !json!(local_skills)
+            .to_string()
+            .contains("SOURCE_ACTIVE_RULE")
+    );
     let (_, snapshot) =
         s.f.request(
             "GET",

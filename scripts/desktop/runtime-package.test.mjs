@@ -84,6 +84,7 @@ test(
     try {
       await writeFile(join(directory, 'private-secret.txt'), 'SYNTHETIC_PRIVATE_VALUE');
       const manifest = await stageDesktopRuntime({
+        resolveSigningProfile: async () => undefined,
         output,
         stageDriver: async () => ({ hostControl: false }),
         prepareDependencies: async () => {},
@@ -112,8 +113,11 @@ test(
       assert.deepEqual(calls.at(-1)[1], ['--version']);
       assert.equal(manifest.server, 'openbot-backend');
       const packagedPaths = [
-        'desktop-runtime.json', 'openbot-backend', 'openbot-image-worker',
-        'package-manifest.json', 'runtime',
+        'desktop-runtime.json',
+        'openbot-backend',
+        'openbot-image-worker',
+        'package-manifest.json',
+        'runtime',
       ];
       if (process.platform === 'darwin') {
         const helper = 'bin/OpenBot Desktop Helper.app/Contents/MacOS/OpenBotDesktopHelper';
@@ -121,7 +125,10 @@ test(
         assert.equal(manifest.accessibilityHelper, helper);
         assert.deepEqual(await readdir(join(output, 'bin')), ['OpenBot Desktop Helper.app']);
         assert.deepEqual((await readdir(join(bundle, 'Contents'))).sort(), ['Info.plist', 'MacOS']);
-        assert.match(await readFile(join(bundle, 'Contents/Info.plist'), 'utf8'), /com\.openbot\.desktop-helper/);
+        assert.match(
+          await readFile(join(bundle, 'Contents/Info.plist'), 'utf8'),
+          /com\.openbot\.desktop-helper/,
+        );
         assert.deepEqual(await readFile(join(output, helper)), nativeHeader());
         const [compile, sign, verify] = calls.slice(2, -1);
         assert.equal(compile[0], '/usr/bin/xcrun');
@@ -129,7 +136,17 @@ test(
         assert.equal(compile[1].includes('-module-cache-path'), false);
         assert.deepEqual(sign.slice(0, 2), [
           '/usr/bin/codesign',
-          ['--force', '--sign', '-', '--identifier', 'com.openbot.desktop-helper', '--options', 'runtime', bundle],
+          [
+            '--force',
+            '--sign',
+            '-',
+            '--identifier',
+            'com.openbot.desktop-helper',
+            '--options',
+            'runtime',
+            '--timestamp=none',
+            bundle,
+          ],
         ]);
         assert.deepEqual(verify.slice(0, 2), [
           '/usr/bin/codesign',
@@ -154,61 +171,77 @@ test(
   },
 );
 
-test('candidate staging precedes strict notices and carries only relocatable provenance', {
-  skip: process.platform !== 'darwin' || process.arch !== 'arm64',
-}, async (t) => {
-  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-candidate-test-'));
-  t.after(() => rm(directory, { recursive: true, force: true }));
-  const output = join(directory, 'service');
-  const nativeImage = {
-    manifestPath: 'runtime/native-image-runtime/overlay.json',
-    manifestSha256: 'a'.repeat(64),
-    releaseApproval: false,
-  };
-  const events = [];
-  const manifest = await stageDesktopRuntime({
-    output,
-    nativeImageArtifactsDirectory: join(directory, 'private-build-input'),
-    prepareDependencies: async () => {},
-    command: async () => {},
-    buildBackend: fakeBackend,
-    stageNativeImage: async (options) => {
-      assert.equal(options.output, output);
-      assert.equal(options.platform, 'darwin');
-      assert.equal(options.arch, 'arm64');
-      assert.equal(options.artifactsDirectory, join(directory, 'private-build-input'));
-      events.push('overlay');
-      return nativeImage;
-    },
-    stageNode: async () => ({}),
-    stageDriver: async () => ({ hostControl: false }),
-    stageAccessibilityHelper: async () => ({}),
-    buildRuntimeNotices: async (options) => {
-      assert.equal(options.nativeImage, nativeImage);
-      events.push('strict-notices');
-    },
-  });
-  assert.deepEqual(events, ['overlay', 'strict-notices']);
-  assert.deepEqual(manifest.nativeImage, nativeImage);
-  assert.equal(manifest.releaseApproval, false);
-  assert.equal(JSON.stringify(manifest).includes(directory), false);
-});
+test(
+  'candidate staging precedes strict notices and carries only relocatable provenance',
+  {
+    skip: process.platform !== 'darwin' || process.arch !== 'arm64',
+  },
+  async (t) => {
+    const directory = await mkdtemp(join(tmpdir(), 'bambooshift-candidate-test-'));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const output = join(directory, 'service');
+    const nativeImage = {
+      manifestPath: 'runtime/native-image-runtime/overlay.json',
+      manifestSha256: 'a'.repeat(64),
+      releaseApproval: false,
+    };
+    const events = [];
+    const manifest = await stageDesktopRuntime({
+      output,
+      nativeImageArtifactsDirectory: join(directory, 'private-build-input'),
+      prepareDependencies: async () => {},
+      command: async () => {},
+      buildBackend: fakeBackend,
+      stageNativeImage: async (options) => {
+        assert.equal(options.output, output);
+        assert.equal(options.platform, 'darwin');
+        assert.equal(options.arch, 'arm64');
+        assert.equal(options.artifactsDirectory, join(directory, 'private-build-input'));
+        events.push('overlay');
+        return nativeImage;
+      },
+      stageNode: async () => ({}),
+      stageDriver: async () => ({ hostControl: false }),
+      stageAccessibilityHelper: async () => ({}),
+      buildRuntimeNotices: async (options) => {
+        assert.equal(options.nativeImage, nativeImage);
+        events.push('strict-notices');
+      },
+    });
+    assert.deepEqual(events, ['overlay', 'strict-notices']);
+    assert.deepEqual(manifest.nativeImage, nativeImage);
+    assert.equal(manifest.releaseApproval, false);
+    assert.equal(JSON.stringify(manifest).includes(directory), false);
+  },
+);
 
-test('rejected candidate prevents notices, runtime download and completion manifest', {
-  skip: process.platform !== 'darwin' || process.arch !== 'arm64',
-}, async (t) => {
-  const directory = await mkdtemp(join(tmpdir(), 'bambooshift-rejected-candidate-'));
-  t.after(() => rm(directory, { recursive: true, force: true }));
-  const output = join(directory, 'service');
-  await assert.rejects(stageDesktopRuntime({
-    output, nativeImageArtifactsDirectory: directory,
-    prepareDependencies: async () => {}, command: async () => {}, buildBackend: fakeBackend,
-    stageNativeImage: async () => { throw Error('Candidate digest mismatch'); },
-    stageNode: async () => assert.fail('must not stage Node'),
-    buildRuntimeNotices: async () => assert.fail('must not claim notice coverage'),
-  }), /Candidate digest mismatch/);
-  await assert.rejects(readFile(join(output, 'desktop-runtime.json')), { code: 'ENOENT' });
-});
+test(
+  'rejected candidate prevents notices, runtime download and completion manifest',
+  {
+    skip: process.platform !== 'darwin' || process.arch !== 'arm64',
+  },
+  async (t) => {
+    const directory = await mkdtemp(join(tmpdir(), 'bambooshift-rejected-candidate-'));
+    t.after(() => rm(directory, { recursive: true, force: true }));
+    const output = join(directory, 'service');
+    await assert.rejects(
+      stageDesktopRuntime({
+        output,
+        nativeImageArtifactsDirectory: directory,
+        prepareDependencies: async () => {},
+        command: async () => {},
+        buildBackend: fakeBackend,
+        stageNativeImage: async () => {
+          throw Error('Candidate digest mismatch');
+        },
+        stageNode: async () => assert.fail('must not stage Node'),
+        buildRuntimeNotices: async () => assert.fail('must not claim notice coverage'),
+      }),
+      /Candidate digest mismatch/,
+    );
+    await assert.rejects(readFile(join(output, 'desktop-runtime.json')), { code: 'ENOENT' });
+  },
+);
 
 test(
   'bundled runtime rejects missing inventories and foreign Rust executables before installing dependencies',

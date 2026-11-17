@@ -1,5 +1,6 @@
 import packsSource from '../../shared/starter-skill-packs.json';
 import type { Language } from './i18n/language';
+import { skillWorkflowTemplates } from './skillWorkflowTemplates';
 
 type Pack = {
   name: string;
@@ -14,7 +15,20 @@ const catalog: {
 } = packsSource;
 
 function localPacks(ids: string[] | undefined, language: Language) {
-  return (ids || []).map((id) => ({ id, ...catalog.packs[id].locales[language] }));
+  if (!ids) return [];
+  return [...new Set([...ids, ...packsSource.foundation])].map((id) => {
+    const starter = catalog.packs[id]?.locales[language];
+    if (starter) return { id, ...starter };
+    const recipe = skillWorkflowTemplates[language].find((item) => item.id === id);
+    if (!recipe) throw new Error(`Missing bundled skill: ${id}`);
+    return {
+      id,
+      name: recipe.name,
+      description: recipe.description,
+      instructions: recipe.content,
+      checklist: [],
+    };
+  });
 }
 
 export const starterBotPacks = (id: string, language: Language) =>

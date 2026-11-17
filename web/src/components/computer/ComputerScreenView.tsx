@@ -43,7 +43,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
     inputBusy,
     otherControlled,
     permissionBusy,
-    checkComputer,
+    refreshPermissions,
     selectSurface,
     agent,
     isDesktop,
@@ -125,7 +125,7 @@ export function ComputerScreenView(model: ComputerDialogModel) {
         computer={computer}
         busy={busy || inputBusy || otherControlled}
         checking={permissionBusy}
-        onCheck={() => void checkComputer()}
+        onCheck={() => void refreshPermissions()}
         onSelect={(surface) => void selectSurface(surface)}
       />
     ) : !computer.botScreen?.shared ? (

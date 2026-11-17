@@ -154,7 +154,20 @@ test('settings category navigation supports keyboard focus and exposes the recov
   try {
     await h.flush();
     const buttons = all(h.tree, (node) => node.type === 'button');
-    assert.equal(buttons.length, 8);
+    assert.deepEqual(
+      buttons.map((button) => button.key),
+      [
+        'general',
+        'avatars',
+        'work',
+        'memory',
+        'usage',
+        'notifications',
+        'devices',
+        'updates',
+        'models',
+      ],
+    );
     const focused: number[] = [];
     const dom = buttons.map((_: unknown, i: number) => ({ focus: () => focused.push(i) }));
     buttons[0].props.onKeyDown({
@@ -163,17 +176,21 @@ test('settings category navigation supports keyboard focus and exposes the recov
       currentTarget: Object.assign(dom[0], { parentElement: { querySelectorAll: () => dom } }),
     });
     assert.deepEqual(focused, [buttons.length - 1]);
-    buttons[2].props.onClick();
+    buttons[3].props.onClick();
     assert.deepEqual(chosen, ['memory']);
     h.setProps({ blocked: true, recoverable: ['memory'] });
     await h.flush();
     const blocked = all(h.tree, (node) => node.type === 'button');
     assert.equal(blocked[1].props.disabled, true);
-    assert.equal(blocked[2].props.disabled, false);
+    assert.equal(blocked[2].props.disabled, true);
+    assert.equal(blocked[3].props.disabled, false);
     assert.match(h.copy, /需要核对/);
     h.setProps({ blocked: false, canManage: false });
     await h.flush();
-    assert.equal(all(h.tree, (node) => node.type === 'button').length, 7);
+    assert.deepEqual(
+      all(h.tree, (node) => node.type === 'button').map((button) => button.key),
+      ['general', 'avatars', 'work', 'memory', 'usage', 'notifications', 'devices', 'updates'],
+    );
   } finally {
     h.dispose();
   }

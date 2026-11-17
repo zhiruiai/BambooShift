@@ -23,6 +23,19 @@ templates do not carry model bindings.
 
 ## Choose skills
 
+Every local Bot starts with four complete packages: **Web research**, **Browser
+use**, **Computer use**, and **Agent Desktop**. This applies to the initial Bot,
+manual creation, recruitment, templates and teams. Existing local Bots receive
+missing packages once on workspace initialization; shared Bots keep their source
+definition. Existing authored or disabled packages are preserved, and later
+removing or disabling a foundational package is not undone on restart.
+
+These packages teach the real tool paths. Research uses `web_search` and
+`web_fetch`; browser work uses the existing Playwright worker; native Mac work
+uses application controls when available. The optional Vercel Agent Desktop CLI
+remains a separate prerequisite. Neither package installation nor initialization
+grants computer access, creates credentials, installs software or enables a screen.
+
 In the Web and desktop clients, the Bot's settings show enabled skills and drafts
 awaiting review. Open **Choose skills**, select a package and its target Bot, then
 choose **Install**. The complete
@@ -87,26 +100,40 @@ the key column if you want duplicate-key counts. The bundled script reports
 record count, malformed widths, blanks and duplicate-key rows. A Python 3 runtime
 is required for this script.
 
-The English and Chinese library contains 20 skill packages. Each includes a
+The English and Chinese library contains 27 skill packages. Each includes a
 reference checklist and a working template. Data quality review and spreadsheet
 analysis also include a Python script for profiling CSV files. Web app testing,
 code security review and product documentation are adapted from GitHub Awesome
 Copilot. Debugging and verification are adapted from Superpowers. Product
-specifications and team handoffs are adapted from Matt Pocock. Adapted packages
-carry their pinned source and license. [Source inventory](../legal/third-party/community-skills/SOURCES.json)
+specifications and team handoffs are adapted from Matt Pocock. The Superpowers
+engineering package additionally retains complete pinned upstream directories for
+systematic debugging, test-driven development, review feedback and completion
+verification, including supporting references and a file-hash inventory. It does
+not install upstream hooks or execute reference scripts automatically.
+
+Frontend design retains the complete Anthropic design guidance as a reference;
+its package declares **MIT AND Apache-2.0**, preserves both licenses, and records
+the upstream revision and hash. Agent Desktop retains **Apache-2.0**. Other bundled
+workflows use MIT. Skill discovery, skill creation and connector development
+include review checklists and portable working files. All adapted packages retain
+their actual source and license. [Source inventory](../legal/third-party/community-skills/SOURCES.json)
 
 The Bot Gallery's starter packages include working files tailored to each role.
 The research Bot includes a claims spreadsheet template, and the recruiter has a
-structured Bot brief. [Bot Gallery](bot-templates.md)
+structured Bot brief. Choosing **Use template and edit** retains these role
+packages while you customize the profile. The form previews the packages; they
+are installed together with the Bot only after submission. Cancelling the draft
+creates nothing. [Bot Gallery](bot-templates.md)
 
 ## Agent Desktop
 
 The **Agent Desktop** workflow is adapted from Vercel Labs' Apache-2.0 skill. It
-requires the CLI to be installed separately on the selected execution computer,
-operating-system permissions, and BambooShift's approved `local-shell-v1` command
-capability. The workflow checks `computer_status`, requests `agent-desktop status`
-through `computer_action`, and reads the installed version's desktop and platform
-guides. It uses an observe, act and verify loop and preserves action approvals.
+checks `computer_status` and prefers BambooShift's available native app controls.
+The optional external CLI path requires a separately installed CLI on the selected
+execution computer, operating-system permissions and authorized `local-shell-v1`
+commands. On that path, the Bot requests `agent-desktop status` through
+`computer_action` and reads the installed version's desktop and platform guides.
+Both paths observe, act and verify through the current computer authorization.
 
 Adding or approving this skill does not install the CLI, change the selected
 computer, enable physical input, or turn a Windows connection client into a local

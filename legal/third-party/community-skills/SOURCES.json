@@ -1,5 +1,5 @@
 {
-  "reviewedOn": "2026-11-14",
+  "reviewedOn": "2026-11-17",
   "adaptations": [
     {
       "recipeIds": ["systematic-debugging", "behavior-first"],
@@ -43,6 +43,36 @@
       "license": "MIT",
       "licenseFile": "github-awesome-copilot-LICENSE.txt",
       "changes": "Condensed and translated for available workspace and browser tools. The adaptations omit upstream scripts, automatic dependency installation and reference files."
+    },
+    {
+      "recipeIds": ["superpowers-engineering"],
+      "repository": "obra/superpowers",
+      "revision": "22f0b463e7a5e579904dd6211a520321035526f7",
+      "paths": [
+        "skills/systematic-debugging/SKILL.md",
+        "skills/systematic-debugging/condition-based-waiting-example.ts",
+        "skills/systematic-debugging/condition-based-waiting.md",
+        "skills/systematic-debugging/defense-in-depth.md",
+        "skills/systematic-debugging/find-polluter.sh",
+        "skills/systematic-debugging/root-cause-tracing.md",
+        "skills/test-driven-development/SKILL.md",
+        "skills/test-driven-development/writing-good-tests.md",
+        "skills/verification-before-completion/SKILL.md",
+        "skills/receiving-code-review/SKILL.md"
+      ],
+      "license": "MIT",
+      "licenseFile": "superpowers-LICENSE.txt",
+      "changes": "Selected complete upstream method directories preserved verbatim as references; BambooShift adds host guidance. No hooks or installers executed."
+    },
+    {
+      "recipeIds": ["frontend-design"],
+      "repository": "anthropics/skills",
+      "revision": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "paths": ["skills/frontend-design/SKILL.md"],
+      "license": "Apache-2.0",
+      "licenseFile": "anthropic-frontend-LICENSE.txt",
+      "changes": "Complete upstream skill retained unchanged as a reference. BambooShift adds its own host workflow and acceptance resources.",
+      "packageLicense": "MIT AND Apache-2.0"
     }
   ],
   "references": [

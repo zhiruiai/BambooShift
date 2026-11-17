@@ -1,4 +1,5 @@
 export default {
+  settingsAvatars: 'Bot 形象',
   settingsGeneral: '通用',
   settingsBotWork: 'Bot 工作设置',
   settingsMemory: '记忆导入',

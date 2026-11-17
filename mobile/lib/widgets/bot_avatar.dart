@@ -76,7 +76,8 @@ class BotAvatar extends StatelessWidget {
     final theme =
         generated?.motif ?? validAvatarTheme(appearance?.avatarTheme ?? family);
     final classic = theme == classicAvatarTheme;
-    final renderedTheme = classic ? classicAvatarShapes[shape]! : theme;
+    final character = classic || theme == colorfulAvatarTheme;
+    final renderedTheme = character ? classicAvatarShapes[shape]! : theme;
     final base = _exportedColors[shape]!;
     final hex = generated?.colorFor(shape) ?? bot['color'];
     final color = classic
@@ -106,8 +107,8 @@ class BotAvatar extends StatelessWidget {
             state: motion?.name ?? 'idle',
             sustain: animate && sustainMotion,
             blinkWhenIdle:
-                animate && (blinkWhenIdle || classic && motion == null),
-            repeatIdleBlink: animate && classic && blinkWhenIdle,
+                animate && (blinkWhenIdle || character && motion == null),
+            repeatIdleBlink: animate && character && blinkWhenIdle,
             label: bot['name'] as String?,
           )
         : path == null &&

@@ -168,9 +168,14 @@ pub async fn post(
     }
     let (kind, chat, ids) = match body["kind"].as_str() {
         Some("bot") => {
-            crate::error::only_fields(&body, &["kind", "requestId", "profile"])?;
+            crate::error::only_fields(&body, &["kind", "requestId", "profile", "starter"])?;
             grant.authorize_owner(&state).await?;
-            let (agent, chat) = mutations::create_bot(&store, &mut tx, &body["profile"]).await?;
+            let (agent, chat) = if let Some(starter) = body.get("starter") {
+                super::starter_bots::create_custom(&store, &mut tx, &body["profile"], starter)
+                    .await?
+            } else {
+                mutations::create_bot(&store, &mut tx, &body["profile"]).await?
+            };
             ("bot", chat, vec![agent["id"].clone()])
         }
         Some("group") => {

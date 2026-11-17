@@ -318,8 +318,28 @@ async fn memories_and_skill_versions_use_real_transactions_with_one_active_versi
         assert_eq!(active["status"], "active");
     }
     let skills = f.bootstrap().await["skills"].as_array().unwrap().clone();
-    assert_eq!(skills.iter().filter(|s| s["status"] == "active").count(), 1);
-    assert_eq!(skills[0]["status"], "archived");
+    let reviews: Vec<_> = skills
+        .iter()
+        .filter(|s| s["agentId"] == agent && s["name"] == "Review")
+        .collect();
+    assert_eq!(reviews.len(), 2);
+    assert_eq!(
+        reviews.iter().filter(|s| s["status"] == "active").count(),
+        1
+    );
+    assert_eq!(
+        reviews
+            .iter()
+            .find(|s| s["id"] == versions[0]["id"])
+            .unwrap()["status"],
+        "archived"
+    );
+    let unchanged: Vec<_> = skills
+        .iter()
+        .filter(|s| s["name"] != "Review")
+        .cloned()
+        .collect();
+    assert_eq!(json!(unchanged), boot["skills"]);
     let (status, _) = f
         .request(
             "POST",
@@ -333,5 +353,6 @@ async fn memories_and_skill_versions_use_real_transactions_with_one_active_versi
         )
         .await;
     assert_eq!(status, 403);
+    assert_eq!(f.bootstrap().await["skills"], json!(skills));
     f.close().await;
 }

@@ -1,4 +1,32 @@
 export default {
+  messageChannelsTitle: '消息渠道',
+  messageChannelsIntro: '从企业聊天发起任务，把结果带回原会话。选择渠道查看接入条件。',
+  messageChannelsChoose: '选择企业消息渠道',
+  messageChannelsNeedsSetup: '需要配置',
+  messageChannelsConnect: '连接{{name}}与 Bot',
+  messageChannelsFlow: '企业消息 → 专用 Bot 会话 → 原消息回复',
+  messageChannelsDeveloper: '开发者接入',
+  messageChannelsStep1: '准备企业机器人',
+  messageChannelsCredentials_feishu: '准备应用 ID、应用密钥与机器人的 Open ID，开启消息长连接。',
+  messageChannelsCredentials_dingtalk:
+    '准备企业应用的 AppKey 与 AppSecret，开启机器人 Stream 模式。',
+  messageChannelsCredentials_wecom: '准备智能机器人的 Bot ID 与 Secret，使用官方长连接。',
+  messageChannelsStep2: '绑定员工与专用会话',
+  messageChannelsBinding:
+    '指定可用员工、聊天和话题，各自绑定独立 Bot 单聊，沿用对应用户的实际权限。',
+  messageChannelsStep3: '检查配置，验证双向收发',
+  messageChannelsVerification:
+    '先离线检查配置，再启动独立桥接程序。在企业平台发送测试消息，核对结果回到原会话。',
+  messageChannelsBoundary:
+    '模板不会自动连接企业账号。当前支持文本收发；需要审批的操作仍在 BambooShift 中处理，外部消息不能提升权限。',
+  messageChannelsGuide: '查看接入指南',
+  messageChannelsCopy: '复制检查命令',
+  messageChannelsCopied: '已复制检查命令',
+  messageChannelsTechnical: '协议与开源依赖',
+  messageChannelsProtocol:
+    '采用各平台官方消息协议。消息桥接独立运行，不冒充 MCP 工具连接或 A2A 代理通信。',
+  messageChannelsUpstream: '查看官方 SDK',
+  environmentModelReady: '已配置，可开始工作',
   composerApps: '连接应用',
   composerAppsHint: '选择服务商，核对当前空间的应用与授权。',
   composerAppsKeywords:

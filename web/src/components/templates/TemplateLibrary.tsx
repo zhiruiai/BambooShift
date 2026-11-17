@@ -13,6 +13,7 @@ import { SmartTeamPanel } from '../SmartTeamPanel';
 import { TeamStarterPicker } from '../team/TeamStarterPicker';
 import { useStarterBotInstall } from './useStarterBotInstall';
 import type { BotProfileDraft } from '../../botProfiles';
+import type { CreationStarter } from '../../../../shared/creation-requests';
 export function TemplateLibrary(props: Common) {
   const [tab, setTab] = useState<'starters' | 'teams' | 'gallery' | 'mine'>('starters'),
     [gallery, setGallery] = useState<BotTemplateSummary[]>([]),
@@ -20,7 +21,7 @@ export function TemplateLibrary(props: Common) {
     [query, setQuery] = useState(''),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
-  const [starter, setStarter] = useState<BotProfileDraft>();
+  const [starter, setStarter] = useState<{ profile: BotProfileDraft; origin?: CreationStarter }>();
   const [teamBusy, setTeamBusy] = useState(false);
   const [teamDirty, setTeamDirty] = useState(false);
   const [leave, setLeave] = useState<() => void>();
@@ -94,7 +95,8 @@ export function TemplateLibrary(props: Common) {
     return (
       <StarterTemplateCreate
         {...props}
-        profile={starter}
+        profile={starter.profile}
+        starter={starter.origin}
         onBack={() => {
           if (props.scope.current(props.scope.ticket())) setStarter(undefined);
         }}
@@ -103,7 +105,8 @@ export function TemplateLibrary(props: Common) {
   return (
     <Dialog
       title={uiText('workspace:botGalleryTitle')}
-      className="bot-template-dialog"
+      className={`bot-template-dialog${tab === 'starters' ? ' bot-gallery-dialog' : ''}`}
+      scrollBody={tab !== 'starters'}
       onClose={() => navigate(props.onClose)}
     >
       <div className="segmented" role="tablist" aria-label={uiText('common:text_02a897db6c07')}>
@@ -182,9 +185,12 @@ export function TemplateLibrary(props: Common) {
           onInstall={starterInstall.install}
           installError={starterInstall.error}
           current={() => props.scope.current(props.scope.ticket())}
-          onChoose={(profile) => {
+          onChoose={(profile, origin) => {
             if (latest.current.owner && props.scope.current(props.scope.ticket()))
-              setStarter(structuredClone(profile));
+              setStarter({
+                profile: structuredClone(profile),
+                origin: origin && structuredClone(origin),
+              });
           }}
         />
       ) : tab === 'teams' ? (

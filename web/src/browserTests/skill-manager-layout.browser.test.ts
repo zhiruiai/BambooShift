@@ -49,6 +49,7 @@ test(
         contents: `
       import './web/src/styles.css'; import './web/src/theme.css';
       import { createRoot } from 'react-dom/client';
+      import { useState } from 'react';
       import { initializeLanguage } from './web/src/i18n';
       import { SkillsDialog } from './web/src/components/SkillsDialog';
       import { skillWorkflowPackage, skillWorkflowTemplates } from './web/src/skillWorkflowTemplates';
@@ -67,10 +68,29 @@ test(
         skills.splice(0, skills.length, {...draft, id:'data-quality', agentId:'reviewer', version:1, status:'active',
           skillPackage:{...draft.skillPackage,format:'agent-skills',files:[{path:'SKILL.md',size:2128},...draft.skillPackage.files]}});
       }
-      createRoot(document.getElementById('root')).render(<SkillsDialog agents={[{id:'reviewer',name:'Review Bot'}]}
-        skills={skills} busy={false} readOnly={location.search==='?member'} onClose={()=>{}}
-        team={location.search==='?team' ? {onImported:()=>{}} : undefined}
-        onAdd={async()=>({ok:true})} onTransition={async()=>({ok:true})} />);
+      const transitions = location.search.startsWith('?transition');
+      if (transitions) skills.splice(0, skills.length,
+        ...Array.from({length:8},(_,index)=>({...skills[0],id:'active-'+index,name:'Active '+index,status:'active'})),
+        ...[1,2].map(version=>({...skills[0],id:'budget-v'+version,name:'Weekend budget',version,status:'proposed',content:'# Budget check'})));
+      window.transitionCalls = [];
+      let rejected = false;
+      function Fixture() {
+        const [currentSkills, setSkills] = useState(skills);
+        return <SkillsDialog agents={[{id:'reviewer',name:'Review Bot'}]}
+          skills={currentSkills} busy={false} readOnly={location.search==='?member'} onClose={()=>{}}
+          team={location.search==='?team' ? {onImported:()=>{}} : undefined}
+          onAdd={async()=>({ok:true})} onTransition={async(id,action,expectedActiveId)=>{
+            window.transitionCalls.push({id,action,expectedActiveId});
+            if(location.search==='?transition-failure' && !rejected) {
+              rejected = true;
+              return {ok:false,error:'The service is unavailable. Try again.'};
+            }
+            if(transitions) setTimeout(()=>setSkills(items=>items.map(item=>item.id===id
+              ? {...item,status:action==='disable'?'disabled':'active'} : item)),300);
+            return {ok:true};
+          }} />;
+      }
+      createRoot(document.getElementById('root')).render(<Fixture />);
     `,
         resolveDir: process.cwd(),
         loader: 'tsx',
@@ -246,6 +266,95 @@ test(
       .locator('.skill-version-review .skill-package')
       .getByText('MIT', { exact: true })
       .waitFor();
+    for (const failure of [false, true]) {
+      await t.test(
+        `version transitions preserve the reviewed skill${failure ? ' after a retry' : ''}`,
+        async () => {
+          await page.goto(
+            'https://skills.example.test/w/11111111-1111-4111-8111-111111111111?transition' +
+              (failure ? '-failure' : ''),
+          );
+          const proposals = dialog.getByRole('button', { name: /^Awaiting confirmation/ });
+          await proposals.click();
+          assert.equal(await items.count(), 2);
+          const reviewed = dialog.locator('[data-skill-id="budget-v2"]');
+          await reviewed.click();
+          await dialog.locator('.skill-detail .approve-skill').click();
+          const review = dialog.locator('.skill-version-review');
+          await review.getByRole('button', { name: 'Confirm and enable', exact: true }).click();
+          if (failure) {
+            await review
+              .getByRole('alert')
+              .getByText('The service is unavailable. Try again.')
+              .waitFor();
+            assert.match(await review.locator('.skill-review-heading').innerText(), /v2/);
+            await review.locator('.skill-review-back').click();
+            assert.equal(await proposals.getAttribute('aria-pressed'), 'true');
+            assert.equal(await reviewed.getAttribute('aria-current'), 'true');
+            assert.equal(
+              await items.count(),
+              2,
+              'a failed request leaves both proposals untouched',
+            );
+            await dialog.locator('.skill-detail .approve-skill').click();
+            await review.getByRole('button', { name: 'Confirm and enable', exact: true }).click();
+          }
+          await review.waitFor({ state: 'hidden' });
+          assert.equal(
+            await dialog.getByRole('button', { name: /^In use/ }).getAttribute('aria-pressed'),
+            'true',
+          );
+          assert.equal(await reviewed.getAttribute('aria-current'), 'true');
+          assert.match(
+            await dialog.locator('.skill-detail-heading').innerText(),
+            /Weekend budget\s+In use\s+v2 · Review Bot/,
+          );
+          assert.equal(await dialog.locator('[data-skill-id="budget-v1"]').count(), 0);
+          assert.equal(
+            await items.count(),
+            3,
+            'the approved skill is selected on its actual second page',
+          );
+          await dialog.getByRole('button', { name: 'Previous skills' }).click();
+          assert.equal(await items.count(), 6);
+          assert.equal(
+            await reviewed.count(),
+            0,
+            'manual pagination is not pulled back to the selected page',
+          );
+          assert.equal(await items.first().getAttribute('aria-current'), 'true');
+          await dialog.getByRole('button', { name: 'Next skills' }).click();
+          assert.equal(await items.count(), 3);
+          await reviewed.click();
+          assert.equal(await reviewed.getAttribute('aria-current'), 'true');
+          await dialog.locator('.skill-detail .approve-skill').click();
+          await review.getByRole('button', { name: 'Disable this skill', exact: true }).click();
+          await review.waitFor({ state: 'hidden' });
+          assert.equal(
+            await dialog
+              .getByRole('button', { name: /^Version history/ })
+              .getAttribute('aria-pressed'),
+            'true',
+          );
+          assert.equal(await reviewed.getAttribute('aria-current'), 'true');
+          assert.match(await dialog.locator('.skill-detail-heading').innerText(), /v2/);
+          await dialog.locator('.skill-detail .approve-skill').click();
+          await review.getByRole('button', { name: 'Restore this version', exact: true }).click();
+          await review.waitFor({ state: 'hidden' });
+          assert.equal(
+            await dialog.getByRole('button', { name: /^In use/ }).getAttribute('aria-pressed'),
+            'true',
+          );
+          assert.equal(await reviewed.getAttribute('aria-current'), 'true');
+          assert.deepEqual(await page.evaluate(() => (window as any).transitionCalls), [
+            ...(failure ? [{ id: 'budget-v2', action: 'approve', expectedActiveId: null }] : []),
+            { id: 'budget-v2', action: 'approve', expectedActiveId: null },
+            { id: 'budget-v2', action: 'disable', expectedActiveId: 'budget-v2' },
+            { id: 'budget-v2', action: 'restore', expectedActiveId: null },
+          ]);
+        },
+      );
+    }
     assert.deepEqual(errors, []);
   },
 );

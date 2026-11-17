@@ -82,6 +82,7 @@ pub async fn dispatch(
             | "disconnect"
             | "reconnect"
             | "surface"
+            | "permissions/refresh"
             | "prepare"
             | "release"
             | "reset"
@@ -208,6 +209,10 @@ pub async fn dispatch(
                 authorize.clone(),
             )
             .await?
+        }
+        "permissions/refresh" if agent.is_none() => {
+            super::local_surface::refresh(&controller, &actor.user_id, &body, authorize.clone())
+                .await?
         }
         "takeover/screenshot" => {
             crate::error::only_fields(&body, &[])?;

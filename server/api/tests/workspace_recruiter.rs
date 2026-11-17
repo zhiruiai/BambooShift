@@ -61,6 +61,11 @@ async fn concurrent_first_open_creates_one_local_recruiter_without_messages_or_m
         .iter()
         .filter(|skill| skill["agentId"] == first["agentId"])
         .collect::<Vec<_>>();
+    assert_eq!(recruiter_skills.len(), 5);
+    let recruiter_skills: Vec<_> = recruiter_skills
+        .into_iter()
+        .filter(|skill| skill["name"] == "bot-design")
+        .collect();
     assert_eq!(recruiter_skills.len(), 1);
     assert_eq!(recruiter_skills[0]["name"], "bot-design");
     assert_eq!(recruiter_skills[0]["status"], "active");

@@ -42,20 +42,28 @@ test(
     await page.goto(origin);
     const chooseGroup = (name: string) =>
       page.locator('.avatar-theme-families button').filter({ hasText: name }).click();
-    const choose = (id: string) => page.locator(`[data-theme-choice="${id}"]`).click();
+    const choose = async (id: string) => {
+      const pack = COMMUNITY_AVATAR_PACKS.find((item) =>
+        item.themes.some((theme) => theme.id === id),
+      )!;
+      await chooseGroup(pack.name);
+      const previous = page.getByRole('button', { name: 'Previous avatar page', exact: true });
+      while (await previous.isEnabled()) await previous.click();
+      const index = pack.themes.findIndex((theme) => theme.id === id);
+      for (let i = 0; i < Math.floor(index / 8); i++)
+        await page.getByRole('button', { name: 'Next avatar page', exact: true }).click();
+      await page.locator(`[data-theme-choice="${id}"]`).click();
+    };
     const state = (value: string) => page.getByRole('button', { name: value, exact: true }).click();
     const eyes = () =>
       page
         .locator('#selected-avatar [data-avatar-eye]')
         .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('d')));
     assert.equal(await page.locator('[data-community-sample]').count(), 40);
-    assert.equal(await page.locator('#selected-avatar [data-avatar-theme="classic"]').count(), 1);
+    assert.equal(await page.locator('#selected-avatar [data-avatar-theme="colorful"]').count(), 1);
+    assert.equal(await page.locator('#selected-avatar svg > path').getAttribute('fill'), '#1084FE');
     assert.equal(
-      await page.locator('#selected-avatar .avatar-classic-body').getAttribute('fill'),
-      '#1c1c1c',
-    );
-    assert.equal(
-      await page.locator('[data-theme-choice="classic"]').getAttribute('aria-pressed'),
+      await page.locator('[data-theme-choice="colorful"]').getAttribute('aria-pressed'),
       'true',
     );
     const classicPoses = [];
@@ -66,7 +74,10 @@ test(
     assert.equal(new Set(classicPoses).size, 6);
     for (const pack of COMMUNITY_AVATAR_PACKS) {
       await chooseGroup(pack.name);
-      assert.equal(await page.locator('[data-theme-choice]').count(), pack.themes.length);
+      assert.equal(
+        await page.locator('[data-theme-choice]').count(),
+        Math.min(8, pack.themes.length),
+      );
       assert.equal(
         await page.getByRole('link', { name: 'License', exact: true }).getAttribute('href'),
         `/licenses/${pack.id}.html`,
@@ -109,7 +120,9 @@ test(
     // Work remains visible after the old two-pulse entry animation would end.
     await page.waitForTimeout(1900);
     const bodyTransform = () =>
-      page.locator('#selected-avatar .avatar > svg').evaluate((svg) => getComputedStyle(svg).transform);
+      page
+        .locator('#selected-avatar .avatar > svg')
+        .evaluate((svg) => getComputedStyle(svg).transform);
     const busyBody = await bodyTransform();
     const busyEyes = await eyes();
     await page.waitForTimeout(180);
@@ -131,7 +144,11 @@ test(
     assert.equal(await page.locator('#selected-avatar [data-avatar-sustained]').count(), 1);
     const finishingEyes = await eyes();
     await page.waitForTimeout(220);
-    assert.notDeepEqual(await eyes(), finishingEyes, 'work continues while the result is finalized');
+    assert.notDeepEqual(
+      await eyes(),
+      finishingEyes,
+      'work continues while the result is finalized',
+    );
     await state('error');
     await page.waitForTimeout(650);
     assert.equal((await eyes()).join(' '), poses[5]);
@@ -142,7 +159,9 @@ test(
     await page.waitForTimeout(220);
     assert.deepEqual(await eyes(), hidden);
     assert.equal(
-      await page.locator('#selected-avatar .avatar > svg').evaluate((svg) => getComputedStyle(svg).animationPlayState),
+      await page
+        .locator('#selected-avatar .avatar > svg')
+        .evaluate((svg) => getComputedStyle(svg).animationPlayState),
       'paused',
     );
     await page.locator('#selected-avatar').scrollIntoViewIfNeeded();

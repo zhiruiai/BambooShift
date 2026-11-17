@@ -3,6 +3,7 @@ import { type ComputerLifecycleIntent } from '../../computerLifecycle';
 import { type BotScreenInventory } from '../../computerScope';
 import { type FileComputerAction } from '../ComputerFiles';
 export interface ComputerLifecycleActionsContext {
+  machine: ComputerState;
   observe: (key: string, work: () => Promise<void>) => Promise<void>;
   scope: {
     key: string;
@@ -59,5 +60,6 @@ export interface ComputerLifecycleActionsContext {
   screenReady: boolean;
   endTakeover: () => Promise<void>;
   statusSequence: import('react').RefObject<number>;
+  computerStatusSequence: import('react').RefObject<number>;
   checkStatus: () => Promise<void>;
 }

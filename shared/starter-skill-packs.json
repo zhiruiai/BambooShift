@@ -1,130 +1,65 @@
 {
   "bots": {
-    "research": [
-      "evidence-review"
-    ],
-    "writing": [
-      "editorial-review"
-    ],
-    "coordination": [
-      "work-coordination"
-    ],
-    "engineering": [
-      "code-delivery"
-    ],
-    "organization": [
-      "knowledge-index"
-    ],
-    "briefing": [
-      "decision-brief"
-    ],
-    "support": [
-      "issue-triage"
-    ],
-    "analysis": [
-      "data-quality"
-    ],
-    "recruitment": [
-      "bot-design"
-    ]
+    "research": ["evidence-review"],
+    "writing": ["editorial-review"],
+    "coordination": ["work-coordination"],
+    "engineering": ["code-delivery", "superpowers-engineering"],
+    "organization": ["knowledge-index"],
+    "briefing": ["decision-brief"],
+    "support": ["issue-triage"],
+    "analysis": ["data-quality"],
+    "recruitment": ["bot-design"],
+    "skill-curator": ["skill-discovery", "skill-creation"],
+    "connector-builder": ["connector-development"],
+    "engineering-lead": ["superpowers-engineering"],
+    "frontend-designer": ["frontend-design"],
+    "feishu-assistant": ["connector-development"],
+    "dingtalk-assistant": ["connector-development"],
+    "wecom-assistant": ["connector-development"]
   },
   "teams": {
     "launch": {
-      "brief": [
-        "work-coordination"
-      ],
-      "copy": [
-        "editorial-review"
-      ],
-      "review": [
-        "release-review"
-      ]
+      "brief": ["work-coordination"],
+      "copy": ["editorial-review"],
+      "review": ["release-review"]
     },
     "close": {
-      "invoices": [
-        "reconciliation"
-      ],
-      "expenses": [
-        "reconciliation"
-      ],
-      "review": [
-        "data-quality"
-      ]
+      "invoices": ["reconciliation"],
+      "expenses": ["reconciliation"],
+      "review": ["data-quality"]
     },
     "support": {
-      "triage": [
-        "issue-triage"
-      ],
-      "repro": [
-        "scenario-testing"
-      ],
-      "docs": [
-        "editorial-review"
-      ]
+      "triage": ["issue-triage"],
+      "repro": ["scenario-testing"],
+      "docs": ["editorial-review"]
     },
     "study": {
-      "guide": [
-        "guided-learning"
-      ],
-      "lab": [
-        "guided-learning"
-      ],
-      "review": [
-        "editorial-review"
-      ]
+      "guide": ["guided-learning"],
+      "lab": ["guided-learning"],
+      "review": ["editorial-review"]
     },
     "creator": {
-      "producer": [
-        "content-production"
-      ],
-      "script": [
-        "content-production"
-      ],
-      "review": [
-        "evidence-review"
-      ]
+      "producer": ["content-production"],
+      "script": ["content-production"],
+      "review": ["evidence-review"]
     },
     "office": {
-      "coordinator": [
-        "work-coordination"
-      ],
-      "tracker": [
-        "work-coordination"
-      ],
-      "editor": [
-        "decision-brief"
-      ]
+      "coordinator": ["work-coordination"],
+      "tracker": ["work-coordination"],
+      "editor": ["decision-brief"]
     },
     "account-health": {
-      "signals": [
-        "customer-review"
-      ],
-      "context": [
-        "evidence-review"
-      ],
-      "followup": [
-        "customer-review"
-      ]
+      "signals": ["customer-review"],
+      "context": ["evidence-review"],
+      "followup": ["customer-review"]
     },
     "software-product": {
-      "lead": [
-        "work-coordination"
-      ],
-      "product": [
-        "requirements-review"
-      ],
-      "backend": [
-        "api-contract"
-      ],
-      "frontend": [
-        "ui-flow-review"
-      ],
-      "qa": [
-        "scenario-testing"
-      ],
-      "release": [
-        "release-review"
-      ]
+      "lead": ["work-coordination"],
+      "product": ["requirements-review"],
+      "backend": ["api-contract", "superpowers-engineering"],
+      "frontend": ["ui-flow-review", "frontend-design"],
+      "qa": ["scenario-testing"],
+      "release": ["release-review"]
     }
   },
   "packs": {
@@ -632,5 +567,6 @@
         "content": "account_reference,observed_at,metric,baseline,value,criterion,evidence,followup\n"
       }
     }
-  }
+  },
+  "foundation": ["web-research", "browser-use", "computer-use", "agent-desktop"]
 }

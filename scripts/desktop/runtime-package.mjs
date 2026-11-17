@@ -46,6 +46,8 @@ export async function stageDesktopRuntime({
   stageNativeImage = stageNativeRuntimeOverlay,
   nodeVersion = process.versions.node,
   sourceRoot = root,
+  signingProfile,
+  resolveSigningProfile,
 } = {}) {
   if (
     !['darwin', 'linux'].includes(platform) ||
@@ -92,7 +94,11 @@ export async function stageDesktopRuntime({
   );
   const nativeImage = nativeImageArtifactsDirectory
     ? await stageNativeImage({
-        sourceRoot, output, artifactsDirectory: nativeImageArtifactsDirectory, platform, arch,
+        sourceRoot,
+        output,
+        artifactsDirectory: nativeImageArtifactsDirectory,
+        platform,
+        arch,
       })
     : undefined;
   const node = await stageNode({ output, version: nodeVersion, platform, arch, command });
@@ -103,6 +109,8 @@ export async function stageDesktopRuntime({
     arch,
     sourceRoot,
     command,
+    signingProfile,
+    resolveProfile: resolveSigningProfile,
   });
   await buildRuntimeNotices({ sourceRoot, output, nativeImage });
   await command(join(output, 'bin/node'), ['--version'], output);

@@ -72,7 +72,10 @@ test('adapted workflows retain pinned provenance and complete notices in both cl
         assert.ok(recipe.content.includes(source.license));
         assert.ok(recipe.content.includes(`/${source.repository}/blob/${source.revision}/`));
         const { draft, fileContents } = skillWorkflowPackage(recipe, language);
-        assert.equal(draft.skillPackage.frontmatter.license, source.license);
+        assert.equal(
+          draft.skillPackage.frontmatter.license,
+          source.packageLicense ?? source.license,
+        );
         assert.ok(
           draft.skillPackage.frontmatter.metadata?.source.includes(
             `/${source.repository}/blob/${source.revision}/`,

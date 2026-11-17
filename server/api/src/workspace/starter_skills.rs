@@ -21,6 +21,7 @@ pub(crate) struct Pack {
     artifact_path: &'static str,
     artifact_content: &'static str,
     chinese: bool,
+    workflow: bool,
 }
 
 impl Pack {
@@ -29,6 +30,15 @@ impl Pack {
     }
 
     pub(crate) fn fingerprint(&self) -> String {
+        if self.workflow {
+            let body = super::workflow_skills::package(
+                self.id,
+                if self.chinese { "zh-CN" } else { "en" },
+                &Value::Null,
+            )
+            .expect("checked-in workflow package");
+            return hex::encode(Sha256::digest(body.to_string()));
+        }
         hex::encode(Sha256::digest(
             json!([
                 2,
@@ -55,6 +65,17 @@ fn selected(entry: &'static Value, language: &str) -> Result<Vec<Pack>> {
                 .filter(|id| seen.insert(*id))
                 .ok_or_else(unavailable)?;
             let pack = &CATALOG["packs"][id];
+            if pack.is_null() {
+                let text = super::workflow_skills::recipe(id, language).ok_or_else(unavailable)?;
+                return Ok(Pack {
+                    id,
+                    text,
+                    artifact_path: "",
+                    artifact_content: "",
+                    chinese: language == "zh-CN",
+                    workflow: true,
+                });
+            }
             let text = &pack["locales"][language];
             if !text["name"].is_string()
                 || !text["description"].is_string()
@@ -71,6 +92,7 @@ fn selected(entry: &'static Value, language: &str) -> Result<Vec<Pack>> {
                     .as_str()
                     .ok_or_else(unavailable)?,
                 chinese: language == "zh-CN",
+                workflow: false,
             })
         })
         .collect()
@@ -91,6 +113,15 @@ pub(crate) async fn install(
 ) -> Result<Vec<Value>> {
     let mut installed = Vec::with_capacity(packs.len());
     for pack in packs {
+        if pack.workflow {
+            let body = super::workflow_skills::package(
+                pack.id,
+                if pack.chinese { "zh-CN" } else { "en" },
+                agent_id,
+            )?;
+            installed.push(super::workflow_skills::install(conn, &body).await?);
+            continue;
+        }
         let title = pack.text["name"].as_str().ok_or_else(unavailable)?;
         let instructions = pack.text["instructions"].as_str().ok_or_else(unavailable)?;
         let (direction, section) = if pack.chinese {

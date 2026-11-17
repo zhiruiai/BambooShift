@@ -13,7 +13,7 @@ async fn upload_download_and_delete_preserve_bytes_actor_and_original_collision(
     let boot = f.bootstrap().await;
     let cid = boot["conversations"][0]["id"].as_str().unwrap();
     let contents = [0, 1, 255, 23, 4];
-    let body = json!({"name":"资料.txt","type":"application/octet-stream","content":STANDARD.encode(contents),"conversationId":cid});
+    let body = json!({"name":"资料 <demo>.txt","type":"application/octet-stream","content":STANDARD.encode(contents),"conversationId":cid});
     let (status, first) = f
         .request(
             "POST",
@@ -55,7 +55,7 @@ async fn upload_download_and_delete_preserve_bytes_actor_and_original_collision(
         headers["content-disposition"]
             .to_str()
             .unwrap()
-            .contains("filename*=UTF-8''%E8%B5%84%E6%96%99.txt")
+            .contains("filename*=UTF-8''%E8%B5%84%E6%96%99%20%3Cdemo%3E.txt")
     );
     let messages = f.bootstrap().await["messages"].clone();
     let file_messages: Vec<_> = messages
@@ -65,6 +65,11 @@ async fn upload_download_and_delete_preserve_bytes_actor_and_original_collision(
         .filter(|m| m["kind"] == "file")
         .collect();
     assert_eq!(file_messages.len(), 2);
+    for message in &file_messages {
+        assert_eq!(message["content"], "资料 <demo>.txt");
+        assert_eq!(message["metadata"]["name"], "资料 <demo>.txt");
+        assert!([&first["id"], &second["id"]].contains(&&message["metadata"]["fileId"]));
+    }
     assert!(
         file_messages
             .iter()

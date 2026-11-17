@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { NewChatPicker } from '../components/NewChatPicker';
 import { uiText } from '../i18n';
+import { searchShortcutLabel } from '../keyboardShortcuts';
 import {
   ChevronRight,
   FolderOpen,
@@ -117,11 +118,6 @@ export function WorkspaceSidebar({
           />
         )}
         <div className="sidebar-toolbar">
-          <div className="window-dots" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </div>
           <span className="app-wordmark">BambooShift</span>
           <div className="toolbar-actions">
             <IconButton
@@ -143,7 +139,7 @@ export function WorkspaceSidebar({
             onChange={(e) => setSearch(e.target.value)}
             placeholder={uiText('workspace:text_0db24603a35b')}
           />
-          <kbd>⌘ K</kbd>
+          <kbd>{searchShortcutLabel()}</kbd>
         </label>
         <div className="conversation-list">
           {mobileHome && (

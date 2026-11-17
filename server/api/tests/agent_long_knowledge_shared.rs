@@ -98,8 +98,9 @@ async fn delegated_shared_knowledge_uses_the_source_grant_and_stops_after_revoca
                 .count();
             match (role(&body), responses) {
                 (0, 0) => {
-                    assert!(prompt.contains(ROOT_PRIVATE));
-                    assert!(!tools(&body).contains(&"list_skills"));
+                    assert!(prompt.contains("Synthetic parent-only method"));
+                    assert!(!prompt.contains(ROOT_PRIVATE));
+                    assert!(tools(&body).contains(&"list_skills"));
                     call(
                         "delegate",
                         json!({"agentId":target,"task":"Read the approved source workflow."}),
@@ -125,7 +126,7 @@ async fn delegated_shared_knowledge_uses_the_source_grant_and_stops_after_revoca
                 }
                 (1, 1) if count.load(Ordering::SeqCst) == 1 => {
                     let catalog = result(latest_tool(&body).unwrap());
-                    assert_eq!(catalog["total"], 8);
+                    assert_eq!(catalog["total"], 12);
                     assert_eq!(catalog["matched"], 1);
                     assert_eq!(catalog["skills"][0]["id"], skill["id"]);
                     call("read_skill", json!({"skillId":skill["id"]}))

@@ -3,6 +3,7 @@ import type { AppSettings, BotAgent, Conversation } from '../../../../shared/typ
 import type { ConfirmedTeamConversation } from '../../botTeamDraft';
 import '../BotProfiles.css';
 import type { BotProfileDraft } from '../../botProfiles';
+import type { CreationStarter } from '../../../../shared/creation-requests';
 import type { RecruiterShortcut } from '../../workspace/useRecruiterShortcut';
 export type Props = {
   agents: BotAgent[];
@@ -15,6 +16,7 @@ export type Props = {
   onSettingsChanged?: (settings: AppSettings) => void;
   initialPlanId?: string;
   initialProfile?: BotProfileDraft;
+  initialStarter?: CreationStarter;
   botOnly?: boolean;
   initialMode?: 'bot' | 'group' | 'team';
   recruiterShortcut?: RecruiterShortcut;

@@ -8,6 +8,7 @@ import { dirname, resolve } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { build } from 'esbuild';
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import type { Bootstrap, BotAgent, Conversation } from '../../../shared/types';
 import type { SidebarRosterState, SidebarRosterOperation } from '../../../shared/sidebar-roster';
 
@@ -93,6 +94,16 @@ export async function harness(
     effects: Array<() => void> = [];
   const hooks = {
     ...React,
+    useContext<T>(context: React.Context<T>) {
+      // This fixture invokes components directly; let React read the real context default.
+      let value!: T;
+      function ReadContext() {
+        value = React.useContext(context);
+        return null;
+      }
+      renderToStaticMarkup(React.createElement(ReadContext));
+      return value;
+    },
     useState(value: any) {
       const index = cursor++;
       if (!(index in slots))

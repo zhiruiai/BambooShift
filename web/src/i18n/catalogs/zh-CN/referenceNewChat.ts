@@ -1,4 +1,6 @@
 export default {
+  searchShortcutMac: '⌘ K',
+  searchShortcutControl: 'Ctrl K',
   newChatTitle: '开始聊天',
   newChatClose: '关闭聊天选择器',
   newChatSearch: '搜索 Bot 或工作组',

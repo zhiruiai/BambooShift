@@ -12,7 +12,15 @@ const messages: Record<Exclude<Sync['phase'], 'ready'>, UiTextKey> = {
   unavailable: 'settings:avatarSyncUnavailable',
 };
 
-export function AvatarThemeSyncPanel({ sync, active }: { sync: Sync; active: boolean }) {
+export function AvatarThemeSyncPanel({
+  sync,
+  active,
+  compact = false,
+}: {
+  sync: Sync;
+  active: boolean;
+  compact?: boolean;
+}) {
   const ready = sync.phase === 'ready';
   const canClear = active && ready && sync.synced;
   const [confirmClear, setConfirmClear] = useState(false);
@@ -28,11 +36,19 @@ export function AvatarThemeSyncPanel({ sync, active }: { sync: Sync; active: boo
           ? 'settings:avatarSyncSaved'
           : 'settings:avatarSyncDevice';
   return (
-    <section className="avatar-theme-sync" aria-label={uiText('settings:avatarSyncTitle')}>
-      <h4>{uiText('settings:avatarSyncTitle')}</h4>
-      <p>{uiText('settings:avatarSyncHelp')}</p>
+    <section
+      className="avatar-theme-sync"
+      data-compact={compact || undefined}
+      aria-label={uiText('settings:avatarSyncTitle')}
+    >
+      {!compact && (
+        <>
+          <h4>{uiText('settings:avatarSyncTitle')}</h4>
+          <p>{uiText('settings:avatarSyncHelp')}</p>
+        </>
+      )}
       <p role="status">{uiText(status)}</p>
-      {sync.synced && <p>{uiText('settings:avatarSyncClearHelp')}</p>}
+      {sync.synced && !compact && <p>{uiText('settings:avatarSyncClearHelp')}</p>}
       <div className="avatar-theme-sync-actions">
         <button
           type="button"

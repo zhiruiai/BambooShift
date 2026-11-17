@@ -1,8 +1,8 @@
 .modal.workspace-settings {
   width: min(980px, calc(100vw - 48px));
   max-width: 980px;
-  height: min(780px, 90dvh);
-  max-height: calc(100dvh - 56px);
+  height: min(820px, calc(100dvh - 40px));
+  max-height: calc(100dvh - 40px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   padding: 0;

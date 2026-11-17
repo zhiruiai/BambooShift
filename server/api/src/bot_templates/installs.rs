@@ -239,7 +239,7 @@ async fn perform(
             .await?;
         profile["avatarImageId"] = asset["id"].clone();
     }
-    let (agent, chat) = mutations::create_bot(store, &mut tx, &profile).await?;
+    let (agent, chat) = mutations::create_bot_unprovisioned(store, &mut tx, &profile).await?;
     let mut skill_ids = Vec::new();
     for (index, value) in current.blueprint["skills"]
         .as_array()
@@ -260,6 +260,15 @@ async fn perform(
             crate::workspace::skill_packages::persist_text(&mut tx, &mut skill).await?;
         }
         skill_ids.push(id);
+    }
+    crate::workspace::workflow_skills::ensure_foundation(&mut tx, &agent).await?;
+    for skill in WorkspaceStore::list_in(&mut tx, Table::Skills).await? {
+        if skill["agentId"] == agent["id"] {
+            let id = skill["id"].as_str().unwrap().to_owned();
+            if !skill_ids.contains(&id) {
+                skill_ids.push(id);
+            }
+        }
     }
     let mut routine_ids = Vec::new();
     for value in current.blueprint["routines"].as_array().unwrap() {

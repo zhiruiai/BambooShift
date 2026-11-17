@@ -6,11 +6,13 @@
 
 **[直接试玩](https://zhiruiai.github.io/BambooShift/zh.html)** · **[下载最新版本](https://github.com/zhiruiai/BambooShift/releases/latest)** · **[支持的平台](#支持的平台)** · **[启动工作空间](#快速开始)** · **[参与共建](CONTRIBUTING.md)** · [技术栈与架构](#技术栈与架构) · [更多演示](#功能演示) · [创作者取材](#创作者取材)
 
-**给一队 AI 同事一句话，拿到点开就能玩的小游戏。** 在星港任务小队打开交付卡，切到源码查看五个文件，再回到预览操纵飞船完成软着陆。
+**把网站做出来，也把每次修改留下来。** 在聊天里打开交付的网站，对比新版变化、回看旧版，再回到原线程继续改。
 
-![从 BambooShift 聊天打开网页交付物并操纵飞船着陆](docs/demo/orbital-landing.gif)
+![在 BambooShift 中打开网站交付、对比版本变化，并回到原线程继续修改](docs/demo/website-delivery.gif)
 
-以下演示在独立工作区录制，使用示例对话、文件和预设的模型回复。
+网站交付、团队协作、技能执行、技能制作这四段新演示，使用本机客户端内置的 Rust 服务和真实模型，在独立工作空间以虚构成员和数据录制，经过剪辑省略等待与调试过程。其余历史演示使用示例数据与预设回复。
+
+[录制说明与文件校验](docs/demo/recordings.json)
 
 ## 支持的平台
 
@@ -18,7 +20,7 @@
 | --- | --- |
 | **Web / PWA** | Windows、macOS、Linux 和移动浏览器可打开工作空间。浏览器支持时可安装 PWA。 |
 | **Windows x64** | 选择提供 Windows x64 客户端 ZIP 的版本，完整解压后运行 `BambooShift.exe`。便携包未签名，需要连接已有服务。 [Windows 使用说明](docs/desktop-client.md#windows-x64) |
-| **macOS Apple Silicon** | 下载桌面 ZIP 并连接运行中的服务。应用托管的个人空间是源码预览，尚未提供正式下载。客户端采用临时签名。 [桌面连接说明](docs/desktop-client.md) |
+| **macOS Apple Silicon** | 下载桌面 ZIP 并连接运行中的服务。应用托管的个人空间是源码预览，尚未提供正式下载。源码打包支持固定本地签名，正式 Developer ID 签名与公证尚未配置。 [桌面连接说明](docs/desktop-client.md) |
 | **Linux x64** | 发布页提供预编译服务端。按包内 README 安装，再通过浏览器进入工作空间。 [服务部署](server/api/deployment/README.md) |
 | **Android / iOS** | 通过移动浏览器使用。原生 Flutter 客户端以源码提供。 [移动端源码](mobile/README.md) |
 
@@ -60,22 +62,30 @@ npm run dev
 
 ### 给 Bot 装一项技能
 
-在 Bot 设置中选择技能，或在网页、桌面端打开 **连接应用 → 内置技能**。预览工作指令并为该 Bot 保存草稿。审核通过后，在该 Bot 的单聊输入 `/` 来选择技能。Flutter 客户端可从输入区打开 **+ → 使用技能**。Bot 会在这轮任务中使用选中的已审核指令。
+在网页或桌面端的 Bot 设置中打开 **选择技能**，预览 `SKILL.md` 与文件列表，再选择 **安装**，为该 Bot 启用完整技能包。在单聊输入 `/` 可指定本轮使用的技能；Flutter 客户端可从输入区打开 **+ → 使用技能**。
 
-Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 读取本地技能文件。核对导入的指令后，保存草稿并审核启用。
+已有技能可通过 **导入 Agent Skill 文件夹** 安装，保留 `SKILL.md`、`scripts/`、`references/` 和 `assets/` 的目录结构。自行编写的草稿与 Bot 提出的修改仍需审核后启用。
 
-每个 Bot 也能选择独立模型或继承空间默认模型，群聊委派同样生效。中英文技能库包含网页流程验收、代码安全审查、产品文档写作、团队决策简报，以及调试、交接和 Agent Desktop 操作指导。Agent Desktop 需要在已授权的执行电脑上另行安装 CLI；选择技能不会安装程序
-或开启整机访问。[各 Bot 的模型、技能与使用条件](docs/bot-models-and-skills.md)
+每个本地 Bot 初始配有联网研究、浏览器操作、本机电脑操作和 Agent Desktop 四个完整基础包。中英文技能库共 **27 个包**，Bot 广场有 **16 个 Bot 模板**，另有团队模板。技能管家可以用 `find_skills` 检索内置目录，用 `propose_skill` 制作多文件草稿，审核后再启用。
+
+每个 Bot 可选择独立模型或继承空间默认模型，群聊委派同样生效。Agent Desktop 需要在已授权的执行电脑上另行安装 CLI；选择技能不会安装程序或开启整机访问。[各 Bot 的模型、技能与使用条件](docs/bot-models-and-skills.md) · [能力与协议实现范围](docs/capabilities-and-protocols.md)
 
 ### 选择本机或云端工作电脑
 
 - **本机浏览器。** 「设置 → 电脑 → 本机」使用服务所在电脑的隔离浏览器。客户端与服务在同一台电脑时，浏览器就在当前设备运行。
-- **Mac 原生应用。** 使用含内置运行环境的 macOS 客户端，启动本机空间时勾选 **允许整机操作**。授予屏幕录制和辅助功能权限，再在会话电脑面板启用桌面操作。已部署的空间也可连接专用 Worker。 [Mac 整机操作](docs/desktop-client.md#macos-整机操作)
+- **Mac 原生应用。** 使用含内置运行环境的 macOS 客户端，在会话中选择 **电脑 → Mac 应用**，为面板提示的应用授予辅助功能权限。原生控件操作无需屏幕录制；电脑默认权限选择「完全授权」后，复用你在该空间发起任务的授权。[Mac 应用与权限](docs/desktop-client.md#mac-应用)
 - **云端执行。** 使用部署者已绑定的云电脑，或连接自己在另一台电脑、云服务器上运行的 Worker。 [选择执行位置](docs/computer.md#选择执行位置)
 
 想收藏项目，可以点 Star。想收到发版提醒，可选 **Watch → Custom → Releases**。欢迎在 [Issues](https://github.com/zhiruiai/BambooShift/issues) 分享第一个任务，或用[安装与兼容性表单](https://github.com/zhiruiai/BambooShift/issues/new?template=installation.yml)反馈问题。
 
 ## 功能演示
+
+| 本次实录 | 看点 | 动画 |
+| --- | --- | --- |
+| 网站交付与修改 | 打开网站、对比变化、回看旧版，回原线程继续修改。 | [网站交付 GIF](docs/demo/website-delivery.gif) |
+| 三位 Bot 协作 | 从团队模板开始，查看角色分工，再看三位成员分别回应同一项任务。 | [团队协作 GIF](docs/demo/team-templates.gif) |
+| 技能包实际执行 | 查看包含四个文件的技能包，打开 `SKILL.md`，核对 CSV 脚本的执行结果。 | [技能执行 GIF](docs/demo/skill-library.gif) |
+| Bot 制作技能 | 审阅 Bot 生成的四文件技能包，启用后实际执行预算核对示例。 | [技能制作与执行 GIF](docs/demo/skill-creation.gif) |
 
 ### 学习、创作与办公
 
@@ -117,11 +127,11 @@ Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 
 
 还可选择两套离线社区系列：**Open Bot Avatar 的 22 款角色**和**社区 GrokBot 的 18 款造型**，保留各自眼型与 Bot 颜色，在网页、客户端和移动端分组选择。[系列说明与许可](shared/avatar-packs/README.md)
 
-**给新品发布拉一支小队。** 从团队模板接手三位有分工的 Bot，调整群名并创建群聊。 [团队模板 GIF](docs/demo/team-templates.gif)
+**给一项任务配好三位同事。** 从团队模板查看角色分工，在群聊中派发任务，看三位 Bot 分别回应。 [团队协作 GIF](docs/demo/team-templates.gif)
 
 **把工作日简报排进日历。** 设好星期和时间，在例行任务里核对下次执行。 [定时简报 GIF](docs/demo/scheduled-brief.gif)
 
-**让下次调研也带上来源。** 预览内置技能的核对步骤，并给指定 Bot 保存待审核草稿。 [技能草稿 GIF](docs/demo/skill-library.gif)
+**让技能包真正执行起来。** 查看包含 `SKILL.md`、脚本和参考资料的四文件技能包，再核对 CSV 数据质量脚本的执行结果。 [技能执行 GIF](docs/demo/skill-library.gif)
 
 **顺着答案去找原文。** 展开检索记录，核对 Bot 访问过的网页。 [网页检索 GIF](docs/demo/web-research.gif)
 
@@ -140,6 +150,7 @@ Web、桌面和 Flutter 的 Bot 技能编辑器均可通过 **导入 SKILL.md** 
 | 审批操作或接管 | 需要确认时，在原消息查看请求并审批。打开 Bot 画面可以查看进度。私密接管期间，Bot 暂停观察和输入。 |
 | 拿到能用的交付物 | 在聊天里直接打开文档、表格、媒体和多文件网站。网站可以试玩、切换到源码或下载整个项目。 [文件预览](docs/file-previews.md) |
 | 把做法变成技能和例行任务 | 审核后启用可复用的智能体技能。按时区定时运行，或用 Webhook 触发工作，把结果送回原会话。 [Webhook](docs/routine-webhooks.md) |
+| 接入企业消息 | 在「连接应用 → 消息渠道」查看飞书、钉钉、企业微信的配置要求。独立开发者桥接程序使用官方 SDK 支持文字双向通信；协议测试已通过，企业账号尚未实测。 [接入与限制](docs/im-connectors.md) |
 
 ## 技术栈与架构
 

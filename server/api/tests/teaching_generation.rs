@@ -80,6 +80,7 @@ async fn real_isolated_pi_uses_explicit_profile_and_persists_exactly_one_unappro
 #[tokio::test]
 async fn cancelling_generation_reaps_pi_and_fences_retries_and_late_model_output() {
     let t = Teaching::new().await;
+    let skills_before = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let saved = t.review().await;
     let gate = Arc::new(Semaphore::new(0));
@@ -95,12 +96,7 @@ async fn cancelling_generation_reaps_pi_and_fences_retries_and_late_model_output
     let done = t.settled().await;
     assert_eq!(done["status"], "error");
     tokio::time::sleep(Duration::from_millis(100)).await;
-    assert!(
-        t.f.bootstrap().await["skills"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
+    assert_eq!(t.f.bootstrap().await["skills"], skills_before);
     assert_eq!(t.request("POST", "/generate", Some(body)).await.0, 200);
     assert_eq!(calls.lock().await.len(), 1);
     assert_eq!(t.read().await["steps"].as_array().unwrap().len(), 1);
@@ -110,6 +106,7 @@ async fn cancelling_generation_reaps_pi_and_fences_retries_and_late_model_output
 #[tokio::test]
 async fn model_format_failure_preserves_reviewed_steps_and_never_enables_or_retries() {
     let t = Teaching::new().await;
+    let skills_before = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let saved = t.review().await;
     let (task, calls, profile) = model(
@@ -129,12 +126,7 @@ async fn model_format_failure_preserves_reviewed_steps_and_never_enables_or_retr
     assert_eq!(calls.lock().await.len(), 1);
     assert_eq!(t.request("POST", "/generate", Some(body)).await.0, 200);
     assert_eq!(calls.lock().await.len(), 1);
-    assert!(
-        t.f.bootstrap().await["skills"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
+    assert_eq!(t.f.bootstrap().await["skills"], skills_before);
     task.abort();
     t.f.close().await;
 }

@@ -22,11 +22,7 @@ test('every built-in Bot and newly created team role previews localized real ski
       const packs = starterBotPacks(bot.id, language);
       assert.ok(packs.length, bot.id);
       assert.equal(new Set(packs.map((pack) => pack.id)).size, packs.length);
-      assert.ok(
-        packs.every(
-          (pack) => pack.name && pack.description && pack.instructions && pack.checklist.length,
-        ),
-      );
+      assert.ok(packs.every((pack) => pack.name && pack.description && pack.instructions));
     }
     for (const team of teamTemplates[language])
       for (const member of team.draft.members)

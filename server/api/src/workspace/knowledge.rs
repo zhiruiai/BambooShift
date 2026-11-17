@@ -139,7 +139,7 @@ pub async fn add_skill(
     Ok((StatusCode::CREATED, Json(value)))
 }
 
-pub(super) async fn stage_skill(
+pub(crate) async fn stage_skill(
     conn: &mut SqliteConnection,
     body: &Value,
     team_source: Option<Value>,

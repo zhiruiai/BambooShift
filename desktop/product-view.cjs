@@ -127,6 +127,9 @@ function createSetupWindow({
     minHeight: 540,
     title: productName,
     backgroundColor: '#fbfaf9',
+    // Native captions retain Windows Snap, system menus and accessible controls.
+    // Alt reveals the application menu without a permanent second header row.
+    autoHideMenuBar: process.platform !== 'darwin',
     show: false,
     webPreferences: {
       ...rendererPreferences('openbot-setup', join(__dirname, 'preload.cjs')),

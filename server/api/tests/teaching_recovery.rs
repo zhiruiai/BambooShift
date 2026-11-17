@@ -9,6 +9,7 @@ use tokio::sync::Semaphore;
 #[tokio::test]
 async fn restart_marks_uncertain_recordings_interrupted_without_replaying_or_generating() {
     let t = Teaching::new().await;
+    let skills_before = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let retained = t.read().await;
     let config = (*t.f.state.config).clone();
@@ -46,11 +47,13 @@ async fn restart_marks_uncertain_recordings_interrupted_without_replaying_or_gen
     assert_eq!(value["status"], "interrupted");
     assert_eq!(value["reason"], "service_restarted");
     assert_eq!(value["steps"], retained["steps"]);
-    assert!(
-        ws.list(openbot_backend::workspace::Table::Skills)
-            .await
-            .unwrap()
-            .is_empty()
+    assert_eq!(
+        json!(
+            ws.list(openbot_backend::workspace::Table::Skills)
+                .await
+                .unwrap()
+        ),
+        skills_before
     );
     restored.close().await;
     t.f.close().await;
@@ -58,6 +61,7 @@ async fn restart_marks_uncertain_recordings_interrupted_without_replaying_or_gen
 #[tokio::test]
 async fn real_sixty_second_deadline_cancels_the_worker_and_preserves_reviewed_steps() {
     let t = Teaching::new().await;
+    let skills_before = t.f.bootstrap().await["skills"].clone();
     t.input(json!({"type":"key","key":"Enter"})).await;
     let saved = t.review().await;
     let gate = Arc::new(Semaphore::new(0));
@@ -72,12 +76,7 @@ async fn real_sixty_second_deadline_cancels_the_worker_and_preserves_reviewed_st
     assert_eq!(calls.lock().await.len(), 1);
     assert!(begin.elapsed() >= Duration::from_secs(59));
     assert!(begin.elapsed() < Duration::from_secs(70));
-    assert!(
-        t.f.bootstrap().await["skills"]
-            .as_array()
-            .unwrap()
-            .is_empty()
-    );
+    assert_eq!(t.f.bootstrap().await["skills"], skills_before);
     task.abort();
     tokio::time::timeout(Duration::from_secs(5), t.f.close())
         .await

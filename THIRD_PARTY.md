@@ -129,8 +129,11 @@ These are reviewed BambooShift adaptations, not complete installations or offici
 endorsements. The Agent Desktop recipe requires a separately installed CLI and an
 authorized execution computer; it does not bundle native adapters, a VM or an MCP
 server. The React performance workflow is original BambooShift content that links
-to Vercel guidance; upstream rule files are not included. Existing frontend-design
-content remains an original workflow. User-approved skill contents do not grant
+to Vercel guidance; upstream rule files are not included. The frontend-design package
+combines BambooShift's MIT workflow with Anthropic's original Apache-2.0 guidance,
+retaining both license texts and a pinned source inventory. The engineering package
+includes complete selected MIT Superpowers methods with their referenced files.
+User-approved skill contents do not grant
 additional tool access or change action approvals.
 
 ## Other separately licensed assets

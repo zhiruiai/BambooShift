@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { starterCategoryLabel, starterTemplates, filterStarterTemplates } from './starterTemplates';
 import { botProfileProblem, type BotProfileDraft } from './botProfiles';
 import { initializeLanguage } from './i18n';
+import { starterBotPacks } from './starterSkillPacks';
 import {
   all,
   click,
@@ -20,7 +21,7 @@ import {
   until,
 } from './testSupport/creationFlowFixture';
 
-test('nine original bilingual profiles are valid independent starting points without portable secrets or scheduled work', () => {
+test('bilingual role and capability profiles are valid independent starting points without portable secrets or scheduled work', () => {
   const asset = (path: string) =>
     readFileSync(new URL(`../../${path}/bot-starter-templates.json`, import.meta.url));
   assert.deepEqual(asset('mobile/assets/templates'), asset('shared'));
@@ -41,6 +42,13 @@ test('nine original bilingual profiles are valid independent starting points wit
           ['support', 'arch', '#32766d'],
           ['analysis', 'gem', '#187f9a'],
           ['recruitment', 'arch', '#8b5eaa'],
+          ['skill-curator', 'spark', '#9363ed'],
+          ['connector-builder', 'arch', '#32766d'],
+          ['engineering-lead', 'gem', '#ff871f'],
+          ['frontend-designer', 'leaf', '#0ac987'],
+          ['feishu-assistant', 'drop', '#3294f9'],
+          ['dingtalk-assistant', 'arch', '#187f9a'],
+          ['wecom-assistant', 'leaf', '#0ac987'],
         ],
       );
       assert.equal(starterCategoryLabel('engineering'), locale === 'en' ? 'Engineering' : '编程');
@@ -91,7 +99,7 @@ test('catalog search, category, full instruction preview and explicit selection 
   );
   try {
     await ui.flush();
-    assert.equal(all(ui.tree, (n) => n.props?.className?.startsWith('starter-card')).length, 9);
+    assert.equal(all(ui.tree, (n) => n.props?.className?.startsWith('starter-card')).length, 4);
     const search = all(ui.tree, (n) => n.type === 'input')[0];
     search.props.onChange({ target: { value: '不存在的模板' } });
     await ui.flush();
@@ -108,7 +116,10 @@ test('catalog search, category, full instruction preview and explicit selection 
     await ui.flush();
     const preview = component(ui.tree, 'BotTemplatePreview');
     assert.match(preview.props.blueprint.profile.instructions, /代码约定/);
-    assert.deepEqual(Array.from(preview.props.blueprint.skills), []);
+    assert.deepEqual(
+      Array.from(preview.props.blueprint.skills, (skill: any) => skill.name),
+      starterBotPacks('engineering', 'zh-CN').map((pack) => pack.name),
+    );
     assert.deepEqual(Array.from(preview.props.blueprint.routines), []);
     assert.equal(chosen.length, 0);
     await click(ui, '使用模板并编辑');
@@ -174,11 +185,15 @@ test('selecting a starter fills editable profile fields; only the existing confi
     await f.ui.flush();
     assert.equal(writes(f.calls).length, 0);
     const picker = component(f.ui.tree, 'StarterTemplateCatalog');
-    picker.props.onChoose(starterTemplates()[0].profile);
+    const engineering = starterTemplates().find((item) => item.id === 'engineering-lead')!;
+    const origin = { id: engineering.id, language: 'zh-CN' } as const;
+    picker.props.onChoose(engineering.profile, origin);
     await f.ui.flush();
     const fields = f.profile();
-    assert.equal(fields.props.draft.name, '研究员');
-    assert.match(fields.props.draft.instructions, /研究助手/);
+    assert.equal(fields.props.draft.name, engineering.profile.name);
+    assert.equal(fields.props.draft.instructions, engineering.profile.instructions);
+    for (const pack of starterBotPacks(origin.id, origin.language))
+      assert.ok(f.ui.copy.includes(pack.name));
     assert.equal(writes(f.calls).length, 0);
     fields.props.onChange({ ...fields.props.draft, name: 'My reviewed researcher' });
     await f.ui.flush();
@@ -187,6 +202,7 @@ test('selecting a starter fills editable profile fields; only the existing confi
     assert.equal(writes(f.calls).length, 1);
     assert.equal(writes(f.calls)[0].body.kind, 'bot');
     assert.equal(writes(f.calls)[0].body.profile.name, 'My reviewed researcher');
+    assert.deepEqual(writes(f.calls)[0].body.starter, origin);
     assert.equal(f.opened.length, 0);
     assert.ok(f.calls.every((c) => c.headers.get('X-OpenBot-Expected-User') === userId));
     assert.doesNotMatch(
@@ -274,10 +290,12 @@ test('library separates originals from published templates and hands a fixed pro
     assert.ok(ui.button('BambooShift 原创'));
     assert.ok(ui.button('用户发布'));
     const choose = component(ui.tree, 'StarterTemplateCatalog').props.onChoose;
-    choose(starterTemplates()[2].profile);
+    choose(starterTemplates()[2].profile, { id: 'coordination', language: 'zh-CN' });
     await ui.flush();
     const starter = component(ui.tree, 'StarterTemplateCreate');
     assert.equal(starter.props.profile.name, '项目协调员');
+    assert.equal(starter.props.starter.id, 'coordination');
+    assert.equal(starter.props.starter.language, 'zh-CN');
     assert.equal(opened, 0);
     assert.equal(requests, 0);
     starter.props.onBack();
@@ -301,6 +319,7 @@ test('a library starter uses the existing create receipt and never offers unrela
       canCreateBot: true,
       botOnly: true,
       initialProfile: starterTemplates()[4].profile,
+      initialStarter: { id: 'organization', language: 'zh-CN' },
       userId,
       workspaceId,
       onClose() {},
@@ -329,6 +348,7 @@ test('a library starter uses the existing create receipt and never offers unrela
     assert.equal(calls.length, 1, ui.copy);
     assert.equal(calls[0].path, `/api/workspaces/${workspaceId}/creation-requests`);
     assert.equal(calls[0].body.kind, 'bot');
+    assert.deepEqual(calls[0].body.starter, { id: 'organization', language: 'zh-CN' });
     assert.match(ui.copy, /已创建/);
   } finally {
     ui.dispose();

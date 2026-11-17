@@ -110,7 +110,17 @@ async fn published_team_skill_revisions_are_explicit_and_imports_remain_pinned()
     )
     .await;
     assert_eq!(status, 200, "{copy_source}");
-    assert_eq!(copy_source["blueprint"]["skills"], json!([]));
+    let portable_skills = copy_source["blueprint"]["skills"].as_array().unwrap();
+    assert_eq!(portable_skills.len(), 4);
+    assert!(portable_skills.iter().all(|skill| {
+        [
+            "web-research",
+            "browser-use",
+            "computer-use",
+            "agent-desktop",
+        ]
+        .contains(&skill["name"].as_str().unwrap())
+    }));
     assert_eq!(
         request(
             &f,

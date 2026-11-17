@@ -105,7 +105,13 @@ async fn add_is_atomic_idempotent_private_and_read_receipt_survives_revoke() {
     assert_eq!(raw["avatarImageId"], Value::Null);
     assert_ne!(raw["id"], s.agent);
     assert!(target.list(Table::Memories).await.unwrap().is_empty());
-    assert!(target.list(Table::Skills).await.unwrap().is_empty());
+    let local_skills = target.list(Table::Skills).await.unwrap();
+    assert!(
+        local_skills
+            .iter()
+            .all(|skill| skill["agentId"] != a["agentId"])
+    );
+    assert!(local_skills.iter().all(|skill| skill["agentId"] != s.agent));
     let bootstrap = format!("/api/workspaces/{}/bootstrap", s.personal);
     assert_eq!(
         s.f.request("GET", &bootstrap, None, false, Some(&s.f.owner))

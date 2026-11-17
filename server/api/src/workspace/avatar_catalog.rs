@@ -31,6 +31,11 @@ pub(crate) static THEME_MOTIFS: LazyLock<Vec<String>> = LazyLock::new(|| {
                 .expect("bundled classic avatar must be valid")
                 .id,
         ))
+        .chain(std::iter::once(
+            serde_json::from_str::<Theme>(include_str!("../../../../shared/avatar-colorful.json"))
+                .expect("bundled colorful avatar must be valid")
+                .id,
+        ))
         .chain(
             catalog
                 .packs
@@ -53,7 +58,8 @@ mod tests {
         assert!(has_theme("classic"));
         assert!(has_theme("companions"));
         assert!(has_theme("grokbot-blob"));
-        assert_eq!(THEME_MOTIFS.len(), 46);
+        assert!(has_theme("colorful"));
+        assert_eq!(THEME_MOTIFS.len(), 47);
         assert!(!has_theme("../classic"));
     }
 }

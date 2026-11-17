@@ -192,7 +192,17 @@ async fn only_personal_owner_can_pin_a_reviewed_local_skill_and_remove_the_exact
     let (status, portable) =
         request(&group, "GET", &format!("/bot-copy-source/{target}"), None).await;
     assert_eq!(status, 200, "{portable}");
-    assert_eq!(portable["blueprint"]["skills"], json!([]));
+    let portable_skills = portable["blueprint"]["skills"].as_array().unwrap();
+    assert_eq!(portable_skills.len(), 4);
+    assert!(portable_skills.iter().all(|skill| {
+        [
+            "web-research",
+            "browser-use",
+            "computer-use",
+            "agent-desktop",
+        ]
+        .contains(&skill["name"].as_str().unwrap())
+    }));
     let pinned = shelf(&group).await;
     assert!(shelf_entry(&pinned, &installed[0]).is_none());
     assert_eq!(
@@ -309,10 +319,13 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
                 return finish("Checked the current approved skills.");
             }
             let Some(raw) = latest_tool(&body) else {
-                return call("list_skills", json!({}));
+                return call("list_skills", json!({"query":"Evidence pass"}));
             };
             let receipt = result(raw);
             if let Some(skills) = receipt["skills"].as_array() {
+                if skills.is_empty() {
+                    return finish("Checked the current approved skills.");
+                }
                 assert_eq!(skills.len(), 1);
                 return call("read_skill", json!({"skillId":skills[0]["id"]}));
             }
@@ -339,7 +352,7 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
         .send("Check my current skills.", "followUp", false)
         .await;
     group.done().await;
-    let system = agent_primary_support::system(&model.calls.lock().await[1]);
+    let system = agent_primary_support::system(&model.calls.lock().await[2]);
     assert!(system.contains("Evidence pass"));
     assert!(!system.contains(marker));
     assert!(!system.contains(newer));
@@ -357,9 +370,9 @@ async fn pi_reads_only_the_approved_version_explicitly_enabled_for_its_bot() {
         .await;
     group.done().await;
     let records = model.calls.lock().await;
-    assert_eq!(records.len(), 5);
-    assert_eq!(result(latest_tool(&records[3]).unwrap())["content"], marker);
-    let system = agent_primary_support::system(&records[4]);
+    assert_eq!(records.len(), 7);
+    assert_eq!(result(latest_tool(&records[4]).unwrap())["content"], marker);
+    let system = agent_primary_support::system(&records[6]);
     assert!(!system.contains(marker));
     assert!(!system.contains(newer));
     drop(records);

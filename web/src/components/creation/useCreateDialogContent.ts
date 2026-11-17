@@ -5,6 +5,8 @@ import { createAppConnectionScope } from '../../appConnections';
 import { useAvatarEdits } from '../../avatarImages';
 import { botProfileDraft, botProfileProblem, type BotProfileDraft } from '../../botProfiles';
 import { useCreationRequests } from '../../creationRequests';
+import type { CreationStarter } from '../../../../shared/creation-requests';
+import { starterBotPacks } from '../../starterSkillPacks';
 import '../BotProfiles.css';
 import { suggestedGroupTitle } from '../GroupRecipients';
 import { Props } from './parts';
@@ -26,6 +28,7 @@ export function useCreateDialogContent(props: Props) {
         : 'group',
   );
   const [teamPlanId, setTeamPlanId] = useState(props.initialPlanId);
+  const [starter, setStarter] = useState<CreationStarter | undefined>(props.initialStarter);
   const offeredPlan = useRef(props.initialPlanId);
   const [draft, setDraft] = useState(() =>
       props.initialProfile ? structuredClone(props.initialProfile) : botProfileDraft(),
@@ -153,7 +156,7 @@ export function useCreateDialogContent(props: Props) {
           title: selectedTitle.trim(),
           agentIds: selectedIds,
         });
-      else await creation.createBot(draft);
+      else await creation.createBot(draft, starter);
     } catch (cause) {
       if (!scope.current(ticket)) return;
       setError((cause as Error).message);
@@ -182,19 +185,21 @@ export function useCreateDialogContent(props: Props) {
     )
       setView('starter-catalog');
   }
-  function chooseStarter(profile: BotProfileDraft) {
+  function chooseStarter(profile: BotProfileDraft, origin?: CreationStarter) {
     if (!latest.current.canCreateBot || !canEditManual()) return;
     setView('create');
     navigate(() => {
       if (!latest.current.canCreateBot || !canEditManual()) return;
       avatarEdits.reset();
       setDraft(structuredClone(profile));
+      setStarter(origin ? structuredClone(origin) : undefined);
       setError('');
     });
   }
   function resetManualDraft() {
     avatarEdits.reset();
     setDraft(botProfileDraft());
+    setStarter(undefined);
     setTitle('');
     setCustomTitle(false);
     setIds([]);
@@ -249,6 +254,7 @@ export function useCreateDialogContent(props: Props) {
     create,
     avatarEdits,
     draft,
+    starterPacks: starter ? starterBotPacks(starter.id, starter.language) : [],
     canEditManual,
     setDraft,
     manualLocked,

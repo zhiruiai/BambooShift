@@ -22,10 +22,13 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
       setMachine,
       applyScreen,
       setControlError,
+      controlTransition,
+      computerStatusSequence,
     } = read();
-
+    if (controlTransition.current) return Promise.resolve();
     return observe('computer', async () => {
       const version = scope.ticket();
+      const sequence = computerStatusSequence.current;
       setPermissionBusy(true);
       try {
         const [machine, inventory, state] = await Promise.allSettled([
@@ -33,7 +36,12 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
           scope.request<BotScreenInventory>('/bots', 'GET', undefined, true),
           agentId ? scope.request<ComputerState>('/status') : undefined,
         ]);
-        if (!current(version)) return;
+        if (
+          !current(version) ||
+          controlTransition.current ||
+          sequence !== computerStatusSequence.current
+        )
+          return;
         // Bootstrap can precede restoration of a saved local computer. Update the
         // connection even if this Bot's screen is still unavailable.
         if (machine.status === 'fulfilled') setMachine(machine.value);
@@ -42,11 +50,74 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
         if (failed?.status === 'rejected') setControlError((failed.reason as Error).message);
         if (state.status === 'fulfilled' && state.value) applyScreen(state.value);
       } catch (error) {
-        if (current(version)) setControlError((error as Error).message);
+        if (
+          current(version) &&
+          !controlTransition.current &&
+          sequence === computerStatusSequence.current
+        )
+          setControlError((error as Error).message);
       } finally {
-        if (current(version)) setPermissionBusy(false);
+        if (
+          current(version) &&
+          !controlTransition.current &&
+          sequence === computerStatusSequence.current
+        )
+          setPermissionBusy(false);
       }
     });
+  }
+  async function refreshPermissions() {
+    const {
+      machine,
+      canManage,
+      busy,
+      inputBusy,
+      preparing,
+      scope,
+      current,
+      setPermissionBusy,
+      setInputBusy,
+      setControlError,
+      setMachine,
+      controlTransition,
+      statusSequence,
+      computerStatusSequence,
+      mounted,
+      observationRequests,
+    } = read();
+    if (!canManage || busy || inputBusy || preparing) return;
+    // Remote screens only need a fresh status. Restoring a saved native surface
+    // is an explicit local action; automatic polling always stays read-only.
+    if (machine.mode !== 'local') return checkComputer();
+    const version = scope.ticket();
+    setPermissionBusy(true);
+    setInputBusy(true);
+    setControlError('');
+    controlTransition.current = true;
+    statusSequence.current++;
+    computerStatusSequence.current++;
+    // A delayed pre-transition read cannot satisfy the post-transition refresh.
+    observationRequests.current.delete('computer');
+    try {
+      const state = await scope.request<ComputerState>(
+        '/permissions/refresh',
+        'POST',
+        {
+          expectedTargetRevision: machine.targetRevision,
+        },
+        true,
+      );
+      if (current(version)) setMachine(state);
+    } catch (error) {
+      if (current(version)) setControlError((error as Error).message);
+    } finally {
+      controlTransition.current = false;
+      if (mounted.current) {
+        setInputBusy(false);
+        setPermissionBusy(false);
+        await checkComputer();
+      }
+    }
   }
   function chooseLifecycle(kind: ComputerLifecycleIntent['kind']) {
     const {
@@ -242,5 +313,12 @@ export function createComputerLifecycleActions(read: () => ComputerLifecycleActi
       }
     }
   }
-  return { checkComputer, chooseLifecycle, submitLifecycle, prepareScreen, selectSurface };
+  return {
+    checkComputer,
+    refreshPermissions,
+    chooseLifecycle,
+    submitLifecycle,
+    prepareScreen,
+    selectSurface,
+  };
 }

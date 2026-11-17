@@ -1,17 +1,20 @@
 import type { BotProfileDraft } from '../../botProfiles';
 import { CreateDialog } from '../CreateDialog';
 import type { Common } from './types';
+import type { CreationStarter } from '../../../../shared/creation-requests';
 export function StarterTemplateCreate({
   profile,
+  starter,
   onBack,
   ...props
-}: Common & { profile: BotProfileDraft }) {
+}: Common & { profile: BotProfileDraft; starter?: CreationStarter }) {
   return (
     <CreateDialog
       agents={[]}
       canCreateBot={props.owner}
       botOnly
       initialProfile={profile}
+      initialStarter={starter}
       workspaceId={props.workspaceId}
       userId={props.userId}
       onClose={onBack}

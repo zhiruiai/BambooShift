@@ -4,9 +4,9 @@ use super::{
     model, private_config,
     transport::{Authority, Request, Target},
 };
-use crate::error::Result;
+use crate::error::{ApiError, Result};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{Value, json};
 use std::sync::Arc;
 
 #[derive(Serialize, Deserialize)]
@@ -63,6 +63,15 @@ pub(crate) async fn restore(
     target: &Arc<Target>,
     authorize: Authority,
 ) -> Result<()> {
+    replay(controller, target, authorize, None).await
+}
+
+async fn replay(
+    controller: &Arc<Controller>,
+    target: &Arc<Target>,
+    authorize: Authority,
+    actor: Option<&str>,
+) -> Result<()> {
     if !controller
         .runtime
         .local_desktop
@@ -78,13 +87,18 @@ pub(crate) async fn restore(
     if surface == "browser" {
         return Ok(());
     }
-    let Some(expected) =
-        authorization::local_grant(controller, preference.as_ref().map(|p| p.user_id.as_str()))
-            .await?
+    let Some(expected) = authorization::local_grant(
+        controller,
+        actor.or(preference.as_ref().map(|p| p.user_id.as_str())),
+    )
+    .await?
     else {
         return Ok(());
     };
     let state = target.state().await;
+    if state["surface"] == surface {
+        return Ok(());
+    }
     let ready = if surface == "accessibility" {
         target.saved.has(model::MACOS_ACCESSIBILITY)
             && state["desktop"]["accessibilityReady"] == true
@@ -127,4 +141,63 @@ pub(crate) async fn restore(
     }
     target.request(Request::get("/health"), check).await?;
     Ok(())
+}
+
+// Callers hold management so new task leases, actions and takeovers cannot enter
+// between the idle check and replay. Revocation deliberately uses another lock.
+pub(crate) async fn reconcile_current(
+    controller: &Arc<Controller>,
+    user: &str,
+    revision: &Value,
+    authorize: Authority,
+) -> Result<()> {
+    controller.active()?;
+    authorize().await?;
+    let target = controller
+        .target
+        .lock()
+        .await
+        .clone()
+        .ok_or_else(model::invalid)?;
+    if !revision.is_string() || *revision != target.state().await["targetRevision"] {
+        return Err(ApiError::new(409, "工作电脑已切换，请刷新后再试。")
+            .with_code("COMPUTER_TARGET_CHANGED"));
+    }
+    // A local worker still reports transport mode=remote. Use the executor's
+    // exact credentials, never a worker-provided mode or loopback URL alone.
+    if !controller.is_local().await
+        || !controller
+            .local
+            .lock()
+            .await
+            .as_ref()
+            .is_some_and(|executor| {
+                executor.url == target.saved.url && executor.token == target.saved.token
+            })
+    {
+        return Err(ApiError::new(409, "当前连接不是本机电脑。"));
+    }
+    if controller.busy_for_surface_replay().await {
+        return Err(ApiError::new(
+            409,
+            "电脑正在执行任务或被接管，请结束后再刷新权限。",
+        ));
+    }
+    target
+        .request(Request::get("/health"), authorize.clone())
+        .await?;
+    replay(controller, &target, authorize, Some(user)).await
+}
+
+pub(crate) async fn refresh(
+    controller: &Arc<Controller>,
+    user: &str,
+    body: &Value,
+    authorize: Authority,
+) -> Result<Value> {
+    crate::error::only_fields(body, &["expectedTargetRevision"])?;
+    let _guard = controller.management.lock().await;
+    reconcile_current(controller, user, &body["expectedTargetRevision"], authorize).await?;
+    controller.changed();
+    Ok(controller.state().await)
 }

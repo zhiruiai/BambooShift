@@ -27,7 +27,7 @@ async fn automation_model(skill: Value, checkin: bool) -> Model {
     Model::new(Arc::new(move |body| {
         let skill = long_skill.clone();
         Box::pin(async move {
-            let mut allowed = vec!["list_skills", "read_skill"];
+            let mut allowed = vec!["list_skills", "read_skill", "read_skill_resource"];
             if checkin {
                 allowed.push("recall");
             }
@@ -48,7 +48,7 @@ async fn automation_model(skill: Value, checkin: bool) -> Model {
                 0 => call("list_skills", json!({"query":"method 07"})),
                 1 => {
                     let catalog = result(latest_tool(&body).unwrap());
-                    assert_eq!(catalog["total"], 8);
+                    assert_eq!(catalog["total"], 12);
                     assert_eq!(catalog["matched"], 1);
                     assert_eq!(catalog["skills"][0]["id"], skill["id"]);
                     assert!(catalog["skills"][0].get("content").is_none());
@@ -135,7 +135,7 @@ async fn oversized_daily_checkin_reads_its_snapshot_with_no_write_or_external_to
     })
     .await;
     assert_eq!(workspace.list(Table::Memories).await.unwrap().len(), 12);
-    assert_eq!(workspace.list(Table::Skills).await.unwrap().len(), 8);
+    assert_eq!(workspace.list(Table::Skills).await.unwrap().len(), 12);
     assert_eq!(model.calls.lock().await.len(), 4);
     drop(model);
     fixture.close().await;
@@ -189,7 +189,7 @@ async fn oversized_webhook_reads_skills_without_receiving_memory_or_other_tools(
     .await;
     assert!(!json!(messages).to_string().contains(EVENT));
     assert_eq!(workspace.list(Table::Memories).await.unwrap().len(), 1);
-    assert_eq!(workspace.list(Table::Skills).await.unwrap().len(), 8);
+    assert_eq!(workspace.list(Table::Skills).await.unwrap().len(), 12);
     assert_eq!(model.calls.lock().await.len(), 3);
     drop(model);
     fixture.close().await;

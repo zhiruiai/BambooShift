@@ -30,6 +30,7 @@
     "computer:pair": "node scripts/run.mjs scripts/pair-computer.mjs",
     "computer:services": "node scripts/run.mjs scripts/computer-services.ts",
     "desktop:build": "node scripts/build-desktop.mjs",
+    "desktop:identity": "node scripts/desktop/create-macos-signing-identity.mjs",
     "desktop:check": "node scripts/check-desktop.mjs",
     "client:dev": "node scripts/run.mjs scripts/run-client.mjs",
     "client:package": "node scripts/run.mjs scripts/package-client.mjs",

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   AVATAR_THEME_NAMES,
   BUILTIN_AVATAR_THEMES,
@@ -26,6 +26,7 @@ export function AvatarThemeChoices({
   onChange: (theme: AvatarTheme) => void;
 }) {
   const [group, setGroup] = useState(() => family(value));
+  const [page, setPage] = useState(0);
   useEffect(() => setGroup(family(value)), [value]);
   const groups = [
     {
@@ -45,6 +46,15 @@ export function AvatarThemeChoices({
       : COMMUNITY_AVATAR_PACKS.find((pack) => pack.id === group)!.themes.map(
           (item) => item.id as AvatarTheme,
         );
+  const pages = Math.ceil(themes.length / 8);
+  const currentPage = Math.min(page, pages - 1);
+  useEffect(() => {
+    const choices =
+      group === 'originals'
+        ? BUILTIN_AVATAR_THEMES
+        : COMMUNITY_AVATAR_PACKS.find((pack) => pack.id === group)!.themes.map((item) => item.id);
+    setPage(Math.max(0, Math.floor(choices.findIndex((theme) => theme === value) / 8)));
+  }, [group, value]);
   return (
     <div className="avatar-theme-catalog">
       <div
@@ -79,7 +89,7 @@ export function AvatarThemeChoices({
         role="group"
         aria-label={groups.find((item) => item.id === group)!.name}
       >
-        {themes.map((theme) => (
+        {themes.slice(currentPage * 8, currentPage * 8 + 8).map((theme) => (
           <button
             key={theme}
             type="button"
@@ -97,7 +107,7 @@ export function AvatarThemeChoices({
                 color={AVATAR_ROLE_COLORS.orb}
                 size={46}
                 faceMotion={
-                  theme === 'classic' && !custom && value === theme
+                  ['classic', 'colorful'].includes(theme) && !custom && value === theme
                     ? { state: 'idle', sustain: true }
                     : undefined
                 }
@@ -126,7 +136,34 @@ export function AvatarThemeChoices({
           </button>
         ))}
       </div>
-      {(group !== 'originals' || value === 'classic') && (
+      {pages > 1 && (
+        <div
+          className="avatar-theme-pages"
+          role="group"
+          aria-label={uiText('settings:avatarThemePages')}
+        >
+          <button
+            type="button"
+            disabled={disabled || currentPage === 0}
+            aria-label={uiText('settings:avatarPreviousPage')}
+            onClick={() => setPage(currentPage - 1)}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <span aria-live="polite">
+            {currentPage + 1} / {pages}
+          </span>
+          <button
+            type="button"
+            disabled={disabled || currentPage + 1 === pages}
+            aria-label={uiText('settings:avatarNextPage')}
+            onClick={() => setPage(currentPage + 1)}
+          >
+            <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+      {(group !== 'originals' || ['classic', 'colorful'].includes(value)) && (
         <p className="avatar-theme-collection-note">
           {uiText('settings:avatarCommunityNote')}
           {' · '}

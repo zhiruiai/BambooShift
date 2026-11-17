@@ -24,7 +24,7 @@ test('idle classic blinks once and releases its frame loop; reduced motion stays
   assert.equal(motion.frame(0, true), false);
 });
 
-test('new devices use Classic black while existing explicit theme choices survive', () => {
+test('new devices use colorful characters while existing explicit theme choices survive', () => {
   for (const saved of [null, 'pandas', 'companions', 'grokbot-leaf', 'classic']) {
     const store = createAppearanceStore({
       storage: {
@@ -40,7 +40,7 @@ test('new devices use Classic black while existing explicit theme choices surviv
         setItem: () => {},
       },
     });
-    assert.equal(store.getSnapshot().avatarTheme, saved ?? 'classic');
+    assert.equal(store.getSnapshot().avatarTheme, saved ?? 'colorful');
     store.dispose();
   }
 });
@@ -64,6 +64,21 @@ test('classic keeps six distinct vector silhouettes and light eyes despite store
     assert.match(svg, /fill="#fffdf7"/);
     assert.doesNotMatch(svg, /#8b5cf6|<image|<foreignObject/);
     bodies.add(svg.match(/class="avatar-classic-body" d="([^"]+)"/)![1]);
+  }
+  assert.equal(bodies.size, 6);
+});
+
+test('colorful characters keep six role silhouettes and their individual colors', () => {
+  const bodies = new Set<string>();
+  for (const shape of AVATAR_SHAPES) {
+    const svg = renderToStaticMarkup(
+      React.createElement(AvatarArtwork, { theme: 'colorful', shape, color: '#1084FE' }),
+    );
+    assert.match(svg, /data-avatar-theme="colorful"/);
+    assert.match(svg, new RegExp(`data-avatar-source-theme="${CLASSIC_AVATAR.shapes[shape]}"`));
+    assert.match(svg, /fill="#1084FE"/);
+    assert.doesNotMatch(svg, /avatar-classic-body|fill="#1c1c1c"/);
+    bodies.add(svg.match(/<path d="([^"]+)"/)![1]);
   }
   assert.equal(bodies.size, 6);
 });

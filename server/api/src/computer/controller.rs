@@ -360,44 +360,6 @@ impl Controller {
         }
         Ok(())
     }
-    pub async fn busy(&self, agent_id: Option<&str>) -> bool {
-        let task_scope = if agent_id.is_some() && self.uses_shared_screen().await {
-            None
-        } else {
-            agent_id
-        };
-        if self.tasks.busy(task_scope) {
-            return true;
-        }
-        let jobs: Vec<_> = self.jobs.lock().await.values().cloned().collect();
-        for job in jobs {
-            if agent_id.is_none_or(|id| job.context.agent_id.as_deref() == Some(id))
-                && !*job.finished.borrow()
-            {
-                return true;
-            }
-        }
-        if self.takeovers.lock().await.values().any(|l| {
-            l.expires_at > crate::db::now()
-                && agent_id.is_none_or(|a| l.agent_id.as_deref() == Some(a))
-        }) {
-            return true;
-        }
-        let targets: Vec<_> = self.screen_targets.lock().await.values().cloned().collect();
-        if targets.iter().any(|t| {
-            agent_id.is_none_or(|a| t.binding.as_ref().is_some_and(|b| b.agent_id == a))
-                && t.active_count() > 0
-        }) {
-            return true;
-        }
-        agent_id.is_none()
-            && self
-                .target
-                .lock()
-                .await
-                .as_ref()
-                .is_some_and(|t| t.active_count() > 0)
-    }
     pub async fn deletion_guard(&self, agent: &str) -> Result<tokio::sync::MutexGuard<'_, ()>> {
         let guard = self.management.lock().await;
         let journal = self.bindings.lock().await;

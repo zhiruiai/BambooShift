@@ -170,7 +170,9 @@ test(
       assert.deepEqual(requests, []);
 
       const desktop = page.getByRole('complementary', { name: 'Local website' });
-      await desktop.getByText('Version 2', { exact: true }).waitFor();
+      await desktop
+        .getByText('Viewing now · Version 2 · Latest delivery', { exact: true })
+        .waitFor();
       await desktop.getByRole('button', { name: 'Edit this version' }).click();
       assert.equal(
         await page.locator('#root').getAttribute('data-edited-version'),
@@ -179,7 +181,9 @@ test(
 
       await page.setViewportSize({ width: 320, height: 640 });
       const mobile = page.getByRole('dialog', { name: 'Local website' });
-      await mobile.getByText('Version 2', { exact: true }).waitFor();
+      await mobile
+        .getByText('Viewing now · Version 2 · Latest delivery', { exact: true })
+        .waitFor();
       const mobileEdit = mobile.getByRole('button', { name: 'Edit this version' });
       assert.equal(await mobileEdit.getByText('Edit this version').isVisible(), true);
       const bounds = await mobileEdit.boundingBox();

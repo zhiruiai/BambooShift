@@ -5,6 +5,7 @@ import type {
   CreationReceipt,
   CreationRequest,
   CreationResolution,
+  CreationStarter,
 } from '../../shared/creation-requests';
 import { ApiError } from './api';
 import { createPrimaryBotScope, type PrimaryBotIdentity } from './primaryBot';
@@ -283,7 +284,8 @@ export function createCreationRequestClient(options: Options) {
       body = undefined;
       state = { ...state, busy: false, canRetry: false, originalAvailable: false };
     },
-    createBot: (profile: CreationBotProfile) => start({ kind: 'bot', profile }),
+    createBot: (profile: CreationBotProfile, starter?: CreationStarter) =>
+      start({ kind: 'bot', profile, ...(starter ? { starter } : {}) }),
     createGroup: (input: { title: string; agentIds: string[] }) =>
       start({ ...input, kind: 'group' }),
     check: () => perform('read'),

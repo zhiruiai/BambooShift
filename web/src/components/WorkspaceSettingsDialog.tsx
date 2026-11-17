@@ -196,8 +196,18 @@ function WorkspaceSettingsContent(props: Props) {
                   userId={props.userId}
                   onAccount={() => navigate(() => window.location.assign('/account'))}
                 />
+                <AppearanceSettings section="preferences" active={currentView === 'general'} />
+              </section>
+              <section
+                className="workspace-settings-panel"
+                hidden={currentView !== 'avatars'}
+                inert={currentView !== 'avatars'}
+                aria-labelledby="settings-section-avatars"
+              >
+                <h2 id="settings-section-avatars">{settingsSectionLabel('avatars')}</h2>
                 <AppearanceSettings
-                  active={currentView === 'general'}
+                  section="avatars"
+                  active={currentView === 'avatars'}
                   generation={
                     props.canManage && props.workspaceId && props.userId
                       ? {

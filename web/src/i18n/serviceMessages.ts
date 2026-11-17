@@ -127,6 +127,10 @@ export const serviceMessages: Readonly<Record<string, string>> = {
     'Bots share an isolated browser on the server computer and use it in turn.',
   '工作电脑已切换，请刷新后再提交操作。':
     'The work computer changed. Refresh before submitting this action.',
+  '工作电脑已切换，请刷新后再试。': 'The work computer changed. Refresh before trying again.',
+  '当前连接不是本机电脑。': 'The current connection is not this local computer.',
+  '电脑正在执行任务或被接管，请结束后再刷新权限。':
+    'The computer has active work or a takeover. Finish it before refreshing permissions.',
   '平台执行空间不能控制宿主整机桌面。':
     'Platform workspaces cannot control the host computer’s desktop.',
   '用户已拒绝此电脑操作。': 'The requester rejected this computer action.',

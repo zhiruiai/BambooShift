@@ -7,12 +7,14 @@ import {
   Laptop,
   RefreshCw,
   Settings,
+  Smile,
   Sparkles,
 } from 'lucide-react';
 import { uiText } from '../../i18n';
 
 export type SettingsSection =
   | 'general'
+  | 'avatars'
   | 'computer'
   | 'work'
   | 'memory'
@@ -27,6 +29,7 @@ export function settingsSectionLabel(value: SettingsSection) {
     (
       {
         general: 'workspace:settingsGeneral',
+        avatars: 'workspace:settingsAvatars',
         computer: 'computer:location_entry',
         usage: 'workspace:usageTitle',
         notifications: 'workspace:notificationsTitle',
@@ -57,6 +60,7 @@ export function SettingsNavigation({
 }) {
   const items = [
     { id: 'general', label: uiText('workspace:settingsGeneral'), icon: Settings },
+    { id: 'avatars', label: uiText('workspace:settingsAvatars'), icon: Smile },
     ...(hasComputer
       ? [{ id: 'computer', label: settingsSectionLabel('computer'), icon: Monitor }]
       : []),
