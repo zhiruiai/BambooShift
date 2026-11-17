@@ -31,7 +31,7 @@ export function SkillInstallation({
   canEdit: boolean;
   onInstall?: InstallSkill;
   onBusyChange?: (busy: boolean) => void;
-  onDone: () => void;
+  onDone: (installedId: string) => void;
   fileContents?: Readonly<Record<string, string>>;
 }) {
   const [target, setTarget] = useState(initialAgentId || (bots.length === 1 ? bots[0].id : ''));
@@ -196,7 +196,7 @@ export function SkillInstallation({
                 type="button"
                 className="secondary-button skill-install-done"
                 disabled={locked}
-                onClick={onDone}
+                onClick={() => onDone(receipt.id)}
               >
                 {uiText('workspace:packagedSkillsDone')}
               </button>
@@ -211,17 +211,18 @@ export function SkillInstallation({
       <details className="skill-install-details">
         <summary>{uiText('workspace:packagedSkillsDetails')}</summary>
         <div className="packaged-skill-document">
+          <SkillPackageDetails
+            {...skill.skillPackage}
+            files={[{ path: 'SKILL.md' }, ...skill.skillPackage.files]}
+            fileContents={fileContents}
+            expandedFiles
+          />
           <section className="packaged-skill-instructions">
             <h4>{uiText('workspace:packagedSkillsInstructions')}</h4>
             <div className="skill-content packaged-skill-content">
               <Markdown text={skill.content} passive />
             </div>
           </section>
-          <SkillPackageDetails
-            {...skill.skillPackage}
-            files={[{ path: 'SKILL.md' }, ...skill.skillPackage.files]}
-            fileContents={fileContents}
-          />
         </div>
       </details>
     </>

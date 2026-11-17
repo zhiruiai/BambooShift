@@ -39,7 +39,10 @@ test(
         initializeLanguage().setLanguage(owner ? 'en' : 'zh-CN');
         const bots = ${JSON.stringify(bots)};
         function Fixture() {
-          const [skills,setSkills] = useState([]);
+          const [skills,setSkills] = useState(location.search === '?single'
+            ? [{ id:'existing', agentId:'design', name:'aaa-existing', description:'Existing skill',
+              content:'Existing instructions.', version:1, status:'active' }]
+            : []);
           const [closed,setClosed] = useState(false);
           globalThis.fixtureSkillStatus = status => setSkills(previous => previous.map(skill => ({...skill,status})));
           const install = async (draft, expectedActiveId) => {
@@ -241,10 +244,12 @@ test(
     await manager.getByRole('button', { name: 'Install skill', exact: true }).click();
     await manager.getByText('Enabled for Design Bot and ready to use.').waitFor();
     await manager.getByRole('button', { name: 'Done', exact: true }).click();
-    await manager
-      .getByRole('button', { name: new RegExp(recipe.name) })
-      .first()
-      .waitFor();
+    await manager.getByRole('heading', { name: recipe.name, exact: true }).waitFor();
+    await manager.locator('.skill-detail-back').click();
+    assert.equal(
+      await manager.locator('.skill-picker[aria-current="true"]').getAttribute('data-skill-id'),
+      'installed-3',
+    );
     assert.equal(writes.length, 3);
 
     const folder = await mkdtemp(join(tmpdir(), 'skill-install-'));
@@ -264,6 +269,8 @@ test(
     assert.equal(writes[3].body.name, 'quality-review');
     assert.equal(writes[3].body.skillPackage.files[0].path, 'scripts/check.py');
     assert.equal(await manager.getByRole('heading', { name: 'Skill package draft' }).count(), 0);
+    await manager.getByRole('button', { name: 'Done', exact: true }).click();
+    await manager.getByRole('heading', { name: 'quality-review', exact: true }).waitFor();
 
     await page.goto(`${home}?member`);
     await page.getByRole('button', { name: '内置技能', exact: true }).click();

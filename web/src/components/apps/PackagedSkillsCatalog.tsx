@@ -33,7 +33,7 @@ export function PackagedSkillsCatalog({
   disabled: boolean;
   onInstall?: InstallSkill;
   onBusyChange?: (busy: boolean) => void;
-  onInstalled?: () => void;
+  onInstalled?: (installedId: string) => void;
   initialAgentId?: string;
   embedded?: boolean;
   skills?: readonly Skill[];
@@ -137,8 +137,8 @@ export function PackagedSkillsCatalog({
             disabled={disabled}
             onInstall={onInstall}
             onBusyChange={onBusyChange}
-            onDone={() => {
-              if (onInstalled) onInstalled();
+            onDone={(installedId) => {
+              if (onInstalled) onInstalled(installedId);
               else {
                 returning.current = true;
                 setSelected('');

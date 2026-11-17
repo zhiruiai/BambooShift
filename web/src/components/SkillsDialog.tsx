@@ -74,6 +74,12 @@ export function SkillsDialog({
   const locked = busy || saving;
   const managing = !adding && !showCatalog && !importing && !showTeam && !reviewId;
   const canSave = !!name.trim() && !!description.trim() && (!!packageDraft || !!content.trim());
+  function showInstalledSkill(installedId: string) {
+    setSelectedSkillId(installedId);
+    setView('current');
+    setImporting(undefined);
+    setShowCatalog(false);
+  }
   function fillDraft(draft: ImportedSkillDraft, skillPackage?: SkillPackageDraft) {
     setName(draft.name);
     setDescription(draft.description);
@@ -159,10 +165,7 @@ export function SkillsDialog({
           }}
           onInstall={onInstall}
           onBusyChange={setSaving}
-          onInstalled={() => {
-            setShowCatalog(false);
-            setView('current');
-          }}
+          onInstalled={showInstalledSkill}
         />
       ) : importing ? (
         <section className="packaged-skill-preview">
@@ -189,10 +192,7 @@ export function SkillsDialog({
             canEdit={!readOnly}
             onInstall={onInstall}
             onBusyChange={setSaving}
-            onDone={() => {
-              setImporting(undefined);
-              setView('current');
-            }}
+            onDone={showInstalledSkill}
           />
         </section>
       ) : showTeam && team ? (
