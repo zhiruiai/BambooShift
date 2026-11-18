@@ -16,21 +16,27 @@ class AvatarPackGeometry {
 
   static Future<AvatarPackGeometry> load(AssetBundle bundle, String family) {
     final cache = _cache[bundle] ??= {};
-    return cache.putIfAbsent(family, () async {
-      try {
-        final values = await Future.wait([
-          bundle.loadString('assets/avatars/packs/$family/manifest.json'),
-          bundle.loadString('assets/avatars/packs/$family/expressions.json'),
-        ]);
-        return AvatarPackGeometry(
-          jsonDecode(values[0]) as Map<String, dynamic>,
-          jsonDecode(values[1]) as Map<String, dynamic>,
-        );
-      } catch (_) {
+    return cache.putIfAbsent(family, () {
+      return _read(bundle, family).onError((Object error, StackTrace trace) {
         cache.remove(family);
-        rethrow;
-      }
+        Error.throwWithStackTrace(error, trace);
+      });
     });
+  }
+
+  static Future<AvatarPackGeometry> _read(
+    AssetBundle bundle,
+    String family,
+  ) async {
+    final values = await Future.wait(
+      ['manifest', 'expressions'].map(
+        (name) => bundle.loadString('assets/avatars/packs/$family/$name.json'),
+      ),
+    );
+    return AvatarPackGeometry(
+      jsonDecode(values[0]) as Map<String, dynamic>,
+      jsonDecode(values[1]) as Map<String, dynamic>,
+    );
   }
 
   AvatarPackShape shape(String id) => _shapes.putIfAbsent(

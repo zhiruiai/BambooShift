@@ -8,5 +8,6 @@ analyzer:
     - ios/**
 linter:
   rules:
-    avoid_print: true
-    use_build_context_synchronously: true
+    cancel_subscriptions: true
+    close_sinks: true
+    unawaited_futures: true

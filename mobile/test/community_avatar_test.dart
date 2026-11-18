@@ -68,6 +68,19 @@ Widget _scene({
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  for (final synchronous in [true, false]) {
+    final failure = synchronous ? 'synchronous' : 'asynchronous';
+    test('failed pack load can be retried after a $failure error', () async {
+      final bundle = _RetryingBundle(synchronous);
+      final initial = AvatarPackGeometry.load(bundle, 'grokbot');
+      expect(AvatarPackGeometry.load(bundle, 'grokbot'), same(initial));
+      await expectLater(initial, throwsStateError);
+      final recovered = await AvatarPackGeometry.load(bundle, 'grokbot');
+      expect(recovered.family, 'grokbot');
+      expect(await AvatarPackGeometry.load(bundle, 'grokbot'), same(recovered));
+      expect(bundle.manifestReads, 2);
+    });
+  }
   final evidenceFont = Platform.environment['BAMBOOSHIFT_EVIDENCE_FONT'];
   setUpAll(() async {
     if (evidenceFont == null) return;
@@ -353,5 +366,25 @@ class _DelayedBundle extends CachingAssetBundle {
   Future<ByteData> load(String key) async {
     if (key.contains('/open-avatar/')) await gate.future;
     return rootBundle.load(key);
+  }
+}
+
+class _RetryingBundle extends CachingAssetBundle {
+  _RetryingBundle(this.synchronous);
+
+  final bool synchronous;
+  int manifestReads = 0;
+
+  @override
+  Future<ByteData> load(String key) => rootBundle.load(key);
+
+  @override
+  Future<String> loadString(String key, {bool cache = true}) {
+    if (key.endsWith('/manifest.json') && ++manifestReads == 1) {
+      final error = StateError('Asset temporarily unavailable');
+      if (synchronous) throw error;
+      return Future.error(error);
+    }
+    return super.loadString(key, cache: cache);
   }
 }
