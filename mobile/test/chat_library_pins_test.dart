@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openbot_mobile/core/api.dart';
 import 'package:openbot_mobile/features/chat/chat_library_data.dart';
-import 'package:openbot_mobile/features/chat/chat_project_library.dart';
 
+import 'chat_library_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp, waitFor;
 
@@ -97,7 +97,7 @@ void main() {
       await tester.pumpWidget(
         testApp(
           Scaffold(
-            appBar: AppBar(actions: [ChatProjectLibrary(f.scope, 'chat-a')]),
+            appBar: AppBar(actions: [libraryActionButton(f.scope, 'chat-a')]),
           ),
         ),
       );

@@ -2,10 +2,11 @@ import '../../core/api.dart';
 import '../../core/message_links.dart';
 import '../../core/workspace_controller.dart';
 import '../files/website_project_data.dart';
-import 'chat_library_links.dart';
 import 'file_preview_data.dart';
 
 enum LibraryItemKind { website, file, link }
+
+typedef LibraryLink = ({String messageId, MessageLink link});
 
 typedef LibraryItemKey = ({LibraryItemKind kind, String target});
 

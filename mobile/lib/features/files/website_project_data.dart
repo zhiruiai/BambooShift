@@ -148,13 +148,3 @@ List<WebsiteAsset> websiteProjectManifest(
   }
   return List.unmodifiable(files);
 }
-
-List<Json> latestWebsiteProjects(Iterable<Json> messages) {
-  final seen = <String>{};
-  final latest = <Json>[];
-  for (final message in messages.toList().reversed) {
-    final project = websiteProjectFor(message);
-    if (project != null && seen.add(project.projectKey)) latest.add(message);
-  }
-  return latest;
-}

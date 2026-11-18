@@ -9,25 +9,6 @@ import 'chat_library_data.dart';
 import 'chat_library_links.dart';
 import 'file_card.dart';
 
-class ChatProjectLibrary extends StatelessWidget {
-  const ChatProjectLibrary(this.scope, this.conversationId, {super.key});
-
-  final WorkspaceController scope;
-  final String conversationId;
-
-  @override
-  Widget build(BuildContext context) {
-    final open = chatProjectLibraryAction(context, scope, conversationId);
-    return open == null
-        ? const SizedBox.shrink()
-        : IconButton(
-            tooltip: context.tr('mobileChatLibraryTitle'),
-            icon: const Icon(Icons.folder_outlined),
-            onPressed: open,
-          );
-  }
-}
-
 VoidCallback? chatProjectLibraryAction(
   BuildContext context,
   WorkspaceController scope,

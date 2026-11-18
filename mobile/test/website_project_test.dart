@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:openbot_mobile/core/api.dart';
 import 'package:openbot_mobile/core/byte_read.dart';
 import 'package:openbot_mobile/core/workspace_controller.dart';
+import 'package:openbot_mobile/features/chat/chat_library_data.dart';
 import 'package:openbot_mobile/features/files/website_project_card.dart';
 import 'package:openbot_mobile/features/files/website_project_client.dart';
 import 'package:openbot_mobile/features/files/website_project_data.dart';
@@ -125,7 +126,7 @@ Future<WorkspaceController> _scope(
 void main() {
   test(
     'validates role and version and keeps only the latest revision in library',
-    () {
+    () async {
       final server = _Server();
       final message = server.message;
       expect(websiteProjectFor({...message, 'role': 'user'}), isNull);
@@ -143,7 +144,16 @@ void main() {
           'websiteProject': {...server.summary, 'id': 'c' * 64},
         },
       };
-      expect(latestWebsiteProjects([message, later, invalid]), [later]);
+      final scope = await _scope(server, messages: [message, later, invalid]);
+      addTearDown(() {
+        scope.dispose();
+        scope.session.dispose();
+      });
+      final library = conversationLibraryItems(
+        scope,
+        message['conversationId'],
+      );
+      expect(library.single.message, later);
       expect(
         websiteProjectManifest(
           websiteProjectFor(message)!,
@@ -260,10 +270,7 @@ void main() {
       await tester.pumpWidget(
         testApp(
           Scaffold(
-            body: WebsiteProjectLibrary(
-              scope: scope,
-              messages: [server.message],
-            ),
+            body: WebsiteProjectCard(scope: scope, message: server.message),
           ),
         ),
       );

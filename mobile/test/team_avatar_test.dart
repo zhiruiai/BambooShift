@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:openbot_mobile/core/avatar_assets.dart';
 import 'package:openbot_mobile/features/collaboration/team_avatar.dart';
 import 'collaboration_support.dart';
 import 'support.dart';
@@ -13,12 +14,12 @@ void main() {
     () async {
       final f = await fixture((_) async => jsonResponse({}));
       expect(
-        teamAvatarPath(f.scope, {'avatarImageId': planId}),
+        botAvatarPath(f.scope, {'avatarImageId': planId}),
         '/api/workspaces/space-a/bot-avatars/$planId',
       );
       final path = '/api/shared-bots/$planId/avatar?revision=${'a' * 64}';
       expect(
-        teamAvatarPath(f.scope, {
+        botAvatarPath(f.scope, {
           'avatarImageId': originalRequest,
           'sharedBot': {'shareId': planId, 'avatarPath': path},
         }),
@@ -31,7 +32,7 @@ void main() {
         '/api/workspaces/other/bot-avatars/$planId',
       ]) {
         expect(
-          teamAvatarPath(f.scope, {
+          botAvatarPath(f.scope, {
             'avatarImageId': originalRequest,
             'sharedBot': {'shareId': planId, 'avatarPath': bad},
           }),

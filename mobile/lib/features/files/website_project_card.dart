@@ -58,37 +58,3 @@ class WebsiteProjectCard extends StatelessWidget {
     );
   }
 }
-
-class WebsiteProjectLibrary extends StatelessWidget {
-  const WebsiteProjectLibrary({
-    super.key,
-    required this.scope,
-    required this.messages,
-  });
-  final WorkspaceController scope;
-  final Iterable<Json> messages;
-
-  @override
-  Widget build(BuildContext context) {
-    final latest = latestWebsiteProjects(messages);
-    if (latest.isEmpty) return const SizedBox.shrink();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(
-            context.tr('mobileWebsiteLibrary'),
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-        ),
-        for (final message in latest)
-          WebsiteProjectCard(
-            key: ValueKey(message['id']),
-            scope: scope,
-            message: message,
-          ),
-      ],
-    );
-  }
-}

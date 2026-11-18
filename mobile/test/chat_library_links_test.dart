@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openbot_mobile/core/api.dart';
+import 'package:openbot_mobile/features/chat/chat_library_data.dart';
 import 'package:openbot_mobile/features/chat/chat_library_links.dart';
-import 'package:openbot_mobile/features/chat/chat_project_library.dart';
 import 'package:openbot_mobile/features/chat/chat_screen.dart';
 
+import 'chat_library_support.dart';
 import 'support.dart';
 import 'widgets_test.dart' show testApp;
 
@@ -48,6 +49,8 @@ void main() {
       f.scope.data = bootstrap(
         messages: [
           root,
+          for (var i = 0; i < 12; i++)
+            chatLinkMessage('related-$i', 'Related $i', 'example.test/$i'),
           chatLinkMessage('old-link', 'Earlier label', 'research.example.test'),
           chatLinkMessage(
             'new-link',
@@ -66,7 +69,7 @@ void main() {
       await tester.pumpWidget(
         testApp(
           Scaffold(
-            appBar: AppBar(actions: [ChatProjectLibrary(f.scope, 'chat-a')]),
+            appBar: AppBar(actions: [libraryActionButton(f.scope, 'chat-a')]),
           ),
           locale: const Locale('zh'),
         ),
@@ -77,6 +80,15 @@ void main() {
       expect(find.text('https://research.example.test'), findsOneWidget);
       expect(find.text('Earlier label'), findsNothing);
       expect(find.text('另一会话'), findsNothing);
+      expect(find.text('Related 0'), findsNothing);
+      final more = find.text('查看更多链接');
+      await tester.ensureVisible(more);
+      await tester.pumpAndSettle();
+      await tester.tap(more);
+      await tester.pumpAndSettle();
+      expect(find.text('Related 0'), findsOneWidget);
+      await tester.ensureVisible(find.text('最新链接'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('最新链接'));
       await tester.pumpAndSettle();
       final chat = tester.widget<ChatScreen>(find.byType(ChatScreen));
@@ -93,39 +105,29 @@ void main() {
     'external link action is explicit and rechecks current message scope',
     (tester) async {
       final f = await fixture((_) async => jsonResponse(bootstrap()));
-      final records = [
-        for (var i = 0; i < 13; i++)
-          chatLinkMessage('link-$i', 'Source $i', 'example.test/source/$i'),
-      ];
-      f.scope.data = bootstrap(messages: records);
+      f.scope.data = bootstrap(
+        messages: [
+          chatLinkMessage('link-0', 'Source 0', 'example.test/source/0'),
+        ],
+      );
+      final link = conversationLibraryItems(f.scope, 'chat-a').single.link!;
       final opened = <Uri>[];
       await tester.pumpWidget(
         testApp(
           Scaffold(
-            body: ListView(
-              children: [
-                ChatLibraryLinks(
-                  scope: f.scope,
-                  conversationId: 'chat-a',
-                  links: conversationLibraryLinks(records),
-                  launcher: (uri) async {
-                    opened.add(uri);
-                    return true;
-                  },
-                ),
-              ],
+            body: ChatLibraryLinkTile(
+              scope: f.scope,
+              conversationId: 'chat-a',
+              item: link,
+              launcher: (uri) async {
+                opened.add(uri);
+                return true;
+              },
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Source 0'), findsNothing);
-      final more = find.text('Show more links');
-      await tester.drag(find.byType(ListView), const Offset(0, -500));
-      await tester.pumpAndSettle();
-      await tester.tap(more);
-      await tester.pumpAndSettle();
-      expect(find.text('Source 0'), findsOneWidget);
       expect(opened, isEmpty);
       final first = find.widgetWithText(ListTile, 'Source 0');
       final external = find.descendant(
@@ -138,7 +140,7 @@ void main() {
       await tester.pumpAndSettle();
       final uri = Uri.parse('https://example.test/source/0');
       expect(opened, [uri]);
-      f.scope.data = bootstrap(messages: records.skip(1).toList());
+      f.scope.data = bootstrap(messages: []);
       await tester.tap(external);
       await tester.pumpAndSettle();
       expect(opened, [uri]);
