@@ -17,6 +17,7 @@ pub struct Config {
     pub web_origin: Option<String>,
     pub runtime_dir: PathBuf,
     pub node_binary: PathBuf,
+    pub image_worker: Option<PathBuf>,
     pub operations: Option<OperationsConfig>,
     pub releases: Option<crate::updates::ReleasesConfig>,
     pub local_desktop: Option<LocalDesktopConfig>,
@@ -105,6 +106,12 @@ impl Config {
             web_origin: None,
             runtime_dir: default_runtime(),
             node_binary: PathBuf::from("node"),
+            image_worker: std::env::current_exe().ok().map(|path| {
+                path.with_file_name(format!(
+                    "openbot-image-worker{}",
+                    std::env::consts::EXE_SUFFIX
+                ))
+            }),
             operations: None,
             releases: None,
             local_desktop: None,

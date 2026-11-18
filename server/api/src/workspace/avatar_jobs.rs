@@ -7,7 +7,6 @@ use serde_json::Value;
 use std::{
     collections::HashMap,
     future::Future,
-    path::PathBuf,
     process::Stdio,
     sync::{
         Arc, Mutex, OnceLock,
@@ -159,15 +158,6 @@ impl Cancellation {
         }
     }
 }
-fn executable() -> Result<PathBuf> {
-    let current = std::env::current_exe()?;
-    crate::executable::sibling(
-        &current,
-        "openbot-image-worker",
-        std::env::consts::EXE_SUFFIX,
-    )
-    .ok_or_else(|| ApiError::new(503, "图片处理程序不可用。"))
-}
 pub async fn process(
     job: &Cancellation,
     state: &State,
@@ -176,7 +166,13 @@ pub async fn process(
 ) -> Result<Value> {
     job.authorize(state, grant).await?;
     let bytes = serde_json::to_vec(&input).map_err(|_| ApiError::bad("头像图片无效。"))?;
-    let child = tokio::process::Command::new(executable()?)
+    let executable = state
+        .config
+        .image_worker
+        .as_deref()
+        .filter(|path| crate::executable::is_regular_program(path))
+        .ok_or_else(|| ApiError::new(503, "图片处理程序不可用。"))?;
+    let child = tokio::process::Command::new(executable)
         .env_clear()
         .env("LANG", "C.UTF-8")
         .stdin(Stdio::piped())

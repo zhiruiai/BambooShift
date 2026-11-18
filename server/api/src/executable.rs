@@ -56,18 +56,8 @@ pub(crate) fn resolve(
         .find(|candidate| candidate.is_file())
 }
 
-pub(crate) fn sibling(current: &Path, stem: &str, suffix: &str) -> Option<PathBuf> {
-    if !current.is_absolute() || Path::new(stem).components().count() != 1 {
-        return None;
-    }
-    let mut directory = current.parent()?;
-    if directory.file_name().is_some_and(|name| name == "deps") {
-        directory = directory.parent()?;
-    }
-    let candidate = directory.join(native_name(Path::new(stem), suffix)?);
-    std::fs::symlink_metadata(&candidate)
-        .is_ok_and(|metadata| metadata.is_file() && !metadata.file_type().is_symlink())
-        .then_some(candidate)
+pub(crate) fn is_regular_program(path: &Path) -> bool {
+    path.is_absolute() && std::fs::symlink_metadata(path).is_ok_and(|metadata| metadata.is_file())
 }
 
 #[cfg(test)]

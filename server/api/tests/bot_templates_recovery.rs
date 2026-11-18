@@ -5,7 +5,7 @@ use axum::{
     http::Request,
 };
 use bot_templates_support::{Templates, id, token, webp};
-use openbot_backend::{config::Config, db::State, workspace::Table};
+use openbot_backend::{db::State, workspace::Table};
 use serde_json::json;
 use tower::ServiceExt;
 
@@ -126,9 +126,7 @@ async fn node_install_receipt_digest_and_publication_survive_rust_restart_withou
         .await
         .unwrap();
     t.f.state.close().await;
-    t.f.state = State::open(Config::local(t.f.directory.path()))
-        .await
-        .unwrap();
+    t.f.state = State::open((*t.f.state.config).clone()).await.unwrap();
     t.store =
         t.f.state
             .workspace

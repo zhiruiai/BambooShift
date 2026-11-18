@@ -88,6 +88,10 @@ lint diagnostics use Clippy from the same stable toolchain as the build.
 [Dart static analysis](https://dart.dev/tools/analysis) and
 [Clippy guidance](https://doc.rust-lang.org/clippy/continuous_integration/index.html).
 
+Rust integration tests that launch a bundled executable should use Cargo's
+`CARGO_BIN_EXE_<name>` path. Cargo can change where it stores the test binary
+between toolchain versions. [Cargo integration tests](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#integration-tests).
+
 ### Reviewing a change
 
 - Trace the changed behavior from the user's entry point through its existing

@@ -121,41 +121,19 @@ fn explicit_current_directory_is_allowed_but_not_implicit_path_fallback() {
 }
 
 #[test]
-fn sibling_program_uses_native_extension_and_cargo_deps_parent() {
+fn image_worker_defaults_to_the_native_binary_beside_the_server() {
     let temp = tempfile::tempdir().unwrap();
-    for suffix in ["", ".exe"] {
-        let worker = temp.path().join(format!("openbot-image-worker{suffix}"));
-        file(&worker);
-        for executable in ["backend", "deps/backend-test"] {
-            assert_eq!(
-                sibling(
-                    &temp.path().join(executable),
-                    "openbot-image-worker",
-                    suffix
-                ),
-                Some(worker.clone())
-            );
-        }
-        assert!(
-            sibling(
-                Path::new("relative/backend"),
-                "openbot-image-worker",
-                suffix
-            )
-            .is_none()
-        );
-        assert!(sibling(&temp.path().join("backend"), "nested/worker", suffix).is_none());
-        fs::remove_file(worker).unwrap();
-    }
-    file(&temp.path().join("openbot-image-worker"));
-    assert!(
-        sibling(
-            &temp.path().join("backend.exe"),
-            "openbot-image-worker",
-            ".exe"
-        )
-        .is_none()
+    let config = crate::config::Config::local(temp.path());
+    let name = format!("openbot-image-worker{}", std::env::consts::EXE_SUFFIX);
+    assert_eq!(
+        config.image_worker,
+        Some(std::env::current_exe().unwrap().with_file_name(&name))
     );
+    assert!(!is_regular_program(Path::new(&name)));
+    let worker = temp.path().join(name);
+    assert!(!is_regular_program(&worker));
+    file(&worker);
+    assert!(is_regular_program(&worker));
 }
 
 #[test]
@@ -172,7 +150,9 @@ fn directories_are_not_programs() {
             )
             .is_none()
         );
-        assert!(sibling(&temp.path().join("backend"), "node", suffix).is_none());
+        assert!(!is_regular_program(
+            &temp.path().join(format!("node{suffix}"))
+        ));
     }
     assert!(resolve(Path::new(""), [temp.path().to_owned()], temp.path(), "").is_none());
 }
@@ -190,8 +170,8 @@ fn unix_node_symlinks_remain_supported_but_sibling_workers_must_be_regular() {
         resolve(Path::new("node"), [temp.path().to_owned()], temp.path(), ""),
         Some(alias.clone())
     );
-    assert_eq!(resolve(&alias, [], temp.path(), ""), Some(alias));
-    assert!(sibling(&temp.path().join("backend"), "node", "").is_none());
+    assert_eq!(resolve(&alias, [], temp.path(), ""), Some(alias.clone()));
+    assert!(!is_regular_program(&alias));
     fs::remove_file(target).unwrap();
     assert!(resolve(Path::new("node"), [temp.path().to_owned()], temp.path(), "").is_none());
 }

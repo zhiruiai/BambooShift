@@ -26,7 +26,9 @@ pub struct Fixture {
 impl Fixture {
     pub async fn new() -> Self {
         let directory = tempfile::tempdir().unwrap();
-        let state = State::open(Config::local(directory.path())).await.unwrap();
+        let mut config = Config::local(directory.path());
+        config.image_worker = Some(env!("CARGO_BIN_EXE_openbot-image-worker").into());
+        let state = State::open(config).await.unwrap();
         let db = SqlitePool::connect(&format!(
             "sqlite:{}",
             directory.path().join("platform/identity.sqlite").display()
