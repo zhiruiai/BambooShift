@@ -99,6 +99,17 @@ pub(crate) fn command(config: &Config, worker: Worker, node_options: &[&str]) ->
         .current_dir(&config.runtime_dir)
         .env_clear()
         .env("LANG", "en_US.UTF-8");
+    #[cfg(windows)]
+    {
+        // Winsock expands %SystemRoot% when loading its providers. The source
+        // loader also needs a writable temp directory for TypeScript transforms.
+        let system_root = std::env::var_os("SystemRoot").ok_or_else(unavailable)?;
+        let temporary = std::env::temp_dir();
+        command
+            .env("SystemRoot", system_root)
+            .env("TEMP", &temporary)
+            .env("TMP", temporary);
+    }
     Ok(command)
 }
 
@@ -131,7 +142,23 @@ mod tests {
                 base.join("index.mjs").to_string_lossy().to_string()
             ]
         );
-        assert!(built.as_std().get_envs().all(|(key, _)| key == "LANG"));
+        let environment: std::collections::BTreeMap<_, _> = built.as_std().get_envs().collect();
+        assert_eq!(environment.len(), if cfg!(windows) { 4 } else { 1 });
+        assert!(environment.contains_key(std::ffi::OsStr::new("LANG")));
+        #[cfg(windows)]
+        for (key, value) in [
+            ("SystemRoot", std::env::var_os("SystemRoot").unwrap()),
+            ("TEMP", std::env::temp_dir().into_os_string()),
+            ("TMP", std::env::temp_dir().into_os_string()),
+        ] {
+            assert_eq!(
+                environment
+                    .get(std::ffi::OsStr::new(key))
+                    .copied()
+                    .flatten(),
+                Some(value.as_os_str())
+            );
+        }
         std::fs::remove_file(base.join("index.mjs")).unwrap();
         let source = c.runtime_dir.join("server/workers/pi-worker/index.ts");
         std::fs::create_dir_all(source.parent().unwrap()).unwrap();

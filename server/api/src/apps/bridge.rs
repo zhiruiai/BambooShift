@@ -6,7 +6,7 @@ use crate::{
 use serde_json::{Value, json};
 use std::{process::Stdio, time::Duration};
 use tokio::{
-    io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
+    io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader},
     process::Child,
 };
 const MAX: usize = 2 * 1024 * 1024;
@@ -58,13 +58,21 @@ async fn run_process(
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::null())
+        .stderr(if state.apps.fixture_origins.is_empty() {
+            Stdio::null()
+        } else {
+            Stdio::piped()
+        })
         .kill_on_drop(true);
     #[cfg(unix)]
     command.process_group(0);
-    let mut child = command
-        .spawn()
-        .map_err(|_| ApiError::new(503, "应用协议执行器暂不可用。"))?;
+    let mut child = command.spawn().map_err(|_| {
+        ApiError::new(503, "应用协议执行器暂不可用。").with_code("APP_WORKER_SPAWN")
+    })?;
+    let diagnostic = child
+        .stderr
+        .take()
+        .map(|stderr| tokio::spawn(fixture_stderr(stderr)));
     let mut input = child.stdin.take().unwrap();
     let output = child.stdout.take().unwrap();
     let task = async {
@@ -78,7 +86,9 @@ async fn run_process(
             loop {
                 let available = output.fill_buf().await?;
                 if available.is_empty() {
-                    return Err(ApiError::new(502, "应用执行结果未确认。"));
+                    return Err(
+                        ApiError::new(502, "应用执行结果未确认。").with_code("APP_WORKER_EOF")
+                    );
                 }
                 let count = available
                     .iter()
@@ -115,7 +125,12 @@ async fn run_process(
                     Some("blocked") => {
                         ApiError::bad("应用地址不可访问，请使用公网 HTTPS 服务且不要设置跳转。")
                     }
-                    _ => ApiError::new(502, "无法取得应用的确定结果，请检查服务状态。"),
+                    Some("network") => {
+                        ApiError::new(502, "无法取得应用的确定结果，请检查服务状态。")
+                            .with_code("APP_NETWORK_ERROR")
+                    }
+                    _ => ApiError::new(502, "无法取得应用的确定结果，请检查服务状态。")
+                        .with_code("APP_PROTOCOL_ERROR"),
                 });
             } else {
                 return Err(ApiError::new(502, "应用响应格式无效。"));
@@ -139,5 +154,41 @@ async fn run_process(
         }
     };
     terminate(&mut child).await;
+    if let Some(mut task) = diagnostic {
+        if result.is_err() {
+            if let Ok(Ok(class)) = tokio::time::timeout(Duration::from_millis(500), &mut task).await
+            {
+                eprintln!("MCP fixture worker diagnostic: {class}");
+            }
+        }
+        task.abort();
+    }
     result
+}
+
+async fn fixture_stderr(mut pipe: tokio::process::ChildStderr) -> &'static str {
+    // Explicit loopback fixtures only. Drain concurrently and retain at most
+    // 8 KiB for classifying startup errors; no child output reaches logs.
+    let mut bytes = Vec::new();
+    let _ = (&mut pipe).take(8192).read_to_end(&mut bytes).await;
+    let _ = tokio::io::copy(&mut pipe, &mut tokio::io::sink()).await;
+    let message = String::from_utf8_lossy(&bytes);
+    [
+        "ERR_MODULE_NOT_FOUND",
+        "MODULE_NOT_FOUND",
+        "ERR_UNSUPPORTED_ESM_URL_SCHEME",
+        "ERR_SYSTEM_ERROR",
+        "TransformError",
+        "EACCES",
+        "EPERM",
+        "ENOENT",
+        "TypeError",
+    ]
+    .into_iter()
+    .find(|code| message.contains(code))
+    .unwrap_or(if bytes.is_empty() {
+        "no-stderr"
+    } else {
+        "other"
+    })
 }

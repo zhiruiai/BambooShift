@@ -104,8 +104,14 @@ async fn replacing_private_bearer_credentials_survives_reopen_and_authenticates_
         )
         .await;
     assert_eq!(status, 200, "{first}");
-    assert_eq!(first["status"], "connected");
     assert_redacted(&first);
+    assert_eq!(
+        first["status"],
+        "connected",
+        "MCP fixture requests: initialize={}, tools/list={}",
+        server.remote.initialize_requests.load(Ordering::SeqCst),
+        server.remote.list_requests.load(Ordering::SeqCst)
+    );
     let id = first["id"].as_str().unwrap();
     let (saved_a, private_a) = persisted(&fixture, id).await;
     let reference_a = saved_a["credentialRef"].as_str().unwrap();

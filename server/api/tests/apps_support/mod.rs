@@ -23,6 +23,8 @@ pub type ToolResponder = Box<dyn Fn(&Value) -> Value + Send + Sync>;
 pub struct Remote {
     pub origin: String,
     pub calls: AtomicUsize,
+    pub initialize_requests: AtomicUsize,
+    pub list_requests: AtomicUsize,
     pub refreshes: AtomicUsize,
     pub revoked: AtomicUsize,
     pub metadata_changed: AtomicBool,
@@ -55,6 +57,8 @@ impl Server {
         let remote = Arc::new(Remote {
             origin: format!("http://{}", socket.local_addr().unwrap()),
             calls: AtomicUsize::new(0),
+            initialize_requests: AtomicUsize::new(0),
+            list_requests: AtomicUsize::new(0),
             refreshes: AtomicUsize::new(0),
             revoked: AtomicUsize::new(0),
             metadata_changed: AtomicBool::new(false),
@@ -110,6 +114,15 @@ async fn endpoint(State(remote): State<Arc<Remote>>, request: Request) -> Respon
         )
             .into_response(),
         "/mcp" => {
+            match body["method"].as_str() {
+                Some("initialize") => {
+                    remote.initialize_requests.fetch_add(1, Ordering::SeqCst);
+                }
+                Some("tools/list") => {
+                    remote.list_requests.fetch_add(1, Ordering::SeqCst);
+                }
+                _ => {}
+            }
             let auth = headers
                 .get(header::AUTHORIZATION)
                 .and_then(|v| v.to_str().ok())

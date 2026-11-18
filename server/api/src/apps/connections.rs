@@ -263,6 +263,13 @@ pub(crate) async fn probe(
             current.error = None;
         }
         Err(error) => {
+            if !state.apps.fixture_origins.is_empty() {
+                eprintln!(
+                    "MCP fixture discovery failed: {} ({})",
+                    error.code,
+                    error.status.as_u16()
+                );
+            }
             current.status = if error.code == "APP_AUTH_REQUIRED" {
                 "needs_auth"
             } else {
