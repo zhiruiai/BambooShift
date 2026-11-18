@@ -10,6 +10,9 @@ default-run = "openbot-backend"
 [workspace]
 resolver = "3"
 
+[lints.rust]
+unused_must_use = "deny"
+
 [dependencies]
 axum = "=0.8.9"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal", "sync", "process", "io-util", "time", "fs"] }

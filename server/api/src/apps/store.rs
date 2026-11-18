@@ -7,15 +7,7 @@ use serde_json::{Value, json};
 use sqlx::Row;
 
 pub async fn initialize(store: &WorkspaceStore) -> Result<()> {
-    for table in ["app_connections", "app_actions", "app_oauth_flows"] {
-        sqlx::query(&format!(
-            "CREATE TABLE IF NOT EXISTS {table}(id TEXT PRIMARY KEY,data TEXT NOT NULL)"
-        ))
-        .execute(&store.pool)
-        .await?;
-    }
-    super::policy_data::initialize(store).await?;
-    super::interactive_rules::initialize(store).await?;
+    initialize_schema(store).await?;
     for mut saved in list_raw(store, "app_connections").await? {
         let old_token = saved.get("token").cloned();
         let old_grant = saved.get("oauth").cloned();
@@ -52,6 +44,10 @@ pub async fn initialize(store: &WorkspaceStore) -> Result<()> {
     recover_workflows(store).await
 }
 pub async fn initialize_attached(store: &WorkspaceStore) -> Result<()> {
+    initialize_schema(store).await?;
+    recover_workflows(store).await
+}
+async fn initialize_schema(store: &WorkspaceStore) -> Result<()> {
     for table in ["app_connections", "app_actions", "app_oauth_flows"] {
         sqlx::query(&format!(
             "CREATE TABLE IF NOT EXISTS {table}(id TEXT PRIMARY KEY,data TEXT NOT NULL)"
@@ -60,8 +56,7 @@ pub async fn initialize_attached(store: &WorkspaceStore) -> Result<()> {
         .await?;
     }
     super::policy_data::initialize(store).await?;
-    super::interactive_rules::initialize(store).await?;
-    recover_workflows(store).await
+    super::interactive_rules::initialize(store).await
 }
 async fn recover_workflows(store: &WorkspaceStore) -> Result<()> {
     for mut saved in list_raw(store, "app_actions").await? {
@@ -132,8 +127,9 @@ pub async fn put_raw(store: &WorkspaceStore, table: &str, value: &Value) -> Resu
     Ok(())
 }
 pub async fn connection(store: &WorkspaceStore, id: &str) -> Result<Connection> {
-    serde_json::from_value(get_raw(store, "app_connections", id).await?)
-        .map_err(|_| ApiError::new(409, "应用记录不可用。"))
+    connection_in(&mut *store.pool.acquire().await?, id)
+        .await?
+        .ok_or_else(|| ApiError::new(404, "应用记录不存在。"))
 }
 pub(crate) async fn connection_in(
     tx: &mut sqlx::SqliteConnection,
@@ -143,8 +139,15 @@ pub(crate) async fn connection_in(
         .bind(id)
         .fetch_optional(tx)
         .await?;
-    data.map(|raw| serde_json::from_str(&raw).map_err(|_| ApiError::new(409, "应用记录不可用。")))
-        .transpose()
+    data.map(|raw| {
+        let connection: Connection =
+            serde_json::from_str(&raw).map_err(|_| ApiError::new(409, "应用记录不可用。"))?;
+        if connection.id != id {
+            return Err(ApiError::new(409, "应用记录不可用。"));
+        }
+        Ok(connection)
+    })
+    .transpose()
 }
 pub async fn save(store: &WorkspaceStore, value: &Connection) -> Result<()> {
     let mut record = serde_json::to_value(value).unwrap();
@@ -156,18 +159,26 @@ pub async fn save(store: &WorkspaceStore, value: &Connection) -> Result<()> {
             record["oauth"] = grant.clone();
         }
     }
-    let previous = get_raw(store, "app_connections", &value.id).await.ok();
-    if previous
-        .as_ref()
-        .is_some_and(|v| v["revision"] == value.revision && v["tools"] == record["tools"])
-    {
-        sqlx::query("UPDATE app_connections SET data=json_set(?, '$.tools', json(json_extract(data,'$.tools'))) WHERE id=?")
-            .bind(record.to_string()).bind(&value.id).execute(&store.pool).await?;
-        store.emit("update", json!({}));
-        Ok(())
-    } else {
-        put_raw(store, "app_connections", &record).await
-    }
+    let mut tx = store.begin().await?;
+    let previous = connection_in(&mut tx, &value.id).await?;
+    // Keep the original tools JSON when only connection metadata changed. Approval
+    // triggers compare SQLite's extracted JSON, including object key order.
+    let preserve_tools =
+        previous.is_some_and(|old| old.revision == value.revision && old.tools == value.tools);
+    sqlx::query(
+        "INSERT INTO app_connections(id,data) VALUES(?,?)
+         ON CONFLICT(id) DO UPDATE SET data=CASE WHEN ?
+            THEN json_set(excluded.data,'$.tools',json(json_extract(app_connections.data,'$.tools')))
+            ELSE excluded.data END",
+    )
+    .bind(&value.id)
+    .bind(record.to_string())
+    .bind(preserve_tools)
+    .execute(&mut *tx)
+    .await?;
+    tx.commit().await?;
+    store.emit("update", json!({}));
+    Ok(())
 }
 
 pub async fn save_changed(
@@ -179,4 +190,48 @@ pub async fn save_changed(
     state.changed(None, None, None);
     state.workspace.emit_all("update", json!({})).await;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn saving_a_connection_preserves_an_unreadable_existing_record() {
+        let directory = tempfile::tempdir().unwrap();
+        let store = WorkspaceStore::open(directory.path()).await.unwrap();
+        let mut connection: Connection = serde_json::from_value(json!({
+            "id":"example", "name":"Example", "url":"https://example.com/",
+            "revision":"initial", "authType":"none", "status":"disconnected", "tools":[]
+        }))
+        .unwrap();
+        save(&store, &connection).await.unwrap();
+        let before = store.sync();
+        let wrong_id = serde_json::to_string(&connection).unwrap();
+        for (id, raw) in [
+            ("partial", "{}"),
+            ("malformed", "incomplete"),
+            ("mismatch", wrong_id.as_str()),
+        ] {
+            connection.id = id.into();
+            sqlx::query("INSERT INTO app_connections(id,data) VALUES(?,?)")
+                .bind(id)
+                .bind(raw)
+                .execute(&store.pool)
+                .await
+                .unwrap();
+            assert_eq!(
+                save(&store, &connection).await.unwrap_err().status.as_u16(),
+                409
+            );
+            let saved: String = sqlx::query_scalar("SELECT data FROM app_connections WHERE id=?")
+                .bind(id)
+                .fetch_one(&store.pool)
+                .await
+                .unwrap();
+            assert_eq!(saved, raw);
+            assert_eq!(store.sync(), before);
+        }
+        store.close().await;
+    }
 }

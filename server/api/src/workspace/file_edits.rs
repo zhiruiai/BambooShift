@@ -13,6 +13,7 @@ use std::{
 };
 
 pub(crate) const TEXT_LIMIT: usize = 4 * 1024 * 1024;
+#[must_use = "keep the edit until its database transaction commits, or drop it to roll back"]
 pub(crate) struct Edit {
     parent: Directory,
     name: String,

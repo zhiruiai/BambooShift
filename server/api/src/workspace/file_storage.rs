@@ -17,12 +17,14 @@ pub struct ReadFile {
     initial: FileStamp,
     remaining: u64,
 }
+#[must_use = "keep the upload until its database transaction commits, or drop it to roll back"]
 pub struct Uploaded {
     parent: Directory,
     name: String,
     file: File,
     committed: bool,
 }
+#[must_use = "keep the removal until its database transaction commits, or drop it to roll back"]
 pub struct Removed {
     root: Directory,
     parent: Directory,
