@@ -100,14 +100,23 @@ pub(crate) async fn execute(
             } else {
                 requested.as_str()
             };
-            let site = sites
-                .iter()
-                .find(|site| {
-                    site["name"]
-                        .as_str()
-                        .is_some_and(|n| n.eq_ignore_ascii_case(name))
-                })
-                .ok_or_else(|| ApiError::new(404, "发布平台尚未配置。"))?;
+            let site = sites.iter().find(|site| {
+                site["name"]
+                    .as_str()
+                    .is_some_and(|n| n.eq_ignore_ascii_case(name))
+            });
+            let Some(site) = site else {
+                let names: Vec<_> = sites
+                    .iter()
+                    .filter_map(|site| site["name"].as_str())
+                    .collect();
+                return Ok(text_result(json!({
+                    "exactMatch": false,
+                    "requested": requested,
+                    "availableNames": names,
+                    "guidance": "Compare the user's full platform name with these saved names, then look up its exact name. If more than one could match, ask which one before publishing."
+                })));
+            };
             let workflow = match site["url"].as_str() {
                 Some("https://zhuanlan.zhihu.com/write") => "zhihu-article-publishing",
                 Some("https://creator.xiaohongshu.com/") => "xiaohongshu-note-publishing",

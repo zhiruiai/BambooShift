@@ -86,6 +86,18 @@ async fn publishing_sites_reaches_the_bot_with_the_saved_editor_and_its_guidance
                 }
                 3 => {
                     assert_eq!(last_tool(&body)["workflow"], "zhihu-article-publishing");
+                    call("workspace_publishing_sites", json!({"name":"Engineering"}))
+                }
+                4 => {
+                    let result = last_tool(&body);
+                    assert_eq!(result["exactMatch"], false);
+                    assert!(
+                        result["availableNames"]
+                            .as_array()
+                            .unwrap()
+                            .contains(&site["name"])
+                    );
+                    assert!(result.get("site").is_none());
                     finish("I found the saved editor and its publishing instructions.")
                 }
                 _ => panic!("Unexpected publishing lookup"),
@@ -103,7 +115,7 @@ async fn publishing_sites_reaches_the_bot_with_the_saved_editor_and_its_guidance
     let messages = g.done().await;
     assert!(messages.iter().any(|m| m["status"] == "done"
         && m["content"] == "I found the saved editor and its publishing instructions."));
-    assert_eq!(count.load(Ordering::SeqCst), 4);
+    assert_eq!(count.load(Ordering::SeqCst), 5);
     drop(model);
     g.close().await;
 }
