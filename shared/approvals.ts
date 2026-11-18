@@ -31,12 +31,6 @@ export function parseActionRequester(value: unknown): ActionRequester | undefine
     ...(source.messageId !== undefined ? { messageId: source.messageId as string } : {}),
   };
 }
-/** Names and input-message IDs never establish identity. */
-export function sameActionRequester(a: unknown, b: unknown): boolean {
-  const first = parseActionRequester(a),
-    second = parseActionRequester(b);
-  return !!first && !!second && first.userId === second.userId;
-}
 export function canDecideAction(requester: unknown, actor: ApprovalActor): boolean {
   if (requester === undefined) return actor.isOwner === true;
   const parsed = parseActionRequester(requester);

@@ -4,7 +4,8 @@ const assert = require('node:assert/strict');
 const { mkdirSync, rmSync, readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { partitionFor, rendererPreferences, ConnectionState } = require('./security.cjs');
-const { createController, saveLastOrigin, readLastOrigin } = require('./main.cjs');
+const { createController } = require('./main.cjs');
+const { saveLastOrigin, readLastOrigin } = require('./session-policy.cjs');
 
 const { tempDir, deferred, fakeElectron } = require('./test-fixture.cjs');
 

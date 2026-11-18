@@ -1,16 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { runInNewContext } from 'node:vm';
-import { build } from 'esbuild';
-import React from 'react';
-import ts from 'typescript';
-import type { BotAgent } from '../../shared/types';
-import type { BotTeamPlan, BotTeamProposalCard as Proposal } from '../../shared/bot-team-plans';
-import { webcrypto } from 'node:crypto';
 import {
   json,
   deferred,
@@ -23,7 +12,6 @@ import {
   createProps,
   recipients,
   checkbox,
-  plan,
 } from './testSupport/groupRecipientsFixture';
 
 test('actual recipient selector searches names and roles, preserves selected tags, marks the leader and caps native checkbox selection at six', async () => {

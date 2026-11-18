@@ -36,7 +36,6 @@ export interface UpdateSidebarRoster {
 }
 export const SIDEBAR_MAX_SECTIONS = 100;
 export const SIDEBAR_MAX_SECTION_NAME = 80;
-export const SIDEBAR_MAX_ENTRIES = 5000;
 /** A Bot preference applies to all of its private chats, never to its groups. */
 export function sidebarTargetForConversation(
   conversation: Pick<Conversation, 'id' | 'isGroup' | 'agentIds'>,

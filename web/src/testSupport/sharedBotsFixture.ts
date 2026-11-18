@@ -1,7 +1,6 @@
 import { expandPureViews } from './expandPureViews';
 import { componentSource } from './componentSource';
-import { workspaceSource, runInWorkspaceContext as runInNewContext } from './workspaceSource';
-import test from 'node:test';
+import { runInWorkspaceContext as runInNewContext } from './workspaceSource';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -9,7 +8,6 @@ import { dirname, resolve } from 'node:path';
 import { build } from 'esbuild';
 import { webcrypto } from 'node:crypto';
 import React from 'react';
-import ts from 'typescript';
 
 export const require = createRequire(import.meta.url);
 

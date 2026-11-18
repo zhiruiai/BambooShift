@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  nextRoutineRun,
   normalizeRoutineSchedule,
   parseRoutineSchedule,
 } from '../../shared/routine-schedule';
@@ -57,7 +56,6 @@ function makeClient(fetch: typeof globalThis.fetch, identity = () => ({ workspac
 test('event-only schedules round-trip without a time and manual run receipts preserve exact schedule checks', async () => {
   assert.deepEqual(parseRoutineSchedule('webhook'), { kind: 'webhook' });
   assert.equal(normalizeRoutineSchedule('webhook'), 'webhook');
-  assert.equal(nextRoutineRun('webhook'), '');
   assert.throws(() => parseRoutineSchedule('webhook:09:00'));
   const eventOnly = { ...routine, schedule: 'webhook', nextRunAt: '' };
   const draft = draftForRoutine([], eventOnly);

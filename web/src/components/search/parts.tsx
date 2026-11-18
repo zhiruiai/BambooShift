@@ -16,7 +16,7 @@ export interface ConversationSearchProps {
   onOpenWebsite?: (message: Message) => void;
   commands?: SearchCommand[];
 }
-export interface SearchCommand {
+interface SearchCommand {
   id: string;
   title: string;
   description: string;
@@ -58,7 +58,7 @@ export interface SearchIndex {
   links: SearchEntry[];
   websites: SearchEntry[];
 }
-export interface ConversationSearchResults {
+interface ConversationSearchResults {
   entries: SearchEntry[];
   conversationCount: number;
   messageCount: number;
@@ -66,9 +66,7 @@ export interface ConversationSearchResults {
   routineCount: number;
   linkCount: number;
   websiteCount: number;
-  truncated: boolean;
 }
-const RESULT_LIMIT = 60;
 export const RECENT_RESULTS_LIMIT = 8;
 export const normalize = (value: string) =>
   value.normalize('NFKC').toLocaleLowerCase().replace(/\s+/g, ' ').trim();
@@ -245,7 +243,7 @@ export function findMatches(
   scope: 'all' | 'current',
   currentConversationId: string,
   category: SearchCategory,
-): Omit<ConversationSearchResults, 'truncated'> {
+): ConversationSearchResults {
   const terms = termsFor(query);
   const inScope = (entry: SearchEntry) =>
     scope === 'all' || entry.conversationId === currentConversationId;
@@ -292,20 +290,6 @@ export function findMatches(
     routineCount: routines.length,
     linkCount: links.length,
     websiteCount: websites.length,
-  };
-}
-export function searchConversationHistory(
-  data: Bootstrap,
-  query: string,
-  scope: 'all' | 'current',
-  currentConversationId: string,
-): ConversationSearchResults {
-  const result = findMatches(createIndex(data), query, scope, currentConversationId, 'all');
-  const limit = normalize(query) ? RESULT_LIMIT : RECENT_RESULTS_LIMIT;
-  return {
-    ...result,
-    entries: result.entries.slice(0, limit),
-    truncated: result.entries.length > limit,
   };
 }
 export function excerpt(text: string, terms: string[], length = 180) {

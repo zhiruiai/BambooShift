@@ -1,17 +1,7 @@
-import { componentSource } from './testSupport/componentSource';
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { runInNewContext } from 'node:vm';
-import { build } from 'esbuild';
-import React from 'react';
-import type { AppAction, ConnectedApp } from '../../shared/app-connections';
-import type { AppOAuthFlow } from '../../shared/app-oauth';
+import type { ConnectedApp } from '../../shared/app-connections';
 import {
-  require,
   compile,
   render,
   json,

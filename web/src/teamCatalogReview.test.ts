@@ -1,15 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { runInNewContext } from 'node:vm';
-import { webcrypto } from 'node:crypto';
-import { build } from 'esbuild';
-import React from 'react';
-import type { BotAgent } from '../../shared/types';
-import type { BotTeamPlan, BotTeamCatalogReview } from '../../shared/bot-team-plans';
 import {
   json,
   deferred,
@@ -21,7 +11,6 @@ import {
   fixture,
   clicks,
   writes,
-  all,
   component,
 } from './testSupport/teamCatalogReviewFixture';
 

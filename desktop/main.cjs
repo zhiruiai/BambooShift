@@ -9,7 +9,6 @@ const {
   createSetupProtocolHandler,
   installSessionPolicy,
   createProductSessions,
-  downloadAllowed,
 } = require('./session-policy.cjs');
 const { createInputPermissions } = require('./input-permissions.cjs');
 const { createAuthorizationHandler } = require('./authorization.cjs');
@@ -481,15 +480,7 @@ async function boot(electron = require('electron')) {
   });
   return controller;
 }
-module.exports = {
-  boot,
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  downloadAllowed,
-  readLastOrigin,
-  saveLastOrigin,
-};
+module.exports = { boot, createController };
 if (require.main === module)
   void boot().catch((error) => {
     console.error(`${productName} client could not start:`, error.message);

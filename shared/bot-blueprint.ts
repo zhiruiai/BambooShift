@@ -13,11 +13,6 @@ export interface BotBlueprint {
   }>;
   avatar?: { mimeType: 'image/webp'; sha256: string; width: 512; height: 512 };
 }
-export interface BotInstallSource {
-  kind: 'bot' | 'template';
-  id: string;
-  revision: string;
-}
 export interface BotInstallReceipt {
   requestId: string;
   agentId: string;
@@ -26,6 +21,3 @@ export interface BotInstallReceipt {
   routineIds: string[];
   createdAt: string;
 }
-export const BOT_BLUEPRINT_MAX_BYTES = 2 * 1024 * 1024;
-export const BOT_BLUEPRINT_MAX_SKILLS = 100;
-export const BOT_BLUEPRINT_MAX_ROUTINES = 100;

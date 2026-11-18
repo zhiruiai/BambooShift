@@ -54,7 +54,7 @@ satisfies the JavaScript linter's requirements.
 | Where | What the checks enforce |
 | --- | --- |
 | JavaScript | ESLint checks Electron, workers, scripts, web assets and showcase code, including JS tests. Undefined names, unused bindings and unreachable statements fail the check. Node, CommonJS, browser, service worker and audio worklet globals are scoped to their entry points. Run `npm run lint:js` on its own for fast feedback. |
-| TypeScript | Production lint catches unused locals and parameters. Both lint and the full build reject unreachable code, accidental switch fallthrough and unresolved side-effect imports. Vite validates actual asset paths during the build. |
+| TypeScript | One configuration covers production, tests and fixtures. Lint and build reject unused locals and parameters, unreachable code, accidental switch fallthrough and unresolved side-effect imports. Vite validates asset paths during the build. |
 | Rust | Cargo rejects ignored values marked `must_use`, including unhandled results and futures. Keep file rollback guards alive until the existing transaction commits. Use an explicit `drop` when rolling back deliberately. |
 | Flutter | The analyzer checks unawaited futures in async functions, subscription cancellation and sink closure. Return or await work the caller depends on. For intentional background work, use `unawaited` and define how errors are handled. |
 
@@ -92,7 +92,10 @@ lint diagnostics use Clippy from the same stable toolchain as the build.
 
 - Trace the changed behavior from the user's entry point through its existing
   callers. Identify which existing code can be reused and remove superseded
-  branches, state and dependencies after checking their callers.
+  branches, state and dependencies after checking their callers. For an entire
+  module, check lazy imports, packaged workers and old persisted data. When an
+  implementation moves, exercise the replacement through its real entry point
+  before deleting tests that only covered the retired implementation.
 - Check boundaries where a retry, revoked permission, older saved data or a
   concurrent action could change the result. For a regression, name the test
   that failed before the fix and passed afterward.

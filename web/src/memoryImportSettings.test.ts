@@ -1,19 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
-import {
-  workspaceSource,
-  runInWorkspaceContext as runInNewContext,
-} from './testSupport/workspaceSource';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { webcrypto } from 'node:crypto';
-import { build } from 'esbuild';
-import React from 'react';
-import type { AppSettings, BotAgent, ModelProfile } from '../../shared/types';
-import type { BotTeamPlan } from '../../shared/bot-team-plans';
-import ts from 'typescript';
 import {
   json,
   all,

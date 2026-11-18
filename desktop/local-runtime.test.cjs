@@ -20,7 +20,8 @@ const {
   readLocalSelection,
   saveLocalSelection,
 } = require('./local-runtime.cjs');
-const { createController, readLastOrigin, saveLastOrigin } = require('./main.cjs');
+const { createController } = require('./main.cjs');
+const { readLastOrigin, saveLastOrigin } = require('./session-policy.cjs');
 const { deferred, fakeElectron } = require('./test-fixture.cjs');
 
 const platformSupported = ['darwin', 'linux'].includes(process.platform);

@@ -3,7 +3,6 @@ import type { ConnectedApp, ConnectedAppTool } from './app-connections.js';
 
 export const SHARED_APP_CONNECTIONS = 20;
 export const SHARED_APP_TOOLS = 64;
-export const SHARED_APP_METADATA_BYTES = 512 * 1024;
 export interface SharedBotAppToolSelection {
   name: string;
   revision: string;

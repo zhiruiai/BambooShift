@@ -7,11 +7,4 @@ export function ConversationSearch(props: Parameters<typeof useConversationSearc
   return <ConversationSearchView {...model} />;
 }
 
-export { searchConversationHistory } from './search/parts';
-export type {
-  ConversationSearchProps,
-  ConversationSearchResults,
-  SearchCommand,
-} from './search/parts';
-
 export default ConversationSearch;

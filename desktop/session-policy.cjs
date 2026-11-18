@@ -148,5 +148,4 @@ module.exports = {
   createSetupProtocolHandler,
   installSessionPolicy,
   createProductSessions,
-  downloadAllowed,
 };

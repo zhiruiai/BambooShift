@@ -1,23 +1,9 @@
-import { expandPureViews } from './testSupport/expandPureViews';
-import { componentSource } from './testSupport/componentSource';
-import {
-  workspaceSource,
-  runInWorkspaceContext as runInNewContext,
-} from './testSupport/workspaceSource';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-import { dirname, resolve } from 'node:path';
-import { build } from 'esbuild';
-import { webcrypto } from 'node:crypto';
-import React from 'react';
-import ts from 'typescript';
 import {
   ids,
   json,
   deferred,
-  storage,
   environment,
   compile,
   all,
@@ -128,7 +114,7 @@ test('shared join never invents a missing conversation or adopts a receipt from 
     const client = api.createSharedBotClient({
       userId: ids.user,
       identity: () => user,
-      fetch: async (url: string, init: RequestInit) => {
+      fetch: async (_url: string, init: RequestInit) => {
         if (init.method === 'POST') {
           posts++;
           requestId = JSON.parse(String(init.body)).requestId;

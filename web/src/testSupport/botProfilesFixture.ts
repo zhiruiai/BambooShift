@@ -1,5 +1,4 @@
 import { expandPureViews } from './expandPureViews';
-import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
@@ -138,7 +137,7 @@ export async function harness(
       }
     },
   };
-  const module = await compile(file, `\nexport { ${exportName} };`, {
+  const module = await compile(file, `\nexport { ${exportName} as ComponentUnderTest };`, {
     require: (name: string) => (name === 'react' ? hooks : require(name)),
     fetch: transport,
     ...(file.endsWith('/CreateDialog.tsx')
@@ -157,7 +156,7 @@ export async function harness(
         if (dirty) {
           cursor = 0;
           dirty = false;
-          tree = expandPureViews(module[exportName](current));
+          tree = expandPureViews(module.ComponentUnderTest(current));
         }
         for (const effect of effects.splice(0)) effect();
         await new Promise((done) => setImmediate(done));

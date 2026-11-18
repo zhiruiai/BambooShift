@@ -62,8 +62,7 @@ test(
       const entry = `import React,{useState,useEffect} from 'react';import{createRoot}from'react-dom/client';
       import{FileCard}from'./web/src/components/FileCard';import{AccountContext}from'./web/src/AccountContext';
       import{Dialog}from'./web/src/components/UI';
-      import{staticHtmlPreview}from'./web/src/staticHtmlPreview';
-      window.fixture={sanitize:staticHtmlPreview,ready:false};
+      window.fixture={ready:false};
       function App(){const[user,setUser]=useState('owner-a');const[name,setName]=useState('report.html');
         const[library,setLibrary]=useState(false);
         useEffect(()=>{window.fixture.ready=true;return()=>{window.fixture.ready=false}},[]);

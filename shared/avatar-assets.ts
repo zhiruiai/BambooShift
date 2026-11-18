@@ -25,5 +25,4 @@ export interface AvatarAsset {
 }
 /** Uploads must be strictly smaller than this limit. */
 export const MAX_AVATAR_UPLOAD_BYTES = 25 * 1024 * 1024;
-export const MAX_AVATAR_INPUT_PIXELS = 40_000_000;
 export const AVATAR_UPLOAD_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'] as const;

@@ -151,7 +151,3 @@ export function renderHtmlPreview(
   output.head.append(baseline);
   return { html: '<!doctype html>\n' + output.documentElement.outerHTML, interactive };
 }
-
-export function staticHtmlPreview(source: string): string {
-  return renderHtmlPreview(source).html;
-}

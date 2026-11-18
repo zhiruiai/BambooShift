@@ -1,6 +1,5 @@
 import { expandPureViews } from './expandPureViews';
 import { workspaceSource, runInWorkspaceContext as runInNewContext } from './workspaceSource';
-import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
@@ -10,15 +9,6 @@ import ts from 'typescript';
 import React from 'react';
 import type { Bootstrap, BotAgent, Conversation } from '../../../shared/types';
 import type { PrimaryBotState } from '../../../shared/primary-bot';
-import type { SidebarRosterState } from '../../../shared/sidebar-roster';
-import { createWorkspaceSync } from '../workspaceSync';
-import {
-  confirmedPrimary,
-  conversationSelectionKey,
-  createPrimaryBotScope,
-  defaultConversation,
-  primaryConversation,
-} from '../primaryBot';
 
 export const require = createRequire(import.meta.url);
 

@@ -1,12 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { runInNewContext } from 'node:vm';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { build } from 'esbuild';
-import React from 'react';
 import {
   modules,
   ready,

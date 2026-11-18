@@ -1,23 +1,7 @@
-import { componentSource } from './testSupport/componentSource';
-import { expandPureViews } from './testSupport/expandPureViews';
-import {
-  workspaceSource,
-  runInWorkspaceContext as runInNewContext,
-} from './testSupport/workspaceSource';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { build } from 'esbuild';
-import React from 'react';
-import ts from 'typescript';
-import { webcrypto } from 'node:crypto';
-import type { BotBlueprint } from '../../shared/bot-blueprint';
-import type { BotTemplate } from '../../shared/bot-templates';
 import {
   createBotInstaller,
-  createBotTemplateScope,
   fetchBotTemplateAvatar,
   safeTemplateAvatarPath,
   parseBotTemplateCard,
@@ -34,7 +18,6 @@ import {
   json,
   storage,
   deferred,
-  copy,
   harness,
   scope,
   copyInput,

@@ -130,8 +130,8 @@ test('operator login and product registration render separate real forms and nav
     };
     const calls: string[] = [];
     const operator = await harness(
-      'web/src/testSupport/operationsComponents.tsx',
-      'OperatorLogin',
+      'operations/src/OperatorLoginPage.tsx',
+      'OperatorLoginPage',
       {},
       (async (path) => {
         calls.push(String(path));
@@ -147,8 +147,8 @@ test('operator login and product registration render separate real forms and nav
     assert.match(html, locale === 'en' ? /For platform operators only/ : /仅供平台运营人员使用/);
     operator.dispose();
     const product = await harness(
-      'web/src/testSupport/operationsComponents.tsx',
-      'ProductAccount',
+      'web/src/platform/AccountPages.tsx',
+      'AccountPage',
       { mode: 'register' },
       (async (path) => {
         assert.equal(path, '/api/account/session');
@@ -209,8 +209,8 @@ test('operator scope fixes the original account, rejects stale requests and drop
 test('authenticated operator login logout sends its fixed actor and a late login cannot navigate an unmounted page', async () => {
   const calls: Array<{ path: string; init?: RequestInit }> = [];
   const page = await harness(
-    'web/src/testSupport/operationsComponents.tsx',
-    'OperatorLogin',
+    'operations/src/OperatorLoginPage.tsx',
+    'OperatorLoginPage',
     {},
     (async (path, init) => {
       calls.push({ path: String(path), init });
@@ -236,8 +236,8 @@ test('authenticated operator login logout sends its fixed actor and a late login
     navigation.push(path || '');
   };
   const form = await harness(
-    'web/src/testSupport/operationsComponents.tsx',
-    'OperatorLogin',
+    'operations/src/OperatorLoginPage.tsx',
+    'OperatorLoginPage',
     {},
     (async (path) =>
       path === '/api/platform/session'

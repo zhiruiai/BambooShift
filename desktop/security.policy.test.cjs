@@ -11,7 +11,7 @@ const {
   rendererPreferences,
   SETUP_URL,
 } = require('./security.cjs');
-const { createSetupProtocolHandler, installSessionPolicy } = require('./main.cjs');
+const { createSetupProtocolHandler, installSessionPolicy } = require('./session-policy.cjs');
 
 const { fakeElectron } = require('./test-fixture.cjs');
 

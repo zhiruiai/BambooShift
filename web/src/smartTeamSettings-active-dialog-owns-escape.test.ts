@@ -1,15 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { runInNewContext } from 'node:vm';
-import { webcrypto } from 'node:crypto';
-import { build } from 'esbuild';
-import React from 'react';
-import type { AppSettings, BotAgent, ModelProfile } from '../../shared/types';
-import type { BotTeamPlan } from '../../shared/bot-team-plans';
 import { all, harness } from './testSupport/smartTeamSettingsFixture';
 
 test('only the active Dialog owns Escape, Tab and focus while hidden content remains mounted', async () => {

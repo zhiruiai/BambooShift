@@ -1,13 +1,5 @@
-import { expandPureViews } from './testSupport/expandPureViews';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { runInNewContext } from 'node:vm';
-import { webcrypto } from 'node:crypto';
-import { build } from 'esbuild';
-import React from 'react';
 import type { Routine } from '../../shared/types';
 import type { RoutineRun } from '../../shared/routine-runs';
 import {
@@ -17,7 +9,6 @@ import {
   component,
   harness,
   workspaceId,
-  userId,
   agent,
   chat,
   routine,

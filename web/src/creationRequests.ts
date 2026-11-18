@@ -43,12 +43,6 @@ const initialState = (): CreationRequestState => ({
   originalAvailable: false,
   error: '',
 });
-export function creationRequestLabel(receipt: CreationReceipt) {
-  if (receipt.status === 'missing') return uiText('bots:text_43d719410d2d');
-  return receipt.kind === 'bot'
-    ? uiText('bots:text_01573beec5a1')
-    : uiText('bots:text_53da6eca9038');
-}
 export function createCreationRequestClient(options: Options) {
   const scope = createPrimaryBotScope(options);
   const key = `openbot-creation-request:${JSON.stringify([options.userId || null, options.workspaceId || null])}`;

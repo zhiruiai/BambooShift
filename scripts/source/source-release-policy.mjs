@@ -22,7 +22,6 @@ export const releaseFiles = [
   'package.json',
   'package-lock.json',
   'tsconfig.json',
-  'tsconfig.lint.json',
 ];
 export const releaseRoots = [
   '.github',

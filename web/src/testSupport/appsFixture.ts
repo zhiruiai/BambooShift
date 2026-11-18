@@ -1,6 +1,5 @@
 import { componentSource } from './componentSource';
 import { expandPureViews } from './expandPureViews';
-import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';

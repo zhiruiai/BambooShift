@@ -1,6 +1,5 @@
 import { expandPureViews } from './expandPureViews';
-import { workspaceSource, runInWorkspaceContext as runInNewContext } from './workspaceSource';
-import test from 'node:test';
+import { runInWorkspaceContext as runInNewContext } from './workspaceSource';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
@@ -8,9 +7,6 @@ import { dirname, resolve } from 'node:path';
 import { webcrypto } from 'node:crypto';
 import { build } from 'esbuild';
 import React from 'react';
-import type { AppSettings, BotAgent, ModelProfile } from '../../../shared/types';
-import type { BotTeamPlan } from '../../../shared/bot-team-plans';
-import ts from 'typescript';
 
 export const require = createRequire(import.meta.url);
 
