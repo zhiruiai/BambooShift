@@ -27,6 +27,10 @@ pub(crate) fn definitions() -> Vec<Value> {
         super::website_delivery::read_definition(),
     ]
 }
+fn text_result(value: Value) -> Value {
+    json!({"content":[{"type":"text","text":value.to_string()}],"details":value})
+}
+
 fn path(args: &Value) -> Result<String> {
     file_edits::path(
         args["path"]
@@ -86,7 +90,7 @@ pub(crate) async fn execute(
             let sites = crate::apps::publishing_sites::catalog(store).await?;
             authorize().await?;
             let Some(name) = args.get("name") else {
-                return Ok(json!({"sites":sites}));
+                return Ok(text_result(json!({"sites":sites})));
             };
             let requested = crate::error::text(name, "发布平台名称", 80)?;
             let name = if requested.eq_ignore_ascii_case("Zhihu") {
@@ -119,9 +123,9 @@ pub(crate) async fn execute(
             let recipe = crate::workspace::workflow_skills::recipe(workflow, language)
                 .ok_or_else(|| ApiError::new(500, "发布指引不可用。"))?;
             let references = crate::workspace::workflow_skills::markdown_resources(workflow);
-            Ok(
+            Ok(text_result(
                 json!({"site":site, "workflow":workflow, "instructions":recipe["content"], "files":references}),
-            )
+            ))
         }
         "workspace_list" => {
             only_fields(args, &["path"])?;
@@ -147,9 +151,7 @@ pub(crate) async fn execute(
                 }
             }
             authorize().await?;
-            Ok(
-                json!({"content":[{"type":"text","text":json!({"entries":entries}).to_string()}],"details":{"entries":entries}}),
-            )
+            Ok(text_result(json!({"entries":entries})))
         }
         "workspace_read" => {
             only_fields(args, &["path", "digestOnly"])?;
@@ -174,9 +176,7 @@ pub(crate) async fn execute(
             authorize().await?;
             if digest_only {
                 let value = json!({"path":name,"size":bytes.len(),"sha256":digest(&bytes)});
-                return Ok(
-                    json!({"content":[{"type":"text","text":value.to_string()}],"details":value}),
-                );
+                return Ok(text_result(value));
             }
             let name = Path::new(&name)
                 .file_name()
@@ -377,5 +377,5 @@ async fn mutate(
     edit.commit();
     store.emit("update", json!({}));
     let output = json!({"saved":name_path,"fileId":id,"size":bytes.len(),"sha256":digest(bytes)});
-    Ok(json!({"content":[{"type":"text","text":output.to_string()}],"details":output}))
+    Ok(text_result(output))
 }

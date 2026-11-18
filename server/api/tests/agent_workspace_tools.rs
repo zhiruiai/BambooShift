@@ -27,8 +27,13 @@ fn last_tool(body: &Value) -> Value {
         .rev()
         .find(|m| m["role"] == "tool")
         .unwrap();
-    serde_json::from_str(message["content"].as_str().unwrap())
-        .expect("Expected actual structured tool output")
+    let content = message["content"].as_str().unwrap();
+    serde_json::from_str(content).unwrap_or_else(|error| {
+        panic!(
+            "Expected a structured tool result ({error}), received {:?}",
+            content.chars().take(250).collect::<String>()
+        )
+    })
 }
 
 #[tokio::test]
