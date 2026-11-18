@@ -116,6 +116,12 @@ async fn request_inner(
     } else {
         authorize
     };
+    if kind == "browser_attach_image" && !target.saved.has("browser-attach-image-v1") {
+        return Err(ApiError::new(
+            409,
+            "当前电脑不支持向网页附图，请升级电脑执行器。",
+        ));
+    }
     if kind == "local_shell" && !target.saved.has("local-shell-v1") {
         return Err(ApiError::new(409, "此电脑未启用本机命令执行能力。"));
     }
@@ -155,6 +161,18 @@ async fn request_inner(
             409,
             "此操作不属于当前电脑界面，请在电脑面板切换。",
         ));
+    }
+    if kind == "browser_attach_image" {
+        let source = super::browser_image::source(
+            &controller.store,
+            &payload,
+            &context,
+            &current["targetRevision"],
+        )
+        .await?;
+        for key in ["fileId", "sourceName", "path", "sha256"] {
+            payload[key] = source[key].clone();
+        }
     }
     transfers::inspect(&controller.store, &mut payload).await?;
     let jobs = controller

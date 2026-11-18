@@ -41,6 +41,35 @@ test('real OAuth discovery, DCR, S256 code exchange, refresh rotation and revoke
   );
 });
 
+test('owner-selected scopes limit the consent request, token exchange and refresh', async (t) => {
+  const f = await providerFixture(t);
+  f.fixture.metadata.scopes_supported = ['notes.read', 'notes.write', 'offline_access'];
+  const input = {
+    url: f.origin + '/mcp',
+    redirectUri: callback,
+    state: state(),
+    scope: 'notes.read',
+  };
+  const prepared = await f.provider.prepare(input, signal());
+  assert.deepEqual(prepared.scopes, ['notes.read']);
+  assert.equal(new URL(prepared.authorizationUrl).searchParams.get('scope'), 'notes.read');
+  assert.equal(
+    JSON.parse(f.fixture.calls.find((call) => call.path === '/register')!.body).scope,
+    'notes.read',
+  );
+  const grant = await f.provider.exchange(prepared, await f.authorize(prepared), signal());
+  f.fixture.tokenScope = 'notes.read notes.write';
+  await assert.rejects(f.provider.refresh(grant, signal()), isKind('protocol'));
+  const next = await f.provider.prepare({ ...input, state: state() }, signal());
+  await assert.rejects(
+    f.provider.exchange(next, await f.authorize(next), signal()),
+    isKind('protocol'),
+  );
+  for (const scope of ['', 'notes.read\nnotes.write', 'x'.repeat(257)]) {
+    await assert.rejects(f.provider.prepare({ ...input, scope }, signal()), isKind('protocol'));
+  }
+});
+
 test('a declared revocation endpoint rejecting the request is a failure, not unsupported revocation', async (t) => {
   const f = await providerFixture(t);
   const prepared = await f.prepare();

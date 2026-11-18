@@ -271,6 +271,10 @@ export function createLinuxBrowserEngine(options: LinuxBrowserOptions) {
     });
     const session: BrowserScreenSession = {
       tabs: {
+        activePage(tabId) {
+          tabGuard().authorize!();
+          return base.tabs!.activePage(tabId);
+        },
         async list(options) {
           await assertAvailable();
           return base.tabs!.list(tabGuard(options));

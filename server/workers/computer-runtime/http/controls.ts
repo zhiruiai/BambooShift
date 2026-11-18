@@ -6,14 +6,8 @@ export const PRIVATE_TAKEOVER_FRAMES_CAPABILITY = 'private-takeover-frames-v1';
 export function registerControlsRoutes(context: WorkerRoutes) {
   const {
     app,
-    options,
     computer,
-    shell,
     runtime,
-    operations,
-    shellJobs,
-    seenShellIds,
-    reserveShell,
     cancelShells,
     workerCapabilities,
     assertConnection,

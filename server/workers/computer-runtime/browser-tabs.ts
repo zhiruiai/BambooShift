@@ -10,6 +10,7 @@ export interface BrowserTabList {
   truncated: boolean;
 }
 export interface BrowserTabs {
+  activePage(tabId: string): Page;
   list(options?: BrowserTabOptions): Promise<BrowserTabList>;
   select(tabId: string, options?: BrowserTabOptions): Promise<BrowserTabList>;
   close(tabId: string, options?: BrowserTabOptions): Promise<BrowserTabList>;
@@ -38,6 +39,11 @@ export function createBrowserTabs(owner: {
     return page;
   };
   const tabs: BrowserTabs = {
+    activePage(tabId) {
+      const page = find(tabId);
+      if (page !== owner.active()) throw new Error('活动标签页已变化，请重新核对编辑器。');
+      return page;
+    },
     async list(options = {}) {
       check(options);
       const owned = pages();

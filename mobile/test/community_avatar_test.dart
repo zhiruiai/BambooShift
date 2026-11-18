@@ -246,6 +246,7 @@ void main() {
       await tester.pumpAndSettle();
       final group = find.text('Community GrokBot');
       await tester.ensureVisible(group);
+      await tester.pumpAndSettle();
       await tester.tap(group);
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Leaf'));

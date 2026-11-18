@@ -390,6 +390,7 @@ class AppsController extends ChangeNotifier {
     String id, {
     String? clientId,
     String? clientSecret,
+    String? scope,
   }) async {
     final app = find(id);
     if (app == null ||
@@ -414,6 +415,9 @@ class AppsController extends ChangeNotifier {
         'expectedRevision': app['revision'],
         if (clientId?.isNotEmpty == true) 'clientId': clientId,
         if (clientSecret?.isNotEmpty == true) 'clientSecret': clientSecret,
+        if (app['url'] != 'https://mcp.slack.com/mcp' &&
+            scope?.isNotEmpty == true)
+          'scope': scope,
       },
     );
   }

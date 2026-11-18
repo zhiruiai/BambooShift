@@ -12,7 +12,7 @@ export function createChatNavigation(read: () => ChatNavigationContext) {
     }
   }
   function toggleDetails(open = !read().showDetail) {
-    const { showDetail, mobileNavigation, selected, setShowDetail } = read();
+    const { mobileNavigation, selected, setShowDetail } = read();
 
     if (
       !mobileNavigation.current?.move({ view: open ? 'details' : 'chat', conversationId: selected })

@@ -9,6 +9,7 @@ import { AppConnectionsListView } from './AppConnectionsListView';
 import { AppApprovalRulesPanel } from './AppApprovalRulesPanel';
 import { PrivateSkillsPanel } from './PrivateSkillsPanel';
 import { PackagedSkillsCatalog } from './PackagedSkillsCatalog';
+import { PublishingAccountsPanel } from './PublishingAccountsPanel';
 import { MessageChannelsPanel } from './MessageChannelsPanel';
 import type { useAppsDialogContent } from './useAppsDialogContent';
 export type AppsDialogContentModel = ReturnType<typeof useAppsDialogContent>;
@@ -71,19 +72,21 @@ export function AppsDialogContentView(model: AppsDialogContentModel) {
     <Dialog
       scrollBody={false}
       title={
-        view === 'channels'
-          ? uiText('workspace:messageChannelsTitle')
-          : view === 'add'
-            ? uiText('apps:text_41dd056c292a')
-            : view === 'detail'
-              ? selectedApp?.name || uiText('apps:text_a6a0fdcd4030')
-              : view === 'rules'
-                ? uiText('apps:approvalRulesTitle')
-                : view === 'skills'
-                  ? uiText('apps:privateSkillsTitle')
-                  : view === 'packaged-skills'
-                    ? uiText('workspace:packagedSkillsTitle')
-                    : uiText('apps:text_b1bea2878095')
+        view === 'publishing'
+          ? uiText('apps:publishingAccounts')
+          : view === 'channels'
+            ? uiText('workspace:messageChannelsTitle')
+            : view === 'add'
+              ? uiText('apps:text_41dd056c292a')
+              : view === 'detail'
+                ? selectedApp?.name || uiText('apps:text_a6a0fdcd4030')
+                : view === 'rules'
+                  ? uiText('apps:approvalRulesTitle')
+                  : view === 'skills'
+                    ? uiText('apps:privateSkillsTitle')
+                    : view === 'packaged-skills'
+                      ? uiText('workspace:packagedSkillsTitle')
+                      : uiText('apps:text_b1bea2878095')
       }
       subtitle={`${props.workspaceName} · ${props.team ? uiText('apps:text_92ee0cd82f1c') : uiText('apps:text_7c96c5f47c00')}`}
       onClose={close}
@@ -102,7 +105,14 @@ export function AppsDialogContentView(model: AppsDialogContentModel) {
           </button>
         </div>
       )}
-      {view === 'channels' ? (
+      {view === 'publishing' && props.publishingAccounts ? (
+        <PublishingAccountsPanel
+          {...props.publishingAccounts}
+          scope={model.scope}
+          team={props.team}
+          canManage={props.canManage}
+        />
+      ) : view === 'channels' ? (
         <MessageChannelsPanel />
       ) : view === 'list' ? (
         <AppConnectionsListView {...model} feedback={feedback} />

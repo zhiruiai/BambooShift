@@ -27,6 +27,7 @@ void main() {
             'expectedRevision': 'rev-a',
             'clientId': 'public-id',
             'clientSecret': 'synthetic-client-secret',
+            'scope': 'notes.read',
           });
           expect(
             secrets.values.values.join(),
@@ -70,6 +71,7 @@ void main() {
         'app-a',
         clientId: 'public-id',
         clientSecret: 'synthetic-client-secret',
+        scope: 'notes.read',
       );
       expect(opened, isEmpty);
       expect(c.flows['app-a']?['status'], 'pending');

@@ -1,4 +1,9 @@
-import type { BotTeamDraft, BotTeamPlan, CommitBotTeamPlan } from '../../../../shared/bot-team-plans';
+import type { RefObject } from 'react';
+import type {
+  BotTeamDraft,
+  BotTeamPlan,
+  CommitBotTeamPlan,
+} from '../../../../shared/bot-team-plans';
 import { type CatalogPreview, type CatalogRequest } from '../../teamCatalogReview';
 import '../SmartTeamPanel.css';
 import type { SmartTeamProps as Props } from './types';
@@ -14,7 +19,7 @@ export interface TeamCatalogReviewContext {
   setCatalogRequest: import('react').Dispatch<
     import('react').SetStateAction<CatalogRequest | undefined>
   >;
-  latest: import('react').RefObject<{
+  latest: RefObject<{
     props: Props;
     plan: BotTeamPlan | undefined;
     draft: BotTeamDraft | undefined;

@@ -46,7 +46,7 @@ export function useAppsDialogContent(props: Props) {
   const pendingReview = useRef(initialReview);
   const [customReview, setCustomReview] = useState<CustomAppProposalEntry>();
   const [view, setView] = useState<
-    'list' | 'review' | 'add' | 'detail' | 'rules' | 'skills' | 'packaged-skills' | 'channels'
+    'list' | 'review' | 'add' | 'detail' | 'rules' | 'skills' | 'packaged-skills' | 'channels' | 'publishing'
   >(initialReview ? 'review' : 'list');
   const [selected, setSelected] = useState(''),
     [search, setSearch] = useState('');

@@ -45,14 +45,30 @@ pub async fn start(
     body: &Value,
 ) -> Result<Value> {
     if !body.as_object().is_some_and(|m| {
-        m.keys()
-            .all(|k| ["expectedRevision", "clientId", "clientSecret"].contains(&k.as_str()))
+        m.keys().all(|k| {
+            ["expectedRevision", "clientId", "clientSecret", "scope"].contains(&k.as_str())
+        })
     }) {
         return Err(ApiError::bad("授权参数无效。"));
     }
     for key in ["clientId", "clientSecret"] {
         if body.get(key).is_some() {
             model::secret(&body[key], 4096)?;
+        }
+    }
+    if let Some(scope) = body.get("scope") {
+        let valid = scope.as_str().is_some_and(|value| {
+            let tokens: Vec<_> = value.split(' ').filter(|s| !s.is_empty()).collect();
+            value.len() <= 4096
+                && (1..=64).contains(&tokens.len())
+                && tokens.iter().all(|s| {
+                    s.len() <= 256
+                        && s.bytes()
+                            .all(|b| matches!(b, 0x21 | 0x23..=0x5b | 0x5d..=0x7e))
+                })
+        });
+        if !valid {
+            return Err(ApiError::bad("OAuth 权限范围格式无效。"));
         }
     }
     let admission = state
@@ -141,7 +157,7 @@ pub async fn start(
     if origin.starts_with("https:") {
         input["clientMetadataUrl"] = json!(format!("{origin}/api/app-oauth/client-metadata"));
     }
-    for key in ["clientId", "clientSecret"] {
+    for key in ["clientId", "clientSecret", "scope"] {
         if let Some(value) = body.get(key) {
             input[key] = value.clone();
         }

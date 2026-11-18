@@ -39,6 +39,7 @@ export function useComputerDialog({
   conversationTitle,
   initialPanel = 'screen',
   watch = true,
+  publishingSite,
   busy: externalBusy,
   onClose,
   onAction,
@@ -48,7 +49,6 @@ export function useComputerDialog({
     ComputerInputContext &
     ComputerLifecycleActionsContext &
     ComputerConnectionActionsContext => actionContext;
-
   const account = useAccount();
   const canManage = !account || account.workspace.role === 'owner';
   const identity = useRef({
@@ -78,7 +78,7 @@ export function useComputerDialog({
   const teachingEligible =
     canManage &&
     !!account?.session.user?.id &&
-    !!agent &&
+    !!agent && !publishingSite &&
     !isSharedBot(agent) &&
     directChats.length === 1 &&
     directChats[0].id === conversationId;
@@ -139,7 +139,7 @@ export function useComputerDialog({
     ? uiText('computer:text_33491e07b151')
     : uiText('computer:text_1245e0dc8cd5');
   const [actions, setActions] = useState<ComputerAction[]>([]),
-    [url, setUrl] = useState('https://example.com'),
+    [url, setUrl] = useState(publishingSite?.url || 'https://example.com'),
     [remote, setRemote] = useState(data.computer.savedRemote?.url || ''),
     [token, setToken] = useState('');
   const [connectionPending, setConnectionPending] = useState<

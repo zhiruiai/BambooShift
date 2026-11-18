@@ -34,7 +34,11 @@ void phone(WidgetTester tester) {
   addTearDown(tester.view.resetViewInsets);
 }
 
-Future<void> tapVisible(WidgetTester tester, Finder target) async {
+Future<void> tapVisible(
+  WidgetTester tester,
+  Finder target, {
+  bool Function()? ready,
+}) async {
   await tester.scrollUntilVisible(
     target,
     180,
@@ -43,7 +47,11 @@ Future<void> tapVisible(WidgetTester tester, Finder target) async {
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();
   await tester.tap(target);
-  await tester.pumpAndSettle();
+  if (ready == null) {
+    await tester.pumpAndSettle();
+  } else {
+    await waitFor(tester, ready);
+  }
 }
 
 Finder get picker => find.descendant(
@@ -321,10 +329,10 @@ void main() {
         OutlinedButton,
         'Start from a workflow template',
       );
-      await tapVisible(tester, recipes);
-      await waitFor(
+      await tapVisible(
         tester,
-        () => find
+        recipes,
+        ready: () => find
             .text('Source-grounded technical research')
             .evaluate()
             .isNotEmpty,

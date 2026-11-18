@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:openbot_mobile/features/bots/bot_model_picker.dart';
 import 'package:openbot_mobile/features/bots/bot_settings.dart';
 import 'package:openbot_mobile/features/computer/computer_controller.dart';
 import 'package:openbot_mobile/features/computer/computer_screen.dart';
@@ -238,6 +239,19 @@ void main() {
         testApp(
           BotSettings(scope: f.scope, bot: f.scope.items('agents').first),
         ),
+      );
+      final modelPicker = find.descendant(
+        of: find.byType(BotModelPicker),
+        matching: find.byType(DropdownButtonFormField<String>),
+      );
+      await waitFor(
+        tester,
+        () =>
+            modelPicker.evaluate().isNotEmpty &&
+            tester
+                    .widget<DropdownButtonFormField<String>>(modelPicker)
+                    .onChanged !=
+                null,
       );
       final entry = find.widgetWithText(ListTile, 'Computer');
       await tester.scrollUntilVisible(

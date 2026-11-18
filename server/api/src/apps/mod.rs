@@ -16,6 +16,7 @@ mod policy_data;
 mod policy_routes;
 pub(crate) mod policy_runtime;
 pub(crate) mod provider_catalog;
+pub mod publishing_sites;
 mod routes;
 mod runtime;
 mod slack;
@@ -27,6 +28,12 @@ pub use runtime::{AppsRuntime, Authority, user_authority};
 pub fn router() -> axum::Router<crate::db::State> {
     use axum::routing::{delete, get, post, put};
     axum::Router::new()
+        .route(
+            "/api/workspaces/{wid}/publishing-sites",
+            get(publishing_sites::list)
+                .post(publishing_sites::save)
+                .delete(publishing_sites::remove),
+        )
         .route(
             "/api/workspaces/{wid}/apps/approval-rules",
             get(interactive_rules::list),

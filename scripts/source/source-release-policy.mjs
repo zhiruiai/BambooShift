@@ -21,6 +21,7 @@ export const releaseFiles = [
   'package.json',
   'package-lock.json',
   'tsconfig.json',
+  'tsconfig.lint.json',
 ];
 export const releaseRoots = [
   '.github',
@@ -88,6 +89,7 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/avatar-states.gif',
   'docs/demo/avatar-themes.en.gif',
   'docs/demo/avatar-themes.gif',
+  'docs/demo/bot-team.svg',
   'docs/demo/chat-choices.en.gif',
   'docs/demo/chat-choices.gif',
   'docs/demo/founder-debate.en.gif',
@@ -100,6 +102,7 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/orbital-landing.gif',
   'docs/demo/pizza-fractions.en.gif',
   'docs/demo/pizza-fractions.gif',
+  'docs/demo/publishing-accounts.gif',
   'docs/demo/scheduled-brief.en.gif',
   'docs/demo/scheduled-brief.gif',
   'docs/demo/short-video-storyboard.en.gif',

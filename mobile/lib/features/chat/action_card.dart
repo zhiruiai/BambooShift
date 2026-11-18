@@ -90,6 +90,7 @@ class _ActionCardState extends State<ActionCard> {
               SelectableText(
                 action.kind == 'computer' &&
                         const [
+                          'browser_attach_image',
                           'browser_tabs',
                           'browser_select_tab',
                           'browser_close_tab',

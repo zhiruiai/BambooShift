@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import type {
   BotTeamDraft,
   BotTeamPlan,
@@ -22,7 +23,7 @@ export interface TeamPlanActionsContext {
   };
   newMemberDrafts: import('react').RefObject<Map<string, NewTeamMember>>;
   setPlan: import('react').Dispatch<import('react').SetStateAction<BotTeamPlan | undefined>>;
-  latest: import('react').RefObject<{
+  latest: RefObject<{
     props: Props;
     plan: BotTeamPlan | undefined;
     draft: BotTeamDraft | undefined;

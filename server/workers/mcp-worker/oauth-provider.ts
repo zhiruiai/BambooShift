@@ -34,6 +34,7 @@ export interface OAuthPrepared {
   issuer: string;
   resource: string;
   scopes: string[];
+  scopesExplicit?: true;
   client: StoredOAuthClientInformation;
   metadata: AuthorizationServerMetadata;
   verifier: string;
@@ -45,6 +46,7 @@ export interface OAuthGrant {
   issuer: string;
   resource: string;
   scopes: string[];
+  scopesExplicit?: true;
   client: StoredOAuthClientInformation;
   metadata: AuthorizationServerMetadata;
   tokens: StoredOAuthTokens;
@@ -60,6 +62,7 @@ export interface AppOAuthProvider {
       clientMetadataUrl?: string;
       clientId?: string;
       clientSecret?: string;
+      scope?: string;
     },
     signal: AbortSignal,
   ): Promise<OAuthPrepared>;
@@ -125,7 +128,10 @@ function authenticate(client: StoredOAuthClientInformation, supported?: string[]
   };
 }
 function makeGrant(
-  base: Pick<OAuthGrant, 'issuer' | 'resource' | 'client' | 'metadata' | 'scopes'>,
+  base: Pick<
+    OAuthGrant,
+    'issuer' | 'resource' | 'client' | 'metadata' | 'scopes' | 'scopesExplicit'
+  >,
   value: OAuthTokens,
 ): OAuthGrant {
   boundedSecret(value.access_token);
@@ -138,6 +144,7 @@ function makeGrant(
         value.expires_in <= 10 * 365 * 86400,
     );
   const granted = value.scope === undefined ? [...base.scopes] : scopes(value.scope);
+  if (base.scopesExplicit) requireValue(granted.every((scope) => base.scopes.includes(scope)));
   const obtainedAt = Date.now();
   return {
     issuer: base.issuer,
@@ -145,6 +152,7 @@ function makeGrant(
     client: base.client,
     metadata: base.metadata,
     scopes: granted,
+    ...(base.scopesExplicit && { scopesExplicit: true as const }),
     tokens: {
       access_token: value.access_token,
       token_type: 'Bearer',
@@ -224,9 +232,12 @@ export function createAppOAuthProvider(options: AppOAuthProviderOptions = {}): A
         const resourceUrl = await network.validate(input.url);
         requireValue(!resourceUrl.search);
         requireValue(!input.clientSecret || input.clientId);
+        const requested = input.scope === undefined ? undefined : scopes(input.scope);
+        requireValue(requested === undefined || requested.length > 0);
         const callback = redirectUri(input.redirectUri);
         const slackEndpoint = isSlackHost(resourceUrl);
         if (slackEndpoint) {
+          requireValue(requested === undefined);
           validateSlackSetup(resourceUrl, callback, input.clientId, input.clientSecret);
         }
         requireValue(
@@ -304,12 +315,14 @@ export function createAppOAuthProvider(options: AppOAuthProviderOptions = {}): A
         );
         const selectedScopes = slackEndpoint
           ? [...slack.scopes]
-          : scopes(challenge.scope || resourceMetadata?.scopes_supported?.join(' ') || '');
+          : (requested ??
+            scopes(challenge.scope || resourceMetadata?.scopes_supported?.join(' ') || ''));
         const refreshSupported =
           !metadata.grant_types_supported ||
           metadata.grant_types_supported.includes('refresh_token');
         if (
           !slackEndpoint &&
+          !requested &&
           refreshSupported &&
           metadata.scopes_supported?.includes('offline_access') &&
           !selectedScopes.includes('offline_access')
@@ -388,6 +401,7 @@ export function createAppOAuthProvider(options: AppOAuthProviderOptions = {}): A
           issuer,
           resource,
           scopes: selectedScopes,
+          ...(requested && { scopesExplicit: true as const }),
           client,
           metadata,
           verifier: authorization.codeVerifier,

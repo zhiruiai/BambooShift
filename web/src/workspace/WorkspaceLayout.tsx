@@ -38,7 +38,6 @@ export function WorkspaceLayout(model: WorkspaceModel) {
     hasFiles,
     modal,
     uploadingRef,
-    copy,
     toast,
     threadRoot,
     closeThread,

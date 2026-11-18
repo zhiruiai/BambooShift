@@ -84,6 +84,7 @@
   "mobileComputerPrivateSnapshot": "私密接管截图，仅当前接管者可见。操作前请刷新。",
   "mobileComputerHideText": "隐藏输入内容",
   "mobileComputerShowText": "显示输入内容",
+  "browser_attach_image": "向网页附加图片",
   "browser_tabs": "查看浏览器标签页",
   "browser_select_tab": "切换浏览器标签页",
   "browser_close_tab": "关闭浏览器标签页",

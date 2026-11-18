@@ -302,6 +302,7 @@ test('actual OAuth start binds revision, keeps secrets in memory, and resolves u
   );
   try {
     await ui.flush();
+    ui.field('申请的权限范围').props.onChange({ target: { value: 'notes.read' } });
     ui.field('客户端 ID').props.onChange({ target: { value: 'registered-client' } });
     ui.field('客户端密钥').props.onChange({ target: { value: 'memory-only-secret' } });
     await ui.flush();
@@ -314,6 +315,7 @@ test('actual OAuth start binds revision, keeps secrets in memory, and resolves u
       {
         expectedRevision: oauthApp.revision,
         clientId: 'registered-client',
+        scope: 'notes.read',
         clientSecret: 'memory-only-secret',
       },
     );

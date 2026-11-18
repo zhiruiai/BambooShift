@@ -56,8 +56,14 @@ export function ComputerDialog(props: ComputerDialogProps) {
       className="computer-dialog"
     >
       <ComputerConnectionSettingsView {...model} />
+      {props.publishingSite && (
+        <div className="field-help">
+          <strong>{props.publishingSite.url}</strong>
+          <p>{uiText('apps:publishingLoginHelp')}</p>
+        </div>
+      )}
       <ComputerStatusView {...model} />
-      <ComputerScreenView {...model} />
+      <ComputerScreenView {...model} publishingSite={props.publishingSite} />
       <TeachingPanel
         agent={agent}
         conversationId={props.conversationId}

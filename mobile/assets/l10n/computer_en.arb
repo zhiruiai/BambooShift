@@ -84,6 +84,7 @@
   "mobileComputerPrivateSnapshot": "Private takeover screenshot. Only the current operator can view it. Refresh before acting.",
   "mobileComputerHideText": "Hide typed text",
   "mobileComputerShowText": "Show typed text",
+  "browser_attach_image": "Attach an image to the webpage",
   "browser_tabs": "View browser tabs",
   "browser_select_tab": "Switch browser tab",
   "browser_close_tab": "Close browser tab",

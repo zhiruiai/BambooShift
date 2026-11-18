@@ -1,7 +1,6 @@
 import { lookup } from 'node:dns/promises';
 import { createServer, request as httpRequest } from 'node:http';
 import { connect as connectSocket, isIP, type Socket } from 'node:net';
-import { workerControlOrigin } from './protocol.js';
 export function isPublicAddress(address: string): boolean {
   if (isIP(address) === 4) {
     const [a, b, c] = address.split('.').map(Number);

@@ -22,7 +22,8 @@ class OAuthFlowPanel extends StatefulWidget {
 class _OAuthFlowPanelState extends State<OAuthFlowPanel>
     with WidgetsBindingObserver {
   final clientId = TextEditingController(),
-      clientSecret = TextEditingController();
+      clientSecret = TextEditingController(),
+      requestedScope = TextEditingController();
   Timer? poll;
   bool foreground = true;
   @override
@@ -40,6 +41,7 @@ class _OAuthFlowPanelState extends State<OAuthFlowPanel>
 
   void changed() {
     if (!widget.controller.active || !widget.controller.scope.owner) {
+      requestedScope.clear();
       clientId.clear();
       clientSecret.clear();
     }
@@ -56,6 +58,7 @@ class _OAuthFlowPanelState extends State<OAuthFlowPanel>
     poll?.cancel();
     widget.controller.removeListener(changed);
     WidgetsBinding.instance.removeObserver(this);
+    requestedScope.dispose();
     clientId.dispose();
     clientSecret.dispose();
     super.dispose();
@@ -66,6 +69,7 @@ class _OAuthFlowPanelState extends State<OAuthFlowPanel>
       widget.connectionId,
       clientId: clientId.text.trim(),
       clientSecret: clientSecret.text,
+      scope: requestedScope.text.trim(),
     );
     if (mounted) clientSecret.clear();
   }
@@ -119,6 +123,22 @@ class _OAuthFlowPanelState extends State<OAuthFlowPanel>
                       labelText: context.tr('mobileAppsClientSecret'),
                     ),
                   ),
+                  if (c.find(id)?['url'] != 'https://mcp.slack.com/mcp') ...[
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: requestedScope,
+                      enabled: c.canWriteConnection(id),
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      maxLength: 4096,
+                      decoration: InputDecoration(
+                        labelText: context.tr('mobileAppsRequestedScope'),
+                        helperText: context.tr('mobileAppsScopeHint'),
+                        helperMaxLines: 3,
+                        counterText: '',
+                      ),
+                    ),
+                  ],
                 ],
               ),
               FilledButton(

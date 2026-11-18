@@ -73,8 +73,9 @@ class _OriginalBotCatalogState extends State<_OriginalBotCatalog> {
                   builder: (context, snapshot) {
                     if (snapshot.hasError) return const Notice('requestFailed');
                     final templates = snapshot.data;
-                    if (templates == null)
+                    if (templates == null) {
                       return const LinearProgressIndicator();
+                    }
                     return ListView(
                       padding: const EdgeInsets.all(16),
                       keyboardDismissBehavior:

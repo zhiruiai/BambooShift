@@ -1,5 +1,6 @@
 pub(crate) mod accessibility;
 mod action_execution;
+mod browser_image;
 pub mod action_store;
 pub mod approvals;
 pub(crate) mod authorization;

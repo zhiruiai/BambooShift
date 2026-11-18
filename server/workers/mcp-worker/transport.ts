@@ -3,6 +3,7 @@ import { isIP } from 'node:net';
 import { Agent, fetch as remoteFetch } from 'undici';
 import { Client, StreamableHTTPClientTransport, type Tool } from '@modelcontextprotocol/client';
 import { isPublicAddress } from './network-policy.js';
+import { discoursePostUrl } from './discourse.js';
 import type { ConnectedAppTool, ConnectedAppResult } from '../../../shared/app-connections.js';
 
 export interface AppEndpoint {
@@ -278,6 +279,10 @@ export async function openAppClient(
           );
           if (result.structuredContent !== undefined)
             chunks.push(JSON.stringify(result.structuredContent));
+          const permalink = result.isError
+            ? undefined
+            : discoursePostUrl(url, name, result.structuredContent);
+          if (permalink) chunks.push(permalink);
           const full = redactAppCredential(chunks.join('\n'), endpoint.token);
           return {
             isError: result.isError === true,

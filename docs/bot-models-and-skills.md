@@ -100,7 +100,7 @@ the key column if you want duplicate-key counts. The bundled script reports
 record count, malformed widths, blanks and duplicate-key rows. A Python 3 runtime
 is required for this script.
 
-The English and Chinese library contains 27 skill packages. Each includes a
+The English and Chinese catalogs offer the same skill packages. Each includes a
 reference checklist and a working template. Data quality review and spreadsheet
 analysis also include a Python script for profiling CSV files. Web app testing,
 code security review and product documentation are adapted from GitHub Awesome
@@ -124,6 +124,18 @@ structured Bot brief. Choosing **Use template and edit** retains these role
 packages while you customize the profile. The form previews the packages; they
 are installed together with the Bot only after submission. Cancelling the draft
 creates nothing. [Bot Gallery](bot-templates.md)
+
+## Publish to a Discourse forum
+
+Connect your own community's built-in HTTPS MCP endpoint under **Connect apps** using web authorization. The forum administrator enables the required tools and grants the posting account's group access. Under **Optional OAuth settings → Requested scopes**, enter `mcp:profile:read mcp:content:read mcp:content:write`. A pre-registered public client uses the workspace callback and its Client ID. Leave its Client Secret empty. [Discourse setup](app-connections.md#discourse-论坛发帖)
+
+Install **Publish to a Discourse forum** on a Bot, select it with `/` in a direct chat and give it the community, destination and text. Ask for a draft, a new topic or a reply. Check the arguments on the action card. A successful write includes the post link in the receipt. If the response is lost, check the original thread or search the forum before asking for another submission.
+
+## Publish a Xiaohongshu image note
+
+Install **Publish a Xiaohongshu image note** on your Bot. Select the skill with `/`, attach the cover image and give the Bot the title, body and audience. Say whether to prepare a draft, show the preview or publish. The Bot uses the selected computer’s browser to open the official creator portal. Take over that same browser for sign-in or account verification, then return control. [Xiaohongshu Creator Center](https://creator.xiaohongshu.com/)
+
+The Bot copies the selected image into the computer workspace and passes the completed upload receipt and the editor’s active tab ID to the image action. The service checks the source attachment, computer, site and file digest. One PNG, JPEG or WebP can be attached this way. Use the editor’s image picker to complete a multi-image note or when an older executor lacks image attachment. A file-selection receipt confirms the browser accepted the file. The Bot checks the preview and returns the platform’s actual status, including a pending review or published note link when available.
 
 ## Agent Desktop
 

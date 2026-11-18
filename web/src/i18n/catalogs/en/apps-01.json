@@ -1,4 +1,6 @@
 {
+  "requestedScope": "Requested scopes",
+  "requestedScopeHint": "Separate scope names with spaces. Leave blank to use the default scopes for this service.",
   "text_003d1bd15f51": "Authorize in browser",
   "text_00808d5e5bec": " tools",
   "text_02739d1bae8b": "Service address",
@@ -63,7 +65,7 @@
   "text_6205c8a9a2b9": "Work computer",
   "text_6328ea1156ca": "Browser authorization",
   "text_636a6dcfe59f": "No shareable apps yet. Add and authorize one in Connect apps, then return to select it.",
-  "text_63a336a4fa29": "Client specified by the provider (optional)",
+  "text_63a336a4fa29": "Optional OAuth settings",
   "text_63cdea6bd39e": "Completing connection",
   "text_68891ab35cab": "Reconnect",
   "text_68c54cc72780": "Connected · View individual screen",

@@ -22,11 +22,7 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
     shellJobs,
     seenShellIds,
     reserveShell,
-    cancelShells,
-    workerCapabilities,
     assertConnection,
-    assertDesktopSession,
-    enqueue,
     transfer,
   } = context;
   app.post('/shell/cancel', async (req, res) => {
@@ -116,7 +112,7 @@ export function registerExecutionRoutes(context: WorkerRoutes) {
       );
       if (action.type === 'browser_download' && runtime.takeoverPending)
         throw new Error('用户正在接管电脑，网页导出已取消。');
-      if (nativeAccessibility && runtime.takeoverPending)
+      if ((nativeAccessibility || action.type === 'browser_attach_image') && runtime.takeoverPending)
         throw new Error('用户正在接管电脑，请稍后再执行。');
       return computer.execute(action, { signal });
     });

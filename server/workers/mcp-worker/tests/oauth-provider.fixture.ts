@@ -35,6 +35,7 @@ async function providerFixture(t: TestContext) {
     tokenType: 'Bearer',
     invalidGrant: false,
     omitRefreshAndScope: false,
+    tokenScope: undefined as string | undefined,
     registered: new Map<string, Record<string, any>>(),
     codes: new Map<
       string,
@@ -215,7 +216,7 @@ async function providerFixture(t: TestContext) {
             access_token: `synthetic-access-${fixture.issued++}`,
             token_type: fixture.tokenType,
             refresh_token: refresh,
-            scope: code.scope,
+            scope: fixture.tokenScope ?? code.scope,
             expires_in: 60,
           });
           return;
@@ -242,6 +243,7 @@ async function providerFixture(t: TestContext) {
             token_type: fixture.tokenType,
             refresh_token: refresh,
             expires_in: 120,
+            scope: fixture.tokenScope,
           });
           return;
         }

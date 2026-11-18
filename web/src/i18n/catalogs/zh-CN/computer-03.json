@@ -140,6 +140,8 @@
   "text_f68f8447e7b1": "此操作未返回可展示的文本。",
   "text_f755b01e2711": "待批准",
   "browser_tabs": "查看浏览器标签页",
+  "imageSha256": "SHA256",
+  "browser_attach_image": "向网页附加图片",
   "browser_select_tab": "切换浏览器标签页",
   "browser_close_tab": "关闭浏览器标签页",
   "local_shell": "在本机运行命令",

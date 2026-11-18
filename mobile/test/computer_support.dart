@@ -5,6 +5,7 @@ import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
 import 'package:openbot_mobile/core/api.dart';
 
+import 'model_profile_support.dart' show ModelsServer;
 import 'support.dart';
 
 Future<Uint8List> computerPng([int width = 800, int height = 400]) async {
@@ -160,7 +161,7 @@ class ComputerServer {
       return jsonResponse(<Json>[]);
     }
     if (request.method == 'GET' && path.endsWith('/model-profiles')) {
-      return jsonResponse({'profiles': <Json>[]});
+      return jsonResponse(ModelsServer().list);
     }
     if (path.endsWith('/computer/bots')) {
       return jsonResponse({

@@ -12,23 +12,7 @@ import { MAX_FILE_TRANSFER_BYTES } from '../../../../shared/computer-files.js';
 
 import type { WorkerRoutes } from './types.js';
 export function registerFilesRoutes(context: WorkerRoutes) {
-  const {
-    app,
-    options,
-    computer,
-    shell,
-    runtime,
-    operations,
-    shellJobs,
-    seenShellIds,
-    reserveShell,
-    cancelShells,
-    workerCapabilities,
-    assertConnection,
-    assertDesktopSession,
-    enqueue,
-    transfer,
-  } = context;
+  const { app, options, transfer } = context;
   const auditFile = async (type: string, path: string, size?: number) => {
     const dir = resolve(options.workspaceDir, '../audit');
     await mkdir(dir, { recursive: true, mode: 0o700 });

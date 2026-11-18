@@ -34,6 +34,7 @@ const entryFiles = [
   'session-policy.cjs',
   'input-permissions.cjs',
   'authorization.cjs',
+  'local-authorization.cjs',
   'shared-download.cjs',
   'notifications.cjs',
   'menus.cjs',

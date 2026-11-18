@@ -71,7 +71,7 @@ void main() {
     );
     final resources = jsonDecode(asset) as Json;
     expect(ids, resources.keys.toSet());
-    expect(ids.length, 20);
+    expect(ids.length, en.length);
     expect(
       ids,
       containsAll([
@@ -84,6 +84,10 @@ void main() {
         'documentation-writer',
         'decision-brief',
         'website-delivery',
+        'forum-publishing',
+        'xiaohongshu-note-publishing',
+        'zhihu-article-publishing',
+        'web-publishing',
         'spreadsheet-review',
         'pdf-review',
       ]),
@@ -105,7 +109,13 @@ void main() {
         for (final file in files)
           file['path']: utf8.decode(base64Decode(file['base64'] as String)),
       }, expected);
-      expect(recipe['content'], contains('references/review-checklist.md'));
+      final references = RegExp(
+        r'\]\(((?:references|assets|scripts)/[^)]+)\)',
+      ).allMatches(recipe['content'] as String).map((match) => match.group(1));
+      expect(references, isNotEmpty, reason: recipe['id'] as String);
+      for (final path in references) {
+        expect(expected, contains(path), reason: recipe['id'] as String);
+      }
     }
   });
 

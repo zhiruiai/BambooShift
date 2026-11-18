@@ -28,6 +28,7 @@ export const labels: Record<string, string> = localizedData(() => ({
   browser_close_tab: uiText('computer:browser_close_tab'),
   browser_navigate: uiText('computer:text_bdc799e5677d'),
   browser_click: uiText('computer:text_51fa25e900f7'),
+  browser_attach_image: uiText('computer:browser_attach_image'),
   browser_download: uiText('computer:text_68532ddc30a9'),
   browser_type: uiText('computer:text_6495aeb002d4'),
   terminal_command: uiText('computer:text_e53f35dc006b'),
@@ -52,6 +53,7 @@ export const labels: Record<string, string> = localizedData(() => ({
   desktop_ax_open: uiText('computer:macAppsOpen'),
 }));
 export type ComputerDialogProps = {
+  publishingSite?: import('../../publishingAccounts').PublishingSite;
   data: Bootstrap;
   agentId?: string;
   onSelectBot: (id: string) => void;

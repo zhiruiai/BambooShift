@@ -5,6 +5,7 @@ import {
   FolderOpen,
   LibraryBig,
   Link2,
+  LogIn,
   Loader2,
   Monitor,
   MessageCircle,
@@ -99,6 +100,18 @@ export function AppConnectionsListView({
         {feedback}
         {
           <div className="apps-private-tools">
+            {props.publishingAccounts && props.workspaceId && props.userId && (
+              <button
+                type="button"
+                className="secondary-button"
+                disabled={busy}
+                onClick={() => navigate('publishing')}
+              >
+                <LogIn size={16} aria-hidden="true" />
+                {uiText('apps:publishingAccounts')}
+                <ChevronRight size={14} aria-hidden="true" />
+              </button>
+            )}
             <button
               type="button"
               className="secondary-button"

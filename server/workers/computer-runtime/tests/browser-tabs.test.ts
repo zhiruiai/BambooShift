@@ -26,8 +26,13 @@ test('closing the last tab never creates a page, and a new page cannot reuse its
     },
   });
   const old = (await tabs.list()).tabs[0].tabId;
+  assert.equal(tabs.activePage(old), page);
+  active = undefined;
+  assert.throws(() => tabs.activePage(old), /活动标签页已变化/);
+  active = page;
   assert.deepEqual(await tabs.close(old), { tabs: [], truncated: false });
   assert.equal(active, undefined);
+  assert.throws(() => tabs.activePage(old), /已关闭/);
   await assert.rejects(tabs.close(old), /已关闭/);
   owned = [{ ...page, isClosed: () => false } as Page];
   assert.notEqual((await tabs.list()).tabs[0].tabId, old);

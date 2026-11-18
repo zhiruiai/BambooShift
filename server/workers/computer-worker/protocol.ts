@@ -44,6 +44,7 @@ export type ComputerActionType =
   | 'browser_close_tab'
   | 'browser_click'
   | 'browser_download'
+  | 'browser_attach_image'
   | 'browser_type'
   | 'browser_scroll'
   | 'browser_back'
@@ -116,6 +117,7 @@ const actionTypes = new Set<ComputerActionType>([
   'browser_close_tab',
   'browser_click',
   'browser_download',
+  'browser_attach_image',
   'browser_type',
   'browser_scroll',
   'browser_back',
@@ -132,18 +134,6 @@ const actionTypes = new Set<ComputerActionType>([
   'desktop_ax_set_text',
   'desktop_ax_open_target',
   'desktop_ax_open',
-]);
-const readOnlyTypes = new Set([
-  'browser_tabs',
-  'list_files',
-  'read_file',
-  'download_file',
-  'terminal_command',
-  'browser_screenshot',
-  'desktop_screenshot',
-  'desktop_ax_inspect',
-  'desktop_ax_target',
-  'desktop_ax_open_target',
 ]);
 export const viewport = { width: 1440, height: 900 };
 const takeoverKeys = new Set([
@@ -296,10 +286,18 @@ export const capabilities = [
   'browser-tabs-v1',
   'browser-screenshot',
   'browser-download',
+  'browser-attach-image-v1',
   'human-approval',
   'human-takeover',
   'desktop',
 ];
+
+function validTabId(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value)
+  );
+}
 
 export function validateComputerAction(input: unknown): ComputerActionInput {
   if (!input || typeof input !== 'object' || Array.isArray(input))
@@ -309,11 +307,7 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
   if (isAccessibilityAction(a.type)) return validateAccessibilityAction(a);
   if (a.type === 'browser_tabs') return { type: a.type };
   if (a.type === 'browser_select_tab' || a.type === 'browser_close_tab') {
-    if (
-      typeof a.tabId !== 'string' ||
-      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(a.tabId)
-    )
-      throw new Error('请选择当前 Bot 标签页列表中的有效 tabId。');
+    if (!validTabId(a.tabId)) throw new Error('请选择当前 Bot 标签页列表中的有效 tabId。');
     return { type: a.type, tabId: a.tabId };
   }
   if (['upload_file', 'download_file'].includes(a.type)) {
@@ -349,7 +343,7 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
     const { command, cwd } = validateShellInput(a.command, a.path);
     return { type: a.type, command, path: cwd };
   }
-  if (a.type === 'browser_navigate') {
+  if (a.type === 'browser_navigate' || a.type === 'browser_attach_image') {
     let url: URL;
     try {
       url = new URL(a.url!);
@@ -358,6 +352,28 @@ export function validateComputerAction(input: unknown): ComputerActionInput {
     }
     if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password)
       throw new Error('浏览器只支持不带凭据的 HTTP(S) 网址。');
+    if (a.type === 'browser_attach_image') {
+      const local = ['127.0.0.1', '[::1]', 'localhost'].includes(url.hostname);
+      if (
+        (url.protocol !== 'https:' && !local) ||
+        url.pathname !== '/' ||
+        url.search ||
+        url.hash ||
+        typeof a.sha256 !== 'string' ||
+        !/^[0-9a-f]{64}$/.test(a.sha256) ||
+        !a.selector?.trim() ||
+        !validTabId(a.tabId)
+      )
+        throw new Error('请选择图片控件、目标网站来源和附件 SHA256。');
+      return {
+        type: a.type,
+        path: validateComputerPath(a.path),
+        selector: a.selector,
+        url: url.origin,
+        sha256: a.sha256,
+        tabId: a.tabId,
+      };
+    }
     a.url = url.href;
   }
   if (['browser_click', 'browser_type', 'browser_download'].includes(a.type) && !a.selector)

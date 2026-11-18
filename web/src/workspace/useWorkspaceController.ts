@@ -355,7 +355,7 @@ export function useWorkspaceController() {
     closeThread,
   } = createChatNavigation(readActionContext);
 
-  const { upsertMessage, reactToMessage, settleAttempt, reconcileReceipts, submitAttempt, send } =
+  const { reactToMessage, reconcileReceipts, submitAttempt, send } =
     createMessageActions(readActionContext);
 
   const primary = workspaceState.data

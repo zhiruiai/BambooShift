@@ -125,6 +125,7 @@ export const computerActionLabels: Record<string, string> = localizedData(() => 
   browser_close_tab: uiText('computer:browser_close_tab'),
   browser_navigate: uiText('computer:text_bdc799e5677d'),
   browser_click: uiText('computer:text_a617f9f6faef'),
+  browser_attach_image: uiText('computer:browser_attach_image'),
   browser_download: uiText('computer:text_68532ddc30a9'),
   browser_type: uiText('computer:text_6495aeb002d4'),
   browser_scroll: uiText('computer:text_f3e6fb138f57'),

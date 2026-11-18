@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import type {
   BotTeamCatalogRefreshResult,
   BotTeamDraft,
@@ -17,7 +18,7 @@ export interface TeamCatalogRecoveryContext {
     request<T>(path: string, method?: string, body?: unknown): Promise<T>;
   };
   running: import('react').RefObject<boolean>;
-  latest: import('react').RefObject<{
+  latest: RefObject<{
     props: Props;
     plan: BotTeamPlan | undefined;
     draft: BotTeamDraft | undefined;

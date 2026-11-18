@@ -33,6 +33,17 @@ pub(crate) fn recipe(id: &str, language: &str) -> Option<&'static Value> {
     catalog(language).iter().find(|item| item["id"] == id)
 }
 
+/// Inline the human-readable package resources when the Bot looks up publishing guidance.
+pub(crate) fn markdown_resources(id: &str) -> serde_json::Map<String, Value> {
+    RESOURCES[id]["files"]
+        .as_object()
+        .into_iter()
+        .flatten()
+        .filter(|(path, _)| path.ends_with(".md"))
+        .map(|(path, content)| (path.clone(), content.clone()))
+        .collect()
+}
+
 /// The same package bytes and frontmatter used by the Web and mobile catalog.
 pub(crate) fn package(id: &str, language: &str, agent_id: &Value) -> Result<Value> {
     if !matches!(language, "en" | "zh-CN") {

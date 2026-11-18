@@ -6,8 +6,13 @@ use serde_json::{Value, json};
 use std::{sync::Arc, time::Duration};
 
 pub async fn setup() -> (Group, Server, Value) {
+    setup_with_tools("Personal notes", None).await
+}
+
+pub async fn setup_with_tools(name: &str, catalog: Option<Vec<Value>>) -> (Group, Server, Value) {
     let mut group = Group::new().await;
     let server = Server::start().await;
+    *server.remote.catalog.lock().await = catalog;
     group.f.state.apps = Arc::new(
         openbot_backend::apps::AppsRuntime::fixture(vec![server.remote.origin.clone()]).unwrap(),
     );
@@ -20,7 +25,7 @@ pub async fn setup() -> (Group, Server, Value) {
         .request(
             "POST",
             &group.f.path("/apps"),
-            Some(connection_body(&server, "Personal notes")),
+            Some(connection_body(&server, name)),
             false,
             Some(&group.f.owner),
         )

@@ -339,6 +339,11 @@ export function WorkspaceTaskDialogs({
           }}
           conversationId={computerConversation.id}
           conversationTitle={computerConversation.title}
+          publishingSite={
+            computerConversation.publishingLogin?.agentId === computerAgentId
+              ? computerConversation.publishingLogin?.site
+              : undefined
+          }
           initialPanel={computerPanel}
           busy={busy}
           onClose={() => setModal(null)}

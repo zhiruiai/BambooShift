@@ -109,7 +109,7 @@ async fn dispatch(State(worker): State<Arc<Worker>>, request: Request) -> Respon
         .unwrap_or("default")
         .to_owned();
     if suffix == "/health" {
-        let mut state = json!({"protocol":"openbot-computer-v2","instanceId":worker.instance,"workspaceScopeId":worker.workspace,"controlOrigin":null,"name":"Fixture computer","platform":"linux","surface":"browser","status":"ready","connected":true,"capabilities":["operation-cleanup-v1","screen-pool-v1","screen-lifecycle-v1","action-frames","binary-file-transfer","isolated-shell-v1"]});
+        let mut state = json!({"protocol":"openbot-computer-v2","instanceId":worker.instance,"workspaceScopeId":worker.workspace,"controlOrigin":null,"name":"Fixture computer","platform":"linux","surface":"browser","status":"ready","connected":true,"capabilities":["operation-cleanup-v1","screen-pool-v1","screen-lifecycle-v1","action-frames","binary-file-transfer","browser-attach-image-v1","isolated-shell-v1"]});
         state["controlOrigin"] = worker.control_origin.lock().await.clone();
         if !worker.cleanup_capable.load(Ordering::SeqCst) {
             state["capabilities"]
@@ -236,6 +236,11 @@ async fn dispatch(State(worker): State<Arc<Worker>>, request: Request) -> Respon
             ([("content-type","image/png"),("x-computer-surface",surface)], png.clone()).into_response()
         },
         "/execute-with-frame"=>response(200,json!({"result":{"ok":true},"frame":{"mimeType":"image/png","data":STANDARD.encode(&worker.png),"capturedAt":chrono::Utc::now().to_rfc3339()}})),
+        "/execute" if body["type"] == "browser_attach_image" => match body["selector"].as_str() {
+            Some("#upload-interrupted") => response(502, json!({"code":"BROWSER_IMAGE_ATTACHMENT_UNKNOWN"})),
+            Some("#gateway-lost-reply") => response(503, json!({})),
+            _ => response(200,json!({"attached":true,"sha256":body["sha256"],"origin":body["url"]})),
+        },
         "/execute" if body["type"] == "desktop_ax_open_target" => response(200,json!({"app":"计算器","bundleId":"com.apple.calculator","identity":APP_LAUNCH_IDENTITY})),
         "/execute" if body["type"] == "desktop_ax_open" => response(200,json!({"ok":body["identity"]==APP_LAUNCH_IDENTITY && body["bundleId"]=="com.apple.calculator"})),
         "/execute" if body["type"] == "desktop_ax_target" => response(200,json!({"app":"Fixture","role":"AXButton","label":"Save","windowTitle":"Draft Delivery"})),

@@ -177,6 +177,17 @@
     openOrigin: ['打开 {{origin}}？', 'Open {{origin}}?'],
     cancel: ['取消', 'Cancel'],
     openBrowser: ['打开浏览器', 'Open Browser'],
+    oauthProvider: ['使用 {{origin}} 授权此连接？', 'Authorize this connection with {{origin}}?'],
+    oauthScopes: ['请求的权限：{{scopes}}', 'Requested permissions: {{scopes}}'],
+    oauthNoScopes: ['提供方没有列出具体权限。', 'The provider lists no specific permissions.'],
+    oauthReturn: [
+      '完成网页登录后，回到此窗口完成连接。',
+      'After authorizing in your browser, return here to finish connecting.',
+    ],
+    oauthRetry: [
+      '授权未能继续，请回到 BambooShift 查看状态并重新发起授权。',
+      'Return to BambooShift to check the connection and restart authorization.',
+    ],
     saveFile: ['保存 BambooShift 文件', 'Save BambooShift File'],
     saveShared: ['保存共享资料', 'Save Shared File'],
     save: ['保存', 'Save'],

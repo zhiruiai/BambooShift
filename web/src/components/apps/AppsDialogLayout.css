@@ -10,6 +10,9 @@
 .modal.apps-list-dialog {
   width: min(920px, calc(100vw - 56px));
 }
+.modal.apps-packaged-skills-dialog {
+  width: min(900px, calc(100vw - 56px));
+}
 .apps-dialog > .modal-header {
   flex: none;
   margin: 0;

@@ -1,4 +1,3 @@
-import { uiText } from './i18n';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { LocalizedRoot } from './i18n/LocalizedRoot';

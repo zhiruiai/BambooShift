@@ -31,8 +31,8 @@ test(
         import './web/src/theme.css';
         import { useState } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { AppsDialog } from './web/src/components/AppsDialog';
         import { SkillsDialog } from './web/src/components/SkillsDialog';
+        import { AppsDialog } from './web/src/components/AppsDialog';
         import { skillInstallBody, acceptInstalledSkill } from './web/src/skillInstallation';
         import { initializeLanguage } from './web/src/i18n';
         const owner = location.search !== '?member';
@@ -154,6 +154,13 @@ test(
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.waitForFunction(
       () => document.querySelectorAll('.packaged-skill-tile').length === 9,
+    );
+    assert.equal(
+      await catalog
+        .locator('.packaged-skill-grid')
+        .evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length),
+      3,
+      'nine desktop skills fit in three columns',
     );
     assert.ok(
       await catalog

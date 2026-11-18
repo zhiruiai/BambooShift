@@ -1,10 +1,11 @@
+import type { RefObject } from 'react';
 import type { Bootstrap, Message } from '../../../shared/types';
 import { type ComposerState } from '../chatDrafts';
 import { type MobilePage } from '../mobileNavigation';
 import type { Modal } from './types';
 export interface ChatNavigationContext {
   api: import('../fixedWorkspaceApi').FixedWorkspaceApi;
-  mobileNavigation: import('react').RefObject<{
+  mobileNavigation: RefObject<{
     activate(page: MobilePage): void;
     deactivate(): void;
     move: (page: MobilePage) => boolean;

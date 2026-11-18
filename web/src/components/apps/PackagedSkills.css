@@ -1,6 +1,3 @@
-.modal.apps-packaged-skills-dialog {
-  width: min(900px, 100%);
-}
 .packaged-skills {
   container-type: inline-size;
   min-width: 0;
@@ -272,9 +269,6 @@
   }
 }
 @media (max-width: 640px) {
-  .modal.apps-packaged-skills-dialog {
-    width: calc(100vw - 24px);
-  }
   .packaged-skills-navigation .text-button,
   .packaged-skills-pages button,
   .packaged-skill-install select,

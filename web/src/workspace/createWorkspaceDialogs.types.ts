@@ -89,7 +89,7 @@ export interface WorkspaceDialogsContext {
   selectedComputerAgentId: string | undefined;
   setComputerAgentId: import('react').Dispatch<import('react').SetStateAction<string | undefined>>;
   setComputerConversation: import('react').Dispatch<
-    import('react').SetStateAction<{ id: string; title: string; scope: string }>
+    import('react').SetStateAction<import('../publishingAccounts').ComputerConversation>
   >;
   selected: string;
   conversation: Conversation | undefined;

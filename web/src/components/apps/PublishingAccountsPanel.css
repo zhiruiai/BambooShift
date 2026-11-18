@@ -1,0 +1,22 @@
+.publishing-accounts,
+.publishing-custom {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.publishing-address {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.publishing-address button {
+  flex: none;
+}
+.publishing-accounts > button,
+.publishing-custom > button {
+  justify-self: start;
+}

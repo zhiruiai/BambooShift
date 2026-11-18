@@ -1,3 +1,5 @@
+#[path = "computer_actions/browser_image.rs"]
+mod browser_image;
 mod computer_support;
 mod workspace_support;
 use computer_support::*;

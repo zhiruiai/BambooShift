@@ -17,6 +17,7 @@ pub const ACTIONS: &[&str] = &[
     "browser_close_tab",
     "browser_click",
     "browser_download",
+    "browser_attach_image",
     "browser_type",
     "browser_scroll",
     "browser_back",
@@ -84,6 +85,31 @@ pub fn action(input: &Value, virtual_desktop: bool) -> Result<Value> {
     let mut out = json!({"type":kind});
     if super::accessibility::mutation(kind) {
         return super::accessibility::action_payload(kind, input);
+    }
+    if kind == "browser_attach_image" {
+        let url = url::Url::parse(&browser_url(&input["url"])?).map_err(|_| model::invalid())?;
+        let local = matches!(url.host_str(), Some("127.0.0.1" | "[::1]" | "localhost"));
+        let selector = input["selector"].as_str().unwrap_or("");
+        if (url.scheme() != "https" && !local)
+            || url.path() != "/"
+            || url.query().is_some()
+            || url.fragment().is_some()
+            || selector.trim().is_empty()
+            || selector.len() > 20_000
+            || !input["uploadActionId"].as_str().is_some_and(model::uuid)
+            || !input["tabId"].as_str().is_some_and(model::uuid)
+            || ["path", "sha256", "fileId"]
+                .iter()
+                .any(|key| input.get(key).is_some())
+        {
+            return Err(ApiError::bad(
+                "请选择已完成的图片上传回执、当前标签页和目标网站控件。",
+            ));
+        }
+        return Ok(
+            json!({"type":kind, "url":url.origin().ascii_serialization(), "selector":selector,
+            "uploadActionId":input["uploadActionId"], "tabId":input["tabId"]}),
+        );
     }
     if kind == "browser_tabs" {
         return Ok(out);

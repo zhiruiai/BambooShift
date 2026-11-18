@@ -28,6 +28,7 @@ import {
   validateComputerAction,
   pngDimensions,
 } from './protocol.js';
+import { attachBrowserImage } from './attach-image.js';
 import { captureDownload } from './download.js';
 import { executeLocalFileAction } from './local-files.js';
 import { localComputerStatus } from './local-status.js';
@@ -407,12 +408,14 @@ export class LocalComputer {
           `当前为 ${mode[this.surface]} 模式，请使用对应操作；模式只能由用户手动切换。`,
         );
     }
-    if (['browser_tabs', 'browser_select_tab', 'browser_close_tab'].includes(action.type)) {
+    if (['browser_tabs', 'browser_select_tab', 'browser_close_tab', 'browser_attach_image'].includes(action.type)) {
       const tabs = this.leaseOptions.browserSession
         ? this.leaseOptions.browserSession.tabs
         : this.browserTabs;
       if (!tabs) throw new Error('当前浏览器不支持标签页管理，请升级电脑执行器。');
       const guard = { ...options, authorize: () => this.assertAgentAccess() };
+      if (action.type === 'browser_attach_image')
+        return attachBrowserImage(tabs, this.workspace, action, guard);
       if (action.type === 'browser_select_tab') return tabs.select(action.tabId!, guard);
       if (action.type === 'browser_close_tab') return tabs.close(action.tabId!, guard);
       return tabs.list(guard);

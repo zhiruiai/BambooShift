@@ -1,4 +1,6 @@
 mod agent_apps_support;
+#[path = "agent_apps/forum_publishing.rs"]
+mod forum_publishing;
 mod agent_delegation_support;
 mod apps_support;
 mod workspace_support;

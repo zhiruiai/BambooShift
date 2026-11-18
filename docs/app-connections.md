@@ -6,6 +6,14 @@
 
 网页、桌面和移动端的“添加连接”支持粘贴 `mcpServers` 或 VS Code `servers` 配置。客户端只提取名称和 HTTPS 地址，交给当前工作空间服务预览；不会发送原始配置中的密钥、请求头或环境变量，也不会在预览时连接外部服务。从支持的项目中选择一项后，表单会填入可编辑的名称和地址。完整地址匹配官方目录时，表单会预选推荐的认证方式。修改地址会清空已填令牌和共享确认；替换现有草稿需要重新确认。格式、边界与接口详见[配置导入](mcp-configuration-import.md)。
 
+## 在工作浏览器中登录发布账号
+
+在网页或桌面客户端打开「连接应用 → 发布账号」，选择平台和将执行发布的 Bot，然后打开其工作电脑。预置目录收录知乎、小红书、CSDN、头条号、DEV Community、Medium 和 WordPress.com。部分地址先进入创作后台，登录后请选对账号、栏目或站点。工作空间拥有者还能保存自定义平台名称和公开的 HTTPS 创作页。工作空间成员可以查看这些地址，Bot 也可以从后续对话中按平台名称查找。
+
+首次请由工作空间拥有者准备浏览器画面。选择「私密接管并打开登录页」，直接在网站上完成登录、扫码或二次验证。核对账号后归还控制，再告诉 Bot 要发往哪个平台、采用哪份定稿和什么可见范围。网站登录保存在这台工作电脑的浏览器中。共享同一浏览器的 Bot 和有权接管的团队成员可能使用同一会话，团队空间应使用合适的发布账号。需要切换身份时，到相应网站退出并重新登录。
+
+保存创作地址后，平台的编辑权限、发布限制和登录有效期仍由网站决定。移除地址只会清理当前工作空间的快捷入口。若要退出网站账号，请在工作浏览器中操作。文章在审核时应交付审核状态，取得文章直链后才能确认公开发布。[知乎实操和验证范围](zhihu-articles.md)
+
 ## 使用范围
 
 空间拥有者提供服务名称、HTTPS 地址，选择无需认证、Bearer 访问凭据或网页登录授权，并确认与当前空间的 Bot 共享。连接成功后显示实际发现的工具和最后检查时间。凭据无效会进入“需要重新授权”；最初选择无需认证的连接也可补充凭据。断开清除本地保存的凭据与可用工具，重新使用需要再次连接；移除还会删除连接记录，历史操作消息保留。
@@ -23,6 +31,18 @@
 执行后丢失响应或被取消时，外部服务可能已经完成操作。界面显示结果未知，不自动重新调用；取消请求、终止 MCP 会话和断开连接都不代表撤销外部副作用。先到服务中核对结果，再决定后续任务。
 
 ## 服务商设置
+
+### Discourse 论坛发帖
+
+用论坛自带的 MCP 服务，Bot 可以用已登录的论坛身份发新主题、回已有主题，并把帖子链接带回原对话。每个连接对应一个具体社区。
+
+1. **在论坛启用发帖。** 管理员进入 `/admin/config/mcp` 打开 `mcp_server_enabled`，在 Capabilities 启用发主题、回帖和所需的搜索或读帖工具，在 Access 给发帖账号所在组授予相应权限。复制 Overview 显示的站点专属 MCP 地址，通常为论坛地址加 `/mcp`。普通组可只授予所需的内容读写权限。[Discourse 官方接入说明](https://meta.discourse.org/t/connect-your-ai-apps-to-your-community-with-discourse-s-built-in-mcp-server/412755)
+2. **连接自己的社区。** 工作空间拥有者打开 **连接应用 → 添加连接**，给连接起一个能认出目标社区的名称，填写上一步的 HTTPS 地址，选择网页登录授权。在 **可选 OAuth 设置 → 申请的权限范围** 填写 `mcp:profile:read mcp:content:read mcp:content:write`。需要浏览分类时再加 `mcp:categories:read`。论坛账号在该分类的发帖权限仍然生效。
+3. **登记回调并完成登录。** 远程服务按其产品 HTTPS 来源登记 `/api/app-oauth/callback`。论坛若允许 BambooShift 的公开客户端元数据，可直接走网页登录。使用本机回调或论坛要求预注册时，在论坛的 OAuth clients 中登记公共客户端，回调填写本次工作空间的实际来源加同一路径，将 Client ID 填回 BambooShift，Client Secret 留空。Discourse 支持 loopback HTTP 回调与 PKCE。由当前空间发起授权，在论坛同意后回到该连接点「完成连接」，检查工具列表。[上游 OAuth 元数据](https://github.com/discourse/discourse/blob/main/app/controllers/mcp_oauth_metadata_controller.rb) · [回调地址规则](https://github.com/discourse/discourse/blob/main/app/models/mcp_oauth_client.rb)
+4. **试发一篇主题。** 在目标 Bot 的技能库安装 **发布到 Discourse 论坛**。在其单聊中用 `/` 选这个技能，并明确说「请发布到我的测试论坛，分类 ID 为 8，标题是……，正文是……」。先查看应用操作卡里的目标、标题和正文，按当前授权策略批准后等待结果。要起草只需说「先给我草稿」；要回帖请给出已有主题链接或编号。
+5. **核对回执。** 新主题调用 `discourse_create_topic`，传 `title`、`raw` 和用户选择的 `category_id`；回帖调用 `discourse_create_post`，传 `topic_id`、`raw`，回复指定楼层时还可传 `reply_to_post_number`。成功回执分别用确认的主题编号、楼层编号构造本站直达链接。超时后论坛可能已经收帖；保留回执，先按作者和标题搜索或打开原主题核对，查到后交回原链接。结果仍不清楚时保留草稿，由用户决定是否再次提交。[原生工具契约](https://github.com/discourse/discourse/blob/main/lib/discourse_mcp/core_primitives.rb) · [返回字段](https://github.com/discourse/discourse/blob/main/lib/discourse_mcp/tools/topic_writes.rb)
+
+本仓库的验收使用本地模拟论坛、测试账号和虚构内容。接入自己的社区后，可以在约定的测试分类核验一次真实授权和发帖。
 
 ### Slack 公开频道
 

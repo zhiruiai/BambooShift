@@ -36,6 +36,9 @@ pub fn validate_setup(url: &str, origin: &str, body: &Value) -> Result<()> {
         return Ok(());
     }
     validate_endpoint(url, "oauth")?;
+    if body.get("scope").is_some() {
+        return Err(ApiError::bad("Slack 使用固定的只读授权范围。").with_code("SLACK_OAUTH_SETUP"));
+    }
     if !origin.starts_with("https://")
         || body["clientId"].as_str().is_none_or(str::is_empty)
         || body["clientSecret"].as_str().is_none_or(str::is_empty)

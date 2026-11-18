@@ -4,6 +4,7 @@ import './ChatComputerApproval.css';
 const labels: Record<string, UiTextKey> = {
   url: 'computer:inlineDetailUrl',
   selector: 'computer:inlineDetailTarget',
+  sha256: 'computer:imageSha256',
   text: 'computer:inlineDetailText',
   content: 'computer:inlineDetailContent',
   path: 'computer:inlineDetailPath',

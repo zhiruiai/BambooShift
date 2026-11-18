@@ -39,6 +39,22 @@ pub(super) async fn execute(
     let authorize = authority(job, decision);
     authorize().await?;
     let kind = action["type"].as_str().unwrap_or("");
+    if kind == "browser_attach_image" {
+        let target = job.target.state().await;
+        let source = super::browser_image::source(
+            &controller.store,
+            &action["payload"],
+            &job.context,
+            &target["targetRevision"],
+        )
+        .await?;
+        if ["fileId", "sourceName", "path", "sha256"]
+            .iter()
+            .any(|key| action["payload"][*key] != source[*key])
+        {
+            return Err(ApiError::new(409, "已审批的图片来源已变化，请重新选择。"));
+        }
+    }
     if kind == skill_scripts::KIND {
         skill_scripts::require_target(controller, &job.target).await?;
         let input = skill_scripts::worker_payload(
@@ -90,11 +106,12 @@ pub(super) async fn execute(
     if matches!(kind, "remote_shell" | "local_shell") {
         request.shell_id = action["id"].as_str().map(str::to_owned);
     }
-    let value = job
-        .target
-        .request(request, authorize.clone())
-        .await?
-        .json()?;
+    let response = job.target.request(request, authorize.clone()).await;
+    let value = if kind == "browser_attach_image" {
+        super::browser_image::attachment_result(response, &action["payload"])?
+    } else {
+        response?.json()?
+    };
     authorize().await?;
     if accessibility::mutation(kind) {
         if value["ok"] != true {

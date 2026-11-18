@@ -1,0 +1,9 @@
+[
+  { "name": "知乎", "url": "https://zhuanlan.zhihu.com/write" },
+  { "name": "小红书", "url": "https://creator.xiaohongshu.com/" },
+  { "name": "DEV Community", "url": "https://dev.to/new" },
+  { "name": "Medium", "url": "https://medium.com/new-story" },
+  { "name": "CSDN", "url": "https://editor.csdn.net/md/" },
+  { "name": "头条号", "url": "https://mp.toutiao.com/" },
+  { "name": "WordPress.com", "url": "https://wordpress.com/post" }
+]

@@ -276,6 +276,11 @@ export function WorkspaceResourceDialogs({
           modelLabel={`${data.settings.profileName || data.settings.provider} · ${data.settings.model || uiText('workspace:text_e2c498da30fc')}`}
           modelConfigured={data.settings.configured}
           onTemplates={() => openTemplates({ kind: 'library' })}
+          publishingAccounts={{
+            bots: data.agents.filter((agent) => !isSharedBot(agent)),
+            initialBot: selectedComputerAgentId,
+            onOpen: (site, agentId) => openComputer(agentId, 'screen', site),
+          }}
           packagedSkills={{
             bots: canManage ? data.agents.filter((agent) => !isSharedBot(agent)) : [],
             skills: data.skills,

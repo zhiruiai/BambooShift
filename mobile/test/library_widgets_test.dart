@@ -319,7 +319,15 @@ void main() {
     expect(find.text('My draft'), findsOneWidget);
     await selectCoding();
     await tester.tap(find.text('Done'));
-    await tester.pumpAndSettle();
+    // Replacing the form also reloads the Bot's model picker through the mock API.
+    await waitForLibrary(
+      tester,
+      () =>
+          name.evaluate().isNotEmpty &&
+          tester.widget<TextFormField>(name).initialValue ==
+              'Coding Assistant' &&
+          find.byType(LinearProgressIndicator).evaluate().isEmpty,
+    );
     expect(find.text('My draft'), findsNothing);
     expect(find.text('Coding Assistant'), findsOneWidget);
     expect(tester.widget<TextFormField>(name).enabled, isTrue);

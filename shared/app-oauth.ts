@@ -28,4 +28,6 @@ export interface StartAppOAuth {
   expectedRevision: string;
   clientId?: string;
   clientSecret?: string;
+  /** Space-separated OAuth scopes requested by the workspace owner. */
+  scope?: string;
 }

@@ -110,7 +110,10 @@ function createController(
   });
   const openAppAuthorization = createAuthorizationHandler({
     getConnection,
+    getWindow,
     foregroundFrame,
+    dialog,
+    t,
     now,
     shell,
   });

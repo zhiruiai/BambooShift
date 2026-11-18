@@ -25,7 +25,10 @@ import { ComputerSurface, MacAppsStatus } from '../ComputerSurface';
 import { ComputerActionEntry } from './ComputerActionEntry';
 import { ComputerManualControlsView } from './ComputerManualControlsView';
 import { type ComputerDialogModel } from './types';
-export function ComputerScreenView(model: ComputerDialogModel) {
+import type { PublishingSite } from '../../publishingAccounts';
+export function ComputerScreenView(
+  model: ComputerDialogModel & { publishingSite?: PublishingSite },
+) {
   const {
     panel,
     lifecyclePending,
@@ -77,9 +80,6 @@ export function ComputerScreenView(model: ComputerDialogModel) {
     run,
     scope,
     setUrl,
-    setPointerMode,
-    inputText,
-    setInputText,
     visibleActions,
     identity,
     preparing,
@@ -255,12 +255,14 @@ export function ComputerScreenView(model: ComputerDialogModel) {
                     otherControlled ||
                     (isDesktop && !computer.desktop?.authorized)
                   }
-                  onClick={() => void startTakeover()}
+                  onClick={() => void startTakeover(isDesktop ? undefined : model.publishingSite)}
                 >
                   {inputBusy ? <Loader2 className="spin" size={14} /> : <MousePointer2 size={14} />}
                   {inputBusy
                     ? uiText('computer:text_a9b5182570b7')
-                    : uiText('computer:text_692f577ab078')}
+                    : model.publishingSite && !isDesktop
+                      ? uiText('apps:publishingStartLogin')
+                      : uiText('computer:text_692f577ab078')}
                 </button>
               )}
             </div>

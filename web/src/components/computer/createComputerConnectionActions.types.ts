@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import type { ComputerState } from '../../../../shared/types';
 import { type FileComputerAction } from '../ComputerFiles';
 import { type Lease, type TakeoverStatus } from './types';
@@ -26,7 +27,7 @@ export interface ComputerConnectionActionsContext {
   loadActions: () => Promise<void>;
   refresh: () => Promise<void>;
   panelRef: import('react').RefObject<'screen' | 'files'>;
-  approvalState: import('react').RefObject<{
+  approvalState: RefObject<{
     actions: FileComputerAction[];
     owner: boolean;
     userId: string | undefined;

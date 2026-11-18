@@ -32,6 +32,78 @@ fn last_tool(body: &Value) -> Value {
 }
 
 #[tokio::test]
+async fn publishing_sites_reaches_the_bot_with_the_saved_editor_and_its_guidance() {
+    let mut g = Group::new().await;
+    configure_node(&mut g);
+    let site = json!({"name":"Engineering Journal","url":"https://journal.example.com/write"});
+    let (status, _) =
+        g.f.request(
+            "POST",
+            &g.f.path("/publishing-sites"),
+            Some(site.clone()),
+            false,
+            Some(&g.f.owner),
+        )
+        .await;
+    assert_eq!(status, 200);
+    let count = Arc::new(AtomicUsize::new(0));
+    let step = count.clone();
+    let model = Model::new(Arc::new(move |body| {
+        let n = step.fetch_add(1, Ordering::SeqCst);
+        let site = site.clone();
+        Box::pin(async move {
+            match n {
+                0 => call("workspace_publishing_sites", json!({})),
+                1 => {
+                    assert!(
+                        last_tool(&body)["sites"]
+                            .as_array()
+                            .unwrap()
+                            .contains(&site)
+                    );
+                    call(
+                        "workspace_publishing_sites",
+                        json!({"name":"engineering journal","language":"zh-CN"}),
+                    )
+                }
+                2 => {
+                    let guide = last_tool(&body);
+                    assert_eq!(guide["site"], site);
+                    assert_eq!(guide["workflow"], "web-publishing");
+                    assert!(guide["instructions"].as_str().unwrap().contains("草稿"));
+                    assert!(
+                        guide["files"]["references/editors.md"]
+                            .as_str()
+                            .unwrap()
+                            .contains("Medium")
+                    );
+                    call("workspace_publishing_sites", json!({"name":"Zhihu"}))
+                }
+                3 => {
+                    assert_eq!(last_tool(&body)["workflow"], "zhihu-article-publishing");
+                    finish("I found the saved editor and its publishing instructions.")
+                }
+                _ => panic!("Unexpected publishing lookup"),
+            }
+        })
+    }))
+    .await;
+    g.configure(&model).await;
+    g.send(
+        "Find our engineering journal and its publishing guidance.",
+        "followUp",
+        false,
+    )
+    .await;
+    let messages = g.done().await;
+    assert!(messages.iter().any(|m| m["status"] == "done"
+        && m["content"] == "I found the saved editor and its publishing instructions."));
+    assert_eq!(count.load(Ordering::SeqCst), 4);
+    drop(model);
+    g.close().await;
+}
+
+#[tokio::test]
 async fn actual_pdf_and_docx_text_is_parsed_in_the_worker_then_delivered_to_pi() {
     let _parser_fixture = PARSER_FIXTURES.lock().await;
     let mut g = Group::new().await;

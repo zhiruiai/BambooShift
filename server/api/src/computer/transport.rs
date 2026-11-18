@@ -273,6 +273,13 @@ impl Target {
             if error["code"] == "WORKER_CONNECTION_INVALID" {
                 self.poison();
             }
+            if request.path == "/execute"
+                && (error["code"] == super::browser_image::UNKNOWN || reply.status >= 500)
+                && serde_json::from_slice::<Value>(&request.body)
+                    .is_ok_and(|body| body["type"] == "browser_attach_image")
+            {
+                return Err(super::browser_image::unknown());
+            }
             if request.path == "/execute" && self.saved.has(model::MACOS_ACCESSIBILITY) {
                 if let Some(error) = error["code"]
                     .as_str()

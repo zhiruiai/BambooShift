@@ -1,6 +1,15 @@
 'use strict';
-const { appAuthorizationRequest } = require('./security.cjs');
-function createAuthorizationHandler({ getConnection, foregroundFrame, now, shell }) {
+const { appAuthorizationRequest, trustedProductSender } = require('./security.cjs');
+const { openLocalAuthorization } = require('./local-authorization.cjs');
+function createAuthorizationHandler({
+  getConnection,
+  getWindow,
+  foregroundFrame,
+  now,
+  shell,
+  dialog,
+  t,
+}) {
   async function openAppAuthorization(event, value) {
     const current = getConnection();
     const frame = current && foregroundFrame(event.sender, current.origin);
@@ -19,27 +28,29 @@ function createAuthorizationHandler({ getConnection, foregroundFrame, now, shell
       throw new Error('请在当前工作空间点击授权按钮。');
     current.oauthOpening = true;
     const originalUrl = frame.url;
-    const valid = () =>
+    const valid = (foreground = true) =>
       getConnection() === current &&
+      trustedProductSender(event, current) &&
       event.senderFrame === frame &&
-      foregroundFrame(event.sender, current.origin) === frame &&
+      (!foreground || foregroundFrame(event.sender, current.origin) === frame) &&
       frame.url === originalUrl;
-    try {
-      const endpoint = `${current.origin}/api/workspaces/${request.workspaceId}/apps/${request.connectionId}/oauth/${request.flowId}/launch`;
-      const response = await current.view.webContents.session.fetch(endpoint, {
-        method: 'POST',
+    const root = `${current.origin}/api/workspaces/${request.workspaceId}/apps/${request.connectionId}/oauth/${request.flowId}`;
+    async function read(suffix, method, foreground = true) {
+      if (!valid(foreground)) throw new Error();
+      const response = await current.view.webContents.session.fetch(root + suffix, {
+        method,
         credentials: 'include',
         redirect: 'error',
         cache: 'no-store',
         headers: {
-          'Content-Type': 'application/json',
+          ...(method === 'POST' && { 'Content-Type': 'application/json' }),
           Origin: current.origin,
           'X-OpenBot-Expected-User': request.expectedUserId,
         },
-        body: '{}',
-        signal: AbortSignal.timeout(15000),
+        ...(method === 'POST' && { body: '{}' }),
+        signal: AbortSignal.any([current.healthCheck.signal, AbortSignal.timeout(15000)]),
       });
-      if (!valid() || !response.ok || !response.body) throw new Error();
+      if (!valid(foreground) || !response.ok || !response.body) throw new Error();
       const reader = response.body.getReader();
       let length = 0;
       const chunks = [];
@@ -48,13 +59,28 @@ function createAuthorizationHandler({ getConnection, foregroundFrame, now, shell
           const { done, value: chunk } = await reader.read();
           if (done) break;
           length += chunk.byteLength;
-          if (length > 4096 || !valid()) throw new Error();
+          if (length > 16384 || !valid(foreground)) throw new Error();
           chunks.push(Buffer.from(chunk));
         }
       } finally {
         await reader.cancel().catch(() => {});
       }
-      const result = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+      if (!valid(foreground)) throw new Error();
+      return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    }
+    try {
+      if (current.managed)
+        return await openLocalAuthorization({
+          current,
+          request,
+          read,
+          valid,
+          dialog,
+          getWindow,
+          t,
+          shell,
+        });
+      const result = await read('/launch', 'POST');
       if (!valid() || result.launchPath !== request.launchPath) throw new Error();
       await shell.openExternal(current.origin + request.launchPath);
       return { opened: true };

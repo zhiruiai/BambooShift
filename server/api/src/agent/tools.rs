@@ -113,6 +113,11 @@ pub(super) fn filter_runtime_capabilities(
                 .as_str()
                 .is_some_and(|name| name.starts_with("shared_") || name == "read_shared_file")
         });
+    } else {
+        definitions
+            .as_array_mut()
+            .unwrap()
+            .retain(|tool| tool["name"] != "workspace_publishing_sites");
     }
 }
 pub(crate) struct ToolContext<'a> {

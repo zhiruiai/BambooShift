@@ -53,6 +53,11 @@ async function fixture() {
       res.end('self.addEventListener("fetch",()=>{});');
       return;
     }
+    if (req.url === '/persistent-login')
+      res.setHeader(
+        'Set-Cookie',
+        'fixtureSession=publisher-synthetic; Path=/; Max-Age=600; HttpOnly; SameSite=Lax',
+      );
     if (req.url === '/login')
       res.setHeader(
         'Set-Cookie',
@@ -361,6 +366,36 @@ test(
     } finally {
       release.resolve();
       await engine.close();
+      await f.close();
+    }
+  },
+);
+
+test(
+  'an owned work browser reuses a persistent publisher sign-in after restart and isolates other profiles',
+  realBrowser,
+  async () => {
+    const f = await fixture();
+    async function open(profile: string, route: string) {
+      const engine = createSharedBrowserEngine({
+        profileDir: join(f.directory, profile),
+        headless: true,
+        createProxy: f.createProxy,
+      });
+      try {
+        const { page } = await engine.screen('publishing-bot').open();
+        await page.goto(f.origin + route);
+        await page.goto(f.origin + '/creator');
+        return await page.locator('#cookie').innerText();
+      } finally {
+        await engine.close();
+      }
+    }
+    try {
+      assert.match(await open('workspace-a', '/persistent-login'), /publisher-synthetic/);
+      assert.match(await open('workspace-a', '/creator'), /publisher-synthetic/);
+      assert.doesNotMatch(await open('workspace-b', '/creator'), /publisher-synthetic/);
+    } finally {
       await f.close();
     }
   },

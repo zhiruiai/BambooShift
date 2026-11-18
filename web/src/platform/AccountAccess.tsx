@@ -20,7 +20,7 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-import type { AccountSession, WorkspaceSummary } from '../../../shared/platform';
+import type { AccountSession } from '../../../shared/platform';
 import { TeamCreateDialog } from './account/TeamCreateDialog';
 import { platformApi, workspacePath } from './platformApi';
 import './Platform.css';

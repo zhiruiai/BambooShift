@@ -1,3 +1,4 @@
+import type { Dispatch, RefObject, SetStateAction } from 'react';
 import type { Conversation, Message } from '../../../shared/types';
 import { type ComposerState, type SendAttempt } from '../chatDrafts';
 import { type DictationCapture } from '../dictation';
@@ -48,14 +49,14 @@ export interface RoutineNavigationContext {
   };
   routineChatInput: import('react').RefObject<{ dictationBusy: boolean }>;
   compositionRef: import('react').RefObject<boolean>;
-  pendingDictation: import('react').RefObject<{ capture: DictationCapture; text: string } | null>;
+  pendingDictation: RefObject<{ capture: DictationCapture; text: string } | null>;
   routineChatOpening: import('react').RefObject<boolean>;
   composersRef: import('react').RefObject<Record<string, ComposerState>>;
   emptyDraft: import('react').RefObject<ComposerState>;
   setRoutineChatBusy: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   setRoutineChatError: import('react').Dispatch<import('react').SetStateAction<string>>;
-  setRoutineChatPending: import('react').Dispatch<
-    import('react').SetStateAction<
+  setRoutineChatPending: Dispatch<
+    SetStateAction<
       { request: RoutineChatRequest; draft: ComposerState; agentName: string } | undefined
     >
   >;

@@ -187,11 +187,23 @@ async fn legacy_keys_migrate_to_private_file_and_survive_restart_without_sqlite_
         model::runtime_config(&resumed).await.unwrap()["apiKey"],
         "SYNTHETIC_MIGRATED_KEY"
     );
+    // Persist every WAL page before restoring the database at a different data root.
+    let (busy, _, _): (i64, i64, i64) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+        .fetch_one(&resumed.pool)
+        .await
+        .unwrap();
+    assert_eq!(busy, 0);
+    let database = resumed.directory.join("openbot.sqlite");
     restarted.close().await;
+    drop((store, registry, migrated, next, resumed, restarted));
     let destination = tempfile::tempdir().unwrap();
-    let relocated = destination.path().join("relocated-data");
-    std::fs::rename(dir.path(), &relocated).unwrap();
-    let moved = WorkspaceRegistry::new(relocated);
+    let relocated = destination.path().join("spaces").join(&wid);
+    std::fs::create_dir_all(relocated.join("config")).unwrap();
+    std::fs::copy(database, relocated.join("openbot.sqlite")).unwrap();
+    // Moving the private file prevents an absolute reference to the old root from succeeding.
+    std::fs::rename(&file, relocated.join("config/models.private.json")).unwrap();
+    assert!(!file.try_exists().unwrap());
+    let moved = WorkspaceRegistry::new(destination.path().to_owned());
     let restored = moved.get(&wid, &wid).await.unwrap();
     assert_eq!(
         model::runtime_config(&restored).await.unwrap()["apiKey"],

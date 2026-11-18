@@ -20,6 +20,7 @@ export type Props = {
   onComputer: () => void;
   onSettings: () => void;
   onTemplates?: () => void;
+  publishingAccounts?: import('./PublishingAccountsPanel').PublishingAccounts;
   packagedSkills?: {
     bots: readonly Pick<BotAgent, 'id' | 'name'>[];
     skills: readonly Skill[];

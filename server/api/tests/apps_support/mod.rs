@@ -18,6 +18,8 @@ use std::{
 };
 use tokio::sync::Mutex;
 
+pub type ToolResponder = Box<dyn Fn(&Value) -> Value + Send + Sync>;
+
 pub struct Remote {
     pub origin: String,
     pub calls: AtomicUsize,
@@ -36,6 +38,7 @@ pub struct Remote {
     pub codes: Mutex<HashMap<String, Value>>,
     pub registrations: Mutex<HashMap<String, Value>>,
     pub catalog: Mutex<Option<Vec<Value>>>,
+    pub tool_responder: Mutex<Option<ToolResponder>>,
 }
 pub struct Server {
     pub remote: Arc<Remote>,
@@ -67,6 +70,7 @@ impl Server {
             codes: Mutex::new(HashMap::new()),
             registrations: Mutex::new(HashMap::new()),
             catalog: Mutex::new(None),
+            tool_responder: Mutex::new(None),
         });
         let app = Router::new().fallback(endpoint).with_state(remote.clone());
         let task = tokio::spawn(async move {
@@ -139,10 +143,12 @@ async fn endpoint(State(remote): State<Arc<Remote>>, request: Request) -> Respon
                     while remote.hold.load(Ordering::SeqCst) {
                         tokio::time::sleep(std::time::Duration::from_millis(20)).await;
                     }
-                    json_response(
-                        200,
-                        json!({"jsonrpc":"2.0","id":body["id"],"result":{"content":[{"type":"text","text":format!("{} {auth}",body["params"]["arguments"]["text"].as_str().unwrap_or("done"))}],"isError":false}}),
-                    )
+                    let responder = remote.tool_responder.lock().await;
+                    let result = match responder.as_ref() {
+                        Some(respond) => respond(&body["params"]),
+                        None => json!({"content":[{"type":"text","text":format!("{} {auth}",body["params"]["arguments"]["text"].as_str().unwrap_or("done"))}],"isError":false}),
+                    };
+                    json_response(200, json!({"jsonrpc":"2.0","id":body["id"],"result":result}))
                 }
                 _ => json_response(400, json!({"error":"unsupported"})),
             }

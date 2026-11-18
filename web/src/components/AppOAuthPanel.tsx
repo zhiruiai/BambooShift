@@ -2,6 +2,7 @@ import { serviceText } from '../i18n/serviceText';
 import { uiText } from '../i18n';
 import { useEffect, useRef, useState } from 'react';
 import { ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import slackPolicy from '../../../shared/slack-mcp.json';
 import type { ConnectedApp } from '../../../shared/app-connections';
 import type { AppOAuthFlow, StartAppOAuth } from '../../../shared/app-oauth';
 import { createAppConnectionScope } from '../appConnections';
@@ -26,7 +27,8 @@ function OAuthPanel({ app, workspaceId, userId, disabled = false, onBusy, onChan
     [error, setError] = useState(''),
     [uncertain, setUncertain] = useState(false);
   const [clientId, setClientId] = useState(''),
-    [clientSecret, setClientSecret] = useState('');
+    [clientSecret, setClientSecret] = useState(''),
+    [requestedScope, setRequestedScope] = useState('');
   const running = useRef(false),
     sequence = useRef(0),
     uncertainRef = useRef(false),
@@ -108,6 +110,9 @@ function OAuthPanel({ app, workspaceId, userId, disabled = false, onBusy, onChan
               expectedRevision: latest.current.app.revision,
               ...(clientId.trim() ? { clientId: clientId.trim() } : {}),
               ...(clientSecret ? { clientSecret } : {}),
+              ...(app.url !== slackPolicy.endpoint && requestedScope.trim()
+                ? { scope: requestedScope.trim() }
+                : {}),
             }
           : {};
       const result = await scope.request<AppOAuthFlow>(
@@ -236,6 +241,20 @@ function OAuthPanel({ app, workspaceId, userId, disabled = false, onBusy, onChan
                 />
               </label>
               <p className="field-help">{uiText('apps:text_a320606c981d')}</p>
+              {app.url !== slackPolicy.endpoint && (
+                <label>
+                  {uiText('apps:requestedScope')}
+                  <input
+                    value={requestedScope}
+                    disabled={busy || disabled}
+                    autoComplete="off"
+                    spellCheck={false}
+                    maxLength={4096}
+                    onChange={(event) => setRequestedScope(event.target.value)}
+                  />
+                  <span className="field-help">{uiText('apps:requestedScopeHint')}</span>
+                </label>
+              )}
             </div>
           </details>
           <button

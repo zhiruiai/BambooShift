@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:openbot_mobile/core/api.dart';
+import 'package:openbot_mobile/core/avatar_preferences.dart';
 import 'package:openbot_mobile/features/bots/avatar_crop.dart';
 import 'package:openbot_mobile/features/bots/avatar_crop_dialog.dart';
 import 'package:openbot_mobile/features/chat/chat_screen.dart';
@@ -73,8 +74,15 @@ void main() {
       tester,
       () => find.byType(AvatarPackFace).evaluate().isNotEmpty,
     );
-    expect(find.byType(BotAvatar), findsNWidgets(18));
+    for (final family in builtinAvatarThemes) {
+      expect(
+        find.byWidgetPredicate((w) => w is BotAvatar && w.family == family),
+        findsNWidgets(3),
+        reason: 'Each built-in theme previews its three avatar shapes.',
+      );
+    }
     await tester.ensureVisible(find.text('Elephants'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Elephants'));
     await tester.pumpAndSettle();
     await waitFor(

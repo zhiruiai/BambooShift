@@ -43,15 +43,22 @@ lives in `web/`, and the independent operations site lives in `operations/`.
 The Flutter and Electron clients in `mobile/` and `desktop/` use the same
 workspace APIs.
 
-Keep each first-party source or test file at or below 500 lines. Use English code
-comments and put visible interface text in the Chinese and English catalogs. Split
-code by responsibility rather than compressing it to satisfy a line limit.
+Keep each first-party source or test file at or below 500 lines. Split code by
+responsibility, use English code comments and add visible interface text to both
+language catalogs.
 
-Start with the setup instructions in [README.md](README.md). Run the checks relevant
-to your change:
+Run `npm run lint` before requesting review. The existing CI source check runs the same rules. The check
+checks unused locals, imports and parameters in the production TypeScript
+projects, then verifies source policy and generated catalogs. Remove obsolete
+bindings. Preserve required side effects, public signatures and imports that
+register tools. Use an underscore for an unused callback parameter when its
+position is required. The normal build still type-checks test fixtures.
+[TypeScript locals](https://www.typescriptlang.org/tsconfig/noUnusedLocals.html)
+and [parameters](https://www.typescriptlang.org/tsconfig/noUnusedParameters.html).
+
+Choose additional checks for the code you changed.
 
 ```sh
-npm run check:source
 npm run check:privacy
 npm run backend:test
 npm run test:web
@@ -66,12 +73,27 @@ and `OPENBOT_BROWSER_EXECUTABLE` to its absolute executable path, then run
 in [docs/linux-desktop.md](docs/linux-desktop.md). Mobile package builds and device
 acceptance are separate from source analysis and tests.
 
-Write tests for behavior, authorization, cancellation and recovery. Use synthetic
-accounts, local protocol fixtures and temporary data. Keep real model calls,
-remote-computer operations and publication separate from automatic tests.
+Mobile CI runs `tool/flutter.sh analyze --no-pub` and the Flutter tests from
+`mobile/`. For Rust changes, build and run the affected tests. For additional
+lint diagnostics use Clippy from the same stable toolchain as the build.
+[Dart static analysis](https://dart.dev/tools/analysis) and
+[Clippy guidance](https://doc.rust-lang.org/clippy/continuous_integration/index.html).
 
-Explain the observable change and validation in a pull request. Keep credentials,
-private addresses, runtime databases, browser profiles, build artifacts and local
-machine paths out of commits. Configuration examples must use placeholders.
+### Reviewing a change
+
+- Trace the changed behavior from the user's entry point through its existing
+  callers. Identify which existing code can be reused and remove superseded
+  branches, state and dependencies after checking their callers.
+- Check boundaries where a retry, revoked permission, older saved data or a
+  concurrent action could change the result. For a regression, name the test
+  that failed before the fix and passed afterward.
+- For interface changes, exercise the interaction at desktop and narrow widths.
+  Include a screenshot or short recording from a clean workspace when the
+  layout or feedback changed. [Google's code review guide](https://google.github.io/eng-practices/review/reviewer/looking-for.html).
+
+In the PR, describe the user-visible outcome, what you ran and what still needs
+manual verification. Use synthetic accounts, local protocol fixtures and
+temporary data for automatic tests. Keep credentials, browser profiles and
+personal paths out of examples, logs and screenshots.
 
 Contributions are provided under the project's [MIT License](LICENSE).

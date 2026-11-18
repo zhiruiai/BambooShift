@@ -91,7 +91,9 @@ export function useWorkspaceState({
   const routineChatInput = useRef({ dictationBusy: false });
   const [computerPanel, setComputerPanel] = useState<'screen' | 'files'>('screen');
   const [computerAgentId, setComputerAgentId] = useState<string>();
-  const [computerConversation, setComputerConversation] = useState({
+  const [computerConversation, setComputerConversation] = useState<
+    import('../publishingAccounts').ComputerConversation
+  >({
     id: '',
     title: '',
     scope: '',

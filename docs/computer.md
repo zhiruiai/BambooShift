@@ -78,6 +78,8 @@ Web 或 Electron 中，在「设置 → 电脑」管理连接。「你的电脑�
 - `OPENBOT_BROWSER_HEADLESS=false`：显示独立浏览器窗口，供手动登录或接管；默认在后台运行。
 - `OPENBOT_BROWSER_ALLOWED_ORIGINS`：仅用于你控制的本地测试网页，填写逗号分隔的完整 origin，例如 `http://127.0.0.1:48080`。不能包含 BambooShift 控制面常用端口。
 
+要将聊天图片附到网页，Bot 先用 `upload_file` 把指定附件送入工作目录，从 `browser_tabs` 取当前编辑器的 `tabId`。将已完成的传输回执 ID 作为 `uploadActionId`，连同该 `tabId`、目标网站来源 `url` 和文件控件 `selector` 交给 `browser_attach_image`。服务从同一会话、Bot、请求者和电脑的上传记录取得路径与 SHA-256，并核查该用户在聊天中提供的附件。执行器读取同一份图片并交给当前页面，支持单张 PNG、JPEG 或 WebP，最大 10 MiB。收到附图回执后，在编辑器核对预览与发布结果。如果附图操作进入执行后超时、断开或被中止，网站可能已接收文件，先回原标签页检查草稿和缩略图，再决定下一步。
+
 独立浏览器默认拒绝访问本机、私有网络与云元数据地址；HTTP CONNECT 代理逐个连接检查并固定目标 IP，因此页面重定向和子请求也会受限。Chromium 的隐式 loopback 绕过已关闭，原生自动下载默认禁用，Service Worker 被禁用；按当前权限批准的 `browser_download` 通过有界读取保存导出文件。不要为不可信页面增加内网例外。完整授权不会解除这些网络边界。
 
 远程部署时，聊天服务和 Worker 都必须设置同一 `OPENBOT_PUBLIC_ORIGIN`。这个控制台域名在所有端口上都被浏览器硬性拒绝，测试白名单也不能覆盖；连接时聊天服务核对 Worker 声明的受保护域名，不一致则拒绝连接。这样即使控制台使用公网域名，Bot 也无法通过工作浏览器打开控制台自行批准操作。

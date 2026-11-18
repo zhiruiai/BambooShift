@@ -230,7 +230,11 @@ export function createWorkspaceDialogs(read: () => WorkspaceDialogsContext) {
     setCreateProfile(profile);
     setModal('create');
   }
-  function openComputer(agentId?: string | null, panel: 'screen' | 'files' = 'screen') {
+  function openComputer(
+    agentId?: string | null,
+    panel: 'screen' | 'files' = 'screen',
+    publishingSite?: import('../publishingAccounts').PublishingSite,
+  ) {
     const {
       sendScope,
       selectedComputerAgentId,
@@ -256,6 +260,7 @@ export function createWorkspaceDialogs(read: () => WorkspaceDialogsContext) {
       id: selected,
       title: conversation?.title || uiText('workspace:text_9800a458c16b'),
       scope: navigationScope,
+      ...(publishingSite && agentId ? { publishingLogin: { site: publishingSite, agentId } } : {}),
     });
     setComputerPanel(panel);
     setModal('computer');

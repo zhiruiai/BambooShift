@@ -46,20 +46,18 @@ class LayoutStrings extends LocalizationsDelegate<Strings> {
 }
 
 Future<void> loadCaptureFonts() async {
-  final latin = File(
-    '../.tools/flutter/bin/cache/artifacts/material_fonts/Roboto-Regular.ttf',
-  );
-  if (!latin.existsSync()) return;
-  final loader = FontLoader('CaptureSans')
-    ..addFont(SynchronousFuture(ByteData.sublistView(latin.readAsBytesSync())));
-  await loader.load();
-  final chinese = File('/System/Library/Fonts/STHeiti Medium.ttc');
-  if (chinese.existsSync()) {
-    await (FontLoader('CaptureChinese')..addFont(
-          SynchronousFuture(ByteData.sublistView(chinese.readAsBytesSync())),
-        ))
-        .load();
+  final sdk = Platform.environment['FLUTTER_ROOT']!;
+  final fonts = '$sdk/bin/cache/artifacts/material_fonts';
+  Future<void> load(String family, File file) {
+    final bytes = ByteData.sublistView(file.readAsBytesSync());
+    final loader = FontLoader(family)..addFont(SynchronousFuture(bytes));
+    return loader.load();
   }
+
+  await load('CaptureSans', File('$fonts/Roboto-Regular.ttf'));
+  await load('MaterialIcons', File('$fonts/MaterialIcons-Regular.otf'));
+  final chinese = File('/System/Library/Fonts/STHeiti Medium.ttc');
+  if (chinese.existsSync()) await load('CaptureChinese', chinese);
 }
 
 void expectReadableText(InlineSpan span, [double? inherited]) {
@@ -188,15 +186,19 @@ void main() {
                 home: RepaintBoundary(key: boundary, child: entry.value),
               ),
             );
-            if (entry.key == 'model-settings') {
-              final controller =
-                  (tester.state(find.byType(ModelSettings)) as dynamic)
-                      .controller;
-              await waitFor(
-                tester,
-                () =>
-                    controller.ready && !controller.loading && !controller.busy,
+            if (entry.key == 'bot-settings') {
+              final picker = find.byWidgetPredicate(
+                (widget) =>
+                    widget is DropdownButton<String> &&
+                    widget.onChanged != null &&
+                    widget.items!.any((item) => item.value == models.activeId),
               );
+              await waitFor(tester, picker.tryEvaluate);
+            } else if (entry.key == 'model-settings') {
+              final profile = find.text(
+                models.profiles.first['name'] as String,
+              );
+              await waitFor(tester, profile.tryEvaluate);
             } else {
               await tester.pumpAndSettle();
             }
@@ -215,17 +217,20 @@ void main() {
               final render =
                   boundary.currentContext!.findRenderObject()
                       as RenderRepaintBoundary;
-              final image = await render.toImage(pixelRatio: 1);
-              final bytes = await image.toByteData(
-                format: ui.ImageByteFormat.png,
-              );
               await tester.runAsync(() async {
-                await Directory(directory).create(recursive: true);
-                await File(
-                  '$directory/${entry.key}-$lang-${brightness.name}.png',
-                ).writeAsBytes(bytes!.buffer.asUint8List());
+                final image = await render.toImage(pixelRatio: 1);
+                try {
+                  final bytes = await image.toByteData(
+                    format: ui.ImageByteFormat.png,
+                  );
+                  await Directory(directory).create(recursive: true);
+                  await File(
+                    '$directory/${entry.key}-$lang-${brightness.name}.png',
+                  ).writeAsBytes(bytes!.buffer.asUint8List());
+                } finally {
+                  image.dispose();
+                }
               });
-              image.dispose();
             }
           }
           await tester.pumpWidget(const SizedBox());

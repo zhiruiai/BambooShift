@@ -1,3 +1,4 @@
+import { validPublishingAddress, type PublishingSite } from '../../publishingAccounts';
 import { type MouseEvent } from 'react';
 import { ApiError } from '../../api';
 import { PRIVATE_FRAME_UNSUPPORTED } from '../../computerFrameMedia';
@@ -5,7 +6,7 @@ import { uiText } from '../../i18n';
 import type { ComputerInputContext } from './createComputerInput.types';
 import { type Lease } from './types';
 export function createComputerInput(read: () => ComputerInputContext) {
-  async function startTakeover() {
+  async function startTakeover(site?: PublishingSite) {
     const {
       screenReady,
       takeoverSupported,
@@ -47,7 +48,21 @@ export function createComputerInput(read: () => ComputerInputContext) {
       });
       setClock(Date.now());
       setAutoRefresh(true);
-      await screenshot();
+      if (
+        site &&
+        validPublishingAddress(site.url) &&
+        value.surface === 'browser' &&
+        !read().isDesktop &&
+        !read().teachingBlocked &&
+        read().usableLease(value)
+      ) {
+        await scope.request('/takeover/input', 'POST', {
+          leaseId: value.leaseId,
+          type: 'navigate',
+          url: site.url,
+        });
+      }
+      if (current(version)) await screenshot();
     } catch (e) {
       if (current(version))
         setControlError(
