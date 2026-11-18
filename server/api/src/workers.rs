@@ -90,7 +90,8 @@ pub(crate) fn command(config: &Config, worker: Worker, node_options: &[&str]) ->
             if !loader.is_file() {
                 return Err(unavailable());
             }
-            command.arg("--import").arg(loader);
+            let specifier = url::Url::from_file_path(&loader).map_err(|_| unavailable())?;
+            command.arg("--import").arg(specifier.as_str());
         }
         command.arg(source);
     }
@@ -142,7 +143,9 @@ mod tests {
         let dev = command(&c, Worker::Agent, &[]).unwrap();
         let args = dev.as_std().get_args().collect::<Vec<_>>();
         assert_eq!(args[0], "--import");
-        assert_eq!(args[1], loader);
+        let preload = url::Url::parse(args[1].to_str().unwrap()).unwrap();
+        assert_eq!(preload.scheme(), "file");
+        assert_eq!(preload.to_file_path().unwrap(), loader);
         assert_eq!(args[2], source);
     }
     #[test]
