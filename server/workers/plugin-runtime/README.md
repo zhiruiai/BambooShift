@@ -66,10 +66,10 @@ export const reviewedPlugin: Plugin.Object<WorkerPluginContext> = {
 };
 ```
 
-Run the [complete standalone example](examples/minimal-plugin.fixture.ts) from the repository root after `npm ci`:
+Run the [complete standalone example](../../../tests/fixtures/workers/plugin-runtime/examples/minimal-plugin.fixture.ts) from the repository root after `npm ci`:
 
 ```sh
-node --import tsx server/workers/plugin-runtime/examples/minimal-plugin.fixture.ts
+node --import tsx tests/fixtures/workers/plugin-runtime/examples/minimal-plugin.fixture.ts
 ```
 
 It creates the real Cordis host with this example alone, rejects an ungranted tool, and disposes its timer and asynchronous cleanup. It prints `activeTimers: 0`, `cleanupCalls: 1` and `toolCalls: 0`. It needs no model, account, server, credentials or network service. The `.fixture.ts` file is test-only and is rejected by the release bundler if accidentally imported into a production worker. Put a reviewed implementation in a normal source module before registering it in `bundled.ts`.
@@ -97,5 +97,5 @@ The `cordis` aggregate package includes CLI/loader/schema/logger/timer modules; 
 Run the dedicated lifecycle tests with the repository's supported Node runtime:
 
 ```sh
-node --import tsx --test server/workers/plugin-runtime/*.test.ts server/workers/pi-worker/*.test.ts
+node --import tsx --test tests/workers/plugin-runtime/*.test.ts tests/workers/pi-worker/*.test.ts
 ```

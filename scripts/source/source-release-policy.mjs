@@ -3,6 +3,7 @@ import { constants } from 'node:fs';
 import { join, extname } from 'node:path';
 import { userInfo, homedir } from 'node:os';
 import { isIP } from 'node:net';
+import { isSourceFile, isTestTree } from './policy/files.mjs';
 
 export const releaseFiles = [
   'README.md',
@@ -22,6 +23,7 @@ export const releaseFiles = [
   'package.json',
   'package-lock.json',
   'tsconfig.json',
+  'tsconfig.tests.json',
 ];
 export const releaseRoots = [
   '.github',
@@ -30,6 +32,8 @@ export const releaseRoots = [
   'shared',
   'server',
   'scripts',
+  'tests',
+  'examples',
   'desktop',
   'mobile',
   'docs',
@@ -37,6 +41,7 @@ export const releaseRoots = [
 ];
 const ignored = new Set([
   'node_modules',
+  'test-results',
   'target',
   'dist',
   'build',
@@ -162,6 +167,15 @@ export async function collectReleaseFiles(root) {
           entry.name.endsWith('.private.json') ||
           /\.(?:jks|keystore|p12|pfx|mobileprovision)$/i.test(entry.name) ||
           (entry.name.startsWith('.env') && entry.name !== '.env.example')
+        )
+          continue;
+        // Test inputs belong in fixtures; local screenshots and database dumps do not ship.
+        if (
+          entry.isFile() &&
+          isTestTree(child) &&
+          !isSourceFile(child) &&
+          !child.endsWith('.md') &&
+          !child.includes('/fixtures/')
         )
           continue;
         if (child.startsWith('docs/showcase/') && !entry.isDirectory()) {

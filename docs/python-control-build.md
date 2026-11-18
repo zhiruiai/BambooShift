@@ -37,9 +37,9 @@ python3 scripts/python_tool_build.py all --verify
 ## 本地验证
 
 ```sh
-python3 scripts/python-tool-build.test.py
-python3 scripts/desktop-control.test.py
-python3 scripts/desktop-session.test.py
+python3 tests/scripts/python-tool-build.test.py
+python3 tests/scripts/desktop-control.test.py
+python3 tests/scripts/desktop-session.test.py
 ```
 
 原控制与会话测试先构建最新产物，再加载真实程序，保留输入校验、Unicode 交付、截图、取消清理和生命周期断言。构建测试覆盖完整清单、过期源、篡改产物、路径与符号链接，以及开发入口与生成入口一致性。这些检查不启动产品 GUI，也不代替新的 Linux 实机行为验收。

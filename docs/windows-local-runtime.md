@@ -23,7 +23,7 @@ The Rust backend, TypeScript/Pi workers, and shared product API remain the archi
 | Desktop launcher | [Local runtime](../desktop/local-runtime.cjs) assumes POSIX ownership, paths, and process groups. Host-command consent is coupled to the macOS Cua driver. | Separate runtime, shell, and desktop capabilities; implement Windows private storage and lifecycle handling. |
 | Command execution | [Host shell](../server/workers/computer-runtime/host-shell.ts) uses `/bin/sh` and POSIX process-group signals. | Add a Windows process supervisor with explicit shell semantics and bounded cancellation. |
 | Results and shutdown | [TypeScript result validation](../server/workers/computer-runtime/isolated-shell.ts) and [Rust validation](../server/api/src/computer/validation.rs) restrict exit codes to 0–255. [Local executor](../server/api/src/computer/local_executor.rs) kills descendant groups only on Unix. | Preserve Windows native exit codes and verify process-tree cleanup without inventing POSIX signals. |
-| Release qualification | [Windows build](../scripts/publishing/build-windows-client.mjs) and [smoke test](../scripts/check-windows-client.mjs) assert `serviceIncluded: false`. [Publication checks](../scripts/publishing/check-client-release.mjs) reject Windows bundled runtimes. | Qualify a complete Windows package before changing these release gates. |
+| Release qualification | [Windows build](../scripts/publishing/build-windows-client.mjs) and [smoke test](../tests/acceptance/check-windows-client.mjs) assert `serviceIncluded: false`. [Publication checks](../scripts/publishing/check-client-release.mjs) reject Windows bundled runtimes. | Qualify a complete Windows package before changing these release gates. |
 
 The [native dependency selector](../scripts/desktop/runtime-dependencies.mjs) also
 assumes separate Sharp and libvips packages. Windows package contents must be
@@ -121,7 +121,7 @@ and its tests also passed isolated Windows MSVC type checking, including the Win
 sharing-violation test; this is compilation, not native Windows execution.
 
 CI and Windows release jobs now run a
-[native persistence gate](../scripts/publishing/check-windows-foundation.mjs) before
+[native persistence gate](../tests/acceptance/publishing/check-windows-foundation.mjs) before
 building the connection client. It checks executed test counts as well as process
 success, and rejects ignored or empty test suites. The gate's orchestration and
 existing release-boundary tests passed locally; a native Windows run is still
@@ -161,11 +161,11 @@ the shared database guard. The harness includes the production private-file help
 and a narrow error adapter; it excludes SQLx, authorization, HTTP and native Windows
 execution. Database runtime behavior is validated separately on macOS.
 
-Program resolution and the portable [child-process test probe](../server/api/src/test_process.rs)
+Program resolution and the portable [child-process test probe](../server/api/tests/support/process.rs)
 passed the complete release-mode library target on macOS: **138 passed, zero failed**.
 Four tests were ignored in ordinary enumeration: three require external services or
 installed voices; the synthetic child is invoked explicitly by the lifecycle tests.
-Coverage includes [program selection](../server/api/src/executable_tests.rs), worker
+Coverage includes [program selection](../server/api/tests/unit/executable.rs), worker
 startup, avatar cancellation and revocation, document deadlines and process reaping.
 Only the program-resolution module and its tests passed isolated Windows MSVC type
 checking in this change. The process probe's Windows `Threading` branch was reviewed

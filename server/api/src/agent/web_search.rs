@@ -4,12 +4,6 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use std::collections::HashSet;
 use url::{Host, Url};
-#[cfg(test)]
-use {
-    super::exa_transport::{MAX_BODY, client_builder, sse_reply},
-    reqwest::{Client, StatusCode, header},
-    std::time::Duration,
-};
 
 const TOOL: &str = "web_search_advanced_exa";
 const MAX_SNIPPET: usize = 600;
@@ -68,22 +62,6 @@ fn request(query: &str, limit: usize) -> Result<Value> {
     )
 }
 
-#[cfg(test)]
-async fn execute(
-    client: &Client,
-    endpoint: &str,
-    request: Value,
-    limit: usize,
-) -> Result<Vec<SearchResult>> {
-    let result = exa_transport::execute(client, endpoint, request)
-        .await
-        .map_err(provider_error)?;
-    results(&search_payload(result)?, limit)
-}
-#[cfg(test)]
-fn payload(message: Value) -> Result<Value> {
-    search_payload(exa_transport::payload(message).map_err(provider_error)?)
-}
 fn search_payload(mut result: Value) -> Result<Value> {
     if let Some(structured) = result.get_mut("structuredContent") {
         if !structured.is_null() {
@@ -212,5 +190,5 @@ fn bad_response() -> ApiError {
 }
 
 #[cfg(test)]
-#[path = "web_search_tests.rs"]
+#[path = "../../tests/unit/agent/web_search.rs"]
 mod tests;

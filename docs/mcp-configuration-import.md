@@ -38,9 +38,9 @@ Preview requires the workspace owner and the normal account, membership and requ
 
 The [acceptance record](evidence/mcp-import-20261113.json) separates real backend HTTP checks, browser interaction and Flutter widget coverage from provider sign-in and physical-device testing.
 
-- Shared synthetic inputs: [remote-mcp-import.json](../shared/fixtures/remote-mcp-import.json).
+- Shared synthetic inputs: [remote-mcp-import.json](../tests/fixtures/shared/remote-mcp-import.json).
 - Rust API authorization, canonicalization, limits and absence of connection creation: [apps_import_preview.rs](../server/api/tests/apps_import_preview.rs).
-- Web projection and lifecycle tests: [remoteMcpImport.shared.test.ts](../web/src/remoteMcpImport.shared.test.ts), [remoteMcpImport.interaction.test.ts](../web/src/remoteMcpImport.interaction.test.ts), and [browser flow](../web/src/browserTests/mcp-config-import.browser.test.ts).
+- Web projection and lifecycle tests: [remoteMcpImport.shared.test.ts](../tests/web/remoteMcpImport.shared.test.ts), [remoteMcpImport.interaction.test.ts](../tests/web/remoteMcpImport.interaction.test.ts), and [browser flow](../tests/web/browser/mcp-config-import.browser.test.ts).
 - Flutter projection, transport and interaction tests: [remote_mcp_import_test.dart](../mobile/test/remote_mcp_import_test.dart), [mcp_import_preview_test.dart](../mobile/test/mcp_import_preview_test.dart), and [mcp_import_widgets_test.dart](../mobile/test/mcp_import_widgets_test.dart).
 
 The tests use synthetic configuration and credentials. They do not establish compatibility with every provider's sign-in flow. Local command MCP installation and unattended batch connection creation are not part of this importer.

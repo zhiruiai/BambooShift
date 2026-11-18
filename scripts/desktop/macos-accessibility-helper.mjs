@@ -114,7 +114,7 @@ export async function buildMacAccessibilityHelper({
     const tests = join(testOutput, 'DesktopCoreTests');
     await command(
       '/usr/bin/xcrun',
-      [...flags, core, `${nativeSource}/DesktopCoreTests.swift`, '-o', tests],
+      [...flags, core, 'tests/native/macos/DesktopCoreTests.swift', '-o', tests],
       sourceRoot,
     );
     await command(tests, [], sourceRoot);

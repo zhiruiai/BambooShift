@@ -201,7 +201,7 @@ console.log(JSON.stringify({ actualLoadedContained, svgInput: sharp.format.svg.i
         'tsx',
         '--test',
         '--test-reporter=tap',
-        'server/workers/document-worker/tests/image-contract.test.ts',
+        'tests/workers/document-worker/image-contract.test.ts',
       ],
       {
         env: {

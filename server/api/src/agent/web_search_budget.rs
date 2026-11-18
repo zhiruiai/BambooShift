@@ -119,5 +119,5 @@ impl WebSearchBudget {
 }
 
 #[cfg(test)]
-#[path = "web_search_budget_tests.rs"]
+#[path = "../../tests/unit/agent/web_search_budget.rs"]
 mod tests;

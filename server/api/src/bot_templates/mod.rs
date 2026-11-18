@@ -7,6 +7,7 @@ mod public_routes;
 mod published;
 mod routes;
 #[cfg(test)]
+#[path = "../../tests/unit/bot_templates/storage.rs"]
 mod storage_tests;
 mod store;
 pub use store::BotTemplates;

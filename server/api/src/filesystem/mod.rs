@@ -128,4 +128,5 @@ pub fn open_file(parent: &Dir, name: &str) -> io::Result<File> {
 }
 
 #[cfg(test)]
+#[path = "../../tests/unit/filesystem/mod.rs"]
 mod tests;

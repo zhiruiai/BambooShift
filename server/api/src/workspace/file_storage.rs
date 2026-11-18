@@ -235,5 +235,5 @@ pub(super) fn rename_unique(
 }
 
 #[cfg(test)]
-#[path = "file_storage_tests.rs"]
+#[path = "../../tests/unit/workspace/file_storage.rs"]
 mod tests;

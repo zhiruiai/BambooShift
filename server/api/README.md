@@ -49,7 +49,7 @@ npm run backend:package -- --out .build/backend-package
 cd .build/backend-package/runtime
 npm ci --omit=dev --ignore-scripts
 cd ../../..
-node scripts/check-backend-package.mjs .build/backend-package
+node tests/acceptance/check-backend-package.mjs .build/backend-package
 ```
 
 The packager builds and copies only `openbot-backend` and `openbot-image-worker`, compiles the four execution entries to `.mjs`, copies the separate public `dist` and `operations-dist` trees and adds placeholder deployment documentation. It never copies the migration probe, former Node server, application source, private configuration or user data. It rejects links and unexpected files in the public asset tree, writes into a staging directory and publishes only a complete package. An existing output directory is never overwritten implicitly.

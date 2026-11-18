@@ -245,5 +245,5 @@ pub async fn active(store: &WorkspaceStore) -> Result<Lease> {
 }
 
 #[cfg(test)]
-#[path = "avatar_jobs_tests.rs"]
+#[path = "../../tests/unit/workspace/avatar_jobs.rs"]
 mod tests;

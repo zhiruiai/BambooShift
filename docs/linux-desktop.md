@@ -75,7 +75,7 @@ OPENBOT_WORKER_SCREEN_LIFECYCLE_HELPER=/opt/openbot/desktop-session.py
 
 Worker 的 `operation-cleanup-v1` 通过 `X-OpenBot-Operation-Id` 跟踪截图、普通执行、动作留图、人工输入与文件传输。`POST /operations/cancel` 等待实际操作退出后才确认；先到的取消会留下记录，迟到执行与重复执行不能重放。每屏独立记录，未知清理会停用该屏，不能仅移除能力标签后继续执行。控制器成功响应与失败退出均核对清理回执；HTTP 中断、已收到动作结果或可选截图失败，都不能单独证明后台执行已经结束。远程 shell 继续使用独立 `/shell/cancel`，两类清理都参与任务租约的 `drainRun`。
 
-当前画面池执行合同见 [Worker 测试](../server/workers/computer-runtime/tests/computer-screen-pool.test.ts)，Rust 绑定与维护合同见[生命周期测试](../server/api/tests/computer_lifecycle.rs)及[恢复测试](../server/api/tests/computer_recovery.rs)。共享浏览器检查见[浏览器引擎测试](../server/workers/computer-runtime/tests/browser-engine.test.ts)。通过 `npm run test:runtime`、`npm run backend:test` 运行当前合同，实际 Chrome 检查使用 `npm run test:browser`；这里不把历史 VM 数字当作本次全量结果。两套真实 Xvfb 的并行操作另由上述 VM 证据验证；本地及 VM 检查均不代表产品网页视觉验收。
+当前画面池执行合同见 [Worker 测试](../tests/workers/computer-runtime/computer-screen-pool.test.ts)，Rust 绑定与维护合同见[生命周期测试](../server/api/tests/computer_lifecycle.rs)及[恢复测试](../server/api/tests/computer_recovery.rs)。共享浏览器检查见[浏览器引擎测试](../tests/workers/computer-runtime/browser-engine.test.ts)。通过 `npm run test:runtime`、`npm run backend:test` 运行当前合同，实际 Chrome 检查使用 `npm run test:browser`；这里不把历史 VM 数字当作本次全量结果。两套真实 Xvfb 的并行操作另由上述 VM 证据验证；本地及 VM 检查均不代表产品网页视觉验收。
 
 截图和输入结果仅用于现有画面与操作历史。执行引擎的真实 Xvfb 截图不能证明 BambooShift 产品页面已通过浏览器或手机客户端视觉验收。
 

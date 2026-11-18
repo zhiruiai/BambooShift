@@ -25,7 +25,7 @@
 复测需要 Chrome、已编译的 Rust 服务，以及两个分别含有 `dist/` 与 `operations-dist/` 的生产构建目录。脚本自动创建并回收隔离的服务和账号，输出每次导航请求的资源、字节数和耗时。
 
 ```sh
-node scripts/run.mjs scripts/measure-first-load.ts /path/to/before /path/to/after > first-load.json
+node scripts/run.mjs tests/performance/measure-first-load.ts /path/to/before /path/to/after > first-load.json
 ```
 
 ## 设置与页面滚动布局（2026-11-14）

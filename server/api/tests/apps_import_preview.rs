@@ -8,7 +8,7 @@ use workspace_support::Fixture;
 
 fn fixtures() -> Value {
     serde_json::from_str(include_str!(
-        "../../../shared/fixtures/remote-mcp-import.json"
+        "../../../tests/fixtures/shared/remote-mcp-import.json"
     ))
     .unwrap()
 }

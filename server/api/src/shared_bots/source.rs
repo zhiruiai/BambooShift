@@ -203,5 +203,5 @@ fn text(value: &Value, max: usize, empty: bool) -> bool {
 }
 
 #[cfg(test)]
-#[path = "source_tests.rs"]
+#[path = "../../tests/unit/shared_bots/source.rs"]
 mod tests;

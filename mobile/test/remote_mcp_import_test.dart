@@ -27,7 +27,7 @@ void main() {
   final fixture =
       jsonDecode(
             File(
-              '../shared/fixtures/remote-mcp-import.json',
+              '../tests/fixtures/shared/remote-mcp-import.json',
             ).readAsStringSync(),
           )
           as Map<String, dynamic>;

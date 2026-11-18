@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { normalizePath, type UserConfig } from 'vite';
 import { webLicenseInputs } from './web-license-inputs';
+import testDirectories from './source/policy/test-directories.json';
 
 type Environment = Record<string, string | undefined>;
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -32,6 +33,7 @@ export function frontendConfig(
     '/**/' +
     directory +
     '/**';
+  const testTrees = testDirectories.map(scoped);
   const operations = mode === 'operations';
   const target = apiTarget(mode, env);
   return {
@@ -47,6 +49,7 @@ export function frontendConfig(
       strictPort: true,
       watch: {
         ignored: [
+          ...testTrees,
           scoped('.local'),
           scoped('dist'),
           scoped('data'),
@@ -60,6 +63,7 @@ export function frontendConfig(
       fs: {
         allow: [projectRoot],
         deny: [
+          ...testTrees,
           scoped('.local'),
           '.env',
           '.env.*',

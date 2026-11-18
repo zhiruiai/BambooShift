@@ -140,5 +140,5 @@ async fn serve(state: State, request: Request, directory: &str, operations: bool
 }
 
 #[cfg(test)]
-#[path = "web_tests.rs"]
+#[path = "../tests/unit/web.rs"]
 mod tests;

@@ -107,7 +107,7 @@ Rust 与既有网页功能的重构、停写备份、实际切换、全量回归
 
 ## Flutter 现有源码专项验证
 
-2026-11-06 使用已缓存的 Flutter 3.47.9 / Dart 3.13.7，执行 `flutter analyze --no-pub` 与 `flutter test --no-pub --reporter expanded`。持久回执接线后的最终分析零问题、66 项测试全部通过。没有执行依赖下载、APK/iOS 构建、模拟器或设备安装。最终日志为 `openbot-mobile-durable-routines-analyze-final.log`、`openbot-mobile-durable-routines-tests-final.log`；前一轮 50 项检查日志另保留，校验值及适用边界见 [移动验证记录](../mobile/verification.json)。
+2026-11-06 使用已缓存的 Flutter 3.47.9 / Dart 3.13.7，执行 `flutter analyze --no-pub` 与 `flutter test --no-pub --reporter expanded`。持久回执接线后的最终分析零问题、66 项测试全部通过。没有执行依赖下载、APK/iOS 构建、模拟器或设备安装。最终日志为 `openbot-mobile-durable-routines-analyze-final.log`、`openbot-mobile-durable-routines-tests-final.log`；前一轮 50 项检查日志另保留，校验值及适用边界见 [移动验证记录](evidence/mobile-source-verification.json)。
 
 本轮修复新增例行任务页的两个接口问题：删除确认不再把 `id` 混入配置比较对象，避免服务器拒绝；成员现在能打开只读运行历史。新增 12 项检查覆盖配置提交、成员权限、未知响应不在当前页面自动重发、确认中换账号、迟到历史响应、周计划校验、账户资料与团队邀请，以及两种语言各 178 个键和显式字号。测试使用真实 Flutter 控件及合成 HTTP 响应，不是已安装应用连接生产后端的验收。
 

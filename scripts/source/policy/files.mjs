@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
+import testDirectories from './test-directories.json' with { type: 'json' };
 
 export const SOURCE_ROOTS = [
   'web',
@@ -9,6 +10,8 @@ export const SOURCE_ROOTS = [
   'desktop',
   'server',
   'mobile',
+  'tests',
+  'examples',
 ];
 const extensions = new Set([
   '.ts',
@@ -28,6 +31,15 @@ const extensions = new Set([
   '.kt',
   '.java',
 ]);
+export function isSourceFile(path) {
+  return extensions.has(extname(path));
+}
+
+export function isTestTree(path) {
+  const normalized = path.replaceAll('\\', '/');
+  return testDirectories.some((directory) => normalized.startsWith(directory + '/'));
+}
+
 const ignored = new Set([
   'node_modules',
   'target',
@@ -42,7 +54,7 @@ const ignored = new Set([
   '.symlinks',
 ]);
 
-export async function sourceFiles(root) {
+export async function sourceFiles(root, inspectPath) {
   const files = [];
   async function walk(directory) {
     let entries;
@@ -56,7 +68,9 @@ export async function sourceFiles(root) {
       if (entry.isSymbolicLink() || ignored.has(entry.name)) continue;
       const path = join(directory, entry.name);
       if (entry.isDirectory()) await walk(path);
-      else if (extensions.has(extname(entry.name))) {
+      else if (entry.isFile()) {
+        inspectPath?.(relative(root, path));
+        if (!isSourceFile(entry.name)) continue;
         const text = await readFile(path, 'utf8');
         files.push({
           path: relative(root, path),

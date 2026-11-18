@@ -54,4 +54,4 @@ Windows 的平台提示和浏览器布局已检查，未在 Windows 实机验收
 - Frontend Design 包保留 Anthropic 上游完整设计说明及 Apache-2.0 许可，连同 BambooShift 新增部分标为 **MIT AND Apache-2.0**。Agent Desktop 改编包是 **Apache-2.0**，未捆绑其 CLI 或原生运行时。[固定版本、来源与许可清单](../legal/third-party/community-skills/SOURCES.json)
 - IM 参考了 MIT 的 [xmanrui/dsh-im](https://github.com/xmanrui/dsh-im) 实际渠道源码，直接复用官方 SDK。另核对 MIT 的 `shaobeichen/dsh-im-bridge` 和 Apache-2.0 的 `liushutan/dsh-im-connect`，没有复制其宿主集成代码。飞书/钉钉 SDK 为 MIT；依赖树还包含 BSD-3-Clause 与 Apache-2.0。企微 SDK 1.0.7 发布包声明 MIT，但未附 LICENSE 正文，当前只独立从 npm 安装，不内嵌再分发到桌面包。
 
-开发者可以先在本地运行 `node --test server/workers/im-runtime/*.test.mjs` 验证消息桥接契约；真实账号上线仍需按接入文档验证身份、文本往返、原话题、重复事件和撤销行为。测试使用虚构数据，不会向企业账号发消息。
+开发者可以先在本地运行 `node --test tests/workers/im-runtime/*.test.mjs` 验证消息桥接契约；真实账号上线仍需按接入文档验证身份、文本往返、原话题、重复事件和撤销行为。测试使用虚构数据，不会向企业账号发消息。

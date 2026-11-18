@@ -11,6 +11,8 @@ npm test
 npm run source:export -- --out release/source/BambooShift-source
 ```
 
+源码包保留测试用例和 `fixtures/` 下的合成样例，方便从发布版本复测。浏览器截图、跟踪记录和临时数据库应写入系统临时目录；显式导出的截图使用已忽略的 `test-results/`。
+
 每次选择新的输出目录。导出工具拒绝覆盖旧目录或经过输出符号链接，只复制明确列出的公开根文件和源码目录。`source-manifest.json` 记录每个文件的大小和 SHA-256。发现已知私密值就停止并移除临时目录，报告只包含位置，不回显密钥。
 
 源码检查、隐私扫描和导出工具集中在 `scripts/source/`。导出排除 `data/`、`config/private/`、`.env`、`.local/`、依赖、工具链、构建缓存、移动工具链生成配置和签名文件。文档中的媒体文件按文件名逐项放行。README 的短演示集中在 `docs/demo/`，验收图片留在 `docs/evidence/gui/`。本机截图保存在忽略版本管理的 `docs/screenshots/`。

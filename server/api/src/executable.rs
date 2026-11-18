@@ -61,5 +61,5 @@ pub(crate) fn is_regular_program(path: &Path) -> bool {
 }
 
 #[cfg(test)]
-#[path = "executable_tests.rs"]
+#[path = "../tests/unit/executable.rs"]
 mod tests;

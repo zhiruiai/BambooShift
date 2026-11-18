@@ -242,7 +242,7 @@ Bot 观察截图使用 `captureComputerScreenshot({forAgent:true,signal})`。本
 
 文件传输回归使用独立工作区验证真实二进制往返、资料库交付链接、来源摘要变化、重名、超限和取消。真实 Pi 的慢速下载测试确认停止任务会关闭下载，迟到的响应不入库；来源检查和排队阶段也可取消，不会因此关闭共用电脑连接。
 
-`npm run test:browser` 运行真实 Chrome 集成测试（合同位于 [Worker 浏览器测试](../server/workers/computer-runtime/tests/computer.browser.test.ts)及相邻浏览器测试文件），仅打开测试自动创建的本机网页，验证输入、点击、PNG 截图、重定向阻断、本机/远程接管、接管期间阻止 Bot 操作和观察、凭据过期及结束后的恢复。默认测试跳过此项，以免在没有 Chrome 的构建环境启动浏览器。GitHub Actions 另在 Ubuntu 上运行 `OPENBOT_BROWSER_TEST=1 npm run backend:test -- --test computer_shared`，用实际 Pi、独立 Worker 和 Chrome 验证批准前不导航、工作空间隔离及页面内容读取。
+`npm run test:browser` 运行真实 Chrome 集成测试（合同位于 [Worker 浏览器测试](../tests/workers/computer-runtime/computer.browser.test.ts)及相邻浏览器测试文件），仅打开测试自动创建的本机网页，验证输入、点击、PNG 截图、重定向阻断、本机/远程接管、接管期间阻止 Bot 操作和观察、凭据过期及结束后的恢复。默认测试跳过此项，以免在没有 Chrome 的构建环境启动浏览器。GitHub Actions 另在 Ubuntu 上运行 `OPENBOT_BROWSER_TEST=1 npm run backend:test -- --test computer_shared`，用实际 Pi、独立 Worker 和 Chrome 验证批准前不导航、工作空间隔离及页面内容读取。
 
 ## Linux 虚拟桌面现状与剩余工作
 

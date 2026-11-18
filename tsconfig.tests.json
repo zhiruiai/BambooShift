@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["web", "operations", "shared", "scripts", "server/workers", "tests"]
+}

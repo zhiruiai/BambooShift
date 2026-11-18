@@ -29,7 +29,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['eslint.config.mjs', '{desktop,scripts,server/workers}/**/*.{js,cjs,mjs}'],
+    files: ['eslint.config.mjs', '{desktop,examples,scripts,server/workers,tests}/**/*.{js,cjs,mjs}'],
     ignores: ['desktop/ui/**'],
     languageOptions: { globals: globals.nodeBuiltin },
   },

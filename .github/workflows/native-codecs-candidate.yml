@@ -39,8 +39,8 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           npm run check:source
           npm run check:privacy
-          node --test scripts/desktop/native-codecs/*.test.mjs scripts/desktop/native-runtime-distribution.test.mjs
-          python scripts/desktop/native-codecs/archive.test.py
+          node --test tests/scripts/desktop/native-codecs/*.test.mjs tests/scripts/desktop/native-runtime-distribution.test.mjs
+          python tests/scripts/desktop/native-codecs/archive.test.py
       - name: Build fresh candidate from checksum-pinned public sources
         shell: bash
         run: |

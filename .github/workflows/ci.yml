@@ -23,6 +23,8 @@ jobs:
         run: npm run check:source && npm run check:privacy
       - name: Check Rust and build both sites
         run: npm run build
+      - name: Run Python tooling and migration tests
+        run: npm run test:python
       - name: Check a real work browser through Pi and the standalone computer Worker
         env:
           OPENBOT_BROWSER_TEST: '1'
@@ -45,7 +47,7 @@ jobs:
       - name: Install native Windows Rust toolchain
         run: rustup toolchain install stable --profile minimal
       - name: Verify native Windows configuration and credential persistence
-        run: node scripts/publishing/check-windows-foundation.mjs
+        run: node tests/acceptance/publishing/check-windows-foundation.mjs
       - name: Build, launch and archive the Windows x64 client
         run: node scripts/publishing/build-windows-client.mjs
   mobile-source:

@@ -108,6 +108,8 @@ impl Updates {
     }
 }
 #[cfg(test)]
+#[path = "../../tests/unit/updates/http.rs"]
 mod http_tests;
 #[cfg(test)]
+#[path = "../../tests/unit/updates/mod.rs"]
 mod tests;

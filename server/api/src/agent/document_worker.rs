@@ -201,5 +201,5 @@ fn validate(value: Value, name: &str, size: usize) -> Result<Value> {
 }
 
 #[cfg(test)]
-#[path = "document_worker_tests.rs"]
+#[path = "../../tests/unit/agent/document_worker.rs"]
 mod tests;

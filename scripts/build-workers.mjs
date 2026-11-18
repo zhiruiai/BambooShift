@@ -16,7 +16,11 @@ const inventoryPath = (path) => path.replaceAll('\\', '/');
 function assertPureInputs(inputs) {
   for (const input of inputs) {
     const name = input.replaceAll('\\', '/');
-    if (/\.(?:test|fixture)\./.test(name) || name.includes('/fixtures.'))
+    if (
+      name.startsWith('tests/') ||
+      /\.(?:test|fixture)\./.test(name) ||
+      name.includes('/fixtures.')
+    )
       throw Error(`A test fixture was included in a released worker: ${name}`);
     if (name.startsWith('server/workers/') || name.startsWith('shared/')) continue;
     throw Error(`A business server dependency cannot be included in a released worker: ${name}`);

@@ -19,7 +19,7 @@ Use `scripts/build-workers.mjs` to publish this worker together with Pi, MCP and
 Run the synthetic image contract before changing native codec dependencies:
 
 ```sh
-node --import tsx --test server/workers/document-worker/tests/image-contract.test.ts
+node --import tsx --test tests/workers/document-worker/image-contract.test.ts
 ```
 
 The suite exercises both source and the actual release worker, including all eight EXIF orientations for PNG, JPEG and WebP, ICC colour conversion, alpha edges, animated-image first-frame behavior, and input/output limits. Expectations use fixed colour matrices and reviewed baselines. Fixtures contain no user images.

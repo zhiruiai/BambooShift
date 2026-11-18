@@ -171,5 +171,5 @@ impl DatabaseFiles {
 }
 
 #[cfg(test)]
-#[path = "storage_tests.rs"]
+#[path = "../../tests/unit/db/storage.rs"]
 mod tests;

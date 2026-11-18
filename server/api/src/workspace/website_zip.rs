@@ -81,9 +81,5 @@ pub(super) fn archive(files: Vec<(String, Vec<u8>)>) -> Vec<u8> {
 }
 
 #[cfg(test)]
-mod tests {
-    #[test]
-    fn standard_crc32_check_value() {
-        assert_eq!(super::crc32(b"123456789"), 0xcbf4_3926);
-    }
-}
+#[path = "../../tests/unit/workspace/website_zip.rs"]
+mod tests;

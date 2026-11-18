@@ -106,4 +106,5 @@ pub(super) async fn acknowledge(
 }
 
 #[cfg(test)]
+#[path = "../../tests/unit/workspace/unread.rs"]
 mod tests;

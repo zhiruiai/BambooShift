@@ -473,5 +473,5 @@ async fn cancel(
 }
 
 #[cfg(test)]
-#[path = "team_skill_publication_tests.rs"]
+#[path = "../../tests/unit/workspace/team_skill_publication.rs"]
 mod tests;

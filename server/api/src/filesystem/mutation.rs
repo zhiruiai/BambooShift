@@ -87,5 +87,5 @@ pub fn remove_matching(parent: &Dir, name: &str, file: &File) -> io::Result<Remo
 }
 
 #[cfg(test)]
-#[path = "mutation_tests.rs"]
+#[path = "../../tests/unit/filesystem/mutation.rs"]
 mod tests;

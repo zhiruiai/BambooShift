@@ -134,7 +134,14 @@ jobs:
           npm run check:source
           npm run check:privacy
           npm run test:source-policy
-          node --test scripts/publishing/*.test.mjs scripts/source/export-source.test.mjs
+          # A resumed release checks out the originally selected source tree.
+          test_root=tests/scripts
+          package_check=tests/acceptance/check-backend-package.mjs
+          if [[ ! -d "$test_root" ]]; then
+            test_root=scripts
+            package_check=scripts/check-backend-package.mjs
+          fi
+          node --test "$test_root"/publishing/*.test.mjs "$test_root/source/export-source.test.mjs"
           npm run source:export -- --out "release/source/$source_name"
           tar -czf "$assets/$source_name.tar.gz" -C release/source "$source_name"
           npm run build:web
@@ -144,7 +151,7 @@ jobs:
           smoke="$(mktemp -d "$RUNNER_TEMP/pandamate-smoke.XXXXXX")"
           tar -xzf "$assets/$service_name.tar.gz" -C "$smoke"
           npm ci --prefix "$smoke/$service_name/runtime" --omit=dev --ignore-scripts
-          node scripts/check-backend-package.mjs "$smoke/$service_name"
+          node "$package_check" "$smoke/$service_name"
       - name: Build and check the Apple Silicon client
         if: matrix.asset == 'macos-arm64'
         shell: bash
@@ -166,7 +173,7 @@ jobs:
           test -x "$app/Contents/MacOS/$RELEASE_MAC_BUNDLE"
           ditto -c -k --norsrc --noextattr --noqtn --keepParent "$RUNNER_TEMP/$client_name" "$RUNNER_TEMP/pandamate-assets/$client_name.zip"
       - name: Install native Windows Rust toolchain
-        if: matrix.asset == 'windows-x64' && hashFiles('scripts/publishing/check-windows-foundation.mjs') != ''
+        if: matrix.asset == 'windows-x64' && hashFiles('tests/acceptance/publishing/check-windows-foundation.mjs', 'scripts/publishing/check-windows-foundation.mjs') != ''
         run: rustup toolchain install stable --profile minimal
       - name: Verify native Windows configuration and credential persistence
         if: matrix.asset == 'windows-x64'
@@ -175,7 +182,9 @@ jobs:
           RELEASE_SOURCE: ${{ needs.plan.outputs.source }}
         run: |
           set -euo pipefail
-          if [[ -f scripts/publishing/check-windows-foundation.mjs ]]; then
+          if [[ -f tests/acceptance/publishing/check-windows-foundation.mjs ]]; then
+            node tests/acceptance/publishing/check-windows-foundation.mjs
+          elif [[ -f scripts/publishing/check-windows-foundation.mjs ]]; then
             node scripts/publishing/check-windows-foundation.mjs
           elif [[ "$RELEASE_SOURCE" == "$GITHUB_SHA" ]]; then
             echo "The Windows foundation gate is missing from the release source." >&2

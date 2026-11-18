@@ -23,7 +23,7 @@ function run(executable, args, capture = false) {
   return result.stdout;
 }
 
-run(process.execPath, ['scripts/run.mjs', '--test', 'desktop/*.test.cjs']);
+run(process.execPath, ['scripts/run.mjs', '--test', 'tests/desktop/*.test.cjs']);
 run(process.execPath, [
   'scripts/run.mjs',
   'scripts/package-client.mjs',
@@ -32,7 +32,7 @@ run(process.execPath, [
   '--arch',
   'x64',
 ]);
-run(process.execPath, ['scripts/check-windows-client.mjs']);
+run(process.execPath, ['tests/acceptance/check-windows-client.mjs']);
 
 const clientOutput = join(root, 'release', 'client');
 const manifestName = 'manifest-win32-x64.json';

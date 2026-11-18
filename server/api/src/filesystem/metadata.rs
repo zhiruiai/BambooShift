@@ -139,9 +139,9 @@ pub fn inspect_entry(parent: &Dir, name: &str) -> io::Result<FileStamp> {
 }
 
 #[cfg(test)]
-#[path = "metadata_tests.rs"]
+#[path = "../../tests/unit/filesystem/metadata.rs"]
 mod tests;
 
 #[cfg(test)]
-#[path = "metadata_entry_tests.rs"]
+#[path = "../../tests/unit/filesystem/metadata_entry.rs"]
 mod entry_tests;

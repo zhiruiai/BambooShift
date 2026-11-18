@@ -15,12 +15,12 @@
 
 ## 验证范围
 
-官方创作者指南给出了桌面入口。未登录访问写文章页会转向登录。仓库中的 Chrome 测试在隔离环境中拦截并响应测试页面的全部请求，验证了双字段填写、富文本读回、草稿和最终提交的区分、发布直链、审核中与失败，使用虚构的账号与文章。真实账号的登录、编辑器版本差异、审核以及公开文章发布需要在目标账号上验证。[浏览器验收代码](../server/workers/computer-runtime/tests/zhihu-article.browser.test.ts)
+官方创作者指南给出了桌面入口。未登录访问写文章页会转向登录。仓库中的 Chrome 测试在隔离环境中拦截并响应测试页面的全部请求，验证了双字段填写、富文本读回、草稿和最终提交的区分、发布直链、审核中与失败，使用虚构的账号与文章。真实账号的登录、编辑器版本差异、审核以及公开文章发布需要在目标账号上验证。[浏览器验收代码](../tests/workers/computer-runtime/zhihu-article.browser.test.ts)
 
 运行下面的测试需要 Node.js 22.19 或以上版本和已安装的 Chrome。将 `CHROME_EXECUTABLE` 指向执行电脑上的实际可执行文件。下面以 macOS 为例。
 
 ```sh
 OPENBOT_BROWSER_TEST=1 \
 CHROME_EXECUTABLE='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
-node scripts/run.mjs --test server/workers/computer-runtime/tests/zhihu-article.browser.test.ts
+node scripts/run.mjs --test tests/workers/computer-runtime/zhihu-article.browser.test.ts
 ```

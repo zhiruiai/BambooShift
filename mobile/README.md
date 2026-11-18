@@ -15,7 +15,7 @@ also find Flutter on `PATH`. From this directory:
 ```
 
 The recorded source checkpoint passed 349 tests with zero analysis issues. See
-[verification.json](verification.json) for the source and log digests. The tests
+[verification record](../docs/evidence/mobile-source-verification.json) for the source and log digests. The tests
 exercise isolated HTTP responses, secure-storage substitutes and offscreen phone
 layouts. Android and iOS installers and physical-device acceptance are deferred.
 

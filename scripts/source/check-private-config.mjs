@@ -71,6 +71,8 @@ for (const directory of [
   'server',
   'shared',
   'scripts',
+  'tests',
+  'examples',
   '.github',
   'legal',
 ])

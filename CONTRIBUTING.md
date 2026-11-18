@@ -12,12 +12,34 @@ npm run dev:preview
 Open the printed link in a private browser window and sign in with the temporary
 account shown in the terminal. Open a Bot chat and send
 `Deliver the sample launch checklist.` to create a Markdown file you can preview
-or download. The local scripted model drives the real Pi tools. The preview uses
+or download. The [local preview](examples/local-preview.mjs) drives the real Pi tools with a scripted model. The preview uses
 temporary data and removes it when you press Ctrl+C.
 
 Run `npm run dev:preview -- --check` to verify the same workflow without a browser.
 Use [the regular development setup](README.md#run-from-source) for live reload or
 to test your own model provider.
+
+## Test layout
+
+Place Web, Worker, desktop and tooling cases in `tests/web/`, `tests/workers/`,
+`tests/desktop/` and `tests/scripts/`. Web rendering harnesses live in
+`tests/web/fixtures/`. Worker and tooling fixtures live in `tests/fixtures/`,
+with cross-platform input contracts under `tests/fixtures/shared/`. Package
+acceptance checks live in `tests/acceptance/` and performance measurements in
+`tests/performance/`. Use a disposable temporary directory for accounts, databases,
+screenshots and generated files. Publish reviewed evidence under `docs/evidence/`.
+
+Cargo discovers integration targets in `server/api/tests/`. Private Rust unit
+tests live in its `unit/` directory and attach through a test-only module.
+Flutter discovers native tests in `mobile/test/`, and Xcode uses its separate
+`RunnerTests` target. Keep these tools’ standard test commands working.
+
+Run `npm run test:web`, `npm run test:runtime`, `npm run client:test` or
+`npm run test:browser` from the repository root. `npm run lint` checks source
+and tests, including their directory boundaries. `npm run build:web` checks
+and bundles the production entry points. After `npm run backend:build`,
+`npm run test:python` exercises the Python tooling and offline migration on Linux
+and macOS.
 
 ## Find the right place to contribute
 
@@ -26,7 +48,7 @@ to test your own model provider.
 | Chat, accessibility, or responsive layout                 | `web/src/workspace/` or `mobile/lib/features/chat/`                         | `npm run test:web` or `cd mobile && ./tool/flutter.sh test`           |
 | Add a documented MCP provider                             | `shared/app-providers.json` and both UI languages                           | `npm run sync:app-catalog`, then `npm run check:source`               |
 | Change who can use a tool or what happens on cancellation | `server/api/src/agent/` and the matching domain service                     | `npm run backend:test`                                                |
-| Add a trusted bundled worker plugin                       | [Cordis host and lifecycle recipe](server/workers/plugin-runtime/README.md) | `node scripts/run.mjs --test server/workers/plugin-runtime/*.test.ts` |
+| Add a trusted bundled worker plugin                       | [Cordis host and lifecycle recipe](server/workers/plugin-runtime/README.md) | `node scripts/run.mjs --test tests/workers/plugin-runtime/*.test.ts` |
 | Improve a worker or the desktop connection flow           | `server/workers/` or `desktop/`                                             | `npm run test:runtime` or `npm run client:test`                       |
 
 If you are looking for a first change, try reproducing a layout issue at narrow

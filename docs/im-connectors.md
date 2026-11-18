@@ -81,7 +81,7 @@
 官方协议与实现：[飞书 Node SDK](https://github.com/larksuite/node-sdk)、[钉钉 Stream SDK](https://github.com/open-dingtalk/dingtalk-stream-sdk-nodejs)、[企业微信 AI Bot SDK](https://github.com/WecomTeam/aibot-node-sdk)。SDK 单独从 npm 安装；企微该版本发布包声明 MIT，但未附 LICENSE 正文，因此当前不把其源码或产物内嵌再分发到桌面包。
 
 ```sh
-node --test server/workers/im-runtime/*.test.mjs
+node --test tests/workers/im-runtime/*.test.mjs
 ```
 
 测试覆盖三家事件 → 显式身份绑定 → BambooShift HTTP 协议 → 原目标回复，并覆盖跨用户/群/话题拒绝、持久去重、取消、撤销与凭据不进入诊断。测试使用合成账号和 HTTP/SDK fixture，不发送真实企业消息，不代表企业账号联调已经通过。

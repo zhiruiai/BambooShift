@@ -393,5 +393,5 @@ fn private_write(path: &Path, bytes: &[u8]) -> io::Result<()> {
 }
 
 #[cfg(test)]
-#[path = "memo_synthesis_tests.rs"]
+#[path = "../../tests/unit/speech/memo_synthesis.rs"]
 mod tests;

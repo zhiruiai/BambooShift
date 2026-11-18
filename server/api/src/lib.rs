@@ -27,6 +27,7 @@ pub mod speech;
 pub mod teaching;
 pub mod team_builder;
 #[cfg(test)]
+#[path = "../tests/support/process.rs"]
 mod test_process;
 pub mod updates;
 mod web;

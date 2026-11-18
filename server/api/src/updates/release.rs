@@ -117,10 +117,6 @@ impl ReleaseClient {
             .map_err(|_| "network")?;
         Ok(Self { client, endpoint })
     }
-    #[cfg(test)]
-    pub(super) fn fixture(endpoint: String, timeout: Duration) -> Self {
-        Self::build(endpoint, timeout).unwrap()
-    }
     pub(super) async fn fetch(&self, repository: &str) -> Result<Release, &'static str> {
         let mut response = self
             .client
@@ -164,3 +160,7 @@ fn network_error(error: reqwest::Error) -> &'static str {
         "network"
     }
 }
+
+#[cfg(test)]
+#[path = "../../tests/support/release_client.rs"]
+mod test_client;

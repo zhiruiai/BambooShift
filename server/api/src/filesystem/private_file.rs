@@ -91,5 +91,5 @@ fn sync_directory(directory: &File) -> io::Result<DirectorySync> {
 }
 
 #[cfg(test)]
-#[path = "private_file_tests.rs"]
+#[path = "../../tests/unit/filesystem/private_file.rs"]
 mod tests;

@@ -3,10 +3,26 @@ import { spawnSync } from 'node:child_process';
 import { sourceFiles } from './policy/files.mjs';
 import { nonEnglishComments, pythonCommentScanner } from './policy/comments.mjs';
 import { smallFonts } from './policy/fonts.mjs';
+import { misplacedTestFile, testDependencies } from './policy/test-layout.mjs';
 
-const files = await sourceFiles(resolve(import.meta.dirname, '../..'));
 const violations = [];
+const files = await sourceFiles(resolve(import.meta.dirname, '../..'), (path) => {
+  if (misplacedTestFile(path))
+    violations.push({
+      path,
+      line: 1,
+      rule: 'test-layout',
+      message: 'Keep test cases and fixtures in a dedicated test tree.',
+    });
+});
 for (const file of files) {
+  for (const dependency of testDependencies(file))
+    violations.push({
+      path: file.path,
+      line: 1,
+      rule: 'test-layout',
+      message: `Production source contains test code: ${dependency}`,
+    });
   if (file.lines > 500)
     violations.push({
       path: file.path,

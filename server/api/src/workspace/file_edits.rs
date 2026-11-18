@@ -286,5 +286,5 @@ impl Drop for Edit {
 }
 
 #[cfg(test)]
-#[path = "file_edits_tests.rs"]
+#[path = "../../tests/unit/workspace/file_edits.rs"]
 mod tests;

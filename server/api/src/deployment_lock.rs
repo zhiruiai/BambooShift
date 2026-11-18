@@ -135,5 +135,5 @@ fn create_child(parent: &Dir, name: &Path) -> io::Result<Dir> {
 }
 
 #[cfg(test)]
-#[path = "deployment_lock_tests.rs"]
+#[path = "../tests/unit/deployment_lock.rs"]
 mod tests;

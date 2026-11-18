@@ -172,5 +172,5 @@ fn provider_error(error: Failure) -> ApiError {
 }
 
 #[cfg(test)]
-#[path = "web_fetch_tests.rs"]
+#[path = "../../tests/unit/agent/web_fetch.rs"]
 mod tests;
