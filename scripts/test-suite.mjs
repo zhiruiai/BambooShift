@@ -2,6 +2,7 @@ import { readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { matchesTestSuite } from './test-file-selection.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const mode = process.argv[2];
@@ -22,12 +23,7 @@ async function collect(directory) {
       continue;
     const file = join(directory, entry.name);
     if (entry.isDirectory()) tests.push(...(await collect(file)));
-    else if (/\.test\.(?:ts|tsx|mjs|cjs|js)$/.test(entry.name)) {
-      const browser = /(?:^|\/)(?:browserTests\/|[^/]*\.browser\.test\.)/.test(file);
-      const browserRelated =
-        browser || /\/(?:browser-engine|browser-download)\.test\.ts$/.test(file);
-      if (mode === 'browser' ? browserRelated : !browser) tests.push(file);
-    }
+    else if (entry.isFile() && matchesTestSuite(file, mode)) tests.push(file);
   }
   return tests;
 }

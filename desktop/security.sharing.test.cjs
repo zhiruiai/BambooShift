@@ -1,49 +1,16 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
-const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { readFileSync, existsSync, statSync } = require('node:fs');
+const { allowedDownload, sharedFileDownloadRequest } = require('./security.cjs');
 
 const {
-  tempDir,
   deferred,
-  fakeElectron,
   sharedDownloadIds,
   sharedDownloadPath,
   sharedOwnerPath,
   sharedDownloadFixture,
   waitForDownload,
-  controllerWithFilesystem,
 } = require('./test-fixture.cjs');
 
 test('shared download policy accepts only exact versioned source/recipient paths and never broadens ordinary downloads', () => {

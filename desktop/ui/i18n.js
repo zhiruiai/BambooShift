@@ -1,4 +1,5 @@
 'use strict';
+/* global module -- The setup page and CommonJS tests share this catalog. */
 
 (function publish(factory) {
   const api = factory();

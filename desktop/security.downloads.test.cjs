@@ -2,49 +2,12 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
+const { rmSync, readFileSync } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { partitionFor, SETUP_URL } = require('./security.cjs');
+const { createController } = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { tempDir, fakeElectron } = require('./test-fixture.cjs');
 
 test('fake main download integration always prompts and rejects a cross-origin redirect or forged initiator', async () => {
   const dataDir = tempDir();

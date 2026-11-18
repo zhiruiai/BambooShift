@@ -1,38 +1,9 @@
 'use strict';
-const test = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
+const { mkdtempSync, mkdirSync, rmSync, readFileSync, readdirSync } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { createController } = require('./main.cjs');
 
 function tempDir() {
   const root = join(__dirname, '../data');

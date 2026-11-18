@@ -289,6 +289,7 @@ function createSharedDownloadHandler({
         if (current.sharedFileDownload === abort) current.sharedFileDownload = undefined;
       }
       if (cleanupFailed)
+        // eslint-disable-next-line no-unsafe-finally -- The caller needs to know private file cleanup is unconfirmed.
         throw new Error('下载未保存，但本机临时文件的清理未能确认，请检查保存位置后重试。');
     }
   }

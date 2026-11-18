@@ -20,6 +20,20 @@ const kill = (group, signal) => {
   }
 };
 
+async function stopRegisteredGroups(groups) {
+  try {
+    for (const group of groups) if (alive(-group)) kill(group, 'SIGKILL');
+    const end = Date.now() + 3000;
+    while ([...groups].some((group) => alive(-group)) && Date.now() < end) await pause(25);
+    if (![...groups].some((group) => alive(-group))) return;
+  } catch {
+    // The caller must keep the workspace if group termination cannot be confirmed.
+  }
+  const error = Error('Synthetic runtime cleanup could not be confirmed.');
+  error.code = 'ACCEPTANCE_CLEANUP_UNKNOWN';
+  throw error;
+}
+
 async function descendants(parent) {
   const { stdout } = await execute('/bin/ps', ['-axo', 'pid=,ppid=,pgid='], { timeout: 2000 });
   const rows = stdout
@@ -144,15 +158,6 @@ export async function runPersonalProbe(
     clearTimeout(forceTimer);
     process.off('SIGINT', interrupt);
     process.off('SIGTERM', interrupt);
-    try {
-      for (const group of groups) if (alive(-group)) kill(group, 'SIGKILL');
-      const end = Date.now() + 3000;
-      while ([...groups].some((group) => alive(-group)) && Date.now() < end) await pause(25);
-      if ([...groups].some((group) => alive(-group))) throw Error('Still running.');
-    } catch {
-      const failure = Error('Synthetic runtime cleanup could not be confirmed.');
-      failure.code = 'ACCEPTANCE_CLEANUP_UNKNOWN';
-      throw failure;
-    }
+    await stopRegisteredGroups(groups);
   }
 }

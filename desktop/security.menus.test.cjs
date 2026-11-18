@@ -1,50 +1,12 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
+const { rmSync } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { partitionFor } = require('./security.cjs');
+const { createController } = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { tempDir, deferred, fakeElectron } = require('./test-fixture.cjs');
 
 test('native Help lists available shortcuts in the client language and opens one dialog at a time', async () => {
   const dataDir = tempDir();
@@ -89,7 +51,7 @@ test('native Help lists available shortcuts in the client language and opens one
     assert.equal(workspaceDialog.message, '键盘快捷键');
     assert.ok(workspaceDialog.detail.includes(`${modifier}K    搜索会话`));
     assert.ok(workspaceDialog.detail.includes(`${modifier},    打开设置`));
-    assert.match(workspaceDialog.detail, /Shift\+Enter    在输入框中换行/);
+    assert.match(workspaceDialog.detail, /Shift\+Enter {4}在输入框中换行/);
     assert.deepEqual(fake.calls.external, []);
   } finally {
     controller.close();

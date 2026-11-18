@@ -1,50 +1,17 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
 const {
-  mkdtempSync,
   mkdirSync,
-  rmSync,
   readFileSync,
   writeFileSync,
   readdirSync,
   existsSync,
   renameSync,
-  statSync,
 } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { sharedDownloadFixture } = require('./test-fixture.cjs');
 
 test('account rechecks before/after response and after temporary write prevent cross-account or late saves', async (t) => {
   for (const changeAt of [1, 2, 3, 4])

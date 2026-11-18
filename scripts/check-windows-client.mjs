@@ -92,9 +92,9 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
     assert.equal(probes, 0, 'A new profile must wait before probing the suggested address');
     const language = setup.locator('#client-language');
     await language.selectOption('zh-CN');
-    await setup.waitForFunction(() => document.documentElement.lang === 'zh-CN');
+    await setup.locator('html[lang="zh-CN"]').waitFor({ state: 'attached' });
     await language.selectOption('en');
-    await setup.waitForFunction(() => document.documentElement.lang === 'en');
+    await setup.locator('html[lang="en"]').waitFor({ state: 'attached' });
     await setup.locator('#connect-button').click();
     await setup
       .getByText('This address did not respond as a BambooShift workspace.', { exact: false })
@@ -108,7 +108,7 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
     assert.equal(probes, 2);
     health = 'product';
     await setup.locator('#connect-button').click();
-    await setup.waitForFunction(() => document.body.hidden);
+    await setup.locator('body[hidden]').waitFor({ state: 'attached' });
     const connected = await application.evaluate(async ({ app, webContents }, origin) => {
       const view = webContents.getAllWebContents().find((item) => item.getURL() === origin + '/');
       return {

@@ -1,50 +1,12 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
+const { mkdirSync, rmSync, readFileSync } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { partitionFor, rendererPreferences, ConnectionState } = require('./security.cjs');
+const { createController, saveLastOrigin, readLastOrigin } = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { tempDir, deferred, fakeElectron } = require('./test-fixture.cjs');
 
 test('connection state never auto-connects, retries only the attempted origin, and ignores stale completions', () => {
   const state = new ConnectionState(

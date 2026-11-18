@@ -2,14 +2,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { join } = require('node:path');
-const {
-  readFileSync,
-  writeFileSync,
-  statSync,
-  rmSync,
-  mkdirSync,
-  symlinkSync,
-} = require('node:fs');
+const { readFileSync, writeFileSync, statSync, rmSync, symlinkSync } = require('node:fs');
 const { createClientLanguage } = require('./language.cjs');
 const { createController } = require('./main.cjs');
 const catalog = require('./ui/i18n.js');

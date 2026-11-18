@@ -143,7 +143,9 @@ function createManagedAppearance(dataDir) {
         if (created) {
           try {
             fs.rmSync(temporary, { force: true });
-          } catch {}
+          } catch {
+            // A cleanup failure does not change the recorded save result.
+          }
         }
       }
       return { available };

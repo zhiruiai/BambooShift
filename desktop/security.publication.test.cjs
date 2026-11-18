@@ -1,50 +1,10 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
+const { readFileSync, readdirSync, statSync } = require('node:fs');
 const { join } = require('node:path');
-const {
-  normalizeServerOrigin,
-  partitionFor,
-  setupAsset,
-  trustedSetupSender,
-  allowedResource,
-  allowedDownload,
-  sharedFileDownloadRequest,
-  rendererPreferences,
-  ConnectionState,
-  SETUP_URL,
-} = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { sharedDownloadFixture, controllerWithFilesystem } = require('./test-fixture.cjs');
 
 test('successful exclusive publication never clears the saved inode when later unlink or close fails', async (t) => {
   for (const failure of ['unlink', 'close'])

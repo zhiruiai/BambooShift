@@ -1,4 +1,4 @@
-import { open, readdir, readFile, lstat } from 'node:fs/promises';
+import { open, readdir, lstat } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { join, extname } from 'node:path';
 import { userInfo, homedir } from 'node:os';
@@ -18,6 +18,7 @@ export const releaseFiles = [
   '.env.example',
   '.prettierignore',
   '.prettierrc.json',
+  'eslint.config.mjs',
   'package.json',
   'package-lock.json',
   'tsconfig.json',

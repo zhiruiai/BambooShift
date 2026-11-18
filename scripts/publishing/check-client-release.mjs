@@ -43,7 +43,7 @@ function candidate(record) {
 
 async function readManifest(archive, name) {
   // unzip treats member arguments as patterns; metadata paths must be literal.
-  if (/[*?\[\]]/.test(name)) fail('nonliteral metadata path');
+  if (/[*?[\]]/.test(name)) fail('nonliteral metadata path');
   let parsed;
   try {
     const { stdout } = await execute('unzip', ['-p', archive, name], {

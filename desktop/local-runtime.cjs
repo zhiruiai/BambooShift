@@ -178,7 +178,9 @@ function saveLocalSelection(dataDir, selected) {
   } finally {
     try {
       rmSync(temp, { force: true });
-    } catch {}
+    } catch {
+      // The marker is optional when the profile directory is read-only.
+    }
   }
 }
 

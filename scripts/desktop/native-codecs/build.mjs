@@ -201,7 +201,9 @@ async function build({ output, cache, tools, jobs, fetchMissing, profile = defau
   const stop = () => {
     try {
       process.kill(-child.pid, 'SIGTERM');
-    } catch {}
+    } catch {
+      // The process group can already be gone when cancellation arrives.
+    }
   };
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);

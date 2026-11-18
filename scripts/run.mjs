@@ -1,6 +1,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, lstatSync } from 'node:fs';
 import { join, delimiter, resolve } from 'node:path';
+import { constants } from 'node:os';
 
 // An explicit runtime may be supplied by the owner-only deployment configuration.
 function configuredNode() {
@@ -47,7 +48,7 @@ child.on('error', (error) => {
   console.error(error.message);
   process.exitCode = 1;
 });
-child.on('exit', (code) => {
-  process.exitCode = code ?? 0;
+child.on('exit', (code, signal) => {
+  process.exitCode = code ?? (constants.signals[signal] ? 128 + constants.signals[signal] : 1);
 });
 for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));

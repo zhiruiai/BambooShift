@@ -1,19 +1,6 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { EventEmitter } = require('node:events');
-const {
-  mkdtempSync,
-  mkdirSync,
-  rmSync,
-  readFileSync,
-  writeFileSync,
-  readdirSync,
-  existsSync,
-  renameSync,
-  statSync,
-} = require('node:fs');
-const { join } = require('node:path');
 const {
   normalizeServerOrigin,
   partitionFor,
@@ -21,30 +8,12 @@ const {
   trustedSetupSender,
   allowedResource,
   allowedDownload,
-  sharedFileDownloadRequest,
   rendererPreferences,
-  ConnectionState,
   SETUP_URL,
 } = require('./security.cjs');
-const {
-  createController,
-  createSetupProtocolHandler,
-  installSessionPolicy,
-  saveLastOrigin,
-  readLastOrigin,
-} = require('./main.cjs');
+const { createSetupProtocolHandler, installSessionPolicy } = require('./main.cjs');
 
-const {
-  tempDir,
-  deferred,
-  fakeElectron,
-  sharedDownloadIds,
-  sharedDownloadPath,
-  sharedOwnerPath,
-  sharedDownloadFixture,
-  waitForDownload,
-  controllerWithFilesystem,
-} = require('./test-fixture.cjs');
+const { fakeElectron } = require('./test-fixture.cjs');
 
 test('origins reject unsafe schemes, credentials, paths, aliases and insecure remote hosts; partitions isolate exact origins', () => {
   for (const value of [

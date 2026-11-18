@@ -47,14 +47,23 @@ Keep each first-party source or test file at or below 500 lines. Split code by
 responsibility, use English code comments and add visible interface text to both
 language catalogs.
 
-Run `npm run lint` before requesting review. The existing CI source check runs the same rules. The check
-checks unused locals, imports and parameters in the production TypeScript
-projects, then verifies source policy and generated catalogs. Remove obsolete
-bindings. Preserve required side effects, public signatures and imports that
-register tools. Use an underscore for an unused callback parameter when its
-position is required. The normal build still type-checks test fixtures.
-[TypeScript locals](https://www.typescriptlang.org/tsconfig/noUnusedLocals.html)
-and [parameters](https://www.typescriptlang.org/tsconfig/noUnusedParameters.html).
+Run `npm run lint` before requesting review. CI runs the same checks on pushes
+and pull requests. Use Node 24 to match CI; Node 22.19+ on the 22.x line also
+satisfies the JavaScript linter's requirements.
+
+| Where | What the checks enforce |
+| --- | --- |
+| JavaScript | ESLint checks Electron, workers, scripts, web assets and showcase code, including JS tests. Undefined names, unused bindings and unreachable statements fail the check. Node, CommonJS, browser, service worker and audio worklet globals are scoped to their entry points. Run `npm run lint:js` on its own for fast feedback. |
+| TypeScript | Production lint catches unused locals and parameters. Both lint and the full build reject unreachable code, accidental switch fallthrough and unresolved side-effect imports. Vite validates actual asset paths during the build. |
+| Rust | Cargo rejects ignored values marked `must_use`, including unhandled results and futures. Keep file rollback guards alive until the existing transaction commits. Use an explicit `drop` when rolling back deliberately. |
+| Flutter | The analyzer checks unawaited futures in async functions, subscription cancellation and sink closure. Return or await work the caller depends on. For intentional background work, use `unawaited` and define how errors are handled. |
+
+Remove obsolete imports and declarations when behavior moves. Preserve side
+effects needed to register tools. Keep positionally required TypeScript callback
+parameters with an underscore if the implementation does not use them. The
+source check also verifies file policy and generated catalogs.
+[ESLint recommended rules](https://eslint.org/docs/latest/rules/)
+and [TypeScript side-effect imports](https://www.typescriptlang.org/tsconfig/noUncheckedSideEffectImports.html).
 
 Choose additional checks for the code you changed.
 
