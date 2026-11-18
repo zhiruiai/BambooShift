@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
-import { uiText } from '../../web/src/i18n';
+import { useEffect, useState } from 'react';
+import type { OperatorSession } from '../../shared/platform';
+import { uiText } from '../../web/src/i18n/account';
 import { useLanguage } from '../../web/src/i18n/useLanguage';
 import { supportedLanguage } from '../../web/src/i18n/language';
 import { OperatorLoginPage } from './OperatorLoginPage';
@@ -8,6 +9,7 @@ import './Operations.css';
 
 export default function OperationsRoot() {
   const language = useLanguage();
+  const [signInSession, setSignInSession] = useState<OperatorSession>();
   const path = window.location.pathname;
   useEffect(() => {
     document.title = uiText('platform:operationsTitle');
@@ -28,12 +30,19 @@ export default function OperationsRoot() {
           </select>
         </label>
       </div>
-      {path === '/admin/setup' ? (
-        <OperatorLoginPage setup />
-      ) : path === '/admin/login' ? (
-        <OperatorLoginPage />
+      {path === '/admin/setup' || path === '/admin/login' ? (
+        <OperatorLoginPage setup={path === '/admin/setup'} initialSession={signInSession} />
       ) : (
-        <PlatformAdminApp />
+        <PlatformAdminApp
+          onSignIn={(session) => {
+            window.history.replaceState(
+              null,
+              '',
+              session.setupRequired ? '/admin/setup' : '/admin/login',
+            );
+            setSignInSession(session);
+          }}
+        />
       )}
     </>
   );

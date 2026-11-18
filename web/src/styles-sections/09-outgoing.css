@@ -81,33 +81,6 @@
   color: light-dark(#888891, var(--text-secondary));
   font-size: 12px;
 }
-.field-help,
-.dialog-form label small,
-.modal-header p {
-  color: light-dark(#74747b, var(--text-secondary));
-  font-size: 12px;
-}
-.dialog-form label,
-.field-label {
-  color: light-dark(#55545d, var(--text-secondary));
-  font-size: 12px;
-}
-.dialog-form input,
-.dialog-form textarea,
-.dialog-form select {
-  color: light-dark(#333338, var(--text));
-}
-.dialog-form input::placeholder,
-.dialog-form textarea::placeholder {
-  color: light-dark(#909099, var(--text-muted));
-  font-size: 12px;
-}
-.dialog-form h3 {
-  color: light-dark(#55545d, var(--text-secondary));
-}
-.secondary-button {
-  color: light-dark(#756180, var(--text-secondary));
-}
 .setting-info-row,
 .setting-info-row strong,
 .settings-runtime small {
@@ -125,10 +98,6 @@
 .integration-status {
   font-size: 12px;
   color: light-dark(#796584, var(--text-secondary));
-}
-.info-box {
-  color: light-dark(#786c83, var(--text-secondary));
-  font-size: 12px;
 }
 .agent-profile p {
   color: light-dark(#74747b, var(--text-secondary));
@@ -219,22 +188,6 @@
   font-size: 12px;
   color: light-dark(#87828f, var(--text-secondary));
 }
-.segmented > button {
-  color: light-dark(#867590, var(--text-secondary));
-}
-.segmented > button.active {
-  color: light-dark(#5c486d, var(--accent));
-}
-.text-button {
-  color: light-dark(#826398, var(--accent));
-}
-.pill {
-  font-size: 12px;
-  color: light-dark(#6d8c77, var(--success));
-}
-.pill.pending {
-  color: light-dark(#a18353, var(--warning));
-}
 .search-box input::placeholder {
   color: light-dark(#878791, var(--text-secondary));
 }
@@ -277,11 +230,6 @@
   }
   .setup-note {
     font-size: 12px;
-  }
-  .dialog-form input,
-  .dialog-form textarea,
-  .dialog-form select {
-    font-size: 16px;
   }
 }
 .screenshot-error {

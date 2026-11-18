@@ -1,15 +1,13 @@
-import { uiText } from '../../../web/src/i18n';
+import { uiText } from '../../../web/src/i18n/operations';
 import { Building2, Loader2, Pause, Play, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { PlatformPage, PlatformUser, PlatformWorkspace } from '../../../shared/platform';
-import '../../../web/src/admin/Admin.css';
 import { AccountInitial } from '../../../web/src/platform/account/AccountInitial';
-import '../../../web/src/platform/Platform.css';
 import { platformTime } from '../../../web/src/platform/platformApi';
 import { useOperatorScope } from './useOperatorScope';
 import { Status } from './Status';
 import { StatusTarget } from './types';
-export function PlatformDirectory({
+export default function PlatformDirectory({
   kind,
   revision,
   currentUserId,

@@ -1,4 +1,4 @@
-import { uiText } from './i18n';
+import { uiText } from './i18n/account';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { AccountSession } from '../../shared/platform';
 import { parseBotTemplatePath } from '../../shared/bot-templates';
@@ -7,16 +7,20 @@ import { parseTeamSkillLinkPath } from '../../shared/team-skills';
 import { parseWebsiteSharePath } from '../../shared/website-shares';
 import { AccountContext } from './AccountContext';
 import { parseAppAuthorizationPath } from './appOAuth';
-import { Avatar } from './components/Avatar';
-import {
-  AccountPage,
-  AccountShell,
-  InvitationPage,
-  TeamPage,
-  WorkspaceChooser,
-  platformApi,
-} from './platform';
+import { AccountAvatar } from './platform/account/AccountAvatar';
+import { AccountPage } from './platform/AccountPages';
+import { AccountShell } from './platform/account/AccountShell';
+import { WorkspaceChooser } from './platform/AccountAccess';
+import { platformApi } from './platform/platformApi';
 
+const TeamPage = lazy(() =>
+  import('./platform/TeamPage').then(({ TeamPage }) => ({ default: TeamPage })),
+);
+const InvitationPage = lazy(() =>
+  import('./platform/account/InvitationPage').then(({ InvitationPage }) => ({
+    default: InvitationPage,
+  })),
+);
 const ChatApp = lazy(() => import('./App'));
 const BotTemplatePage = lazy(() =>
   import('./platform/BotTemplatePage').then((module) => ({ default: module.BotTemplatePage })),
@@ -38,6 +42,12 @@ const AccountSettings = lazy(() =>
 
 export default function PlatformRoot() {
   const path = window.location.pathname;
+  const [anonymous, setAnonymous] = useState<AccountSession>();
+  const openLogin = (session: AccountSession, next?: string) => {
+    const search = next ? `?next=${encodeURIComponent(next)}` : '';
+    window.history.replaceState(null, '', '/login' + search);
+    setAnonymous(session);
+  };
   if (path === '/team-skills' || path.startsWith('/team-skills/'))
     return (
       <Suspense
@@ -108,14 +118,25 @@ export default function PlatformRoot() {
   if (path === '/login' || path === '/register')
     return (
       <AccountPage
+        initialSession={anonymous}
         mode={path === '/register' ? 'register' : 'login'}
         next={new URLSearchParams(window.location.search).get('next') || undefined}
       />
     );
   const workspace = /^\/w\/([a-f0-9-]{36})(?:\/(manage|members))?\/?$/.exec(path);
-  return <AccountWorkspace workspaceId={workspace?.[1]} panel={workspace?.[2]} />;
+  return (
+    <AccountWorkspace workspaceId={workspace?.[1]} panel={workspace?.[2]} openLogin={openLogin} />
+  );
 }
-function AccountWorkspace({ workspaceId, panel }: { workspaceId?: string; panel?: string }) {
+function AccountWorkspace({
+  workspaceId,
+  panel,
+  openLogin,
+}: {
+  workspaceId?: string;
+  panel?: string;
+  openLogin: (session: AccountSession, next?: string) => void;
+}) {
   const [session, setSession] = useState<AccountSession | null>(null),
     [error, setError] = useState('');
   const request = useRef(0);
@@ -127,11 +148,9 @@ function AccountWorkspace({ workspaceId, panel }: { workspaceId?: string; panel?
       setSession(value);
       setError('');
       if (!value.authenticated)
-        window.location.replace(
-          '/login' +
-            (workspaceId
-              ? `?next=${encodeURIComponent(window.location.pathname + window.location.search)}`
-              : ''),
+        openLogin(
+          value,
+          workspaceId ? window.location.pathname + window.location.search : undefined,
         );
     } catch (cause) {
       if (request.current === current) setError((cause as Error).message);
@@ -141,8 +160,7 @@ function AccountWorkspace({ workspaceId, panel }: { workspaceId?: string; panel?
     void refresh();
     const expired = () => {
       request.current++;
-      setSession({ authenticated: false, workspaces: [] });
-      window.location.replace('/login');
+      openLogin({ authenticated: false, workspaces: [] });
     };
     const revalidate = () => {
       if (!document.hidden) void refresh();
@@ -164,7 +182,7 @@ function AccountWorkspace({ workspaceId, panel }: { workspaceId?: string; panel?
   if (!session?.authenticated)
     return (
       <main className="loading-screen">
-        <Avatar size={56} />
+        <AccountAvatar size={56} />
         <p>{error || uiText('common:text_cad787054ece')}</p>
         {error && (
           <button className="secondary-button" onClick={() => void refresh()}>

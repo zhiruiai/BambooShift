@@ -61,7 +61,6 @@
   "text_1dd518b11b3b": "Update draft from original Bot",
   "text_1ddc08e4ea3f": "Search and quick actions",
   "text_1e1a5e14d128": "Confirm and enable",
-  "text_1e55666a9920": "Loading account settings…",
   "text_1e861520e421": "Cannot sync the workspace right now.",
   "text_1ef70d95fc8f": "The last action has not been confirmed. Check its status before continuing the original request. Nothing will be published or revoked automatically.",
   "text_1f1bc0d5105c": "Hidden",
@@ -127,7 +126,6 @@
   "text_3ec168daa78f": "The skill's status has changed. Go back and review it before taking action.",
   "text_3ed2c259da32": "Copy prompt",
   "text_3eee4c4d8b90": "A section with this name already exists. Choose another name, or select the existing section under “Move to section”.",
-  "text_3fd47edce45b": "Close",
   "text_3ffd0a70f5df": "No templates yet. Create one with “Share template” in Bot settings. Saved templates remain available here after the original Bot is deleted.",
   "text_40e1a987ea57": "Team policy only allows internal sharing.",
   "text_41515a3e45f5": "For example: Research and writing",
@@ -136,7 +134,6 @@
   "text_44ce7ae909bb": "Search",
   "text_455cd893ab47": "Follow-up status for the saved settings",
   "text_4592a970a45e": "The service restarted. Waiting to reconnect and sync.",
-  "text_45cde065fddd": "Loading approval request…",
   "text_460ae3a78f16": "Use this avatar",
   "text_46e42919a795": "Add to memory"
 }

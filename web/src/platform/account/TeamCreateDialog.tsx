@@ -3,7 +3,7 @@ import { Loader2, Plus } from 'lucide-react';
 import type { WorkspaceSummary } from '../../../../shared/platform';
 import { Dialog } from '../../components/UI';
 import { platformApi } from '../platformApi';
-import { uiText } from '../../i18n';
+import { uiText } from '../../i18n/account';
 
 export function TeamCreateDialog({
   onClose,

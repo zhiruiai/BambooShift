@@ -9,7 +9,7 @@ import {
   DEFAULT_AVATAR_THEME,
   CLASSIC_AVATAR,
   type CommunityAvatarTheme,
-} from '../avatarThemes';
+} from '../avatarThemeCatalog';
 import { CommunityAvatarArtwork } from './CommunityAvatarArtwork';
 import { Chick, Elephant } from './AnimalAvatarArtwork';
 import { AvatarFaceEyes } from './AvatarFaceEyes';

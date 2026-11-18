@@ -1,4 +1,4 @@
-import { uiText, languageHeaders, currentLanguage } from '../i18n';
+import { uiText, languageHeaders, currentLanguage } from '../i18n/account';
 import { parseAppAuthorizationPath } from '../appOAuth';
 import { parseBotTemplatePath, botTemplatePath } from '../../../shared/bot-templates';
 import { parseSharedBotPath } from '../../../shared/shared-bots';

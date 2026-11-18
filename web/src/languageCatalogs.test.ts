@@ -3,7 +3,9 @@ import test from 'node:test';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import ts from 'typescript';
-import { resources } from './i18n';
+import { resources, initializeLanguage, uiText } from './i18n';
+import { uiText as accountText } from './i18n/account';
+import { uiText as operationsText } from './i18n/operations';
 
 const tokens = (text: string) => text.match(/\{\{[^}]+\}\}/g)?.sort() ?? [];
 const edge = (text: string) => [text.match(/^\s*/)?.[0], text.match(/\s*$/)?.[0]];
@@ -22,6 +24,23 @@ test('every namespace has complete English keys, interpolation contracts and int
       assert.deepEqual(edge(value), edge(source), `${name}:${key} whitespace`);
       assert.doesNotMatch(value, /[\u3400-\u9fff]/, `${name}:${key} was not translated`);
     }
+  }
+});
+
+test('entry, operator and workspace translations can load in order and switch language immediately', () => {
+  const language = initializeLanguage();
+  const previous = language.getSnapshot().locale;
+  try {
+    for (const locale of ['en', 'zh-CN', 'en'] as const) {
+      language.setLanguage(locale);
+      const expected = resources[locale];
+      assert.equal(accountText('common:refresh'), expected.common.refresh);
+      assert.equal(operationsText('platform:disableWorkspace'), expected.platform.disableWorkspace);
+      assert.equal(uiText('workspace:filePreviewOpen'), expected.workspace.filePreviewOpen);
+      assert.equal(operationsText('common:refresh'), expected.common.refresh);
+    }
+  } finally {
+    language.setLanguage(previous);
   }
 });
 

@@ -1,19 +1,41 @@
-import { useMemo, useRef, useState } from 'react';
+import { lazy, useMemo, useRef, useState } from 'react';
 import { uiText } from '../i18n';
 import { isSharedBot } from '../../../shared/shared-bots';
-import { AppsDialog } from '../components/AppsDialog';
-import { BotTemplateDialog } from '../components/BotTemplateDialog';
-import { ComputerSettingsPanel } from '../components/ComputerDialog';
-import { ConversationSearch } from '../components/ConversationSearch';
-import { FilePreviewDialog } from '../components/FilePreviewDialog';
 import { Dialog } from '../components/UI';
-import { WorkspaceSettingsDialog } from '../components/WorkspaceSettingsDialog';
 import { previewFilePath } from '../filePreview';
 import { currentWorkspaceId, workspaceApiUrl } from '../workspace-scope';
 import type { OpenWebsiteProject } from '../websiteProjects';
 import type { WorkspaceModel } from './types';
 import type { Skill } from '../../../shared/types';
-import { acceptInstalledSkill, skillInstallBody } from '../skillInstallation';
+
+const AppsDialog = lazy(() =>
+  import('../components/AppsDialog').then(({ AppsDialog }) => ({ default: AppsDialog })),
+);
+const BotTemplateDialog = lazy(() =>
+  import('../components/BotTemplateDialog').then(({ BotTemplateDialog }) => ({
+    default: BotTemplateDialog,
+  })),
+);
+const ComputerSettingsPanel = lazy(() =>
+  import('../components/ComputerDialog').then(({ ComputerSettingsPanel }) => ({
+    default: ComputerSettingsPanel,
+  })),
+);
+const ConversationSearch = lazy(() =>
+  import('../components/ConversationSearch').then(({ ConversationSearch }) => ({
+    default: ConversationSearch,
+  })),
+);
+const FilePreviewDialog = lazy(() =>
+  import('../components/FilePreviewDialog').then(({ FilePreviewDialog }) => ({
+    default: FilePreviewDialog,
+  })),
+);
+const WorkspaceSettingsDialog = lazy(() =>
+  import('../components/WorkspaceSettingsDialog').then(({ WorkspaceSettingsDialog }) => ({
+    default: WorkspaceSettingsDialog,
+  })),
+);
 
 export function WorkspaceResourceDialogs({
   api,
@@ -286,6 +308,11 @@ export function WorkspaceResourceDialogs({
             skills: data.skills,
             onInstall: async (draft, expectedActiveId) => {
               const ticket = sendScope.ticket();
+              const { skillInstallBody, acceptInstalledSkill } =
+                await import('../skillInstallation');
+              if (!sendScope.current(ticket))
+                throw new Error(uiText('workspace:text_75d366e971e2'));
+
               const installed = await api<Skill>(
                 '/skills/install',
                 'POST',

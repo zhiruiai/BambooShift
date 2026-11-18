@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { resolve } from 'node:path';
-import { build as viteBuild, createFilter, normalizePath, type Plugin } from 'vite';
+import { build as viteBuild, createFilter, normalizePath, type Plugin, type Rollup } from 'vite';
 import { frontendConfig } from '../../scripts/vite.shared';
 import { all, compile, deferred, harness, json, render } from './testSupport/botProfilesFixture';
 
@@ -72,6 +72,23 @@ test('the two Vite sites use separate ports and operator proxy routes never reac
   );
 });
 
+function staticModules(chunks: Rollup.OutputChunk[], entry: Rollup.OutputChunk): Set<string> {
+  const byName = new Map(chunks.map((chunk) => [chunk.fileName, chunk]));
+  const pending = [entry.fileName];
+  const visited = new Set<string>();
+  const modules = new Set<string>();
+  while (pending.length) {
+    const name = pending.pop()!;
+    if (visited.has(name)) continue;
+    visited.add(name);
+    const chunk = byName.get(name);
+    assert.ok(chunk, name);
+    for (const id of chunk.moduleIds) modules.add(normalizePath(id));
+    pending.push(...chunk.imports);
+  }
+  return modules;
+}
+
 test('actual independent Vite builds contain only their own page modules and emit an operations index at the root', async () => {
   const graphs = new Map<string, string[]>();
   for (const mode of ['product', 'operations'] as const) {
@@ -98,6 +115,45 @@ test('actual independent Vite builds contain only their own page modules and emi
     assert.match(String(html.source), /<title>BambooShift · [^<]+<\/title>/);
     assert.match(String(html.source), /src="\/assets\//);
     assert.ok(!outputs.some((output) => output.fileName === 'operations/index.html'));
+    const chunks = outputs.filter((item) => item.type === 'chunk');
+    const entry = chunks.find((chunk) => chunk.isEntry);
+    assert.ok(entry, `Expected a JavaScript entry for ${mode}`);
+    const workspacePath =
+      mode === 'product' ? 'web/src/App.tsx' : 'operations/src/workspace/OperatorWorkspace.tsx';
+    const workspaceId = normalizePath(resolve(workspacePath));
+    const workspace = chunks.find((chunk) =>
+      chunk.moduleIds.some((id) => normalizePath(id) === workspaceId),
+    );
+    assert.ok(workspace, `Expected a workspace route for ${workspacePath}`);
+    const onFirstUse =
+      mode === 'product'
+        ? [
+            'web/src/components/RoutineDialog.tsx',
+            'web/src/components/SkillsDialog.tsx',
+            'web/src/skillWorkflowTemplates.ts',
+          ]
+        : ['operations/src/workspace/PlatformDirectory.tsx'];
+    const routeModules = [workspacePath, ...onFirstUse];
+    if (mode === 'product') routeModules.push('web/src/platform/TeamPage.tsx');
+    const emitted = new Set(chunks.flatMap((chunk) => chunk.moduleIds.map(normalizePath)));
+    for (const path of routeModules) {
+      assert.ok(emitted.has(normalizePath(resolve(path))), `${mode} build is missing ${path}`);
+    }
+    const initial = staticModules(chunks, entry);
+    for (const path of [
+      ...routeModules,
+      'web/src/components/Avatar.tsx',
+      'web/src/i18n/resources.ts',
+    ]) {
+      assert.ok(!initial.has(normalizePath(resolve(path))), `${path} loaded at startup`);
+    }
+    const workspaceModules = staticModules(chunks, workspace);
+    for (const path of onFirstUse) {
+      assert.ok(
+        !workspaceModules.has(normalizePath(resolve(path))),
+        `${workspacePath} eagerly loads ${path}`,
+      );
+    }
     graphs.set(
       mode,
       modules.map((id) => id.replaceAll('\\', '/')),
@@ -177,6 +233,27 @@ test('operator root uses the isolated session gate at slash and never renders a 
     assert.match(html, /href="\/admin\/login"/);
     assert.doesNotMatch(html, /href="\/(?:login|register|account)"/);
     assert.match(html, /operations-language-toolbar/);
+  }
+});
+
+test('operator login and setup open from a verified anonymous session without fetching it twice', async () => {
+  for (const setup of [false, true]) {
+    const calls: string[] = [];
+    const page = await harness(
+      'operations/src/OperatorLoginPage.tsx',
+      'OperatorLoginPage',
+      { setup, initialSession: { authenticated: false, setupRequired: setup } },
+      (async (path) => {
+        calls.push(String(path));
+        return json({ authenticated: false, setupRequired: setup });
+      }) as typeof fetch,
+      { window: browser(setup ? '/admin/setup' : '/admin/login') },
+    );
+    await page.flush();
+    assert.deepEqual(calls, []);
+    const inputs = all(page.form(), (node) => node.type === 'input');
+    assert.equal(inputs.length, setup ? 4 : 2);
+    page.dispose();
   }
 });
 

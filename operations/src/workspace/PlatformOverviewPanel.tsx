@@ -1,9 +1,7 @@
-import { uiText } from '../../../web/src/i18n';
+import { uiText } from '../../../web/src/i18n/operations';
 import { ArrowUpRight, Building2, LayoutGrid, Pause, Users } from 'lucide-react';
 import type { PlatformOverview } from '../../../shared/platform';
-import '../../../web/src/admin/Admin.css';
 import { AccountInitial } from '../../../web/src/platform/account/AccountInitial';
-import '../../../web/src/platform/Platform.css';
 import { platformTime } from '../../../web/src/platform/platformApi';
 import { Status } from './Status';
 import { View } from './types';

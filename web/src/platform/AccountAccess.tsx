@@ -1,4 +1,4 @@
-import { uiText } from '../i18n';
+import { uiText } from '../i18n/account';
 import {
   useEffect,
   useLayoutEffect,

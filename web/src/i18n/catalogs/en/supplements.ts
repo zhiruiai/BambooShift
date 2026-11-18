@@ -1,13 +1,5 @@
 export default {
   platform: {
-    operationsTitle: 'BambooShift · Operations',
-    operatorOnly: 'For platform operators only. Personal and team accounts cannot sign in here.',
-    enableUser: 'Restore user',
-    disableUser: 'Disable user',
-    enableWorkspace: 'Restore workspace',
-    disableWorkspace: 'Disable workspace',
-    disabledNotice: '“{{name}}” has been disabled.',
-    restoredNotice: '“{{name}}” has been restored.',
     text_5270346417b9: 'A Bot may participate in more than one chat.',
     text_571588b59c67: 'Recent failed runs; this does not mean work is still failing.',
     text_196b43ad63cf: 'No recent failed runs',
@@ -19,7 +11,6 @@ export default {
     text_cd8850010b3e: 'Chats appear here when Bots start working.',
     text_1ae440224dab: 'Dismiss notification',
     text_4914c4392a3f: 'Valid data has not loaded yet. Estimates are not shown.',
-    text_3b2b85441a1a: 'Checking platform operator access.',
   },
   computer: {
     text_cecc0beb8af6: 'Go to parent folder',
@@ -41,9 +32,7 @@ export default {
     punct_b269e4a0914b: '“',
     punct_d93a835d0f27: '”',
     punct_a33706e414ed: '”?',
-    punct_eb0d5884569b: '.',
     punct_f114611cd610: ':',
-    punct_da047c04c9b5: '(',
     punct_f2e44c6c9545: ')',
     text_455d95b21acd:
       'Let your Bots remember what matters. You can edit or forget anything at any time.',
@@ -111,10 +100,7 @@ export default {
     text_acfb4e262968: 'Upload documents and deliverables',
   },
   account: {
-    text_16083ba8966c:
-      'Share Bots, chats, and work files with team members. Your personal workspace is kept.',
     text_c7d0301f453c: 'Sign in with the BambooShift owner account that started this connection.',
-    text_e6d837a34721: 'Accept the invitation to share this workspace with the team.',
   },
   workspace: {
     questionChooseOne: 'Choose one answer.',

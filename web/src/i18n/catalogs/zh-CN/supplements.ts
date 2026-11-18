@@ -2,14 +2,6 @@ import { MEMORY_IMPORT_COPY_PROMPT } from '../../../../../shared/memory-imports'
 
 export default {
   platform: {
-    operationsTitle: 'BambooShift · 平台运营',
-    operatorOnly: '仅供平台运营人员使用。个人或团队账户不能登录此后台。',
-    enableUser: '恢复用户',
-    disableUser: '停用用户',
-    enableWorkspace: '恢复工作空间',
-    disableWorkspace: '停用工作空间',
-    disabledNotice: '「{{name}}」已停用。',
-    restoredNotice: '「{{name}}」已恢复。',
     text_5270346417b9: '同一位 Bot 可能参与多个会话。',
     text_571588b59c67: '最近的失败执行记录；不代表仍有任务运行失败。',
     text_196b43ad63cf: '最近没有失败执行记录',
@@ -20,7 +12,6 @@ export default {
     text_cd8850010b3e: '同事开始工作后，这里会显示对应会话。',
     text_1ae440224dab: '关闭操作提示',
     text_4914c4392a3f: '页面尚未读取到有效数据，不显示估算数字。',
-    text_3b2b85441a1a: '正在确认运营身份。',
   },
   computer: {
     text_cecc0beb8af6: '返回上一级文件夹',
@@ -41,9 +32,7 @@ export default {
     punct_b269e4a0914b: '「',
     punct_d93a835d0f27: '」',
     punct_a33706e414ed: '」？',
-    punct_eb0d5884569b: '。',
     punct_f114611cd610: '：',
-    punct_da047c04c9b5: '（',
     punct_f2e44c6c9545: '）',
     text_455d95b21acd: '让 Bot 记住重要的事，也随时由你修改和忘记。',
     text_34b094b2e640: '删除这条记忆',
@@ -105,9 +94,7 @@ export default {
     text_acfb4e262968: '上传文档与交付结果',
   },
   account: {
-    text_16083ba8966c: '与成员共享同事、会话和工作资料。你的个人空间会保留。',
     text_c7d0301f453c: '请使用发起连接的 BambooShift 拥有者账号。',
-    text_e6d837a34721: '接受邀请后，与成员共享这个团队空间。',
   },
   workspace: {
     questionChooseOne: '请选择一项。',

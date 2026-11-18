@@ -132,17 +132,6 @@
 .resources > button > svg {
   color: light-dark(#bcbcc1, var(--text-muted));
 }
-.text-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: light-dark(#9a82ba, var(--accent));
-  padding: 0;
-}
-.text-button:hover {
-  color: light-dark(#6f4f95, var(--accent));
-}
 .member-mini {
   display: flex;
   align-items: center;

@@ -1,3 +1,7 @@
+import zhEntry from './catalogs/zh-CN/entry.json';
+import zhOperations from './catalogs/zh-CN/operations.json';
+import enEntry from './catalogs/en/entry.json';
+import enOperations from './catalogs/en/operations.json';
 import zhreferenceConversationExport from './catalogs/zh-CN/referenceConversationExport';
 import enreferenceConversationExport from './catalogs/en/referenceConversationExport';
 import zhreferenceWebResearch from './catalogs/zh-CN/referenceWebResearch';
@@ -90,14 +94,20 @@ import zh24 from './catalogs/zh-CN/workspace-02.json';
 import en24 from './catalogs/en/workspace-02.json';
 export const uiResources = {
   'zh-CN': {
-    account: { ...zh0, ...zh1, ...zh2, ...zhExtra.account },
-    apps: { ...zh3, ...zh4, ...zhExtra.apps },
+    account: { ...zh0, ...zh1, ...zh2, ...zhExtra.account, ...zhEntry.account },
+    apps: { ...zh3, ...zh4, ...zhExtra.apps, ...zhEntry.apps },
     bots: { ...zh5, ...zh6, ...zh7, ...zh8, ...zhExtra.bots },
-    common: { ...zh9, ...zh10, ...zh11, ...zh12, ...zhExtra.common },
+    common: { ...zh9, ...zh10, ...zh11, ...zh12, ...zhExtra.common, ...zhEntry.common },
     computer: { ...zh13, ...zh14, ...zh15, ...zh16, ...zhExtra.computer },
-    platform: { ...zh17, ...zh18, ...zhExtra.platform },
+    platform: {
+      ...zh17,
+      ...zh18,
+      ...zhExtra.platform,
+      ...zhEntry.platform,
+      ...zhOperations.platform,
+    },
     routines: { ...zh19, ...zh20, ...zhExtra.routines },
-    settings: { ...zh21, ...zh22, ...zhExtra.settings },
+    settings: { ...zh21, ...zh22, ...zhExtra.settings, ...zhEntry.settings },
     workspace: {
       ...zh23,
       ...zh24,
@@ -124,14 +134,20 @@ export const uiResources = {
     },
   },
   en: {
-    account: { ...en0, ...en1, ...en2, ...enExtra.account },
-    apps: { ...en3, ...en4, ...enExtra.apps },
+    account: { ...en0, ...en1, ...en2, ...enExtra.account, ...enEntry.account },
+    apps: { ...en3, ...en4, ...enExtra.apps, ...enEntry.apps },
     bots: { ...en5, ...en6, ...en7, ...en8, ...enExtra.bots },
-    common: { ...en9, ...en10, ...en11, ...en12, ...enExtra.common },
+    common: { ...en9, ...en10, ...en11, ...en12, ...enExtra.common, ...enEntry.common },
     computer: { ...en13, ...en14, ...en15, ...en16, ...enExtra.computer },
-    platform: { ...en17, ...en18, ...enExtra.platform },
+    platform: {
+      ...en17,
+      ...en18,
+      ...enExtra.platform,
+      ...enEntry.platform,
+      ...enOperations.platform,
+    },
     routines: { ...en19, ...en20, ...enExtra.routines },
-    settings: { ...en21, ...en22, ...enExtra.settings },
+    settings: { ...en21, ...en22, ...enExtra.settings, ...enEntry.settings },
     workspace: {
       ...en23,
       ...en24,

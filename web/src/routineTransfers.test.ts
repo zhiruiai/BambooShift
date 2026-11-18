@@ -388,7 +388,7 @@ test('the workspace entry enables transfer only in the current personal space, n
   });
   try {
     await ui.flush();
-    const form = () => all(ui.tree, (n) => n.type?.name === 'RoutineDialog')[0];
+    const form = () => all(ui.tree, (n) => Object.hasOwn(n.props, 'canTransferRoutines'))[0];
     assert.equal(form().props.canTransferRoutines, false);
     ui.setProps({ account: { workspace: { id: workspaceId, kind: 'personal' } } });
     await ui.flush();

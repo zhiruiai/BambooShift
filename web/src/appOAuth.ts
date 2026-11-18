@@ -1,4 +1,4 @@
-import { uiText } from './i18n';
+import { uiText } from './i18n/account';
 import type { AppOAuthPhase } from '../../shared/app-oauth';
 const uuid = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
 const pathPattern = new RegExp(`^/app-authorize/(${uuid})/(${uuid})/(${uuid})$`);

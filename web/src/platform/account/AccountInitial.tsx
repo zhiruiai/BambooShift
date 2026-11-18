@@ -1,4 +1,4 @@
-import { uiText } from '../../i18n';
+import { uiText } from '../../i18n/account';
 
 export function AccountInitial({ name }: { name?: string }) {
   return (

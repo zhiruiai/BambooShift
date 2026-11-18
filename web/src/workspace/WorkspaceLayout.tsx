@@ -1,19 +1,23 @@
+import { Suspense } from 'react';
+import { Dialog } from '../components/UI';
+import { LoadBoundary } from '../components/LoadBoundary';
 import { uiText } from '../i18n';
-import { ArrowLeft, Info, X } from 'lucide-react';
+import { ArrowLeft, Info, Loader2, X } from 'lucide-react';
 import { ChatComposer } from './ChatComposer';
 import { ChatHeader } from './ChatHeader';
 import { ChatMessages } from './ChatMessages';
 import { ConversationDetails } from './ConversationDetails';
 import type { WorkspaceModel } from './types';
-import { WorkspacePeopleDialogs } from './WorkspacePeopleDialogs';
-import { WorkspaceResourceDialogs } from './WorkspaceResourceDialogs';
-import { WorkspaceSharingDialogs } from './WorkspaceSharingDialogs';
 import { WorkspaceSidebar } from './WorkspaceSidebar';
-import { WorkspaceTaskDialogs } from './WorkspaceTaskDialogs';
 import { useWorkspaceWebsite } from './WorkspaceWebsite';
 import { useRecruiterShortcut } from './useRecruiterShortcut';
 import { useVoiceCall } from '../useVoiceCall';
 import { ActiveVoiceCall } from '../components/VoiceCallControls';
+import { WorkspacePeopleDialogs } from './WorkspacePeopleDialogs';
+import { WorkspaceResourceDialogs } from './WorkspaceResourceDialogs';
+import { WorkspaceSharingDialogs } from './WorkspaceSharingDialogs';
+import { WorkspaceTaskDialogs } from './WorkspaceTaskDialogs';
+
 export function WorkspaceLayout(model: WorkspaceModel) {
   const website = useWorkspaceWebsite(model);
   const call = useVoiceCall(model);
@@ -42,6 +46,16 @@ export function WorkspaceLayout(model: WorkspaceModel) {
     threadRoot,
     closeThread,
   } = model;
+  function closeLoadingDialog() {
+    if (model.routineChatPending) {
+      if (!model.routineChatBusy) {
+        model.setRoutineChatPending(undefined);
+        model.setModal('routine');
+      }
+    } else if (model.sharedNavigation) model.setSharedNavigation(undefined);
+    else if (model.templateNavigation) model.setTemplateNavigation(undefined);
+    else model.setModal(null);
+  }
   return (
     <main
       className={`app-shell ${mobileChat ? 'mobile-chat-open' : ''} ${website.panel ? 'with-website' : showDetail ? 'with-detail' : ''}`}
@@ -128,10 +142,25 @@ export function WorkspaceLayout(model: WorkspaceModel) {
           </button>
         </div>
       )}
-      <WorkspacePeopleDialogs {...model} recruiterShortcut={recruiterFromCreate} />
-      <WorkspaceResourceDialogs {...model} openWebsiteSearchResult={website.openSearchResult} />
-      <WorkspaceSharingDialogs {...model} />
-      <WorkspaceTaskDialogs {...model} />
+      <LoadBoundary
+        onClose={closeLoadingDialog}
+        resetKey={
+          modal ?? model.routineChatPending ?? model.sharedNavigation ?? model.templateNavigation
+        }
+      >
+        <Suspense
+          fallback={
+            <Dialog title={uiText('common:loading')} onClose={closeLoadingDialog}>
+              <Loader2 className="spin" size={18} aria-hidden="true" />
+            </Dialog>
+          }
+        >
+          <WorkspacePeopleDialogs {...model} recruiterShortcut={recruiterFromCreate} />
+          <WorkspaceResourceDialogs {...model} openWebsiteSearchResult={website.openSearchResult} />
+          <WorkspaceSharingDialogs {...model} />
+          <WorkspaceTaskDialogs {...model} />
+        </Suspense>
+      </LoadBoundary>
     </main>
   );
 }

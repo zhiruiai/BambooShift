@@ -1,8 +1,6 @@
-import { uiText, localizedData } from '../../../web/src/i18n';
+import { uiText, localizedData } from '../../../web/src/i18n/operations';
 import { Building2, LayoutGrid, Users } from 'lucide-react';
 import type { AccountStatus } from '../../../shared/platform';
-import '../../../web/src/admin/Admin.css';
-import '../../../web/src/platform/Platform.css';
 export type View = 'overview' | 'users' | 'workspaces';
 export type StatusTarget = {
   kind: 'users' | 'workspaces';

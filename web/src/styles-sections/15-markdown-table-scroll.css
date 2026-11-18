@@ -59,12 +59,6 @@
 .mobile-home-header .mobile-home-actions {
   flex-shrink: 0;
 }
-.admin-sidebar-footer > .account-menu {
-  margin-bottom: 14px;
-}
-.admin-sidebar-footer .account-menu-trigger {
-  width: 100%;
-}
 .teammate-avatar {
   width: 32px;
   height: 32px;

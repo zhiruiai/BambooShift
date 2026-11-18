@@ -34,9 +34,6 @@
   }
 }
 @media (max-width: 760px) {
-  :root {
-    background: light-dark(#fff, var(--bg-canvas));
-  }
   .app-shell,
   .app-shell.with-detail {
     height: 100dvh;
@@ -312,36 +309,6 @@
     justify-content: center;
     padding: 17px;
   }
-  .modal-overlay {
-    padding: 12px;
-    align-items: center;
-  }
-  .modal {
-    padding: 21px;
-    width: 100%;
-    max-height: 92dvh;
-    border-radius: 16px;
-  }
-  .modal-header h2 {
-    font-size: 19px;
-  }
-  .modal-header p {
-    font-size: 12px;
-  }
-  .modal-wide {
-    max-height: 94dvh;
-  }
-  .field-pair {
-    gap: 9px;
-  }
-  .dialog-form label {
-    font-size: 12px;
-  }
-  .dialog-form input,
-  .dialog-form select,
-  .dialog-form textarea {
-    font-size: 14px;
-  }
   .empty-conversation {
     padding-top: 60px;
   }
@@ -359,15 +326,6 @@
   }
   .sidebar .app-symbols {
     margin-left: auto;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *:before,
-  *:after {
-    animation: none !important;
-    scroll-behavior: auto !important;
-    transition: none !important;
   }
 }
 /* Keep the compact messenger layout readable on standard-density displays. */

@@ -1,10 +1,23 @@
+import { lazy } from 'react';
 import { uiText } from '../i18n';
 import { isSharedBot } from '../../../shared/shared-bots';
-import { AgentDialog } from '../components/AgentDialog';
-import { ManageSharedBotDialog, SharedBotsDialog } from '../components/SharedBotsDialog';
 import { Dialog } from '../components/UI';
 import { currentWorkspaceId } from '../workspace-scope';
 import type { WorkspaceModel } from './types';
+
+const AgentDialog = lazy(() =>
+  import('../components/AgentDialog').then(({ AgentDialog }) => ({ default: AgentDialog })),
+);
+const ManageSharedBotDialog = lazy(() =>
+  import('../components/SharedBotsDialog').then(({ ManageSharedBotDialog }) => ({
+    default: ManageSharedBotDialog,
+  })),
+);
+const SharedBotsDialog = lazy(() =>
+  import('../components/SharedBotsDialog').then(({ SharedBotsDialog }) => ({
+    default: SharedBotsDialog,
+  })),
+);
 
 export function WorkspaceSharingDialogs({
   modal,

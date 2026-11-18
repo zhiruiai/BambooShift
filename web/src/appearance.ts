@@ -1,5 +1,10 @@
-import { AVATAR_THEMES, DEFAULT_AVATAR_THEME, avatarTheme, type AvatarTheme } from './avatarThemes';
-import { generatedAvatarTheme, type GeneratedAvatarTheme } from './creationPreview';
+import {
+  AVATAR_THEMES,
+  DEFAULT_AVATAR_THEME,
+  avatarTheme,
+  type AvatarTheme,
+} from './avatarThemeCatalog';
+import { generatedAvatarTheme, type GeneratedAvatarTheme } from './generatedAvatarTheme';
 import { managedAppearanceStorage, type AppearanceStorage } from './managedAppearance';
 
 export type AppearancePreferences = {

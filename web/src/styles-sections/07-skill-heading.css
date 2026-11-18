@@ -197,11 +197,6 @@
   display: block;
   text-align: right;
 }
-.error-text {
-  font-size: 12px;
-  color: light-dark(#bb8e8e, var(--danger));
-  line-height: 1.6;
-}
 .approval-actions {
   display: flex;
   justify-content: flex-end;

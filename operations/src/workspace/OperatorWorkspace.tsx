@@ -1,18 +1,20 @@
-import { uiText } from '../../../web/src/i18n';
+import { uiText } from '../../../web/src/i18n/operations';
 import { Loader2, LogOut, Pause, Play, RefreshCw, ShieldCheck } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { OperatorSession, PlatformOverview } from '../../../shared/platform';
 import '../../../web/src/admin/Admin.css';
-import { Avatar } from '../../../web/src/components/Avatar';
+import { LoadBoundary } from '../../../web/src/components/LoadBoundary';
+import { AccountAvatar } from '../../../web/src/platform/account/AccountAvatar';
 import { Dialog } from '../../../web/src/components/UI';
-import '../../../web/src/platform/Platform.css';
 import { platformTime } from '../../../web/src/platform/platformApi';
 import { useOperatorScope } from './useOperatorScope';
-import { PlatformDirectory } from './PlatformDirectory';
 import { PlatformOverviewPanel } from './PlatformOverviewPanel';
 import { initialView } from './Status';
 import { StatusTarget, View, views } from './types';
-export function OperatorWorkspace({
+
+const PlatformDirectory = lazy(() => import('./PlatformDirectory'));
+
+export default function OperatorWorkspace({
   session,
   sessionError,
 }: {
@@ -75,7 +77,7 @@ export function OperatorWorkspace({
     <main className="admin-shell platform-operator">
       <aside className="admin-sidebar">
         <a className="admin-brand" href="/admin">
-          <Avatar size={35} />
+          <AccountAvatar size={35} />
           <span>
             <strong>BambooShift</strong>
             <small>{uiText('platform:text_e0f17eefe421')}</small>
@@ -193,14 +195,23 @@ export function OperatorWorkspace({
               </div>
             )
           ) : (
-            <PlatformDirectory
-              key={view}
-              kind={view}
-              revision={revision}
-              currentUserId={session.user?.id}
-              busy={busy}
-              onChangeStatus={ask}
-            />
+            <LoadBoundary key={view}>
+              <Suspense
+                fallback={
+                  <p className="platform-loading" role="status">
+                    {uiText('platform:text_09ed1b8b31d4')}
+                  </p>
+                }
+              >
+                <PlatformDirectory
+                  kind={view}
+                  revision={revision}
+                  currentUserId={session.user?.id}
+                  busy={busy}
+                  onChangeStatus={ask}
+                />
+              </Suspense>
+            </LoadBoundary>
           )}
         </div>
       </section>

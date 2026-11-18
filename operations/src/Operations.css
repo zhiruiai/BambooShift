@@ -22,3 +22,8 @@
   color: var(--text);
   font: inherit;
 }
+
+.platform-operator .admin-content > .loading-screen {
+  height: auto;
+  padding: 32px 16px;
+}

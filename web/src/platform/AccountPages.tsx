@@ -1,4 +1,4 @@
-import { uiText } from '../i18n';
+import { uiText } from '../i18n/account';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { AccountAuthResult, AccountSession } from '../../../shared/platform';
@@ -7,13 +7,20 @@ import './Platform.css';
 import { AccountShell } from './account/AccountShell';
 import { accountEntryPath, platformApi, safeAccountNext, workspacePath } from './platformApi';
 export { AccountShell } from './account/AccountShell';
-export { InvitationPage } from './account/InvitationPage';
-export function AccountPage({ mode, next }: { mode: 'login' | 'register'; next?: string }) {
+export function AccountPage({
+  mode,
+  next,
+  initialSession,
+}: {
+  mode: 'login' | 'register';
+  next?: string;
+  initialSession?: AccountSession;
+}) {
   const destination = safeAccountNext(
     next ?? new URLSearchParams(window.location.search).get('next'),
   );
-  const [session, setSession] = useState<AccountSession | null>(null),
-    [checking, setChecking] = useState(true),
+  const [session, setSession] = useState<AccountSession | null>(initialSession ?? null),
+    [checking, setChecking] = useState(!initialSession),
     [loadError, setLoadError] = useState('');
   const [email, setEmail] = useState(''),
     [name, setName] = useState(''),
@@ -39,7 +46,7 @@ export function AccountPage({ mode, next }: { mode: 'login' | 'register'; next?:
     }
   }
   useEffect(() => {
-    void check();
+    if (!initialSession) void check();
     return () => {
       request.current++;
     };

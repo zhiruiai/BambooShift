@@ -1,13 +1,18 @@
-import { uiText } from '../../web/src/i18n';
+import { uiText } from '../../web/src/i18n/account';
 import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { OperatorSession } from '../../shared/platform';
-import '../../web/src/platform/Platform.css';
 import { platformApi } from '../../web/src/platform/platformApi';
 import { AccountShell } from '../../web/src/platform/account/AccountShell';
-export function OperatorLoginPage({ setup = false }: { setup?: boolean }) {
-  const [session, setSession] = useState<OperatorSession | null>(null),
-    [loading, setLoading] = useState(true);
+export function OperatorLoginPage({
+  setup = false,
+  initialSession,
+}: {
+  setup?: boolean;
+  initialSession?: OperatorSession;
+}) {
+  const [session, setSession] = useState<OperatorSession | null>(initialSession ?? null),
+    [loading, setLoading] = useState(!initialSession);
   const [email, setEmail] = useState(''),
     [password, setPassword] = useState(''),
     [name, setName] = useState(''),
@@ -30,11 +35,11 @@ export function OperatorLoginPage({ setup = false }: { setup?: boolean }) {
     }
   }
   useEffect(() => {
-    void load();
+    if (!initialSession) void load();
     return () => {
       sequence.current++;
     };
-  }, []);
+  }, [initialSession]);
   return (
     <AccountShell
       operator

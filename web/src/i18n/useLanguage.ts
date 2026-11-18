@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { initializeLanguage } from './index';
+import { initializeLanguage } from './runtime';
 
 export function useLanguage() {
   const store = initializeLanguage();

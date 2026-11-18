@@ -1,15 +1,34 @@
+import { lazy } from 'react';
 import { uiText } from '../i18n';
 import { routineConfigSnapshot } from '../../../shared/routine-operations';
-import { ComputerDialog } from '../components/ComputerDialog';
-import { SendFileToComputerDialog } from '../components/ComputerFiles';
-import { MemoryDialog } from '../components/MemoryDialog';
-import { RoutineDetails } from '../components/RoutineDetails';
-import { RoutineDialog } from '../components/RoutineDialog';
-import { SkillsDialog } from '../components/SkillsDialog';
 import { Dialog } from '../components/UI';
 import type { WorkspaceModel } from './types';
 import type { Skill } from '../../../shared/types';
-import { acceptInstalledSkill, skillInstallBody } from '../skillInstallation';
+
+const ComputerDialog = lazy(() =>
+  import('../components/ComputerDialog').then(({ ComputerDialog }) => ({
+    default: ComputerDialog,
+  })),
+);
+const SendFileToComputerDialog = lazy(() =>
+  import('../components/ComputerFiles').then(({ SendFileToComputerDialog }) => ({
+    default: SendFileToComputerDialog,
+  })),
+);
+const MemoryDialog = lazy(() =>
+  import('../components/MemoryDialog').then(({ MemoryDialog }) => ({ default: MemoryDialog })),
+);
+const RoutineDetails = lazy(() =>
+  import('../components/RoutineDetails').then(({ RoutineDetails }) => ({
+    default: RoutineDetails,
+  })),
+);
+const RoutineDialog = lazy(() =>
+  import('../components/RoutineDialog').then(({ RoutineDialog }) => ({ default: RoutineDialog })),
+);
+const SkillsDialog = lazy(() =>
+  import('../components/SkillsDialog').then(({ SkillsDialog }) => ({ default: SkillsDialog })),
+);
 
 export function WorkspaceTaskDialogs({
   api,
@@ -286,6 +305,9 @@ export function WorkspaceTaskDialogs({
           onClose={() => setModal(null)}
           onInstall={async (draft, expectedActiveId) => {
             const ticket = sendScope.ticket();
+            const { skillInstallBody, acceptInstalledSkill } = await import('../skillInstallation');
+            if (!sendScope.current(ticket)) throw new Error(uiText('workspace:text_75d366e971e2'));
+
             const installed = await api<Skill>(
               '/skills/install',
               'POST',

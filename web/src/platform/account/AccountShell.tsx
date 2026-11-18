@@ -1,6 +1,6 @@
-import { uiText } from '../../i18n';
+import { uiText } from '../../i18n/account';
 import { type ReactNode } from 'react';
-import { Avatar } from '../../components/Avatar';
+import { AccountAvatar } from './AccountAvatar';
 import '../Platform.css';
 export function AccountShell({
   title,
@@ -16,11 +16,11 @@ export function AccountShell({
   return (
     <main className={`platform-auth ${operator ? 'is-operator' : ''}`}>
       <a className="platform-brand" href={operator ? '/admin/login' : '/login'}>
-        <Avatar size={33} />
+        <AccountAvatar size={33} />
         <span>BambooShift{operator && <small>{uiText('account:text_e0f17eefe421')}</small>}</span>
       </a>
       <section className="platform-auth-card">
-        <Avatar size={57} />
+        <AccountAvatar size={57} />
         <h1>{title}</h1>
         {subtitle && <p className="platform-auth-subtitle">{subtitle}</p>}
         {children}

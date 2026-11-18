@@ -1,13 +1,14 @@
-import { uiText } from '../../web/src/i18n';
+import { uiText } from '../../web/src/i18n/account';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import type { OperatorSession } from '../../shared/platform';
-import '../../web/src/admin/Admin.css';
+import { LoadBoundary } from '../../web/src/components/LoadBoundary';
 import { AccountShell } from '../../web/src/platform/account/AccountShell';
-import '../../web/src/platform/Platform.css';
-import { OperatorWorkspace } from './workspace/OperatorWorkspace';
 import { platformApi } from '../../web/src/platform/platformApi';
-export function PlatformAdminApp() {
+
+const OperatorWorkspace = lazy(() => import('./workspace/OperatorWorkspace'));
+
+export function PlatformAdminApp({ onSignIn }: { onSignIn: (session: OperatorSession) => void }) {
   const [session, setSession] = useState<OperatorSession | null>(null),
     [error, setError] = useState(''),
     [checking, setChecking] = useState(true);
@@ -22,8 +23,7 @@ export function PlatformAdminApp() {
       if (request !== sequence.current) return;
       setSession(result);
       setError('');
-      if (!result.authenticated)
-        window.location.replace(result.setupRequired ? '/admin/setup' : '/admin/login');
+      if (!result.authenticated) onSignIn(result);
     } catch (cause) {
       if (request === sequence.current) setError((cause as Error).message);
     } finally {
@@ -80,5 +80,19 @@ export function PlatformAdminApp() {
         )}
       </AccountShell>
     );
-  return <OperatorWorkspace key={session.user?.id} session={session} sessionError={error} />;
+  return (
+    <LoadBoundary>
+      <Suspense
+        fallback={
+          <AccountShell operator title={uiText('platform:text_16fc3f7a97fe')}>
+            <p className="platform-loading" role="status">
+              {uiText('platform:text_09ed1b8b31d4')}
+            </p>
+          </AccountShell>
+        }
+      >
+        <OperatorWorkspace key={session.user?.id} session={session} sessionError={error} />
+      </Suspense>
+    </LoadBoundary>
+  );
 }

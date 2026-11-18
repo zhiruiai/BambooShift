@@ -1,7 +1,5 @@
-import { uiText } from '../../../web/src/i18n';
+import { uiText } from '../../../web/src/i18n/operations';
 import type { AccountStatus } from '../../../shared/platform';
-import '../../../web/src/admin/Admin.css';
-import '../../../web/src/platform/Platform.css';
 import { View, views } from './types';
 export function Status({ value }: { value: AccountStatus }) {
   return (

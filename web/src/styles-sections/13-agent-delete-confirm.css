@@ -5,22 +5,6 @@
   margin-top: 13px;
   flex-wrap: wrap;
 }
-.danger-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background: light-dark(#ab7772, var(--danger-border));
-  color: light-dark(white, var(--on-accent));
-  border: 1px solid light-dark(#ab7772, var(--danger-border));
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 12px;
-  min-height: 34px;
-}
-.danger-button:hover:not(:disabled) {
-  background: light-dark(#966461, var(--danger-border));
-}
 .agent-delete-confirm .error-text {
   margin-top: 10px;
   color: light-dark(#ad6d67, var(--danger));

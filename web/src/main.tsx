@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { LocalizedRoot } from './i18n/LocalizedRoot';
-import { initializeLanguage } from './i18n';
+import { initializeLanguage } from './i18n/runtime';
 import { initializeAppearance } from './appearance';
-import './styles.css';
+import './base.css';
 import './theme.css';
 
 initializeAppearance();

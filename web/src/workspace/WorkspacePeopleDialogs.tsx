@@ -1,12 +1,24 @@
+import { lazy } from 'react';
 import { uiText } from '../i18n';
 import { emptyComposer, makeSendAttempt } from '../chatDrafts';
-import { CreateDialog } from '../components/CreateDialog';
-import { GroupSettingsDialog } from '../components/GroupSettingsDialog';
-import { PrimaryBotDialog } from '../components/PrimaryBotDialog';
 import { RosterManagementDialog } from '../components/SidebarRoster';
 import { currentWorkspaceId } from '../workspace-scope';
 import type { WorkspaceModel } from './types';
 import type { RecruiterShortcut } from './useRecruiterShortcut';
+
+const CreateDialog = lazy(() =>
+  import('../components/CreateDialog').then(({ CreateDialog }) => ({ default: CreateDialog })),
+);
+const GroupSettingsDialog = lazy(() =>
+  import('../components/GroupSettingsDialog').then(({ GroupSettingsDialog }) => ({
+    default: GroupSettingsDialog,
+  })),
+);
+const PrimaryBotDialog = lazy(() =>
+  import('../components/PrimaryBotDialog').then(({ PrimaryBotDialog }) => ({
+    default: PrimaryBotDialog,
+  })),
+);
 
 export function WorkspacePeopleDialogs({
   modal,

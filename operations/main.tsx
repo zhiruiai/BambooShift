@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import OperationsRoot from './src/OperationsRoot';
 import { initializeAppearance } from '../web/src/appearance';
-import { initializeLanguage } from '../web/src/i18n';
-import '../web/src/styles.css';
+import { initializeLanguage } from '../web/src/i18n/runtime';
+import '../web/src/base.css';
 import '../web/src/theme.css';
 
 initializeAppearance();
