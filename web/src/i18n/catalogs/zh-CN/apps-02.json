@@ -141,6 +141,7 @@
   "publishingPlatform": "发布平台",
   "publishingZhihu": "知乎",
   "publishingXiaohongshu": "小红书",
+  "publishingToutiao": "头条号",
   "publishingBot": "使用此工作浏览器的 Bot",
   "publishingChooseBot": "选择本地 Bot",
   "publishingProfile": "登录会保存在所选工作电脑的浏览器中。同一工作空间的 Bot 可能共用网站登录状态，各自保留自己的标签页。请确认使用的是适合该空间的账号。",

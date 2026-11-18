@@ -141,6 +141,7 @@
   "publishingPlatform": "Platform",
   "publishingZhihu": "Zhihu",
   "publishingXiaohongshu": "Xiaohongshu",
+  "publishingToutiao": "Toutiao",
   "publishingBot": "Bot using this work browser",
   "publishingChooseBot": "Choose a local Bot",
   "publishingProfile": "The work computer’s browser keeps the sign-in. Bots in this workspace may share website sessions while keeping separate tabs. Choose an account appropriate for the workspace.",

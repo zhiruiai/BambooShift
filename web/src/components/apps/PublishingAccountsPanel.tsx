@@ -12,8 +12,9 @@ import './PublishingAccountsPanel.css';
 
 const newSite = 'custom';
 function siteName(site: PublishingSite) {
-  if (site.name === '知乎') return uiText('apps:publishingZhihu');
-  if (site.name === '小红书') return uiText('apps:publishingXiaohongshu');
+  if (site.url === 'https://zhuanlan.zhihu.com/write') return uiText('apps:publishingZhihu');
+  if (site.url === 'https://creator.xiaohongshu.com/') return uiText('apps:publishingXiaohongshu');
+  if (site.url === 'https://mp.toutiao.com/') return uiText('apps:publishingToutiao');
   return site.name;
 }
 
