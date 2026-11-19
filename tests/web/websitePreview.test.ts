@@ -9,6 +9,7 @@ import {
   websiteRelativePath,
   websiteScripts,
   websiteStyles,
+  websiteVideoFragment,
 } from '../../web/src/websitePreviewFiles';
 import { WEBSITE_FRAME_RUNTIME, WEBSITE_WORKER_RUNTIME } from '../../web/src/websitePreviewRuntime';
 
@@ -40,6 +41,18 @@ test('website preview resolves relative paths from a single exact manifest and n
   assert.throws(() =>
     websiteFiles([file('a.html', 'text/html', ''), file('A.html', 'text/html', '')]),
   );
+});
+
+test('local MP4 preserves only numeric time ranges with a positive duration', () => {
+  assert.equal(websiteVideoFragment('film.mp4#t=10,15.25'), '#t=10,15.25');
+  assert.equal(websiteVideoFragment('film.mp4#t=0'), '#t=0');
+  for (const ref of [
+    'film.mp4#t=10,5',
+    'film.mp4#track=name',
+    'film.mp4#t=-1',
+    'film.mp4#t=1,2&x=3',
+  ])
+    assert.equal(websiteVideoFragment(ref), '');
 });
 
 test('local styles and images resolve against their owning directory without external CSS or links', () => {

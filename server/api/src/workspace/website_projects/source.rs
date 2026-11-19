@@ -2,10 +2,55 @@ use super::{
     Asset, MAX_FILE_BYTES, Manifest, asset_type, attachment, changed, digest, find, missing,
     portable_path,
 };
-use crate::error::{ApiError, Result};
+use crate::{
+    error::{ApiError, Result},
+    workspace::{Table, WorkspaceStore},
+};
 use axum::response::Response;
 use serde_json::{Value, json};
 use sqlx::SqliteConnection;
+
+pub(super) async fn capture_paths(
+    conn: &mut SqliteConnection,
+    request: &super::Publication,
+    conversation_id: &str,
+    has_delivery: bool,
+) -> Result<Vec<(String, String, String)>> {
+    let mut specs = Vec::with_capacity(request.files.len());
+    for file in &request.files {
+        let source = if let Some(attachment) = &file.attachment_id {
+            let record = WorkspaceStore::get_in(conn, Table::Files, attachment)
+                .await?
+                .filter(|row| row["conversationId"] == conversation_id)
+                .ok_or_else(missing)?;
+            let name = record["name"]
+                .as_str()
+                .filter(|name| !name.contains(['/', '\\']))
+                .ok_or_else(missing)?;
+            if asset_type(name) != asset_type(&file.path) {
+                return Err(super::invalid());
+            }
+            name.to_owned()
+        } else {
+            if has_delivery {
+                continue;
+            }
+            let path = format!("{}/{}", request.directory, file.path);
+            let registered: Option<i64> = sqlx::query_scalar(
+                "SELECT 1 FROM files WHERE json_extract(data,'$.name')=? LIMIT 1",
+            )
+            .bind(&path)
+            .fetch_optional(&mut *conn)
+            .await?;
+            if registered.is_none() {
+                return Err(ApiError::new(404, format!("文件 {} 尚未登记。请用 workspace_write 保存工作文件，或使用本会话上传文件的 attachmentId。", file.path)).with_code("WEBSITE_PROJECT_FILE_UNREGISTERED"));
+            }
+            path
+        };
+        specs.push((file.path.clone(), source, file.sha256.clone()));
+    }
+    Ok(specs)
+}
 
 const TEXT_PAGE_BYTES: usize = 32 * 1024;
 

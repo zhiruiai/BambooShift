@@ -11,10 +11,13 @@ const fixture = [
     <link rel="stylesheet" href="./styles/site.css"><meta http-equiv="refresh" content="0; url=https://example.test/refresh">
     </head><body><h1>Local website</h1><p id="result">Waiting</p><img alt="Local image" src="./assets/mark.svg">
     <a href="./pages/about.html">Local details</a><a href="https://example.test/link">External</a>
+    <a download="other.exe" href="report.csv">Download report</a><a download href="src/scene.mjs">Download script</a>
+    <video src="https://example.test/video.mp4" autoplay></video>
     <button id="enter">Enter scene</button>
     <input type="image" src="https://example.test/input"><iframe src="https://example.test/frame"></iframe>
     <canvas id="scene" width="128" height="96"></canvas><script type="module" src="./src/scene.mjs"></script></body></html>`,
   ],
+  ['report.csv', 'text/csv', 'sku,units\r\nA,12\r\n'],
   ['pages/about.html', 'text/html', '<h1>Local details page</h1>'],
   [
     'styles/site.css',
@@ -155,6 +158,18 @@ test(
         null,
       );
       assert.equal(await frame.getByText('External', { exact: true }).getAttribute('href'), null);
+      assert.equal(await frame.getByText('Download script').getAttribute('href'), null);
+      assert.equal(await frame.locator('video').getAttribute('src'), null);
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        frame.getByRole('link', { name: 'Download report' }).click(),
+      ]);
+      assert.equal(download.suggestedFilename(), 'report.csv');
+      const stream = await download.createReadStream();
+      assert.ok(stream);
+      const chunks = [];
+      for await (const chunk of stream) chunks.push(chunk);
+      assert.equal(Buffer.concat(chunks).toString(), 'sku,units\r\nA,12\r\n');
       assert.equal(await frame.locator('html').getAttribute('data-pointer-calls'), null);
       await frame.getByRole('button', { name: 'Enter scene' }).click();
       await frame.locator('html[data-pointer-calls="1"]').waitFor();

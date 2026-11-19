@@ -105,7 +105,7 @@ async fn update(
         .ok_or_else(bad)?;
     let grant = team_skills::require(&state, &headers, &wid, true).await?;
     let store = grant.store(&state).await?;
-    let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut tx = store.begin().await?;
     let (identity, _) = identity_fence(&state, &grant).await?;
     let previous = read(&mut tx).await?;
     if expected != previous.revision {

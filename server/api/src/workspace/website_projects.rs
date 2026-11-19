@@ -39,6 +39,9 @@ pub(crate) struct Publication {
 struct SourceFile {
     path: String,
     sha256: String,
+    // Snapshot identity depends on the published bytes and path, not their origin.
+    #[serde(default, rename = "attachmentId", skip_serializing)]
+    attachment_id: Option<String>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -113,6 +116,8 @@ fn asset_type(path: &str) -> Option<(&'static str, bool)> {
             "svg" => ("image/svg+xml", true),
             "txt" | "md" => ("text/plain", true),
             "csv" => ("text/csv", true),
+            "ics" => ("text/calendar", true),
+            "mp4" => ("video/mp4", false),
             "png" => ("image/png", false),
             "jpeg" | "jpg" => ("image/jpeg", false),
             "gif" => ("image/gif", false),
@@ -150,7 +155,11 @@ impl Publication {
         }
         let mut names = HashSet::new();
         for file in &mut input.files {
-            if !portable_path(&file.path)
+            if file
+                .attachment_id
+                .as_ref()
+                .is_some_and(|id| uuid::Uuid::parse_str(id).is_err())
+                || !portable_path(&file.path)
                 || asset_type(&file.path).is_none()
                 || !names.insert(file.path.to_ascii_lowercase())
                 || file.sha256.len() != 64
@@ -228,33 +237,18 @@ pub(crate) async fn snapshot(
     store: &WorkspaceStore,
     identity: (String, String),
     publisher_id: &str,
+    conversation_id: &str,
     request: &Publication,
     has_delivery: bool,
 ) -> Result<Summary> {
     let (id, project_key) = identity;
     let saved = find(conn, &id).await?;
-    if has_delivery {
-        return saved.map(|manifest| manifest.summary).ok_or_else(changed);
+    if has_delivery && saved.is_none() {
+        return Err(changed());
     }
-    for file in &request.files {
-        let path = format!("{}/{}", request.directory, file.path);
-        let registered: Option<i64> =
-            sqlx::query_scalar("SELECT 1 FROM files WHERE json_extract(data,'$.name')=? LIMIT 1")
-                .bind(path)
-                .fetch_optional(&mut *conn)
-                .await?;
-        if registered.is_none() {
-            return Err(missing());
-        }
-    }
+    let specs = source::capture_paths(conn, request, conversation_id, has_delivery).await?;
     let directory = store.directory.clone();
-    let project_path = request.directory.clone();
-    let specs = request
-        .files
-        .iter()
-        .map(|file| (file.path.clone(), file.sha256.clone()))
-        .collect();
-    let captured = tokio::task::spawn_blocking(move || capture(&directory, &project_path, specs))
+    let captured = tokio::task::spawn_blocking(move || capture(&directory, specs))
         .await
         .map_err(|_| changed())??;
     if let Some(saved) = saved {
@@ -302,14 +296,13 @@ pub(crate) async fn snapshot(
 
 fn capture(
     directory: &std::path::Path,
-    project_path: &str,
-    specs: Vec<(String, String)>,
+    specs: Vec<(String, String, String)>,
 ) -> Result<Vec<(Asset, Vec<u8>)>> {
     let directory = Directory::open(directory, false)?;
     let mut captured = Vec::with_capacity(specs.len());
     let mut total = 0;
-    for (path, sha256) in specs {
-        let mut reader = directory.reader(&format!("{project_path}/{path}"))?;
+    for (path, source, sha256) in specs {
+        let mut reader = directory.reader(&source)?;
         let length = reader.len();
         if length > MAX_FILE_BYTES as u64 || total + length > MAX_PROJECT_BYTES as u64 {
             return Err(ApiError::new(
@@ -327,6 +320,14 @@ fn capture(
         }
         let (mime, text) = asset_type(&path).ok_or_else(invalid)?;
         if text && (bytes.contains(&0) || std::str::from_utf8(&bytes).is_err()) {
+            return Err(invalid());
+        }
+        if mime == "video/mp4"
+            && (bytes.len() < 16
+                || &bytes[4..8] != b"ftyp"
+                || !(16..=bytes.len())
+                    .contains(&(u32::from_be_bytes(bytes[..4].try_into().unwrap()) as usize)))
+        {
             return Err(invalid());
         }
         captured.push((

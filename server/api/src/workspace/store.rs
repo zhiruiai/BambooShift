@@ -44,6 +44,7 @@ pub struct WorkspaceEvent {
 }
 pub struct WorkspaceStore {
     pub pool: SqlitePool,
+    writer: SqlitePool,
     pub directory: PathBuf,
     pub workspace_id: String,
     pub(crate) team_jobs: std::sync::Arc<crate::team_builder::TeamBuilderJobs>,
@@ -109,7 +110,7 @@ impl WorkspaceStore {
         }
         let pool = SqlitePoolOptions::new()
             .max_connections(4)
-            .connect_with(options)
+            .connect_with(options.clone())
             .await?;
         if initialize {
             sqlx::query("PRAGMA secure_delete=ON")
@@ -146,8 +147,14 @@ impl WorkspaceStore {
             }
         }
         let (events, _) = broadcast::channel(256);
+        // SQLite permits one writer. Queue contenders before they take a reader's
+        // connection: an active tool rechecks membership while holding its write transaction.
+        let writer = SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_lazy_with(options);
         let store = Self {
             pool,
+            writer,
             directory: directory.to_owned(),
             workspace_id: workspace_id.to_owned(),
             epoch: uuid::Uuid::new_v4().to_string(),
@@ -170,8 +177,8 @@ impl WorkspaceStore {
         }
         Ok(store)
     }
-    pub async fn begin(&self) -> Result<Transaction<'_, Sqlite>> {
-        Ok(self.pool.begin_with("BEGIN IMMEDIATE").await?)
+    pub async fn begin(&self) -> Result<Transaction<'static, Sqlite>> {
+        Ok(self.writer.begin_with("BEGIN IMMEDIATE").await?)
     }
     pub async fn get(&self, table: Table, id: &str) -> Result<Option<Value>> {
         Self::get_in(&mut *self.pool.acquire().await?, table, id).await
@@ -198,10 +205,10 @@ impl WorkspaceStore {
             .collect()
     }
     pub async fn put(&self, table: Table, value: &Value) -> Result<Value> {
-        Self::put_in(&mut *self.pool.acquire().await?, table, value).await
+        Self::put_in(&mut *self.writer.acquire().await?, table, value).await
     }
     pub async fn delete(&self, table: Table, id: &str) -> Result<()> {
-        Self::delete_in(&mut *self.pool.acquire().await?, table, id).await
+        Self::delete_in(&mut *self.writer.acquire().await?, table, id).await
     }
     pub async fn get_in(
         conn: &mut SqliteConnection,
@@ -273,7 +280,7 @@ impl WorkspaceStore {
         self.emit("close", json!({}));
         self.team_jobs.close().await;
         self.avatar_jobs.close().await;
-        self.pool.close().await;
+        tokio::join!(self.writer.close(), self.pool.close());
     }
 }
 fn decode(table: Table, data: String) -> Result<Value> {

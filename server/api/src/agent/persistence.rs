@@ -168,6 +168,9 @@ pub(crate) async fn finalize(
             }
             .await;
             if let Err(error) = authorized {
+                if error.code == "STORAGE_BUSY" {
+                    return Err(error);
+                }
                 result["status"] = json!("error");
                 result["metadata"]["executionStatus"] = json!(if error.status.as_u16() == 409 {
                     "cancelled"

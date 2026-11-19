@@ -148,7 +148,7 @@ async fn unpublish(
     let revision = team_skills::uuid(&body["expectedRevision"])?;
     let grant = team_skills::require(&state, &headers, &wid, false).await?;
     let store = grant.store(&state).await?;
-    let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut tx = store.begin().await?;
     let (identity, owner) = team_skill_policy::identity_fence(&state, &grant).await?;
     let publisher: Option<String> =
         sqlx::query_scalar("SELECT user_id FROM team_skill_publishers WHERE publication_id=?")

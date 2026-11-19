@@ -44,7 +44,7 @@ test('Flutter website preview opens multiple bundled pages in an opaque sandbox'
       ({ host, payload }) => {
         const frame = document.createElement('iframe');
         frame.title = 'Preview shell';
-        frame.sandbox.add('allow-scripts', 'allow-pointer-lock');
+        frame.sandbox.add('allow-scripts', 'allow-pointer-lock', 'allow-downloads');
         frame.style.cssText = 'width:100%;height:90vh;border:0';
         const commands = `openbotAppendProjectPreview(${JSON.stringify(payload).replaceAll('<', '\\u003c')});openbotRenderProjectPreview();`;
         frame.srcdoc = host.replace(
@@ -70,7 +70,7 @@ test('Flutter website preview opens multiple bundled pages in an opaque sandbox'
     await content.getByRole('heading', { name: 'First page' }).waitFor();
     assert.equal(
       await shell.locator('#preview').getAttribute('sandbox'),
-      'allow-scripts allow-pointer-lock',
+      'allow-scripts allow-pointer-lock allow-downloads',
     );
     assert.deepEqual(requests, []);
   } finally {

@@ -1,6 +1,8 @@
 mod agent_delegation_support;
 #[path = "agent_website_delivery/archive_integrity.rs"]
 mod archive_integrity;
+#[path = "agent_website_delivery/attachments.rs"]
+mod attachments;
 #[path = "agent_website_delivery/quoted_review.rs"]
 mod quoted_review;
 mod workspace_support;

@@ -56,7 +56,7 @@ export function WebsiteProjectPreview({
       ref={frame}
       className="website-project-preview"
       title={uiText('workspace:filePreviewDocument')}
-      sandbox="allow-scripts allow-pointer-lock"
+      sandbox="allow-scripts allow-pointer-lock allow-downloads"
       referrerPolicy="no-referrer"
       srcDoc={preview.srcDoc}
     />

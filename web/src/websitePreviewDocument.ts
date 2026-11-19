@@ -5,6 +5,7 @@ import {
   websiteRelativePath,
   websiteScripts,
   websiteStyles,
+  websiteVideoFragment,
   websiteText,
   type WebsitePreviewFile,
 } from './websitePreviewFiles';
@@ -15,11 +16,11 @@ const tags = new Set(
     'article section header footer main aside nav div span p h1 h2 h3 h4 h5 h6 ' +
     'table caption colgroup col thead tbody tfoot tr th td ul ol li dl dt dd pre code blockquote ' +
     'figure figcaption br hr b strong i em u s del ins small sup sub mark time abbr address ' +
-    'details summary button a canvas img input label meter progress'
+    'details summary button a canvas img video input label meter progress'
   ).split(' '),
 );
 const discarded = new Set(
-  'iframe frame frameset object embed math meta base title noscript template audio video source track'.split(
+  'iframe frame frameset object embed math meta base title noscript template audio source track'.split(
     ' ',
   ),
 );
@@ -33,7 +34,7 @@ const inputTypes = new Set(['button', 'checkbox', 'radio', 'range', 'number', 't
 const HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 const BASELINE =
   'html{font-size:14px}body{min-width:0}small,sub,sup{font-size:12px!important}' +
-  'img,canvas,svg{max-width:100%}canvas[hidden]{display:none!important}' +
+  'img,video,canvas,svg{max-width:100%}canvas[hidden]{display:none!important}' +
   '[data-ob-project-link]{cursor:pointer;text-decoration:underline;color:LinkText}' +
   '#ob-project-status{font:14px/1.5 system-ui,sans-serif;padding:12px}' +
   '#ob-project-status:empty{display:none}';
@@ -43,7 +44,7 @@ export function websitePreviewCsp(nonce: string) {
   return (
     `default-src 'none'; script-src 'nonce-${nonce}' blob:; script-src-attr 'none'; ` +
     "style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src blob:; " +
-    "connect-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; " +
+    "connect-src 'none'; frame-src 'none'; object-src 'none'; media-src data:; " +
     "base-uri 'none'; form-action 'none'; manifest-src 'none'; webrtc 'block'"
   );
 }
@@ -171,11 +172,37 @@ export function websitePreviewDocument(
         if (url) element.setAttribute('src', url);
         else partial = true;
       }
+      if (tag === 'video') {
+        const reference =
+          node.getAttribute('src') ??
+          Array.from(node.children)
+            .filter((child) => child.localName === 'source')
+            .map((child) => child.getAttribute('src') || '')
+            .find(
+              (src) => files.get(websiteRelativePath(entryPath, src) ?? '')?.mime === 'video/mp4',
+            );
+        const url = reference && assets(entryPath, reference, 'video');
+        if (url) {
+          element.setAttribute('src', url + websiteVideoFragment(reference));
+          element.setAttribute('controls', '');
+          element.setAttribute('playsinline', '');
+          element.setAttribute('preload', 'metadata');
+          const poster = assets(entryPath, node.getAttribute('poster') || '', 'image');
+          if (poster) element.setAttribute('poster', poster);
+        } else partial = true;
+      }
       if (tag === 'a') {
         const href = node.getAttribute('href')?.trim() ?? '';
         const fragment = /^#[a-z0-9_-]{1,160}$/i.test(href) ? href : undefined;
         const target = fragment ?? websitePage(files, entryPath, href);
-        if (target) {
+        if (node.hasAttribute('download')) {
+          const url = assets(entryPath, href, 'download');
+          const path = websiteRelativePath(entryPath, href);
+          if (url && path) {
+            element.setAttribute('href', url);
+            element.setAttribute('download', path.split('/').pop()!);
+          } else partial = true;
+        } else if (target) {
           element.setAttribute('data-ob-project-link', target);
           element.setAttribute('role', 'link');
           element.setAttribute('tabindex', '0');

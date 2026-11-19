@@ -338,7 +338,7 @@ async fn publish(
     let scope = Scope::require(&state, &headers, &wid, &skill, &team).await?;
     let target = scope.team.store(&state).await?;
     let source = scope.personal.store(&state).await?;
-    let mut target_tx = target.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut target_tx = target.begin().await?;
     let digest = request.digest();
     if let Some(saved) = receipt(&mut target_tx, request.id).await? {
         if saved.scope != scope.digest {
@@ -354,7 +354,7 @@ async fn publish(
     }
 
     // Imports and publications both acquire the team lock before the personal lock.
-    let mut source_tx = source.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut source_tx = source.begin().await?;
     let (identity, owner) = scope.fence(&state).await?;
     let policy = team_skill_policy::read(&mut target_tx).await?;
     team_skill_policy::check(&policy, owner, request.policy)?;
@@ -456,7 +456,7 @@ async fn cancel(
     uuid(&request)?;
     let scope = Scope::require(&state, &headers, &wid, &skill, &team).await?;
     let store = scope.team.store(&state).await?;
-    let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut tx = store.begin().await?;
     if let Some(saved) = receipt(&mut tx, &request).await? {
         if saved.scope != scope.digest {
             return Err(request_conflict());

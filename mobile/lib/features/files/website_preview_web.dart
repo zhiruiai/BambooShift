@@ -94,6 +94,7 @@ class _WebWebsitePreviewState extends State<_WebWebsitePreview> {
           frame.referrerPolicy = 'no-referrer';
           frame.sandbox.add('allow-scripts');
           frame.sandbox.add('allow-pointer-lock');
+          frame.sandbox.add('allow-downloads');
           frame.style
             ..width = '100%'
             ..height = '100%'

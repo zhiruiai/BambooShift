@@ -53,8 +53,26 @@ impl IntoResponse for ApiError {
     }
 }
 impl From<sqlx::Error> for ApiError {
-    fn from(_: sqlx::Error) -> Self {
-        Self::new(500, "账户数据暂不可用，请稍后重试。")
+    fn from(error: sqlx::Error) -> Self {
+        let sqlite_code = error
+            .as_database_error()
+            .and_then(|db| db.code())
+            .and_then(|code| code.parse::<i32>().ok());
+        match (&error, sqlite_code.map(|code| code & 0xff)) {
+            (sqlx::Error::PoolTimedOut, _) | (_, Some(5 | 6)) => {
+                Self::new(503, "数据存储正忙，请重试当前操作。").with_code("STORAGE_BUSY")
+            }
+            (_, Some(13)) => {
+                Self::new(507, "存储空间不足，请释放磁盘空间后重试。").with_code("STORAGE_FULL")
+            }
+            _ => {
+                // Only record numeric engine codes, never SQL or user data.
+                if let Some(code) = sqlite_code {
+                    eprintln!("Database operation failed (SQLite {code}).");
+                }
+                Self::new(500, "账户数据暂不可用，请稍后重试。")
+            }
+        }
     }
 }
 impl From<std::io::Error> for ApiError {

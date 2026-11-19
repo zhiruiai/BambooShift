@@ -102,3 +102,55 @@ async fn registry_rejects_symlink_directories_and_database_hardlinks() {
     let registry = WorkspaceRegistry::new(directory.path().to_owned());
     assert!(registry.get(&wid, &wid).await.is_err());
 }
+
+#[tokio::test]
+async fn waiting_writers_leave_connections_for_membership_checks() {
+    use std::time::Duration;
+    use tokio::{
+        sync::Barrier,
+        task::JoinSet,
+        time::{sleep, timeout},
+    };
+
+    let directory = tempfile::tempdir().unwrap();
+    let store = Arc::new(WorkspaceStore::open(directory.path()).await.unwrap());
+    let agent = json!({"id":"agent-1","name":"Scheduler"});
+    let conversation = json!({"id":"chat-1","agentIds":["agent-1"]});
+    store.put(Table::Agents, &agent).await.unwrap();
+    store
+        .put(Table::Conversations, &conversation)
+        .await
+        .unwrap();
+    let active = store.begin().await.unwrap();
+    let ready = Arc::new(Barrier::new(7));
+    let mut queued = JoinSet::new();
+    for _ in 0..6 {
+        let store = Arc::clone(&store);
+        let ready = Arc::clone(&ready);
+        queued.spawn(async move {
+            ready.wait().await;
+            store.begin().await.unwrap().commit().await.unwrap();
+        });
+    }
+    ready.wait().await;
+    // Allow each competing writer to reach BEGIN IMMEDIATE.
+    sleep(Duration::from_millis(200)).await;
+    timeout(Duration::from_secs(1), async {
+        let chat = store
+            .get(Table::Conversations, "chat-1")
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(chat["agentIds"], conversation["agentIds"]);
+        assert_eq!(
+            store.get(Table::Agents, "agent-1").await.unwrap(),
+            Some(agent)
+        );
+    })
+    .await
+    .expect("A writer must be able to recheck membership before commit");
+    active.commit().await.unwrap();
+    while let Some(done) = queued.join_next().await {
+        done.unwrap();
+    }
+}

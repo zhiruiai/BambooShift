@@ -13,6 +13,8 @@ const mediaTypes = new Set([
   'text/javascript',
   'text/plain',
   'text/csv',
+  'text/calendar',
+  'video/mp4',
   'application/json',
   'image/svg+xml',
   'image/png',

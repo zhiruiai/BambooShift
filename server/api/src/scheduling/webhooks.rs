@@ -152,7 +152,7 @@ async fn change_key(
         .ok_or_else(|| ApiError::bad("Webhook 版本无效。"))?;
     let owner = access::require(state, headers, wid, true, true).await?;
     let store = owner.store(state).await?;
-    let mut workspace = store.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut workspace = store.begin().await?;
     let routine = read_routine(&mut workspace, id).await?;
     if enable {
         let (agent, chat) = target_ids(&routine)?;
@@ -318,7 +318,7 @@ async fn accept(
     // Admission precedes the workspace writer, matching operations that hold maintenance first.
     let admission = state.agent_runs.admission(&wid).await?;
     let credentials = store.credential_lock.lock().await;
-    let mut workspace = store.pool.begin_with("BEGIN IMMEDIATE").await?;
+    let mut workspace = store.begin().await?;
     let current_key =
         keys::authenticate(&mut *state.pool.acquire().await?, &wid, &id, token).await?;
     if current_key.revision != original.revision

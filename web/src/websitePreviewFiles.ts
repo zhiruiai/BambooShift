@@ -75,17 +75,41 @@ const imageMimes = new Set([
   'image/x-icon',
   'image/svg+xml',
 ]);
+const downloadableMimes = new Set([
+  'text/csv',
+  'text/calendar',
+  'text/plain',
+  'video/mp4',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
 const fontMimes = new Set(['font/woff', 'font/woff2']);
+
+export function websiteVideoFragment(reference: string) {
+  const match = /#t=(\d{1,6}(?:\.\d{1,3})?)(?:,(\d{1,6}(?:\.\d{1,3})?))?$/.exec(reference);
+  return match && (match[2] === undefined || Number(match[2]) > Number(match[1])) ? match[0] : '';
+}
 
 export function websiteAssetResolver(index: Map<string, WebsitePreviewFile>) {
   const cache = new Map<string, string>();
   let references = 0;
   let bytes = 0;
-  return (from: string, reference: string, kind: 'image' | 'style'): string | undefined => {
+  return (
+    from: string,
+    reference: string,
+    kind: 'image' | 'style' | 'video' | 'download',
+  ): string | undefined => {
     const path = websiteRelativePath(from, reference);
     const file = path === undefined ? undefined : index.get(path);
-    if (!file || !(imageMimes.has(file.mime) || (kind === 'style' && fontMimes.has(file.mime))))
-      return;
+    if (!file) return;
+    const available =
+      kind === 'video'
+        ? file.mime === 'video/mp4'
+        : kind === 'download'
+          ? downloadableMimes.has(file.mime)
+          : imageMimes.has(file.mime) || (kind === 'style' && fontMimes.has(file.mime));
+    if (!available) return;
     if (
       ++references > MAX_ASSET_REFERENCES ||
       (bytes += file.bytes.byteLength) > MAX_PROJECT_BYTES

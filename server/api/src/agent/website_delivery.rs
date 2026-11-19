@@ -14,16 +14,16 @@ use std::{collections::HashSet, sync::Arc};
 
 pub(crate) const TOOL: &str = "workspace_deliver_website";
 pub(crate) const READ_TOOL: &str = "workspace_read_website_version";
-pub(crate) const GUIDANCE: &str = "\nDeliver a requested static website with workspace_deliver_website once its entry and relative assets are ready. Bundle allowed runtime dependencies locally. For a revision, replyContext.websiteProject identifies the exact quoted delivery and its source directory. If the user asks to compare or continue that historical version, use workspace_read_website_version to read the immutable source and workspace_read to inspect the current working files separately. The historical reader never restores files. Build the requested changes deliberately, check the current files and publish a new version. Earlier deliveries remain available. When no website is quoted, websiteProjects can help locate recent working directories.";
+pub(crate) const GUIDANCE: &str = "\nDeliver a requested static website with workspace_deliver_website once its entry and relative assets are ready. Bundle allowed runtime dependencies locally. The chat preview runs scripts in a restricted worker with a limited DOM. Render important results in the initial HTML. Use ordinary relative HTML links for additional views, packaged MP4 with native video controls, or explicit relative download links for CSV, ICS, plain text and MP4. For interactive controls, prefer updating existing elements by ID, textContent and classList. Features that require building a DOM dynamically, network requests or arbitrary browser APIs need a working static fallback in chat. For a revision, replyContext.websiteProject identifies the exact quoted delivery and its source directory. If the user asks to compare or continue that historical version, use workspace_read_website_version to read the immutable source and workspace_read to inspect the current working files separately. The historical reader never restores files. Build the requested changes deliberately, check the current files and publish a new version. Earlier deliveries remain available. When no website is quoted, websiteProjects can help locate recent working directories.";
 
 pub(crate) fn definition() -> Value {
     let path = json!({"type":"string","minLength":1,"maxLength":MAX_PATH});
     json!({
         "name":TOOL,
-        "description":"Deliver a completed static website as a private project card with a ZIP and isolated preview. Keep all project files in one workspace directory. Provide the exact relative asset paths and SHA-256 values from workspace_write or workspace_read with digestOnly=true, including the HTML entry. Bundle all runtime dependencies in the directory. The delivery does not download externals or deploy a website. Editing source files never changes earlier versions.",
+        "description":"Deliver a completed static website as a private project card with a ZIP and isolated preview. Keep all project files in one workspace directory. Provide the exact relative asset paths and SHA-256 values from workspace_write or workspace_read with digestOnly=true, including the HTML entry. To include a file uploaded in this conversation, set its attachmentId, destination path with the same file type, and digest. Local MP4 videos (under 4 MiB), CSV and calendar files can be played or downloaded from the page. Bundle runtime dependencies locally. The delivery does not download externals or deploy a website. Editing source files never changes earlier versions.",
         "parameters":{"type":"object","additionalProperties":false,"required":["directory","title","entry","files"],"properties":{
             "directory":path,"title":{"type":"string","minLength":1,"maxLength":MAX_TITLE},"entry":path,
-            "files":{"type":"array","minItems":1,"maxItems":MAX_FILES,"items":{"type":"object","additionalProperties":false,"required":["path","sha256"],"properties":{"path":path,"sha256":{"type":"string","pattern":"^[a-fA-F0-9]{64}$"}}}}
+            "files":{"type":"array","minItems":1,"maxItems":MAX_FILES,"items":{"type":"object","additionalProperties":false,"required":["path","sha256"],"properties":{"path":path,"attachmentId":{"type":"string","format":"uuid"},"sha256":{"type":"string","pattern":"^[a-fA-F0-9]{64}$"}}}}
         }}
     })
 }
@@ -119,6 +119,7 @@ pub(crate) async fn deliver(
         store,
         identity,
         access.user_id(),
+        &active.conversation_id,
         &input,
         existing.is_some(),
     )

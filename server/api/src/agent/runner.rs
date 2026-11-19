@@ -97,9 +97,23 @@ pub(crate) fn run(
         if active.family.voice_call.get().is_some() {
             result["metadata"]["voiceCallTerminal"] = json!(true);
         }
-        let saved = finalize(&state, &grant, &store, &active, &cid, &mut result).await;
-        if saved.is_ok_and(|published| published) {
-            store.emit("message", result);
+        // Retry only this local transaction. Running the model or tools again could
+        // duplicate a delivery that has already succeeded.
+        for attempt in 0..=2 {
+            match finalize(&state, &grant, &store, &active, &cid, &mut result).await {
+                Ok(true) => {
+                    store.emit("message", result);
+                    break;
+                }
+                Ok(false) => break,
+                Err(error) if error.code == "STORAGE_BUSY" && attempt < 2 => {
+                    tokio::time::sleep(std::time::Duration::from_millis(100 * (attempt + 1))).await;
+                }
+                Err(error) => {
+                    eprintln!("Could not persist task completion ({})", error.code);
+                    break;
+                }
+            }
         }
         queue::advance(&state, &store, &key, &active.run_id).await;
         store.emit("update", json!({}));
