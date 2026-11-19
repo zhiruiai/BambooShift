@@ -1,0 +1,80 @@
+{
+  "recordedOn": "2026-11-19",
+  "environment": "Isolated aihubot workspace, Rust service, live model and Chrome. The briefs and business data are fictional.",
+  "editing": "Recorded the actual product UI replaying stored conversations. Navigation, draft previews and final files are shown. Model waits are omitted. Bilingual captions and chapter markers were added.",
+  "verification": "The final files were downloaded from their workspace delivery records, checked against the SHA-256 in the receipts, and reviewed against the revised briefs. All 421 captured UI frames were checked for private identity, credentials, URLs and model configuration with macOS Vision OCR; zero findings.",
+  "recordings": [
+    {
+      "scenario": "refunds",
+      "animation": "office-refunds.gif",
+      "durationMs": 15420,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 68,
+      "encodedFrames": 29,
+      "animationSha256": "045629e94dbc7f5c31f4fee36bf7e40ca96e17b44a6652b484259f61db292bba",
+      "deliveredFile": "office-results/refunds.md",
+      "deliverySha256": "92dbf8ff9e9f959de210d7de800f7ece4f79af0076b3d13c6fb67c01ed502f86"
+    },
+    {
+      "scenario": "editorial",
+      "animation": "office-editorial.gif",
+      "durationMs": 15230,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 67,
+      "encodedFrames": 28,
+      "animationSha256": "f904a1b927f66a983ad71ccfb394c8fddd228ccc0b31e1cce3ab124b85a4686e",
+      "deliveredFile": "office-results/editorial.md",
+      "deliverySha256": "aae0cc45e0e15806e5c35472b8b69d6764c8df03cd3442ff0f36631b370cc447"
+    },
+    {
+      "scenario": "funnel",
+      "animation": "office-funnel.gif",
+      "durationMs": 15800,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 70,
+      "encodedFrames": 27,
+      "animationSha256": "3e1f01378c270c0ae8d569540f992c3b704a7d1b0d85e28824bc4eab2c99100b",
+      "deliveredFile": "office-results/funnel.csv",
+      "deliverySha256": "d6437c5903b0980e8f806916b494c4724b61e39d80063fa0c33340fc01fa010b"
+    },
+    {
+      "scenario": "minutes",
+      "animation": "office-minutes.gif",
+      "durationMs": 15420,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 68,
+      "encodedFrames": 33,
+      "animationSha256": "a3782eb96f6d06afbc0756f5009c1da770612f2158bb8528d0c3a0dad4bdfe32",
+      "deliveredFile": "office-results/minutes.md",
+      "deliverySha256": "680a2a24c041e9e8db82ac8207987a335b977893db55456899149c86e7da4bae"
+    },
+    {
+      "scenario": "sourcing",
+      "animation": "office-sourcing.gif",
+      "durationMs": 15420,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 68,
+      "encodedFrames": 31,
+      "animationSha256": "e23f890f00c4d6e4a7f264d6c6c887003b7ac2f1b265ab06e7e2461b3e10fbd5",
+      "deliveredFile": "office-results/sourcing.md",
+      "deliverySha256": "c45fc6b89abc7723c92baa61ebc1c96a8f0598c8dcf9d3cd7c8a18981ea73d0f"
+    },
+    {
+      "scenario": "interviews",
+      "animation": "office-interviews.gif",
+      "durationMs": 17700,
+      "width": 1080,
+      "height": 769,
+      "capturedFrames": 80,
+      "encodedFrames": 28,
+      "animationSha256": "5bdf49fab7a9845a80841f53d849850a80ff1fd67f46d3abc6034aff8ed98379",
+      "deliveredFile": "office-results/interviews.md",
+      "deliverySha256": "41ead10ef577e2763f0e51288e37251e40df83200a023efd995998dd3eec5ccf"
+    }
+  ]
+}

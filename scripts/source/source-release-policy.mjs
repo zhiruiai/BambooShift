@@ -103,6 +103,12 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/group-chat.gif',
   'docs/demo/meeting-actions.en.gif',
   'docs/demo/meeting-actions.gif',
+  'docs/demo/office-cover.svg',
+  'docs/demo/office-results/funnel.csv',
+  ...['refunds', 'editorial', 'funnel', 'minutes', 'sourcing', 'interviews'].flatMap((scene) => [
+    `docs/demo/office-${scene}.gif`,
+    `docs/demo/office-${scene}-poster.jpg`,
+  ]),
   'docs/demo/orbital-landing.en.gif',
   'docs/demo/orbital-landing.gif',
   'docs/demo/pizza-fractions.en.gif',
