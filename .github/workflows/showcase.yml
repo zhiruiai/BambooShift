@@ -1,4 +1,4 @@
-name: BambooShift Showcase
+name: aihubot Showcase
 
 on:
   workflow_dispatch:

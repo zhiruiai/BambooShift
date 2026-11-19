@@ -138,7 +138,7 @@ test('fake main lifecycle keeps setup IPC off remote pages, isolates sessions, h
     controller.start();
     await Promise.resolve();
     const win = fake.windows[0];
-    assert.equal(win.title, 'BambooShift');
+    assert.equal(win.title, 'aihubot');
     assert.deepEqual(win.options.webPreferences, {
       ...rendererPreferences('openbot-setup', join(__dirname, '../../desktop/preload.cjs')),
       session: fake.sessions.get('openbot-setup'),
@@ -185,7 +185,7 @@ test('fake main lifecycle keeps setup IPC off remote pages, isolates sessions, h
     retryView.webContents.loadGate.resolve();
     await retry;
     assert.equal(controller.state().status, 'connected');
-    assert.equal(win.title, 'BambooShift');
+    assert.equal(win.title, 'aihubot');
     assert.equal(win.children.length, 1);
     assert.deepEqual(retryView.bounds, { x: 0, y: 0, width: 1250, height: 800 });
     assert.equal(readLastOrigin(dataDir), 'https://one.example.com');

@@ -17,7 +17,7 @@ export function AccountShell({
     <main className={`platform-auth ${operator ? 'is-operator' : ''}`}>
       <a className="platform-brand" href={operator ? '/admin/login' : '/login'}>
         <AccountAvatar size={33} />
-        <span>BambooShift{operator && <small>{uiText('account:text_e0f17eefe421')}</small>}</span>
+        <span>aihubot{operator && <small>{uiText('account:text_e0f17eefe421')}</small>}</span>
       </a>
       <section className="platform-auth-card">
         <AccountAvatar size={57} />

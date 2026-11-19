@@ -4,8 +4,8 @@ set -euo pipefail
 [[ "$RELEASE_TAG" == "v$RELEASE_VERSION" && "$RELEASE_TAG" =~ ^v0\.0\.[1-9][0-9]{0,6}$ ]]
 [[ "$RELEASE_SOURCE" =~ ^[a-f0-9]{40}$ && "$RELEASE_DAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
 test "$(git rev-parse HEAD)" = "$RELEASE_SOURCE"
-[[ "$RELEASE_BRAND" =~ ^(BambooShift|MosoCrew|PandaMate)$ ]]
-[[ "$RELEASE_PACKAGE_NAME" =~ ^(BambooShift|MosoCrew|PandaMate)$ ]]
+[[ "$RELEASE_BRAND" =~ ^(aihubot|BambooShift|MosoCrew|PandaMate)$ ]]
+[[ "$RELEASE_PACKAGE_NAME" =~ ^(aihubot|BambooShift|MosoCrew|PandaMate)$ ]]
 release_brand="$RELEASE_BRAND"
 
 builds="$RUNNER_TEMP/pandamate-builds"
@@ -59,7 +59,7 @@ if git show-ref --verify --quiet "$tag_ref"; then
   test "$(git cat-file -t "$tag_ref")" = tag
   subject="$(git for-each-ref --format='%(subject)' "$tag_ref")"
   case "$subject" in
-    "BambooShift release from $RELEASE_SOURCE"|"MosoCrew release from $RELEASE_SOURCE"|"PandaMate release from $RELEASE_SOURCE")
+    "aihubot release from $RELEASE_SOURCE"|"BambooShift release from $RELEASE_SOURCE"|"MosoCrew release from $RELEASE_SOURCE"|"PandaMate release from $RELEASE_SOURCE")
       release_brand="${subject%% release from *}" ;;
     *) exit 1 ;;
   esac
@@ -83,7 +83,7 @@ files+=(SHA256SUMS.txt)
 releases="$publish_dir/releases.json"
 title="$release_brand $RELEASE_TAG"
 draft_titles="$(jq -nc --arg tag "$RELEASE_TAG" \
-  '["BambooShift", "MosoCrew", "PandaMate"] | map(. + " " + $tag)')"
+  '["aihubot", "BambooShift", "MosoCrew", "PandaMate"] | map(. + " " + $tag)')"
 marker="<!-- pandamate-source: $RELEASE_SOURCE -->"
 gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" > "$releases"
 matches="$(jq -c --arg tag "$RELEASE_TAG" --argjson titles "$draft_titles" \

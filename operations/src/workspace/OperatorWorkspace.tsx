@@ -79,7 +79,7 @@ export default function OperatorWorkspace({
         <a className="admin-brand" href="/admin">
           <AccountAvatar size={35} />
           <span>
-            <strong>BambooShift</strong>
+            <strong>aihubot</strong>
             <small>{uiText('platform:text_e0f17eefe421')}</small>
           </span>
         </a>

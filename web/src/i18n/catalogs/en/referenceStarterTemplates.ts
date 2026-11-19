@@ -8,11 +8,11 @@ export default {
   teamStarterChanged: 'The saved template has changed. Review the team before creating the group.',
   creationAskRecruiter: 'Ask the recruiting assistant',
   creationBotOptions: 'Avatar, description and model',
-  starterTitle: 'BambooShift starter templates',
+  starterTitle: 'aihubot starter templates',
   botGalleryTitle: 'Bot Gallery',
   starterIntro:
     'Choose a way of working, review its standing instructions, then edit and create your Bot.',
-  starterOriginal: 'BambooShift originals',
+  starterOriginal: 'aihubot originals',
   starterPublished: 'User-published',
   starterBrowse: 'Start from a template',
   starterSearch: 'Search starter templates',
@@ -40,5 +40,5 @@ export default {
   starterChoose: 'Choose a template',
   starterOwner: 'You can browse templates. Only the workspace owner can create a Bot.',
   starterNotice:
-    'These are built-in BambooShift starting points, not community submissions. Each contains only a name, role, description, standing instructions, avatar and color. No skills, memories, conversations, credentials or routines are included. Creating a Bot does not start work or connect external services.',
+    'These are built-in aihubot starting points, not community submissions. Each contains only a name, role, description, standing instructions, avatar and color. No skills, memories, conversations, credentials or routines are included. Creating a Bot does not start work or connect external services.',
 };

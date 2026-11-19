@@ -94,7 +94,7 @@ export default {
     text_acfb4e262968: '上传文档与交付结果',
   },
   account: {
-    text_c7d0301f453c: '请使用发起连接的 BambooShift 拥有者账号。',
+    text_c7d0301f453c: '请使用发起连接的 aihubot 拥有者账号。',
   },
   workspace: {
     questionChooseOne: '请选择一项。',

@@ -93,7 +93,7 @@ surface. An explicit browser choice remains in effect. Opening an installed app
 can use an audited local `/usr/bin/open` command when the native control surface
 is unavailable; inspecting or editing app controls still requires Accessibility.
 Re-signing an ad-hoc development app can invalidate its OS permission without
-removing BambooShift's saved grant. See [desktop permissions and signing](desktop-client.md).
+removing aihubot's saved grant. See [desktop permissions and signing](desktop-client.md).
 
 For **Data quality review**, attach a CSV and ask the Bot to check it. Specify
 the key column if you want duplicate-key counts. The bundled script reports
@@ -140,7 +140,7 @@ The Bot copies the selected image into the computer workspace and passes the com
 ## Agent Desktop
 
 The **Agent Desktop** workflow is adapted from Vercel Labs' Apache-2.0 skill. It
-checks `computer_status` and prefers BambooShift's available native app controls.
+checks `computer_status` and prefers aihubot's available native app controls.
 The optional external CLI path requires a separately installed CLI on the selected
 execution computer, operating-system permissions and authorized `local-shell-v1`
 commands. On that path, the Bot requests `agent-desktop status` through

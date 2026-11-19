@@ -1,12 +1,12 @@
-# BambooShift
+# aihubot
 
-![Colorful Bot teammates from the BambooShift avatar collection](docs/demo/bot-team.svg)
+![Colorful Bot teammates from the aihubot avatar collection](docs/demo/bot-team.svg)
 
 English · [简体中文](README.zh-CN.md)
 
-BambooShift is a self-hosted workspace where you give a Bot or a small team a task and get the work back in the conversation. A website arrives with a preview and a version history. You can open an earlier version, compare what changed, then return to the original thread to ask for the next edit.
+aihubot is a self-hosted workspace where you give a Bot or a small team a task and get the work back in the conversation. A website arrives with a preview and a version history. You can open an earlier version, compare what changed, then return to the original thread to ask for the next edit.
 
-[Play a delivered website](https://zhiruiai.github.io/BambooShift/en/) · [Download BambooShift](https://github.com/zhiruiai/BambooShift/releases/latest) · [Run from source](#run-from-source) · [Install a skill](#install-and-run-a-skill)
+[Play a delivered website](https://zhiruiai.github.io/aihubot/en/) · [Download aihubot](https://github.com/zhiruiai/aihubot/releases/latest) · [Run from source](#run-from-source) · [Install a skill](#install-and-run-a-skill)
 
 ![Opening a delivered website, comparing revisions, revisiting version one and continuing in the original chat](docs/demo/website-delivery.gif)
 
@@ -16,7 +16,7 @@ The recording reopens five saved deliveries from a real model run. The playable 
 
 ### Supported platforms
 
-- **Join a workspace.** Open your server’s product URL in a browser, including on mobile. To use a desktop window, download the macOS Apple Silicon or Windows x64 client and enter the same URL. On Windows, extract the entire ZIP before launching `BambooShift.exe`. [Release downloads](https://github.com/zhiruiai/BambooShift/releases/latest)
+- **Join a workspace.** Open your server’s product URL in a browser, including on mobile. To use a desktop window, download the macOS Apple Silicon or Windows x64 client and enter the same URL. On Windows, extract the entire ZIP before launching `aihubot.exe`. [Release downloads](https://github.com/zhiruiai/aihubot/releases/latest)
 - **Host a workspace.** Install the Linux x64 server archive with Node.js 22.19 or later, or use the source setup below. [Server installation](server/api/deployment/README.md#install-and-configure)
 - **Run on this Mac.** In the macOS source preview with the bundled runtime, choose **Start on this computer**. The app starts its own Rust service and opens a personal workspace. The published desktop ZIP connects to a separately running server. [Personal workspace setup](docs/desktop-client.md)
 
@@ -25,8 +25,8 @@ The recording reopens five saved deliveries from a real model run. The playable 
 Install stable Rust, Node.js 22.19 or later and npm. Then start the service and web interface from a checkout of this repository.
 
 ```sh
-git clone https://github.com/zhiruiai/BambooShift.git
-cd BambooShift
+git clone https://github.com/zhiruiai/aihubot.git
+cd aihubot
 npm ci
 npm run configure:local
 npm run dev
@@ -44,7 +44,7 @@ Open the file in the reply. You can check whether it preserved both owners and d
 
 ## Install and run a skill
 
-A BambooShift skill is an Agent Skills package. For example, **Data quality review** has four files. Its `SKILL.md` explains the review, `references/review-checklist.md` lists the checks, `scripts/profile_csv.py` counts data issues and `assets/exceptions.csv` provides a template for logging them.
+An aihubot skill is an Agent Skills package. For example, **Data quality review** has four files. Its `SKILL.md` explains the review, `references/review-checklist.md` lists the checks, `scripts/profile_csv.py` counts data issues and `assets/exceptions.csv` provides a template for logging them.
 
 1. As the workspace owner, open a local Bot’s settings. Select **Choose and manage skills → Choose from skill library** and search for **Data quality review**.
 2. Select **View instructions and files** to read the package. Check the target Bot, select **Install skill**, then **Done**. The installed version stays selected so you can review it.
@@ -98,6 +98,6 @@ Skill packages carry their own files and licenses. MCP connections let a Bot dis
 
 ## Contributing and license
 
-To report a problem, include a small reproduction with sample data, the client you used and what you expected to see. For code changes, the contribution guide maps each part of the project to its tests. [Open an issue](https://github.com/zhiruiai/BambooShift/issues) · [Contributing](CONTRIBUTING.md) · [Report a security issue](SECURITY.md)
+To report a problem, include a small reproduction with sample data, the client you used and what you expected to see. For code changes, the contribution guide maps each part of the project to its tests. [Open an issue](https://github.com/zhiruiai/aihubot/issues) · [Contributing](CONTRIBUTING.md) · [Report a security issue](SECURITY.md)
 
-BambooShift’s original code uses the MIT License. Bundled skills, artwork and dependencies retain their upstream licenses. [MIT License](LICENSE) · [Notices](NOTICE) · [Third-party credits](THIRD_PARTY.md)
+aihubot’s original code uses the MIT License. Bundled skills, artwork and dependencies retain their upstream licenses. [MIT License](LICENSE) · [Notices](NOTICE) · [Third-party credits](THIRD_PARTY.md)

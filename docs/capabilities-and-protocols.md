@@ -49,9 +49,9 @@ Windows 的平台提示和浏览器布局已检查，未在 Windows 实机验收
 
 ## 开源复用与许可证
 
-- BambooShift 自有代码采用 [MIT](../LICENSE)。依赖与导入技能保留各自许可证；不能将整个分发包都标成 MIT。
+- aihubot 自有代码采用 [MIT](../LICENSE)。依赖与导入技能保留各自许可证；不能将整个分发包都标成 MIT。
 - Superpowers 使用 MIT：工程包保留选定固定版本的完整调试、测试驱动开发、评审反馈和完成验证目录及哈希清单，作为包内参考；不自动安装 hooks 或执行上游辅助脚本。Awesome Copilot、Matt Pocock 等改编工作流也保留出处和 MIT 许可。
-- Frontend Design 包保留 Anthropic 上游完整设计说明及 Apache-2.0 许可，连同 BambooShift 新增部分标为 **MIT AND Apache-2.0**。Agent Desktop 改编包是 **Apache-2.0**，未捆绑其 CLI 或原生运行时。[固定版本、来源与许可清单](../legal/third-party/community-skills/SOURCES.json)
+- Frontend Design 包保留 Anthropic 上游完整设计说明及 Apache-2.0 许可，连同 aihubot 新增部分标为 **MIT AND Apache-2.0**。Agent Desktop 改编包是 **Apache-2.0**，未捆绑其 CLI 或原生运行时。[固定版本、来源与许可清单](../legal/third-party/community-skills/SOURCES.json)
 - IM 参考了 MIT 的 [xmanrui/dsh-im](https://github.com/xmanrui/dsh-im) 实际渠道源码，直接复用官方 SDK。另核对 MIT 的 `shaobeichen/dsh-im-bridge` 和 Apache-2.0 的 `liushutan/dsh-im-connect`，没有复制其宿主集成代码。飞书/钉钉 SDK 为 MIT；依赖树还包含 BSD-3-Clause 与 Apache-2.0。企微 SDK 1.0.7 发布包声明 MIT，但未附 LICENSE 正文，当前只独立从 npm 安装，不内嵌再分发到桌面包。
 
 开发者可以先在本地运行 `node --test tests/workers/im-runtime/*.test.mjs` 验证消息桥接契约；真实账号上线仍需按接入文档验证身份、文本往返、原话题、重复事件和撤销行为。测试使用虚构数据，不会向企业账号发消息。

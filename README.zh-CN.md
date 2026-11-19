@@ -1,12 +1,12 @@
-# BambooShift
+# aihubot
 
-![BambooShift 的 Bot 团队](docs/demo/bot-team.svg)
+![aihubot 的 Bot 团队](docs/demo/bot-team.svg)
 
 简体中文 · [English](README.md)
 
-BambooShift 是一个可以自托管的 AI 团队工作空间。让 Bot 做一个网站，它会把可打开的成品交回聊天。改过几轮后，你仍然能打开第一版，查看哪些文件变了，再回到当时的讨论继续改。交付也可以是一份可复核的数据报告。例如给 Bot 一份 CSV，它会按已安装技能的说明运行包内脚本，把退出码和统计结果交给你。
+aihubot 是一个可以自托管的 AI 团队工作空间。让 Bot 做一个网站，它会把可打开的成品交回聊天。改过几轮后，你仍然能打开第一版，查看哪些文件变了，再回到当时的讨论继续改。交付也可以是一份可复核的数据报告。例如给 Bot 一份 CSV，它会按已安装技能的说明运行包内脚本，把退出码和统计结果交给你。
 
-[试玩「星港降落」](https://zhiruiai.github.io/BambooShift/zh.html) · [下载客户端或服务端](https://github.com/zhiruiai/BambooShift/releases/latest) · [启动工作空间](#快速开始) · [试装数据质量核对](#给-bot-装一项技能)
+[试玩「星港降落」](https://zhiruiai.github.io/aihubot/zh.html) · [下载客户端或服务端](https://github.com/zhiruiai/aihubot/releases/latest) · [启动工作空间](#快速开始) · [试装数据质量核对](#给-bot-装一项技能)
 
 ![在聊天中打开交付的网站、查看文件变更、回看第一版，再回原线程继续修改](docs/demo/website-delivery.gif)
 
@@ -16,7 +16,7 @@ BambooShift 是一个可以自托管的 AI 团队工作空间。让 Bot 做一�
 
 ### 支持的平台
 
-- **已有团队服务**。在电脑或手机浏览器打开管理员提供的产品地址。Windows x64 和 Apple 芯片 Mac 也可以下载连接客户端，选择「连接已有工作空间」。Windows 用户需完整解压 ZIP 后运行 `BambooShift.exe`。[桌面客户端说明](docs/desktop-client.md)
+- **已有团队服务**。在电脑或手机浏览器打开管理员提供的产品地址。Windows x64 和 Apple 芯片 Mac 也可以下载连接客户端，选择「连接已有工作空间」。Windows 用户需完整解压 ZIP 后运行 `aihubot.exe`。[桌面客户端说明](docs/desktop-client.md)
 - **自己部署服务**。Linux x64 发布包包含 Rust 服务、网页和执行任务的 Worker。准备 Node.js 22.19 或以上版本，按部署指南安装运行依赖、配置私有数据目录，再启动服务。Android 和 iOS 也提供 Flutter 源码。[Linux 安装指南](server/api/deployment/README.md#install-and-configure) · [移动端源码](mobile/README.md)
 - **在这台 Mac 上执行任务**。含内置运行环境的 macOS 客户端可以选择「在这台电脑开始」，直接打开个人空间，免注册。它会在本机启动 Rust 服务和 Pi，退出应用时本机任务停止。这个版本目前通过源码构建，公开发布的 Mac ZIP 需要连接已有服务。[桌面构建与本机权限](docs/desktop-client.md) · [Apple 芯片 Mac 的构建材料](docs/native-image-runtime.md)
 
@@ -25,8 +25,8 @@ BambooShift 是一个可以自托管的 AI 团队工作空间。让 Bot 做一�
 准备稳定版 Rust、Node.js 22.19 或以上版本（推荐 24）和 npm。在终端运行以下命令。
 
 ```sh
-git clone https://github.com/zhiruiai/BambooShift.git
-cd BambooShift
+git clone https://github.com/zhiruiai/aihubot.git
+cd aihubot
 npm ci
 npm run configure:local
 npm run dev
@@ -99,6 +99,6 @@ Web/PWA 和 Electron 共用 React 界面。聊天请求先到 Rust/Axum 服务�
 
 ## 贡献与许可
 
-欢迎带一份可复现的任务、布局问题或文档修正来参与。报告技能问题时，写明平台、技能版本和期望输出，示例附件请使用虚构数据。[贡献指南](CONTRIBUTING.md) · [提交问题](https://github.com/zhiruiai/BambooShift/issues) · [安全问题报告](SECURITY.md)
+欢迎带一份可复现的任务、布局问题或文档修正来参与。报告技能问题时，写明平台、技能版本和期望输出，示例附件请使用虚构数据。[贡献指南](CONTRIBUTING.md) · [提交问题](https://github.com/zhiruiai/aihubot/issues) · [安全问题报告](SECURITY.md)
 
-BambooShift 的原创代码采用 MIT 许可。Pi、MCP SDK、Cordis、社区技能和其他依赖保留各自的许可与署名。[MIT 许可证](LICENSE) · [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)
+aihubot 的原创代码采用 MIT 许可。Pi、MCP SDK、Cordis、社区技能和其他依赖保留各自的许可与署名。[MIT 许可证](LICENSE) · [NOTICE](NOTICE) · [第三方许可](THIRD_PARTY.md)

@@ -76,7 +76,7 @@ private enum DesktopAppLaunch {
             throw DesktopFailure("INVALID_REQUEST", "请使用准确的应用标识符。")
         }
         guard !requestedId.lowercased().hasPrefix("com.openbot.") else {
-            throw DesktopFailure("AX_APP_PROTECTED", "无法通过应用控制打开 BambooShift 或其助手。")
+            throw DesktopFailure("AX_APP_PROTECTED", "无法通过应用控制打开 aihubot 或其助手。")
         }
         let paths = Set(NSWorkspace.shared.urlsForApplications(withBundleIdentifier: requestedId)
             .filter(\.isFileURL).map(canonicalPath))

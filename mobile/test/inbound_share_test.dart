@@ -294,7 +294,7 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
       expect(find.byType(InboundShareScreen), findsNothing);
-      expect(find.byTooltip('Shared with BambooShift'), findsOneWidget);
+      expect(find.byTooltip('Shared with aihubot'), findsOneWidget);
       expect(bridge.reads, isEmpty);
       expect(bridge.discards, isEmpty);
       expect(

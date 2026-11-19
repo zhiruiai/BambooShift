@@ -18,12 +18,12 @@ export function createBambooShiftClient(
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.any([signal, AbortSignal.timeout(15000)]),
     });
-    if (!response.ok) throw Error('BambooShift session or operation unavailable');
+    if (!response.ok) throw Error('aihubot session or operation unavailable');
     let bytes = 0,
       chunks = [];
     for await (const chunk of response.body) {
       bytes += chunk.length;
-      if (bytes > 8 * 1024 * 1024) throw Error('BambooShift response exceeded limit');
+      if (bytes > 8 * 1024 * 1024) throw Error('aihubot response exceeded limit');
       chunks.push(chunk);
     }
     return JSON.parse(Buffer.concat(chunks).toString('utf8'));
@@ -57,7 +57,7 @@ export function createBambooShiftClient(
       signal,
     );
     const inputId = submit.message?.id;
-    if (!inputId) throw Error('BambooShift submission was not confirmed');
+    if (!inputId) throw Error('aihubot submission was not confirmed');
     for (let tick = 0; tick < 180; tick++) {
       signal.throwIfAborted();
       const current = await request(binding, base(binding) + '/bootstrap', undefined, signal);
@@ -74,11 +74,11 @@ export function createBambooShiftClient(
       );
       if (answer) return answer.content;
       if (replies?.some((m) => m.status === 'error' || m.status === 'stopped'))
-        throw Error('BambooShift task did not finish');
+        throw Error('aihubot task did not finish');
       await wait(interval, undefined, { signal });
     }
     // Do not cancel by conversation ID: another task may have started meanwhile.
-    throw Error('BambooShift result not confirmed; inspect the original conversation');
+    throw Error('aihubot result not confirmed; inspect the original conversation');
   }
   return { authorize, dispatch };
 }

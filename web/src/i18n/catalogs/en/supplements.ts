@@ -100,7 +100,7 @@ export default {
     text_acfb4e262968: 'Upload documents and deliverables',
   },
   account: {
-    text_c7d0301f453c: 'Sign in with the BambooShift owner account that started this connection.',
+    text_c7d0301f453c: 'Sign in with the aihubot owner account that started this connection.',
   },
   workspace: {
     questionChooseOne: 'Choose one answer.',

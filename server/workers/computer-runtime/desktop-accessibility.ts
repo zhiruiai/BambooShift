@@ -69,7 +69,7 @@ const nativeErrors = new Map([
   ['AX_PRESS_UNCONFIRMED', '应用未确认点按结果，请重新查看应用。'],
   ['AX_TEXT_UNCONFIRMED', '应用未确认文字已填写，请重新查看应用。'],
   ['AX_APP_UNAVAILABLE', '找不到唯一的目标应用，请检查应用标识符。'],
-  ['AX_APP_PROTECTED', 'Mac 应用操作不能启动 BambooShift 或其助手。'],
+  ['AX_APP_PROTECTED', 'Mac 应用操作不能启动 aihubot 或其助手。'],
   ['AX_STALE_APP', '目标应用身份已变化，请重新发起启动申请。'],
   ['AX_OPEN_UNCONFIRMED', '应用启动未确认，请检查应用状态。'],
 ]);
@@ -324,7 +324,7 @@ export function createDesktopAccessibility(
         if (started !== generation) throw new Error('原生应用连接已变更，请重试。');
         const { tree, elementTokens } = parseTree(raw);
         if (tree.app.bundleId.toLowerCase() === approvalAppBundleId)
-          throw new Error('Mac 应用操作不能访问 BambooShift 自身的审批界面。');
+          throw new Error('Mac 应用操作不能访问 aihubot 自身的审批界面。');
         const publicToken = randomBytes(32).toString('hex');
         snapshot = {
           tree,

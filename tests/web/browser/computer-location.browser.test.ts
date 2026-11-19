@@ -350,7 +350,7 @@ test(
           assert.equal(await dialog.getByLabel('Computer connection token').count(), 0);
           await dialog.getByRole('button', { name: 'Mac apps', exact: true }).click();
           await dialog.locator('.desktop-permissions').getByText('Not allowed yet').waitFor();
-          await dialog.getByText(/Enable BambooShift/).waitFor();
+          await dialog.getByText(/Enable aihubot/).waitFor();
           const selectMacApps = dialog.getByRole('button', { name: 'Use Mac apps' });
           assert.equal(await selectMacApps.isDisabled(), true);
           assert.equal(posts.length, before);

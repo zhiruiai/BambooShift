@@ -15,7 +15,7 @@
       "chatId",
       "bambooShiftIdentity"
     ],
-    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "documentation": "https://github.com/zhiruiai/aihubot/blob/main/docs/im-connectors.md",
     "upstream": "https://github.com/larksuite/node-sdk"
   },
   {
@@ -33,7 +33,7 @@
       "conversationId",
       "bambooShiftIdentity"
     ],
-    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "documentation": "https://github.com/zhiruiai/aihubot/blob/main/docs/im-connectors.md",
     "upstream": "https://github.com/open-dingtalk/dingtalk-stream-sdk-nodejs"
   },
   {
@@ -51,7 +51,7 @@
       "bundled": false
     },
     "requiredFields": ["botId", "secret", "senderUserId", "chatId", "bambooShiftIdentity"],
-    "documentation": "https://github.com/zhiruiai/BambooShift/blob/main/docs/im-connectors.md",
+    "documentation": "https://github.com/zhiruiai/aihubot/blob/main/docs/im-connectors.md",
     "upstream": "https://github.com/WecomTeam/aibot-node-sdk"
   }
 ]

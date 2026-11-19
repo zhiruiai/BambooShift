@@ -9,12 +9,12 @@
   const locales = Object.freeze(['zh-CN', 'en']);
   // Keep product data and addresses outside this UI-only catalog.
   const entries = {
-    pageTitle: ['连接工作空间 · BambooShift', 'Connect to a workspace · BambooShift'],
+    pageTitle: ['连接工作空间 · aihubot', 'Connect to a workspace · aihubot'],
     connectWorkspace: ['连接工作空间', 'Connect to workspace'],
     heading: ['连接你的工作空间', 'Connect to your workspace'],
     intro: [
-      '在这台电脑创建工作空间，或连接已有的 BambooShift 服务。',
-      'Create a workspace on this computer or connect to an existing BambooShift service.',
+      '在这台电脑创建工作空间，或连接已有的 aihubot 服务。',
+      'Create a workspace on this computer or connect to an existing aihubot service.',
     ],
     startLocal: ['在这台电脑开始', 'Start on this computer'],
     existingWorkspace: ['连接已有工作空间', 'Connect to an existing workspace'],
@@ -92,7 +92,7 @@
       'Computer control could not start. Retry, or turn off computer control and open the local workspace.',
     ],
     cancelLocal: ['取消启动', 'Cancel startup'],
-    mascot: ['BambooShift 吉祥物', 'BambooShift mascot'],
+    mascot: ['aihubot 吉祥物', 'aihubot mascot'],
     address: ['工作空间地址', 'Workspace address'],
     addressPlaceholder: ['https://你的工作空间地址', 'https://your-workspace.example'],
     secureAddress: [
@@ -118,8 +118,8 @@
       'Tasks run on your workspace server and can continue after this app closes.',
     ],
     accountLogin: [
-      '连接已有服务时，使用该服务的 BambooShift 账户登录；首次使用可在登录页注册。',
-      'When connecting to an existing service, sign in with your BambooShift account for that service. New users can register on its sign-in page.',
+      '连接已有服务时，使用该服务的 aihubot 账户登录；首次使用可在登录页注册。',
+      'When connecting to an existing service, sign in with your aihubot account for that service. New users can register on its sign-in page.',
     ],
     language: ['客户端语言', 'Client language'],
     languageHelp: [
@@ -160,14 +160,14 @@
     minimize: ['最小化', 'Minimize'],
     zoom: ['缩放窗口', 'Zoom Window'],
     front: ['全部置于前端', 'Bring All to Front'],
-    about: ['关于 BambooShift', 'About BambooShift'],
-    hide: ['隐藏 BambooShift', 'Hide BambooShift'],
+    about: ['关于 aihubot', 'About aihubot'],
+    hide: ['隐藏 aihubot', 'Hide aihubot'],
     hideOthers: ['隐藏其他应用', 'Hide Others'],
     unhide: ['显示全部', 'Show All'],
-    quit: ['退出 BambooShift', 'Quit BambooShift'],
+    quit: ['退出 aihubot', 'Quit aihubot'],
     close: ['关闭窗口', 'Close Window'],
     external: ['外部链接', 'External link'],
-    linkBlocked: ['此链接没有在 BambooShift 中打开。', 'This link was not opened in BambooShift.'],
+    linkBlocked: ['此链接没有在 aihubot 中打开。', 'This link was not opened in aihubot.'],
     linkHelp: [
       '客户端只显示当前空间。需要访问网页时，请右键点击链接，选择“在浏览器打开链接”，并确认地址。',
       'The client displays only your current workspace. To visit a website, right-click its link, choose “Open Link in Browser”, and confirm the address.',
@@ -186,15 +186,15 @@
       'After authorizing in your browser, return here to finish connecting.',
     ],
     oauthRetry: [
-      '授权未能继续，请回到 BambooShift 查看状态并重新发起授权。',
-      'Return to BambooShift to check the connection and restart authorization.',
+      '授权未能继续，请回到 aihubot 查看状态并重新发起授权。',
+      'Return to aihubot to check the connection and restart authorization.',
     ],
-    saveFile: ['保存 BambooShift 文件', 'Save BambooShift File'],
+    saveFile: ['保存 aihubot 文件', 'Save aihubot File'],
     saveShared: ['保存共享资料', 'Save Shared File'],
     save: ['保存', 'Save'],
     notificationsAllow: [
-      '允许 BambooShift 显示工作通知？',
-      'Allow BambooShift work notifications?',
+      '允许 aihubot 显示工作通知？',
+      'Allow aihubot work notifications?',
     ],
     notificationsHelp: [
       '只显示任务完成或需要确认的提醒，不显示对话内容。退出账户或更换空间后需重新允许。',
@@ -227,8 +227,8 @@
       'Enter a new address to connect to another workspace.',
     ],
     desktopOnly: [
-      '请从 BambooShift 桌面应用打开这个页面。',
-      'Open this page from the BambooShift desktop app.',
+      '请从 aihubot 桌面应用打开这个页面。',
+      'Open this page from the aihubot desktop app.',
     ],
     stateFailed: [
       '暂时无法读取连接信息，请重试。',
@@ -263,8 +263,8 @@
       'This workspace could not be reached. Check the address, network, and service, then try again.',
     ],
     workspaceRequired: [
-      '这个地址没有提供 BambooShift 工作空间。请核对团队给出的产品地址，或确认本机服务已经启动。',
-      'This address did not respond as a BambooShift workspace. Check your team’s product address or make sure the local server has started.',
+      '这个地址没有提供 aihubot 工作空间。请核对团队给出的产品地址，或确认本机服务已经启动。',
+      'This address did not respond as an aihubot workspace. Check your team’s product address or make sure the local server has started.',
     ],
     setupFailed: [
       '连接页面无法加载，请重新安装客户端。',
@@ -272,12 +272,12 @@
     ],
     invalidParameters: ['连接参数无效。', 'Invalid connection parameters.'],
     setupOnly: [
-      '此操作只允许从 BambooShift 连接页面发起。',
-      'This action is available only from the BambooShift connection page.',
+      '此操作只允许从 aihubot 连接页面发起。',
+      'This action is available only from the aihubot connection page.',
     ],
     serviceAddress: [
-      '请输入完整的 BambooShift 服务地址。',
-      'Enter the full BambooShift service address.',
+      '请输入完整的 aihubot 服务地址。',
+      'Enter the full aihubot service address.',
     ],
     originOnly: [
       '只填写服务地址，不包含路径、查询参数或片段。',

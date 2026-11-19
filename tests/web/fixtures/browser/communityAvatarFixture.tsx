@@ -21,7 +21,7 @@ function Fixture() {
   return (
     <main className="community-fixture">
       <header>
-        <span>BambooShift · Community collections</span>
+        <span>aihubot · Community collections</span>
         <h1>A little personality. A whole team.</h1>
         <p>40 community avatars. Native expressions. One shared workspace.</p>
       </header>

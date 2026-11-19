@@ -97,7 +97,7 @@ export async function verifyPackagedStartup(executablePath, expectedVersion, exp
     await setup.locator('html[lang="en"]').waitFor({ state: 'attached' });
     await setup.locator('#connect-button').click();
     await setup
-      .getByText('This address did not respond as a BambooShift workspace.', { exact: false })
+      .getByText('This address did not respond as an aihubot workspace.', { exact: false })
       .waitFor();
     assert.equal(visits, 0, 'The operations listener must not open in the product window');
     assert.equal(probes, 1);

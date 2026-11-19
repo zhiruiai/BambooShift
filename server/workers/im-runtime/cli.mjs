@@ -44,7 +44,7 @@ export async function main(args = process.argv.slice(2)) {
   process.once('SIGINT', stop);
   process.once('SIGTERM', stop);
   try {
-    // Validate every explicit BambooShift identity before opening an external transport.
+    // Validate every explicit aihubot identity before opening an external transport.
     for (const account of config.accounts)
       for (const binding of account.bindings) await client.authorize(binding, controller.signal);
     for (const account of config.accounts) {

@@ -330,7 +330,7 @@ void main() {
     await waitFor(
       tester,
       () => find
-          .textContaining('Update your BambooShift service')
+          .textContaining('Update your aihubot service')
           .evaluate()
           .isNotEmpty,
     );

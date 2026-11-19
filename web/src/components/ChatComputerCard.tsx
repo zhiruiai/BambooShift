@@ -82,7 +82,7 @@ export function ComputerCard({
             <i />
             <i />
             <i />
-            <span>BambooShift Workspace</span>
+            <span>aihubot Workspace</span>
           </div>
           <div className="work-preview-content">
             <span className="work-preview-rail">

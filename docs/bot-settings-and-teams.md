@@ -14,7 +14,7 @@
 资料页显示该 Bot 已启用的技能和待审核数量，可直接选择技能库工作流或管理现有技能。
 内置工作流先保存为草稿，审核后才生效，支持停用和恢复；聊天中输入 `/` 可选择本次任务技能。
 中英文目录共 17 项，包括网页流程验收、代码安全审查、产品文档写作和团队决策简报。
-前三项改编自 GitHub Awesome Copilot，团队决策简报按 BambooShift 的协作方式编写。
+前三项改编自 GitHub Awesome Copilot，团队决策简报按 aihubot 的协作方式编写。
 
 Agent Desktop 需要执行电脑已安装其 CLI、已获得系统权限，并具备已授权的本机命令能力。
 选择技能本身不会安装执行器或开启整机控制。完整边界见[模型与技能说明](bot-models-and-skills.md)。
@@ -35,7 +35,7 @@ Agent Desktop 需要执行电脑已安装其 CLI、已获得系统权限，并�
 
 ### 从团队模板开始
 
-空间拥有者可在桌面、Web 和 Flutter 的「模板库 → 团队模板」或「智能组队」打开同一目录。Flutter 从模板库进入时，在当前空间核对未完成的请求，再展示模板；可以先预览分工，退出预览时不会保存方案。产品发布、财务月结和客户支持各有三位分工明确的 Bot，参考 Grok Bot 的团队案例，由 BambooShift 独立编写中英文方案。[团队案例](https://docs.x.ai/grok-bot/use-cases#build-a-team-of-bots-for-a-bigger-goal)
+空间拥有者可在桌面、Web 和 Flutter 的「模板库 → 团队模板」或「智能组队」打开同一目录。Flutter 从模板库进入时，在当前空间核对未完成的请求，再展示模板；可以先预览分工，退出预览时不会保存方案。产品发布、财务月结和客户支持各有三位分工明确的 Bot，参考 Grok Bot 的团队案例，由 aihubot 独立编写中英文方案。[团队案例](https://docs.x.ai/grok-bot/use-cases#build-a-team-of-bots-for-a-bigger-goal)
 
 载入模板只保存一份待编辑方案，无需配置模型。空间拥有者可以先填写自己的目标，载入后调整群名、负责人和分工，也可以复用已有 Bot。确认创建与开始协作仍是两个独立操作。
 

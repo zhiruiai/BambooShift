@@ -21,7 +21,7 @@ export default {
   messageChannelsVerification:
     'Check the configuration offline, then start the separate bridge. Send a test in the enterprise app and verify the reply reaches its original conversation.',
   messageChannelsBoundary:
-    'Templates do not connect enterprise accounts automatically. Text messages are supported; approvals stay in BambooShift and external messages cannot increase permissions.',
+    'Templates do not connect enterprise accounts automatically. Text messages are supported; approvals stay in aihubot and external messages cannot increase permissions.',
   messageChannelsGuide: 'Read the setup guide',
   messageChannelsCopy: 'Copy check command',
   messageChannelsCopied: 'Check command copied',

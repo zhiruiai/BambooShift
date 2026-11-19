@@ -36,7 +36,7 @@ pub(super) fn worker_error(code: &str) -> Option<ApiError> {
         ),
         "AX_APP_PROTECTED" => (
             "AX_APP_PROTECTED",
-            "无法通过应用控制打开 BambooShift 或其助手。",
+            "无法通过应用控制打开 aihubot 或其助手。",
         ),
         "AX_WINDOW_UNAVAILABLE" => (
             "AX_WINDOW_UNAVAILABLE",

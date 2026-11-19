@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 export function desktopProductName(manifest) {
   const { productName } = manifest;
-  if (typeof productName !== 'string' || !/^[A-Z][A-Za-z0-9]{0,39}$/.test(productName))
+  if (typeof productName !== 'string' || !/^[A-Za-z][A-Za-z0-9]{0,39}$/.test(productName))
     throw new Error('desktop/package.json must declare a valid product name.');
   return productName;
 }

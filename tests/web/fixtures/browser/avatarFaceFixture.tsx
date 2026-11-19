@@ -45,7 +45,7 @@ function Fixture() {
   return (
     <main className="face-fixture" data-scene={state} data-preview={previewOnly || undefined}>
       <header>
-        <span className="fixture-brand">BambooShift</span>
+        <span className="fixture-brand">aihubot</span>
         <h1>Every Bot has a face</h1>
         <p>
           <span className="fixture-state" aria-live="polite">

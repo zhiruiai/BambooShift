@@ -74,7 +74,7 @@ function SharedBotLink({ shareId }: { shareId: string }) {
       <header className="platform-team-header">
         <a className="platform-brand" href="/">
           <Avatar size={32} />
-          <span>BambooShift</span>
+          <span>aihubot</span>
         </a>
         {state.session?.authenticated ? (
           <AccountMenu session={state.session} />

@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "BambooShift · 你的 AI 同事",
-  "short_name": "BambooShift",
+  "name": "aihubot · 你的 AI 同事",
+  "short_name": "aihubot",
   "description": "与 AI 同事协作，在同一工作空间继续你的任务。",
   "lang": "zh-CN",
   "start_url": "/",

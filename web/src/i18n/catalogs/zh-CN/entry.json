@@ -2,7 +2,7 @@
   "account": {
     "text_064d941a717a": "初始化平台运营账号",
     "text_067c41b9878d": "创建运营账号",
-    "text_0aa78a3dfb7a": "创建 BambooShift 账号",
+    "text_0aa78a3dfb7a": "创建 aihubot 账号",
     "text_0ae60dd37b14": "正在退出…",
     "text_0fe66b842224": "使用 10–128 个字符。",
     "text_11345eb54c09": "设备与空间说明",
@@ -140,7 +140,7 @@
     "text_5d35049b01d6": "前往运营登录",
     "text_b0211e3d6d23": "请使用运营账号登录。",
     "text_c25fb86b1e96": "重新检查",
-    "operationsTitle": "BambooShift · 平台运营",
+    "operationsTitle": "aihubot · 平台运营",
     "operatorOnly": "仅供平台运营人员使用。个人或团队账户不能登录此后台。",
     "text_3b2b85441a1a": "正在确认运营身份。"
   },

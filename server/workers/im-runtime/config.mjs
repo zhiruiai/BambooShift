@@ -15,7 +15,7 @@ export function validateConfig(value) {
       (origin.protocol === 'http:' && ['127.0.0.1', '[::1]'].includes(origin.hostname))
     )
   )
-    throw Error('Use a fixed HTTPS or loopback BambooShift origin');
+    throw Error('Use a fixed HTTPS or loopback aihubot origin');
   const accounts = new Set(),
     routes = new Set(),
     chats = new Set();

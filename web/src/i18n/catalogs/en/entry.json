@@ -2,7 +2,7 @@
   "account": {
     "text_064d941a717a": "Set up platform administration",
     "text_067c41b9878d": "Create operator account",
-    "text_0aa78a3dfb7a": "Create a BambooShift account",
+    "text_0aa78a3dfb7a": "Create an aihubot account",
     "text_0ae60dd37b14": "Signing out…",
     "text_0fe66b842224": "Use 10–128 characters.",
     "text_11345eb54c09": "Devices and workspaces",
@@ -140,7 +140,7 @@
     "text_5d35049b01d6": "Open operator sign-in",
     "text_b0211e3d6d23": "Sign in with an operator account.",
     "text_c25fb86b1e96": "Check again",
-    "operationsTitle": "BambooShift · Operations",
+    "operationsTitle": "aihubot · Operations",
     "operatorOnly": "For platform operators only. Personal and team accounts cannot sign in here.",
     "text_3b2b85441a1a": "Checking platform operator access."
   },

@@ -118,7 +118,7 @@ export function WorkspaceSidebar({
           />
         )}
         <div className="sidebar-toolbar">
-          <span className="app-wordmark">BambooShift</span>
+          <span className="app-wordmark">aihubot</span>
           <div className="toolbar-actions">
             <IconButton
               label={uiText('workspace:text_feb95554de09')}

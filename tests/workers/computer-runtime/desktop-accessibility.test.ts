@@ -41,12 +41,12 @@ const tree = {
 };
 const approvedText = '\t保留👩‍💻\n空格  ';
 
-test('AX cannot inspect BambooShift by display name or bundled app ID', async () => {
+test('AX cannot inspect aihubot by display name or bundled app ID', async () => {
   const adapter = createDesktopAccessibility(
     async () => ({ ...tree, app: { ...app, bundleId: 'Com.OpenBot.Client' } }),
     () => {},
   );
-  for (const app of ['BambooShift', 'com.openbot.client']) {
+  for (const app of ['aihubot', 'com.openbot.client']) {
     await assert.rejects(adapter.execute({ type: 'desktop_ax_inspect', app }), /审批界面/);
   }
 });

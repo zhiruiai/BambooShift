@@ -95,7 +95,7 @@ pub(crate) async fn issue(
         .and_then(|h| h.to_str().ok())
         .unwrap_or("");
     let name = if ua.contains("OpenBotDesktop") {
-        "BambooShift 桌面客户端"
+        "aihubot 桌面客户端"
     } else if ["Mobile", "Android", "iPhone"]
         .iter()
         .any(|s| ua.contains(s))

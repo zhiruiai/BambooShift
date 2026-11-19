@@ -108,7 +108,7 @@ export function AccountSettingsPage() {
           }}
         >
           <Avatar size={33} />
-          <span>BambooShift</span>
+          <span>aihubot</span>
         </a>
         <span className="account-settings-identity">
           {session.user.localOnly ? uiText('account:localWorkspace') : session.user.email}

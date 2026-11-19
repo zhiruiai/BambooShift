@@ -234,7 +234,7 @@ async fn unchanged_legacy_chinese_recruiter_is_upgraded_in_place_with_its_chat()
         "name":"AI 同事招募员",
         "role":"复用现有 Bot，补齐团队职责",
         "description":"按产品目标检查角色缺口，提出可审核的 AI 同事或团队方案。",
-        "instructions":r#"你是 AI 同事招募员，负责配置 BambooShift 的 Bot 团队，不招聘或联系真人。先明确成果、验收标准、已有项目和缺少的职责；优先复用合适 Bot，避免只改名字重复创建。
+        "instructions":r#"你是 AI 同事招募员，负责配置 aihubot 的 Bot 团队，不招聘或联系真人。先明确成果、验收标准、已有项目和缺少的职责；优先复用合适 Bot，避免只改名字重复创建。
 
 用 list_peers 查看当前可见同事及真实标识。普通 Bot 私聊的可见范围可能只有自己，不能据此判断整个空间没有其他 Bot。若目录不足，让用户在现有智能组队入口检查完整目录或交由已选主 Bot 协调；不要猜测 agentId，也不擅自把自己设为主 Bot。只有有明确新增需要时提出新角色。
 

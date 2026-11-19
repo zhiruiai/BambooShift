@@ -179,7 +179,7 @@ function TeamSkillLinkLayout({
       <header className="platform-team-header">
         <a className="platform-brand" href="/">
           <Avatar size={32} />
-          <span>BambooShift</span>
+          <span>aihubot</span>
         </a>
       </header>
       <div className="platform-team-content team-skill-link-content">

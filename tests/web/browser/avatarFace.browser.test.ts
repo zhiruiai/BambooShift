@@ -273,7 +273,7 @@ test(
     if (capture) {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await recordPreview(page);
-      const body = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Task expressions · BambooShift</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>${style}</style><div id="fixture" data-preview="true"></div><script>${script.replaceAll('</script', '<\\/script')}</script>`;
+      const body = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Task expressions · aihubot</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>${style}</style><div id="fixture" data-preview="true"></div><script>${script.replaceAll('</script', '<\\/script')}</script>`;
       await writeFile('test-results/web/avatar-face/index.html', body);
       const preview = await browser.newPage();
       const previewRequests: string[] = [];

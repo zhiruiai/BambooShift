@@ -11,7 +11,7 @@ test('service assembly includes exactly two binaries and public assets without s
   try {
     const sourceRoot = join(directory, 'source');
     await mkdir(join(sourceRoot, 'desktop'), { recursive: true });
-    await writeFile(join(sourceRoot, 'desktop', 'package.json'), '{"productName":"BambooShift"}');
+    await writeFile(join(sourceRoot, 'desktop', 'package.json'), '{"productName":"aihubot"}');
     await writeFile(join(sourceRoot, 'LICENSE'), 'Synthetic project license');
     await writeFile(join(sourceRoot, 'NOTICE'), 'Synthetic OpenBot notice');
     await writeFile(join(sourceRoot, 'THIRD_PARTY.md'), 'Synthetic dependency licensing guide');
@@ -66,7 +66,7 @@ test('service assembly includes exactly two binaries and public assets without s
     ]);
     assert.equal(result.profile, 'release');
     const manifest = JSON.parse(await readFile(join(output, 'package-manifest.json'), 'utf8'));
-    assert.equal(manifest.productName, 'BambooShift');
+    assert.equal(manifest.productName, 'aihubot');
     assert.deepEqual(
       manifest.files.filter((file) => file.path.startsWith('openbot-')).map((f) => f.path),
       ['openbot-backend', 'openbot-image-worker'],

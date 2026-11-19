@@ -3,7 +3,7 @@
 ## Current support
 
 The Windows x64 release is a **connection client**: it connects to an existing
-BambooShift service. It does not bundle a Windows personal-workspace service,
+aihubot service. It does not bundle a Windows personal-workspace service,
 execute commands on the client computer, or provide native screen and input control.
 See [Windows setup](desktop-client.md#windows-x64) for the supported installation flow.
 
@@ -207,7 +207,7 @@ qualify the remaining Windows runtime or its installer:
   [MIT license option](https://github.com/bytecodealliance/cap-std/blob/main/LICENSE-MIT).
   Its default handling permits contained symlinks. The
   [cap-fs-ext no-follow option](https://github.com/bytecodealliance/cap-std/blob/main/cap-fs-ext/src/open_options_follow_ext.rs)
-  applies to the final path component; preserving BambooShift's stricter policy
+  applies to the final path component; preserving aihubot's stricter policy
   requires checking each directory component and file identity.
 - [fs4](https://github.com/al8n/fs4), pinned to 1.1.0 with only its sync feature,
   offers cross-platform file locks under MIT or

@@ -1,6 +1,6 @@
-# BambooShift 桌面端
+# aihubot 桌面端
 
-打开应用后，可以在这台电脑创建个人工作空间，也可以连接已有的 BambooShift 服务。启动页会显示当前安装包提供的选项。
+打开应用后，可以在这台电脑创建个人工作空间，也可以连接已有的 aihubot 服务。启动页会显示当前安装包提供的选项。
 
 内置个人空间目前是开发预览。macOS Apple Silicon 的独立测试安装包已通过免登录启动、配置模型、真实文件交付、Markdown 预览、退出清理和重启后继续任务的验收。测试使用受控的合成模型服务，执行的是安装包内的真实 Pi 与文件工具，不代表外部模型质量或整机键鼠操作已经验收。原生图像依赖候选已配套校验过的对应源码和许可材料，尚未公开交付；其余平台的完整安装包仍待验收。缺少包级许可文本时构建会失败；这项检查不代替原生二进制的组件许可审查。自动发布继续提供连接客户端，尚未包含这项预览。
 
@@ -49,12 +49,12 @@
 | ----------------------- | ------------------------------------------------------------------------------- |
 | **macOS Apple Silicon** | 发布工作流构建连接客户端 ZIP。内置运行环境为开发预览，尚未纳入自动发布。        |
 | **macOS Intel**         | 在同架构 Mac 上可从源码构建含内置运行环境的应用，也可使用 Web。                 |
-| **Windows x64**         | 发布工作流构建连接客户端 ZIP。连接运行中的 BambooShift 服务。                   |
+| **Windows x64**         | 发布工作流构建连接客户端 ZIP。连接运行中的 aihubot 服务。                   |
 | **Linux**               | 发布页提供 x64 服务包。可在同平台、同架构从源码构建桌面应用，选择是否内置服务。 |
 
 ### Windows x64
 
-从 [GitHub Releases](https://github.com/zhiruiai/BambooShift/releases) 下载 Windows x64 客户端 ZIP，完整解压后运行 `BambooShift.exe`。输入已有服务的产品地址。Windows 便携包尚未做发行者签名，可用发布页的 SHA-256 校验归档。服务部署和 WSL2 本地试用见 [Windows 连接说明](../server/api/deployment/README.md#connect-from-windows)。
+从 [GitHub Releases](https://github.com/zhiruiai/aihubot/releases) 下载 Windows x64 客户端 ZIP，完整解压后运行包内主程序（历史版 v0.0.8 为 `BambooShift.exe`）。输入已有服务的产品地址。Windows 便携包尚未做发行者签名，可用发布页的 SHA-256 校验归档。服务部署和 WSL2 本地试用见 [Windows 连接说明](../server/api/deployment/README.md#connect-from-windows)。
 
 Windows 的自动发布检查覆盖启动、语言切换和连接测试工作空间。独立浏览器在服务选定的工作电脑上运行。Windows 整机屏幕和键鼠适配尚未提供。
 
@@ -69,13 +69,13 @@ npm run client:package -- --with-runtime
 
 创建命令不会修改系统根信任或系统权限数据库。私钥保存在当前用户钥匙串；`~/Library/Application Support/BambooShift/build-signing/identity.json` 只保存证书指纹和应用标识，目录与文件分别限制为 0700 和 0600，不进入源码或安装包。这个身份属于当前系统用户，新克隆的仓库和 worktree 也会复用。不要删除或重新创建已有身份。配置损坏、证书过期或私钥缺失会中止构建，不会静默换用临时签名。
 
-仅在用户级配置目录尚不存在时兼容原仓库的私有 `.local/macos-signing/identity.json`；已有的用户级配置优先，损坏时不能退回旧文件。若配置丢失但钥匙串仍保留 BambooShift 本机签名身份，构建同样会停止并要求恢复原配置。
+仅在用户级配置目录尚不存在时兼容原仓库的私有 `.local/macos-signing/identity.json`；已有的用户级配置优先，损坏时不能退回旧文件。若配置丢失但钥匙串仍保留原有的本机签名身份，构建同样会停止并要求恢复原配置。
 
 打包时，主应用和助手都使用同一证书，并分别绑定自己的 bundle ID 与确切证书指纹；主应用的标识不会覆盖 Electron 内嵌组件。签名前后检查助手身份，签名后严格校验完整应用和嵌入的指定要求，拒绝仅依赖版本哈希或仅应用标识的身份。没有配置过固定身份时仍可构建 ad-hoc 预览包，命令会明确提示更新可能需要重新授予系统权限。
 
 从旧的 ad-hoc 包迁移到固定身份时，macOS 仍可能要求为新身份重新授予一次辅助功能权限；应用不能替用户迁移系统授权。之后必须保留原证书、私钥与应用标识，才能让系统识别后续版本属于同一应用。应用保存的「完全授权」不因此丢失。权限验收必须覆盖正常启动的客户端，不能以从已获权限的开发工具启动进程的结果代替。普通本机命令和打开应用不依赖辅助功能授权。
 
-若旧条目的开关已经开启，客户端仍显示未授权，macOS 可能还保留着旧签名要求。请在辅助功能列表移除旧的 BambooShift 条目，通过「+」重新选择当前使用的 BambooShift.app，再回到客户端点击「重新检查权限」。仅切换旧条目的开关可能无法更新身份记录；应用内保存的完全授权无需重建。
+若旧条目的开关已经开启，客户端仍显示未授权，macOS 可能还保留着旧签名要求。请在辅助功能列表移除旧安装对应的条目，通过「+」重新选择当前使用的 aihubot.app，再回到客户端点击「重新检查权限」。仅切换旧条目的开关可能无法更新身份记录；应用内保存的完全授权无需重建。
 
 这里的本机证书不等于 Apple Developer ID，不能作为公开发行信任。Developer ID 签名、Apple 公证和自动更新尚未配置。 [Electron 应用打包](https://www.electronjs.org/docs/latest/tutorial/application-distribution)
 
@@ -112,7 +112,7 @@ macOS arm64 已有包含独立构建图像库、完整许可文本及对应源�
 完整包可以通过仓库内的检查命令重复验收，路径指向已解包应用的 `Contents/Resources`（macOS）或 `resources`（Linux）：
 
 ```sh
-npm run client:check -- --resources '/path/to/BambooShift.app/Contents/Resources'
+npm run client:check -- --resources '/path/to/aihubot.app/Contents/Resources'
 ```
 
 检查使用安装包内的本机运行管理代码、Node、Rust 服务和 Pi，自动创建临时个人空间，固定关闭整机操作，只连接本机合成模型。它验证免登录、真实文件交付、后台退出、重启恢复和第二次交付，输出不含账号、地址、令牌或临时路径的 JSON 报告。连接型客户端缺少内置服务，会直接拒绝检查；命令不支持指定现有用户资料、外部模型或开启整机权限。

@@ -17,7 +17,7 @@ const apiBoundaryStatus = 27;
 async function fixture(
   t,
   {
-    brand = 'BambooShift',
+    brand = 'aihubot',
     packageName = brand,
     runtimePackaging = 'none',
     runtimeApproval = true,
@@ -237,7 +237,7 @@ test('release notes describe the runtime actually built by the pinned source, in
       assert.match(body, /独立浏览器另需安装 Chrome/);
       assert.doesNotMatch(body, /connects to a separate/);
     } else {
-      assert.match(body, /connects to a separate BambooShift server/);
+      assert.match(body, /connects to a separate aihubot server/);
       assert.doesNotMatch(body, /includes a local workspace/);
     }
   }
@@ -250,7 +250,7 @@ test('a stamped build pushes a tag to the existing source commit and can resume 
   assert.equal(f.remoteTag(), f.source);
   assert.equal(
     f.git('for-each-ref', '--format=%(subject)', tagRef),
-    'BambooShift release from ' + f.source,
+    'aihubot release from ' + f.source,
   );
   assert.equal(f.git('rev-parse', 'HEAD'), f.source);
   assert.equal(f.git('write-tree'), f.stamped);

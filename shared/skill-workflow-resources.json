@@ -1,7 +1,7 @@
 {
   "source-research": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/claims.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/claims.csv)记录结果。"
@@ -41,8 +41,8 @@
     "license": "MIT AND Apache-2.0",
     "source": "https://github.com/anthropics/skills/blob/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/frontend-design/SKILL.md",
     "instruction": {
-      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/ui-review.csv) to record the result.\n\nRead the complete [upstream design guidance](references/upstream-frontend-design.md) and [pinned source manifest](references/source-manifest.json).\n\nBambooShift additions retain [MIT terms](LICENSE-BambooShift.txt); upstream references retain Apache-2.0 in LICENSE.txt.",
-      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/ui-review.csv)记录结果。\n\nRead the complete [upstream design guidance](references/upstream-frontend-design.md) and [pinned source manifest](references/source-manifest.json).\n\nBambooShift additions retain [MIT terms](LICENSE-BambooShift.txt); upstream references retain Apache-2.0 in LICENSE.txt."
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/ui-review.csv) to record the result.\n\nRead the complete [upstream design guidance](references/upstream-frontend-design.md) and [pinned source manifest](references/source-manifest.json).\n\naihubot additions retain [MIT terms](LICENSE-BambooShift.txt); upstream references retain Apache-2.0 in LICENSE.txt.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/ui-review.csv)记录结果。\n\nRead the complete [upstream design guidance](references/upstream-frontend-design.md) and [pinned source manifest](references/source-manifest.json).\n\naihubot additions retain [MIT terms](LICENSE-BambooShift.txt); upstream references retain Apache-2.0 in LICENSE.txt."
     },
     "files": {
       "references/review-checklist.md": "# 界面检查 / Interface review\n\n- [ ] 在常用窗口尺寸检查主任务和键盘顺序。 / Exercise the main task and keyboard sequence at representative window widths.\n- [ ] 验证空白、加载、失败、重试和未保存更改。 / Exercise empty, loading, failure, retry and unsaved changes.\n- [ ] 记录实际控件名称和结果，检查长内容、对比度和焦点。 / Record control names and outcomes. Inspect long content, contrast and focus.\n",
@@ -55,7 +55,7 @@
   },
   "issue-triage": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/issue.md) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/issue.md)记录结果。"
@@ -67,7 +67,7 @@
   },
   "release-readiness": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/release-gates.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/release-gates.csv)记录结果。"
@@ -79,7 +79,7 @@
   },
   "meeting-followup": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/actions.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/actions.csv)记录结果。"
@@ -91,10 +91,10 @@
   },
   "data-quality-review": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
-      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/exceptions.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in BambooShift, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside BambooShift, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
-      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/exceptions.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 BambooShift 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/exceptions.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in aihubot, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside aihubot, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/exceptions.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 aihubot 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
     },
     "files": {
       "references/review-checklist.md": "# 数据核对 / Dataset checks\n\n- [ ] 定义观察对象、预期主键和纳入条件。 / Define the observation unit, expected key and inclusion criteria.\n- [ ] 登记重复、空值及相同口径下的行数与总量。 / Count duplicate keys, blanks and totals under comparable filters.\n- [ ] 列出显著例外及其决策影响。 / Record material exceptions and their impact on the decision.\n",
@@ -105,7 +105,7 @@
   },
   "account-health-review": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/account-signals.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/account-signals.csv)记录结果。"
@@ -143,7 +143,7 @@
   },
   "react-performance": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/measurements.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/measurements.csv)记录结果。"
@@ -208,7 +208,7 @@
   },
   "decision-brief": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/options.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/options.csv)记录结果。"
@@ -220,7 +220,7 @@
   },
   "website-delivery": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/delivery-review.md) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/delivery-review.md)记录结果。"
@@ -232,10 +232,10 @@
   },
   "spreadsheet-review": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
-      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/workbook-review.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in BambooShift, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside BambooShift, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
-      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/workbook-review.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 BambooShift 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
+      "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/workbook-review.csv) to record the result.\n\n## Run the CSV check\n\nFor an attached CSV in aihubot, use `run_skill_script` with the activated skill ID, path `scripts/profile_csv.py`, the attachment file ID, and arguments `[\"__SKILL_INPUT__\"]`. Include `\"--key\", \"<column>\"` after that argument if the user supplies a key column. Use the returned JSON from stdout and verify the exit code is 0 before reporting counts. Report an unrun check if execution is unavailable or declined. Outside aihubot, run `python3 scripts/profile_csv.py <csv-path> [--key <column>]` from the skill directory. The check covers the supplied CSV.",
+      "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/workbook-review.csv)记录结果。\n\n## 运行 CSV 核对\n\n在 aihubot 中核对聊天附件时，使用 `run_skill_script`。传入当前技能 ID、`path: \"scripts/profile_csv.py\"`、附件的文件 ID 和 `args: [\"__SKILL_INPUT__\"]`。用户给了主键列时，在参数列表末尾添加 `\"--key\", \"<列名>\"`。检查退出码为 0 后，按标准输出的 JSON 报告实际统计。执行不可用或未获批准时标记为未运行。在其他环境中，可在技能目录运行 `python3 scripts/profile_csv.py <CSV 路径> [--key <列名>]`。结果覆盖本次提供的 CSV。"
     },
     "files": {
       "references/review-checklist.md": "# 表格复核 / Workbook review\n\n- [ ] 记录工作表、表头、区域、计量单位和缺失值约定。 / Record sheets, headers, ranges, units and missing value conventions.\n- [ ] 抽查公式是否覆盖同一范围，验证关键小计的输入与输出。 / Check formula ranges and reconcile key subtotals with their inputs.\n- [ ] 记录公式和 CSV 检查的覆盖边界，保留原文件。 / Record whether each check covers formulas or CSV values. Preserve the input workbook.\n",
@@ -246,7 +246,7 @@
   },
   "pdf-review": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md) for verification and the [output template](assets/page-evidence.csv) to record the result.",
       "zh-CN": "按[核对清单](references/review-checklist.md)完成复核，使用[交付模板](assets/page-evidence.csv)记录结果。"
@@ -258,7 +258,7 @@
   },
   "web-research": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/sources.csv)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/sources.csv)."
@@ -267,24 +267,24 @@
       "references/tool-contract.md": "# Tool contract\n\n- `web_search({query, limit?})` returns discovered sources; `web_fetch({url})` reads one public page.\n- These built-in tools require access to the configured public research service; installation does not guarantee network availability.\n- Separate facts, inference, and unresolved uncertainty. Check primary sources for consequential claims.\n- Include direct source URLs and relevant versions. Never invent a successful read.\n",
       "assets/sources.csv": "claim,url,publisher,date,version,evidence,uncertainty\n"
     },
-    "compatibility": "BambooShift web_search and web_fetch tools; network access to the research service."
+    "compatibility": "aihubot web_search and web_fetch tools; network access to the research service."
   },
   "browser-use": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/result.md)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/result.md)."
     },
     "files": {
-      "references/tool-contract.md": "# Browser execution contract\n\nThis package guides BambooShift’s existing browser worker. It does not install or claim to embed the separate browser-use Python agent.\n\n1. Inspect the offered `computer_action` schema; use only its advertised action types and fields.\n2. Keep the human-selected computer and surface. Do not switch to the host screen or override takeover.\n3. Use browser_tabs results for tab selection, and controls returned by the latest browser action for interaction.\n4. A queued action or approval card is not a completed change. Check the completed receipt and inspect the resulting page.\n5. On timeout, inspect before retrying a send, payment, or submission.\n6. Avoid exposing private pages, cookies, credentials or screenshots in public deliverables.\n",
+      "references/tool-contract.md": "# Browser execution contract\n\nThis package guides aihubot’s existing browser worker. It does not install or claim to embed the separate browser-use Python agent.\n\n1. Inspect the offered `computer_action` schema; use only its advertised action types and fields.\n2. Keep the human-selected computer and surface. Do not switch to the host screen or override takeover.\n3. Use browser_tabs results for tab selection, and controls returned by the latest browser action for interaction.\n4. A queued action or approval card is not a completed change. Check the completed receipt and inspect the resulting page.\n5. On timeout, inspect before retrying a send, payment, or submission.\n6. Avoid exposing private pages, cookies, credentials or screenshots in public deliverables.\n",
       "assets/result.md": "# Result\n\n## Task and scope\n\n## Observed evidence\n\n## Completed checks\n\n## Remaining limitations\n"
     },
-    "compatibility": "BambooShift connected browser worker. Uses the existing Playwright-backed tools; no separate browser-use SDK installation."
+    "compatibility": "aihubot connected browser worker. Uses the existing Playwright-backed tools; no separate browser-use SDK installation."
   },
   "computer-use": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/result.md)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/result.md)."
@@ -297,7 +297,7 @@
   },
   "skill-discovery": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/skill-review.json)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/skill-review.json)."
@@ -309,7 +309,7 @@
   },
   "skill-creation": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/SKILL.template.md)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/SKILL.template.md)."
@@ -321,7 +321,7 @@
   },
   "connector-development": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "instruction": {
       "zh-CN": "执行前阅读[工具与检查清单](references/tool-contract.md)，用[结果模板](assets/connector-contract.json)保留证据。",
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/connector-contract.json)."
@@ -339,7 +339,7 @@
       "en": "Read the [tool contract and checklist](references/tool-contract.md) before execution and record evidence in the [result template](assets/result.md).\n\n- [references/upstream/systematic-debugging/SKILL.md](references/upstream/systematic-debugging/SKILL.md)\n- [references/upstream/systematic-debugging/condition-based-waiting-example.ts](references/upstream/systematic-debugging/condition-based-waiting-example.ts)\n- [references/upstream/systematic-debugging/condition-based-waiting.md](references/upstream/systematic-debugging/condition-based-waiting.md)\n- [references/upstream/systematic-debugging/defense-in-depth.md](references/upstream/systematic-debugging/defense-in-depth.md)\n- [references/upstream/systematic-debugging/find-polluter.sh](references/upstream/systematic-debugging/find-polluter.sh)\n- [references/upstream/systematic-debugging/root-cause-tracing.md](references/upstream/systematic-debugging/root-cause-tracing.md)\n- [references/upstream/test-driven-development/SKILL.md](references/upstream/test-driven-development/SKILL.md)\n- [references/upstream/test-driven-development/writing-good-tests.md](references/upstream/test-driven-development/writing-good-tests.md)\n- [references/upstream/verification-before-completion/SKILL.md](references/upstream/verification-before-completion/SKILL.md)\n- [references/upstream/receiving-code-review/SKILL.md](references/upstream/receiving-code-review/SKILL.md)\n- [references/source-manifest.json](references/source-manifest.json)"
     },
     "files": {
-      "references/tool-contract.md": "# Host integration\n\nPrefer the user’s scope and available BambooShift tools. Read only the method needed for the current step. Use current execution receipts and file snapshots; report unavailable execution honestly. Preserve the existing authorization mode, and do not repeatedly ask after full computer authorization.\n",
+      "references/tool-contract.md": "# Host integration\n\nPrefer the user’s scope and available aihubot tools. Read only the method needed for the current step. Use current execution receipts and file snapshots; report unavailable execution honestly. Preserve the existing authorization mode, and do not repeatedly ask after full computer authorization.\n",
       "assets/result.md": "# Result\n\n## Task and scope\n\n## Observed evidence\n\n## Completed checks\n\n## Remaining limitations\n",
       "references/upstream/systematic-debugging/SKILL.md": "---\nname: systematic-debugging\ndescription: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes\n---\n\n# Systematic Debugging\n\n## Overview\n\n**Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.\n\n**Violating the letter of this process is violating the spirit of debugging.**\n\n## The Iron Law\n\n```\nNO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST\n```\n\nIf you haven't completed Phase 1, you cannot propose fixes.\n\n## When to Use\n\nUse for ANY technical issue:\n- Test failures\n- Bugs in production\n- Unexpected behavior\n- Performance problems\n- Build failures\n- Integration issues\n\n**Use this ESPECIALLY when:**\n- Under time pressure (emergencies make guessing tempting)\n- \"Just one quick fix\" seems obvious\n- You've already tried multiple fixes\n- Previous fix didn't work\n- You don't fully understand the issue\n\n**Don't skip when:**\n- Issue seems simple (simple bugs have root causes too)\n- You're in a hurry (rushing guarantees rework)\n- Manager wants it fixed NOW (systematic is faster than thrashing)\n\n## The Four Phases\n\nYou MUST complete each phase before proceeding to the next.\n\n### Phase 1: Root Cause Investigation\n\n**BEFORE attempting ANY fix:**\n\n1. **Read Error Messages Carefully**\n   - Don't skip past errors or warnings\n   - They often contain the exact solution\n   - Read stack traces completely\n   - Note line numbers, file paths, error codes\n\n2. **Reproduce Consistently**\n   - Can you trigger it reliably?\n   - What are the exact steps?\n   - Does it happen every time?\n   - If not reproducible → gather more data, don't guess\n\n3. **Check Recent Changes**\n   - What changed that could cause this?\n   - Git diff, recent commits\n   - New dependencies, config changes\n   - Environmental differences\n\n4. **Gather Evidence in Multi-Component Systems**\n\n   **WHEN system has multiple components (CI → build → signing, API → service → database):**\n\n   **BEFORE proposing fixes, add diagnostic instrumentation:**\n   ```\n   For EACH component boundary:\n     - Log what data enters component\n     - Log what data exits component\n     - Verify environment/config propagation\n     - Check state at each layer\n\n   Run once to gather evidence showing WHERE it breaks\n   THEN analyze evidence to identify failing component\n   THEN investigate that specific component\n   ```\n\n   **Example (multi-layer system):**\n   ```bash\n   # Layer 1: Workflow\n   echo \"=== Secrets available in workflow: ===\"\n   echo \"IDENTITY: $([ -n \"${IDENTITY:-}\" ] && echo SET || echo UNSET)\"\n\n   # Layer 2: Build script\n   echo \"=== Env vars in build script: ===\"\n   printenv IDENTITY >/dev/null 2>&1 && echo \"IDENTITY in environment\" || echo \"IDENTITY not in environment\"\n\n   # Layer 3: Signing script\n   echo \"=== Keychain state: ===\"\n   security list-keychains\n   security find-identity -v\n\n   # Layer 4: Actual signing\n   codesign --sign \"$IDENTITY\" --verbose=4 \"$APP\"\n   ```\n\n   **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)\n\n5. **Trace Data Flow**\n\n   **WHEN error is deep in call stack:**\n\n   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.\n\n   **Quick version:**\n   - Where does bad value originate?\n   - What called this with bad value?\n   - Keep tracing up until you find the source\n   - Fix at source, not at symptom\n\n### Phase 2: Pattern Analysis\n\n**Find the pattern before fixing:**\n\n1. **Find Working Examples**\n   - Locate similar working code in same codebase\n   - What works that's similar to what's broken?\n\n2. **Compare Against References**\n   - If implementing pattern, read reference implementation COMPLETELY\n   - Don't skim - read every line\n   - Understand the pattern fully before applying\n\n3. **Identify Differences**\n   - What's different between working and broken?\n   - List every difference, however small\n   - Don't assume \"that can't matter\"\n\n4. **Understand Dependencies**\n   - What other components does this need?\n   - What settings, config, environment?\n   - What assumptions does it make?\n\n### Phase 3: Hypothesis and Testing\n\n**Scientific method:**\n\n1. **Form Single Hypothesis**\n   - State clearly: \"I think X is the root cause because Y\"\n   - Write it down\n   - Be specific, not vague\n\n2. **Test Minimally**\n   - Make the SMALLEST possible change to test hypothesis\n   - One variable at a time\n   - Don't fix multiple things at once\n\n3. **Verify Before Continuing**\n   - Did it work? Yes → Phase 4\n   - Didn't work? Form NEW hypothesis\n   - DON'T add more fixes on top\n\n4. **When You Don't Know**\n   - Say \"I don't understand X\"\n   - Don't pretend to know\n   - Ask for help\n   - Research more\n\n### Phase 4: Implementation\n\n**Fix the root cause, not the symptom:**\n\n1. **Create Failing Test Case**\n   - Simplest possible reproduction\n   - Automated test if possible\n   - One-off test script if no framework\n   - MUST have before fixing\n   - Use the `superpowers:test-driven-development` skill for writing proper failing tests\n\n2. **Implement Single Fix**\n   - Address the root cause identified\n   - ONE change at a time\n   - No \"while I'm here\" improvements\n   - No bundled refactoring\n\n3. **Verify Fix**\n   - Test passes now?\n   - No other tests broken?\n   - Issue actually resolved?\n   - Use the `superpowers:verification-before-completion` skill before claiming success\n\n4. **If Fix Doesn't Work**\n   - STOP\n   - Count: How many fixes have you tried?\n   - If < 3: Return to Phase 1, re-analyze with new information\n   - **If ≥ 3: STOP and question the architecture (step 5 below)**\n   - DON'T attempt Fix #4 without architectural discussion\n\n5. **If 3+ Fixes Failed: Question Architecture**\n\n   **Pattern indicating architectural problem:**\n   - Each fix reveals new shared state/coupling/problem in different place\n   - Fixes require \"massive refactoring\" to implement\n   - Each fix creates new symptoms elsewhere\n\n   **STOP and question fundamentals:**\n   - Is this pattern fundamentally sound?\n   - Are we \"sticking with it through sheer inertia\"?\n   - Should we refactor architecture vs. continue fixing symptoms?\n\n   **Discuss with your human partner before attempting more fixes**\n\n   This is NOT a failed hypothesis - this is a wrong architecture.\n\n## Red Flags - STOP and Follow Process\n\nIf you catch yourself thinking:\n- \"Quick fix for now, investigate later\"\n- \"Just try changing X and see if it works\"\n- \"Add multiple changes, run tests\"\n- \"Skip the test, I'll manually verify\"\n- \"It's probably X, let me fix that\"\n- \"I don't fully understand but this might work\"\n- \"Pattern says X but I'll adapt it differently\"\n- \"Here are the main problems: [lists fixes without investigation]\"\n- Proposing solutions before tracing data flow\n- **\"One more fix attempt\" (when already tried 2+)**\n- **Each fix reveals new problem in different place**\n\n**ALL of these mean: STOP. Return to Phase 1.**\n\n**If 3+ fixes failed:** Question the architecture (see Phase 4.5)\n\n## your human partner's Signals You're Doing It Wrong\n\n**Watch for these redirections:**\n- \"Is that not happening?\" - You assumed without verifying\n- \"Will it show us...?\" - You should have added evidence gathering\n- \"Stop guessing\" - You're proposing fixes without understanding\n- \"Ultra-think this\" - Question fundamentals, not just symptoms\n- \"We're stuck?\" (frustrated) - Your approach isn't working\n\n**When you see these:** STOP. Return to Phase 1.\n\n## Common Rationalizations\n\n| Excuse | Reality |\n|--------|---------|\n| \"Issue is simple, don't need process\" | Simple issues have root causes too. Process is fast for simple bugs. |\n| \"Emergency, no time for process\" | Systematic debugging is FASTER than guess-and-check thrashing. |\n| \"Just try this first, then investigate\" | First fix sets the pattern. Do it right from the start. |\n| \"I'll write test after confirming fix works\" | Untested fixes don't stick. Test first proves it. |\n| \"Multiple fixes at once saves time\" | Can't isolate what worked. Causes new bugs. |\n| \"Reference too long, I'll adapt the pattern\" | Partial understanding guarantees bugs. Read it completely. |\n| \"I see the problem, let me fix it\" | Seeing symptoms ≠ understanding root cause. |\n| \"One more fix attempt\" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |\n\n## Quick Reference\n\n| Phase | Key Activities | Success Criteria |\n|-------|---------------|------------------|\n| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |\n| **2. Pattern** | Find working examples, compare | Identify differences |\n| **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |\n| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |\n\n## When Process Reveals \"No Root Cause\"\n\nIf systematic investigation reveals issue is truly environmental, timing-dependent, or external:\n\n1. You've completed the process\n2. Document what you investigated\n3. Implement appropriate handling (retry, timeout, error message)\n4. Add monitoring/logging for future investigation\n\n**But:** 95% of \"no root cause\" cases are incomplete investigation.\n\n## Supporting Techniques\n\nThese techniques are part of systematic debugging and available in this directory:\n\n- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger\n- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause\n- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling\n",
       "references/upstream/systematic-debugging/condition-based-waiting-example.ts": "// Complete implementation of condition-based waiting utilities\n// From: Lace test infrastructure improvements (2025-10-03)\n// Context: Fixed 15 flaky tests by replacing arbitrary timeouts\n\nimport type { ThreadManager } from '~/threads/thread-manager';\nimport type { LaceEvent, LaceEventType } from '~/threads/types';\n\n/**\n * Wait for a specific event type to appear in thread\n *\n * @param threadManager - The thread manager to query\n * @param threadId - Thread to check for events\n * @param eventType - Type of event to wait for\n * @param timeoutMs - Maximum time to wait (default 5000ms)\n * @returns Promise resolving to the first matching event\n *\n * Example:\n *   await waitForEvent(threadManager, agentThreadId, 'TOOL_RESULT');\n */\nexport function waitForEvent(\n  threadManager: ThreadManager,\n  threadId: string,\n  eventType: LaceEventType,\n  timeoutMs = 5000\n): Promise<LaceEvent> {\n  return new Promise((resolve, reject) => {\n    const startTime = Date.now();\n\n    const check = () => {\n      const events = threadManager.getEvents(threadId);\n      const event = events.find((e) => e.type === eventType);\n\n      if (event) {\n        resolve(event);\n      } else if (Date.now() - startTime > timeoutMs) {\n        reject(new Error(`Timeout waiting for ${eventType} event after ${timeoutMs}ms`));\n      } else {\n        setTimeout(check, 10); // Poll every 10ms for efficiency\n      }\n    };\n\n    check();\n  });\n}\n\n/**\n * Wait for a specific number of events of a given type\n *\n * @param threadManager - The thread manager to query\n * @param threadId - Thread to check for events\n * @param eventType - Type of event to wait for\n * @param count - Number of events to wait for\n * @param timeoutMs - Maximum time to wait (default 5000ms)\n * @returns Promise resolving to all matching events once count is reached\n *\n * Example:\n *   // Wait for 2 AGENT_MESSAGE events (initial response + continuation)\n *   await waitForEventCount(threadManager, agentThreadId, 'AGENT_MESSAGE', 2);\n */\nexport function waitForEventCount(\n  threadManager: ThreadManager,\n  threadId: string,\n  eventType: LaceEventType,\n  count: number,\n  timeoutMs = 5000\n): Promise<LaceEvent[]> {\n  return new Promise((resolve, reject) => {\n    const startTime = Date.now();\n\n    const check = () => {\n      const events = threadManager.getEvents(threadId);\n      const matchingEvents = events.filter((e) => e.type === eventType);\n\n      if (matchingEvents.length >= count) {\n        resolve(matchingEvents);\n      } else if (Date.now() - startTime > timeoutMs) {\n        reject(\n          new Error(\n            `Timeout waiting for ${count} ${eventType} events after ${timeoutMs}ms (got ${matchingEvents.length})`\n          )\n        );\n      } else {\n        setTimeout(check, 10);\n      }\n    };\n\n    check();\n  });\n}\n\n/**\n * Wait for an event matching a custom predicate\n * Useful when you need to check event data, not just type\n *\n * @param threadManager - The thread manager to query\n * @param threadId - Thread to check for events\n * @param predicate - Function that returns true when event matches\n * @param description - Human-readable description for error messages\n * @param timeoutMs - Maximum time to wait (default 5000ms)\n * @returns Promise resolving to the first matching event\n *\n * Example:\n *   // Wait for TOOL_RESULT with specific ID\n *   await waitForEventMatch(\n *     threadManager,\n *     agentThreadId,\n *     (e) => e.type === 'TOOL_RESULT' && e.data.id === 'call_123',\n *     'TOOL_RESULT with id=call_123'\n *   );\n */\nexport function waitForEventMatch(\n  threadManager: ThreadManager,\n  threadId: string,\n  predicate: (event: LaceEvent) => boolean,\n  description: string,\n  timeoutMs = 5000\n): Promise<LaceEvent> {\n  return new Promise((resolve, reject) => {\n    const startTime = Date.now();\n\n    const check = () => {\n      const events = threadManager.getEvents(threadId);\n      const event = events.find(predicate);\n\n      if (event) {\n        resolve(event);\n      } else if (Date.now() - startTime > timeoutMs) {\n        reject(new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`));\n      } else {\n        setTimeout(check, 10);\n      }\n    };\n\n    check();\n  });\n}\n\n// Usage example from actual debugging session:\n//\n// BEFORE (flaky):\n// ---------------\n// const messagePromise = agent.sendMessage('Execute tools');\n// await new Promise(r => setTimeout(r, 300)); // Hope tools start in 300ms\n// agent.abort();\n// await messagePromise;\n// await new Promise(r => setTimeout(r, 50));  // Hope results arrive in 50ms\n// expect(toolResults.length).toBe(2);         // Fails randomly\n//\n// AFTER (reliable):\n// ----------------\n// const messagePromise = agent.sendMessage('Execute tools');\n// await waitForEventCount(threadManager, threadId, 'TOOL_CALL', 2); // Wait for tools to start\n// agent.abort();\n// await messagePromise;\n// await waitForEventCount(threadManager, threadId, 'TOOL_RESULT', 2); // Wait for results\n// expect(toolResults.length).toBe(2); // Always succeeds\n//\n// Result: 60% pass rate → 100%, 40% faster execution\n",
@@ -357,20 +357,20 @@
   },
   "forum-publishing": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "compatibility": "Requires a connected Discourse community with its built-in MCP server and forum content write access enabled.",
     "instruction": {
       "en": "Use the [connection and receipt checklist](references/review-checklist.md) for site setup and uncertain writes. Use the [forum draft](assets/forum-post.md) to prepare a topic or reply.",
       "zh-CN": "用[连接与回执核对清单](references/review-checklist.md)检查论坛配置及结果不确定的操作。用[帖子草稿模板](assets/forum-post.md)准备新主题或回帖。"
     },
     "files": {
-      "references/review-checklist.md": "# Discourse publishing / 论坛发布核对\n\n- In forum administration, enable the built-in MCP server, authorize the account's group and expose the create-topic or reply tool. In BambooShift, use the forum's own HTTPS MCP URL and web authorization. / 论坛管理员需启用内置 MCP、开放发帖工具，并为账号所在组授权。在 BambooShift 使用该站点提供的 HTTPS MCP 地址与网页登录授权。\n- The account needs `mcp:profile:read` and `mcp:content:write`. Request `mcp:content:read` to look up topics and verify an uncertain write. Category browsing also needs `mcp:categories:read`. / 帖子读写和分类浏览分别授权。使用公开客户端 ID 的站点须登记工作空间回调地址。\n- Check the selected community and visibility. Keep the destination, title and complete body in the approval. / 确认目标社区与可见性，在审批里核对目标、标题和完整正文。\n- A confirmed topic includes a positive topic_id; a reply also includes its post_number. A draft, pending approval or timeout has no published link. / 新主题核对主题 ID，回帖还要核对楼层。待批准、草稿、超时都不能作为已发布的凭证。\n- An uncertain write may already exist. Read the intended thread or search the forum using the authorized account's title, text and time. Preserve the original receipt. Ask the user before any new submission if the original outcome cannot be verified. / 结果不确定时保留原回执，先按原作者、标题、正文和时间查帖，未查清前不要再发。\n\n[Discourse setup](https://meta.discourse.org/t/412755)\n",
+      "references/review-checklist.md": "# Discourse publishing / 论坛发布核对\n\n- In forum administration, enable the built-in MCP server, authorize the account's group and expose the create-topic or reply tool. In aihubot, use the forum's own HTTPS MCP URL and web authorization. / 论坛管理员需启用内置 MCP、开放发帖工具，并为账号所在组授权。在 aihubot 使用该站点提供的 HTTPS MCP 地址与网页登录授权。\n- The account needs `mcp:profile:read` and `mcp:content:write`. Request `mcp:content:read` to look up topics and verify an uncertain write. Category browsing also needs `mcp:categories:read`. / 帖子读写和分类浏览分别授权。使用公开客户端 ID 的站点须登记工作空间回调地址。\n- Check the selected community and visibility. Keep the destination, title and complete body in the approval. / 确认目标社区与可见性，在审批里核对目标、标题和完整正文。\n- A confirmed topic includes a positive topic_id; a reply also includes its post_number. A draft, pending approval or timeout has no published link. / 新主题核对主题 ID，回帖还要核对楼层。待批准、草稿、超时都不能作为已发布的凭证。\n- An uncertain write may already exist. Read the intended thread or search the forum using the authorized account's title, text and time. Preserve the original receipt. Ask the user before any new submission if the original outcome cannot be verified. / 结果不确定时保留原回执，先按原作者、标题、正文和时间查帖，未查清前不要再发。\n\n[Discourse setup](https://meta.discourse.org/t/412755)\n",
       "assets/forum-post.md": "# Forum post / 论坛帖子\n\nCommunity / 社区:\nCategory or topic / 分类或主题:\nNew topic or reply / 新主题或回帖:\nTitle (new topic) / 标题（新主题）:\n\n## Body / 正文\n\n## Receipt / 回执\n\nStatus / 状态:\nConfirmed topic ID and reply number / 已确认主题 ID 与楼层:\nPermalink / 帖子链接:\n"
     }
   },
   "xiaohongshu-note-publishing": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "compatibility": "Requires an authorized browser, a Xiaohongshu creator login and a user-selected image. Automatic single-image attachment requires a current execution computer.",
     "instruction": {
       "en": "Use the [review checklist](references/review-checklist.md), [note draft](assets/note-draft.md) and [posting status guide](references/receipt.md).",
@@ -384,7 +384,7 @@
   },
   "zhihu-article-publishing": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "compatibility": "For the official editor, use an authorized, signed-in interactive browser. The optional offline permalink checker runs on Node.js.",
     "instruction": {
       "en": "Use the [editor and receipt guide](references/editor-review.md) to choose controls and interpret the final page. Start from the [article outline](assets/article.md). The optional [permalink checker](scripts/article_link.mjs) validates an observed address offline. A matching URL alone cannot establish publication.",
@@ -398,7 +398,7 @@
   },
   "web-publishing": {
     "license": "MIT",
-    "source": "BambooShift",
+    "source": "aihubot",
     "compatibility": "Requires an authorized work browser, a signed-in publishing account and a supported editor. Site-specific media or app-only steps may require human takeover.",
     "instruction": {
       "en": "Use actual editor receipts for the [delivery record](assets/publication.md).",

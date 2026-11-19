@@ -30,7 +30,7 @@ if (!compatible(process.version)) {
   );
   if (!executable) {
     console.error(
-      'BambooShift requires Node.js 22.19 or newer. Upgrade Node or set OPENBOT_NODE to an installed runtime.',
+      'aihubot requires Node.js 22.19 or newer. Upgrade Node or set OPENBOT_NODE to an installed runtime.',
     );
     process.exit(1);
   }

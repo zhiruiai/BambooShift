@@ -1,6 +1,6 @@
 # Product icon
 
-BambooShift's icon is a large charcoal rounded form with two white, gently tilted eyes. Its simple geometry, generous mark size and high contrast remain legible at launcher and favicon sizes.
+aihubot's icon is a large charcoal rounded form with two white, gently tilted eyes. Its simple geometry, generous mark size and high contrast remain legible at launcher and favicon sizes.
 
 [The SVG master](../web/public/favicon.svg) is the editable source. It has no fonts, external images or filters. Do not edit generated PNGs independently.
 

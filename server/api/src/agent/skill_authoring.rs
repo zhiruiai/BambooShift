@@ -122,7 +122,7 @@ fn body(agent_id: &str, args: &Value) -> Result<Value> {
         }
         encoded.push(json!({"path":path,"base64":STANDARD.encode(content)}));
     }
-    let mut frontmatter = json!({"metadata":{"created-with":"BambooShift"}});
+    let mut frontmatter = json!({"metadata":{"created-with":"aihubot"}});
     for key in ["license", "compatibility"] {
         if let Some(value) = args.get(key) {
             frontmatter[key] = value.clone();

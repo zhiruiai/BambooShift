@@ -11,7 +11,7 @@ export function Workspace() {
     !data || !sidebar ? (
       <main className="loading-screen">
         <Avatar size={66} />
-        <h1>BambooShift</h1>
+        <h1>aihubot</h1>
         <p>
           {loadError
             ? uiText('workspace:text_2d23d399d69c')

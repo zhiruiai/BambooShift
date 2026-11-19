@@ -62,7 +62,7 @@ pub async fn session(
         }
         let user = accounts::insert_user(
             &mut tx,
-            "desktop@bambooshift.invalid".into(),
+            "desktop@aihubot.invalid".into(),
             "Local user".into(),
             PASSWORD_MARKER.into(),
             false,

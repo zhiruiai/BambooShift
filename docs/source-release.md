@@ -1,6 +1,6 @@
 # 开源源码交付
 
-BambooShift 自有源码采用 MIT 许可证。`LICENSE` 为标准全文，`NOTICE` 记录项目归属，第三方依赖保留自己的许可。准备源码不会自动创建仓库、推送代码或发布安装包。
+aihubot 自有源码采用 MIT 许可证。`LICENSE` 为标准全文，`NOTICE` 记录项目归属，第三方依赖保留自己的许可。准备源码不会自动创建仓库、推送代码或发布安装包。
 
 ```sh
 npm ci
@@ -8,7 +8,7 @@ npm run check:source
 npm run check:privacy
 npm run build
 npm test
-npm run source:export -- --out release/source/BambooShift-source
+npm run source:export -- --out release/source/aihubot-source
 ```
 
 源码包保留测试用例和 `fixtures/` 下的合成样例，方便从发布版本复测。浏览器截图、跟踪记录和临时数据库应写入系统临时目录；显式导出的截图使用已忽略的 `test-results/`。
@@ -25,15 +25,15 @@ CI 在推送或拉取请求时构建 Rust 与两个网站，并运行后端、�
 
 ## GitHub 自动发布
 
-[发布工作流](../.github/workflows/release.yml) 在 GitHub Actions 运行。每天北京时间 **09:17** 从默认分支启动构建，**11:43** 再检查一次。当天已经发布时，第二次运行会在构建前结束。第一次未触发或失败时，第二次运行会补建。GitHub 可能延迟或丢弃定时事件。可在 **Actions → BambooShift Release** 查看实际触发时间和发布结果，也可选择 **Run workflow** 手动补跑。
+[发布工作流](../.github/workflows/release.yml) 在 GitHub Actions 运行。每天北京时间 **09:17** 从默认分支启动构建，**11:43** 再检查一次。当天已经发布时，第二次运行会在构建前结束。第一次未触发或失败时，第二次运行会补建。GitHub 可能延迟或丢弃定时事件。可在 **Actions → aihubot Release** 查看实际触发时间和发布结果，也可选择 **Run workflow** 手动补跑。
 
 版本从 `v0.0.1` 开始，随后递增补丁号。一次构建成功会生成一个版本，同一北京时间日期的重复运行会跳过已发布版本。发布标签指向本次构建的源码提交。带版本号的源码归档、桌面客户端和 Rust 服务使用同一个版本号。GitHub 自动生成的 Source code 下载项对应原始提交。
 
-[下载最新版本](https://github.com/zhiruiai/BambooShift/releases/latest)。发布页会列出该版本的归档及 `SHA256SUMS.txt`。以下文件名中的 `vX.Y.Z` 对应发布版本号，较早版本的文件名以当时的附件为准。
+[下载最新版本](https://github.com/zhiruiai/aihubot/releases/latest)。发布页会列出该版本的归档及 `SHA256SUMS.txt`。以下文件名中的 `vX.Y.Z` 对应发布版本号，较早版本的文件名以当时的附件为准。
 
-- `BambooShift-vX.Y.Z-source.tar.gz` 包含版本对应的各端源码和导出清单。
-- `BambooShift-vX.Y.Z-server-linux-x64.tar.gz` 包含网页、独立运营控制台和执行进程，并经过实际服务启动和调用检查。
-- `BambooShift-vX.Y.Z-client-macos-arm64.zip` 包含 `BambooShift.app`，使用临时签名，未经过 Apple 公证。客户端连接单独部署的服务。
-- 支持 Windows 的版本附带 `BambooShift-vX.Y.Z-client-windows-x64.zip`。归档在 Windows 运行器上构建，启动并验证连接后纳入发布。客户端未签名，连接单独部署的服务。 [Windows 使用说明](desktop-client.md#windows-x64)
+- `aihubot-vX.Y.Z-source.tar.gz` 包含版本对应的各端源码和导出清单。
+- `aihubot-vX.Y.Z-server-linux-x64.tar.gz` 包含网页、独立运营控制台和执行进程，并经过实际服务启动和调用检查。
+- `aihubot-vX.Y.Z-client-macos-arm64.zip` 包含 `aihubot.app`，使用临时签名，未经过 Apple 公证。客户端连接单独部署的服务。
+- 支持 Windows 的版本附带 `aihubot-vX.Y.Z-client-windows-x64.zip`。归档在 Windows 运行器上构建，启动并验证连接后纳入发布。客户端未签名，连接单独部署的服务。 [Windows 使用说明](desktop-client.md#windows-x64)
 
 构建、隐私检查、产物检查和附件校验通过后，工作流才会发布草稿。Flutter 客户端以源码交付。

@@ -18,7 +18,7 @@ export default {
   messageChannelsVerification:
     '先离线检查配置，再启动独立桥接程序。在企业平台发送测试消息，核对结果回到原会话。',
   messageChannelsBoundary:
-    '模板不会自动连接企业账号。当前支持文本收发；需要审批的操作仍在 BambooShift 中处理，外部消息不能提升权限。',
+    '模板不会自动连接企业账号。当前支持文本收发；需要审批的操作仍在 aihubot 中处理，外部消息不能提升权限。',
   messageChannelsGuide: '查看接入指南',
   messageChannelsCopy: '复制检查命令',
   messageChannelsCopied: '已复制检查命令',

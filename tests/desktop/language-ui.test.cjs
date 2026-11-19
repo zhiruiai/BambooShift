@@ -58,15 +58,15 @@ test('shipped setup DOM translates all declared labels and attributes while reta
   assert.equal(page.byId('workspace-url').attributes.placeholder, 'https://your-workspace.example');
   assert.equal(
     page.elements.find((item) => item.tag === 'img').attributes.alt,
-    'BambooShift mascot',
+    'aihubot mascot',
   );
   assert.match(
     page.elements.find((item) => item.attributes['data-i18n'] === 'accountLogin').textContent,
-    /BambooShift account/,
+    /aihubot account/,
   );
   assert.match(
     page.elements.find((item) => item.attributes['data-i18n'] === 'intro').textContent,
-    /Create a workspace on this computer.*existing BambooShift service/,
+    /Create a workspace on this computer.*existing aihubot service/,
   );
   assert.equal(page.byId('use-local').textContent, 'Fill in local address');
   for (const element of page.elements.filter((item) => item.attributes['data-i18n']))

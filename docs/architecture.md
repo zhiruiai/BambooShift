@@ -1,6 +1,6 @@
 # Architecture
 
-BambooShift uses a modular Rust backend, separate product and operations sites, SQLite and supervised integration workers. The retired Node business server is no longer part of the runtime.
+aihubot uses a modular Rust backend, separate product and operations sites, SQLite and supervised integration workers. The retired Node business server is no longer part of the runtime.
 
 ```text
 React product / Electron / Flutter → Product listener → Workspace services
@@ -71,7 +71,7 @@ Workers have narrow protocols, deadlines and supervised cancellation. Production
 
 The application catalog in `shared/app-providers.json` describes public endpoints and their authentication methods. Web and Rust read it directly, and Flutter bundles generated catalog assets for offline use. After editing the catalog, run `npm run sync:app-catalog` to refresh the Flutter assets. App connections and their permissions belong to the workspace. The Rust API authorizes tool actions, and the MCP worker handles discovery, OAuth and transport. A catalog entry or import only supplies a connection draft for review.
 
-Agent Skills packages use the [open directory and `SKILL.md` specification](https://agentskills.io/specification). Rust stores the package files beside the reviewed skill version and exposes metadata, instructions and individual resources as the run needs them. The [MCP client](https://modelcontextprotocol.io/specification/2026-07-28) uses the official TypeScript SDK and Streamable HTTP. Tests exercise discovery and tool dispatch on the 2026-07-28 revision and negotiation with a 2025-11-25 server. The reviewed tool definition stays pinned through dispatch. Cross-server Agent2Agent work has an [A2A design proposal](bot-federation.md). Current Bot delegation operates within BambooShift's authorized run family.
+Agent Skills packages use the [open directory and `SKILL.md` specification](https://agentskills.io/specification). Rust stores the package files beside the reviewed skill version and exposes metadata, instructions and individual resources as the run needs them. The [MCP client](https://modelcontextprotocol.io/specification/2026-07-28) uses the official TypeScript SDK and Streamable HTTP. Tests exercise discovery and tool dispatch on the 2026-07-28 revision and negotiation with a 2025-11-25 server. The reviewed tool definition stays pinned through dispatch. Cross-server Agent2Agent work has an [A2A design proposal](bot-federation.md). Current Bot delegation operates within aihubot's authorized run family.
 
 For [MCP configuration imports](mcp-configuration-import.md), clients discard credential and command fields before sending a bounded name/address projection to Rust. The owner-only preview reuses the backend's URL component for canonicalization and deduplication, without DNS, worker calls or persistence. The same preview serves Web, Electron and Flutter; connection creation remains a separate operation.
 

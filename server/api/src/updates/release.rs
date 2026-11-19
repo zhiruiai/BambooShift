@@ -10,8 +10,15 @@ pub struct ReleasesConfig {
 }
 impl ReleasesConfig {
     pub(super) fn canonical_repository(&self) -> &str {
-        if self.repository.eq_ignore_ascii_case("zhiruiai/PandaMate") {
-            "zhiruiai/BambooShift"
+        if [
+            "zhiruiai/PandaMate",
+            "zhiruiai/BambooShift",
+            "zhiruiai/aihubot",
+        ]
+        .iter()
+        .any(|name| self.repository.eq_ignore_ascii_case(name))
+        {
+            "zhiruiai/aihubot"
         } else {
             &self.repository
         }
@@ -112,7 +119,7 @@ impl ReleaseClient {
             .no_proxy()
             .connect_timeout(Duration::from_secs(3))
             .timeout(timeout)
-            .user_agent("BambooShift-update-check")
+            .user_agent("aihubot-update-check")
             .build()
             .map_err(|_| "network")?;
         Ok(Self { client, endpoint })

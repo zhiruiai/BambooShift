@@ -3,7 +3,7 @@ export default {
   voiceCallTitle: 'Voice chat',
   voiceCallStart: 'Start voice chat',
   voiceCallConsent:
-    'BambooShift listens during this call. Your workspace server transcribes each spoken turn and sends the text to this Bot as a chat message. Replies are read by a local system voice. You can mute or hang up at any time.',
+    'aihubot listens during this call. Your workspace server transcribes each spoken turn and sends the text to this Bot as a chat message. Replies are read by a local system voice. You can mute or hang up at any time.',
   voiceCallConnecting: 'Connecting…',
   voiceCallListening: 'Listening…',
   voiceCallMuted: 'Microphone muted',

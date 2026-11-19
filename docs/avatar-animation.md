@@ -1,6 +1,6 @@
 # Avatar animation
 
-BambooShift includes five original vector themes: Companions, Pandas, Dinosaurs, Chicks and Elephants, plus 22 Open Bot Avatar characters and 18 community GrokBot shapes. Settings groups the collections into a compact, scrollable picker. Each Bot keeps its role color; choosing a community character applies that silhouette across the workspace. Uploaded images remain unchanged.
+aihubot includes five original vector themes: Companions, Pandas, Dinosaurs, Chicks and Elephants, plus 22 Open Bot Avatar characters and 18 community GrokBot shapes. Settings groups the collections into a compact, scrollable picker. Each Bot keeps its role color; choosing a community character applies that silhouette across the workspace. Uploaded images remain unchanged.
 
 New workspaces default to Colorful characters: six distinct community GrokBot silhouettes retain each Bot's role color and task animation. Classic black remains optional. Explicit saved theme choices and uploaded avatars are preserved.
 
@@ -17,7 +17,7 @@ activity. Historical messages remain still, and group avatars identify the membe
 doing the work. Continuous motion pauses offscreen and when the app is hidden;
 reduced-motion preferences retain the status and expression without movement.
 
-Community collections use their own eye geometry, clipped to their native body outlines. The [shared packs](../shared/avatar-packs/README.md) retain their source parameters and notices. Open Bot Avatar supplies three native moods, mapped to the task states; GrokBot supplies 25 expressions and 39 behavior records. BambooShift adapts their timing to its existing lifecycle instead of loading a second animation runtime. The Open Bot Avatar volume-based 3D engine is not included. All required artwork is bundled locally.
+Community collections use their own eye geometry, clipped to their native body outlines. The [shared packs](../shared/avatar-packs/README.md) retain their source parameters and notices. Open Bot Avatar supplies three native moods, mapped to the task states; GrokBot supplies 25 expressions and 39 behavior records. aihubot adapts their timing to its existing lifecycle instead of loading a second animation runtime. The Open Bot Avatar volume-based 3D engine is not included. All required artwork is bundled locally.
 
 ## Design references
 
@@ -25,7 +25,7 @@ xAI describes using recognizable silhouettes and task expressions to communicate
 
 The [grok-icon-study](https://github.com/blessonism/grok-icon-study) reference shows
 how character state coordinates separate body poses, eye expressions, gaze and
-blinking. BambooShift applies that interaction principle to its existing artwork
+blinking. aihubot applies that interaction principle to its existing artwork
 and animation clock. Its work movement lasts as long as the task; completion
 settles into a still expression. The study's extracted artwork and engine code
 are not bundled.
@@ -35,10 +35,10 @@ are not bundled.
 | BoopFace (MIT) | Browser component with its own robot shell, SVG eye poses and timed expression transitions. The public Web component does not expose a way to mount expressions on arbitrary SVG artwork. [Pinned source and license](https://github.com/CX-ArtLab/BoopFace/tree/24ee5f698e58fa4f131b5ae7827373814e191f4c) |
 | Open Bot Avatar (MIT) | Validated JSON describes a single silhouette and its eyes. The repository provides browser animation and static SVG export. Its schema and rendering suit simple custom shapes. [Pinned source and license](https://github.com/DominikScholz/open-bot-avatar/tree/921907e614fb40e76c249bf8684d8619a8a3bf0f) |
 | GrokBot Web and GrokBot Flutter (BSD-3-Clause) | Community implementations with eye-shape interpolation. The Web project ports the Flutter project's expressions to Canvas. [Web source](https://github.com/Coiggahou2002/grokbot-web/tree/616c1dd451f105a10a903e01eed8f82370968681) · [Flutter source](https://github.com/nasawz/GrokBot/tree/bb7b634b029a6c99121cb74954020ddfc8c07acf) |
-| Rive (MIT runtimes) | Web and Flutter runtimes can play authored Rive assets and state machines. Using them would require new animation assets for the BambooShift characters. [Web runtime](https://github.com/rive-app/rive-wasm) · [Flutter runtime](https://github.com/rive-app/rive-flutter) |
+| Rive (MIT runtimes) | Web and Flutter runtimes can play authored Rive assets and state machines. Using them would require new animation assets for the aihubot characters. [Web runtime](https://github.com/rive-app/rive-wasm) · [Flutter runtime](https://github.com/rive-app/rive-flutter) |
 
 ## BoopFace attribution
 
-The panda prototype validated adapting eye-shape interpolation and gaze smoothing to the original BambooShift eye layers. The production renderers apply the same approach across the five themes. Both renderers use normalized eye dimensions and lids for each pose, with the original silhouettes, palettes and other face details preserved. The adaptation carries the original MIT notice, copyright 2026 CX ART Lab. [Pose data and interpolation](https://github.com/CX-ArtLab/BoopFace/blob/24ee5f698e58fa4f131b5ae7827373814e191f4c/src/boopface-core.js) · [Gaze smoothing](https://github.com/CX-ArtLab/BoopFace/blob/24ee5f698e58fa4f131b5ae7827373814e191f4c/embedded/lib/BoopFace/src/BoopFaceGaze.h#L46-L54) · [MIT license](../legal/third-party/boopface-0.8.0/LICENSE)
+The panda prototype validated adapting eye-shape interpolation and gaze smoothing to the original aihubot eye layers. The production renderers apply the same approach across the five themes. Both renderers use normalized eye dimensions and lids for each pose, with the original silhouettes, palettes and other face details preserved. The adaptation carries the original MIT notice, copyright 2026 CX ART Lab. [Pose data and interpolation](https://github.com/CX-ArtLab/BoopFace/blob/24ee5f698e58fa4f131b5ae7827373814e191f4c/src/boopface-core.js) · [Gaze smoothing](https://github.com/CX-ArtLab/BoopFace/blob/24ee5f698e58fa4f131b5ae7827373814e191f4c/embedded/lib/BoopFace/src/BoopFaceGaze.h#L46-L54) · [MIT license](../legal/third-party/boopface-0.8.0/LICENSE)
 
-The integration uses BoopFace’s small interpolation and smoothing routines with BambooShift’s own artwork and renderers.
+The integration uses BoopFace’s small interpolation and smoothing routines with aihubot’s own artwork and renderers.

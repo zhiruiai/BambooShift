@@ -10,7 +10,7 @@ use serde_json::{Value, json};
 use std::sync::Arc;
 
 fn plan(bundle: &Value, status: &Value, local: bool, opted_in: bool) -> Result<Value> {
-    // Reuse native app validation, including the protected BambooShift IDs.
+    // Reuse native app validation, including the protected aihubot IDs.
     // Its ASCII bundle grammar excludes all shell metacharacters and quotes.
     let mut action = computer::validation::action(
         &json!({"type":computer::accessibility::OPEN,"bundleId":bundle}),

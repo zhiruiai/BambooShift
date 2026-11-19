@@ -91,7 +91,9 @@ export const serviceMessages: Readonly<Record<string, string>> = {
   '此 Mac 助手尚不支持打开应用，请先升级。': 'Update the Mac helper to enable opening apps.',
   '请选择已安装 Mac 应用的有效标识符。': 'Use a valid bundle ID for an installed Mac app.',
   '无法通过应用控制打开 BambooShift 或其助手。':
-    'BambooShift and its helper cannot be opened through Mac app control.',
+    'aihubot and its helper cannot be opened through Mac app control.',
+  '无法通过应用控制打开 aihubot 或其助手。':
+    'aihubot and its helper cannot be opened through Mac app control.',
   '无法确认唯一的已安装应用，请检查应用标识符。':
     'Could not uniquely identify the installed app. Check its bundle ID.',
   '已安装的应用发生变化，请重新查看并申请打开。':
