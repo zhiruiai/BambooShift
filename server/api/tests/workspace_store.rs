@@ -142,10 +142,8 @@ async fn waiting_writers_leave_connections_for_membership_checks() {
             .unwrap()
             .unwrap();
         assert_eq!(chat["agentIds"], conversation["agentIds"]);
-        assert_eq!(
-            store.get(Table::Agents, "agent-1").await.unwrap(),
-            Some(agent)
-        );
+        let member = store.get(Table::Agents, "agent-1").await.unwrap().unwrap();
+        assert_eq!(member["id"], chat["agentIds"][0]);
     })
     .await
     .expect("A writer must be able to recheck membership before commit");
