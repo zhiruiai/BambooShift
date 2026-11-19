@@ -133,6 +133,26 @@ pub(crate) async fn finalize(
     conversation_id: &str,
     result: &mut Value,
 ) -> Result<bool> {
+    // Retry only the local transaction, leaving any completed tool actions intact.
+    let mut retries = 0;
+    loop {
+        let saved = finalize_once(state, grant, store, active, conversation_id, result).await;
+        if retries == 2 || !matches!(&saved, Err(error) if error.code == "STORAGE_BUSY") {
+            return saved;
+        }
+        retries += 1;
+        tokio::time::sleep(std::time::Duration::from_millis(100 * retries)).await;
+    }
+}
+
+async fn finalize_once(
+    state: &State,
+    grant: &ExecutionAccess,
+    store: &WorkspaceStore,
+    active: &ActiveRun,
+    conversation_id: &str,
+    result: &mut Value,
+) -> Result<bool> {
     let mut tx = store.begin().await?;
     let mut updated_input = None;
     let present = WorkspaceStore::get_in(&mut tx, Table::Conversations, conversation_id)
