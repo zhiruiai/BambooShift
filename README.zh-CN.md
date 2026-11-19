@@ -20,9 +20,9 @@
 
 | 经营与决策 | 内容与研究 |
 | --- | --- |
-| [![电商退款核算](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds) | [![自媒体口播送审](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial) |
-| [![活动转化复盘](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel) | [![项目决策纪要](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes) |
-| [![市场调研与采购比选](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing) | [![访谈证据复核](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews) |
+| [![电商退款核算](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds)<br>[电商退款核算](docs/office-workflows.md#refunds) | [![自媒体口播送审](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial)<br>[自媒体口播送审](docs/office-workflows.md#editorial) |
+| [![活动转化复盘](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel)<br>[活动漏斗复盘](docs/office-workflows.md#funnel) | [![项目决策纪要](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes)<br>[项目决策纪要](docs/office-workflows.md#minutes) |
+| [![市场调研与采购比选](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing)<br>[供应商报价比选](docs/office-workflows.md#sourcing) | [![访谈证据复核](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews)<br>[访谈证据复核](docs/office-workflows.md#interviews) |
 
 ## 快速开始
 

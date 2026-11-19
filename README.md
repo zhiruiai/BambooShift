@@ -20,9 +20,9 @@ Each card opens the recording, the review request and the actual final file. The
 
 | Numbers & decisions | Writing & research |
 | --- | --- |
-| [![E-commerce reconciliation](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds) | [![Editorial review](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial) |
-| [![Campaign operations](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel) | [![Decision memo](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes) |
-| [![Supplier research](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing) | [![Qualitative research](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews) |
+| [![E-commerce reconciliation](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds)<br>[Refund reconciliation](docs/office-workflows.md#refunds) | [![Editorial review](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial)<br>[Video script review](docs/office-workflows.md#editorial) |
+| [![Campaign operations](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel)<br>[Campaign funnel](docs/office-workflows.md#funnel) | [![Decision memo](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes)<br>[Decision memo](docs/office-workflows.md#minutes) |
+| [![Supplier research](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing)<br>[Supplier comparison](docs/office-workflows.md#sourcing) | [![Qualitative research](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews)<br>[Interview analysis](docs/office-workflows.md#interviews) |
 
 ## Quick start
 
