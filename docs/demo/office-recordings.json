@@ -1,80 +1,437 @@
 {
-  "recordedOn": "2026-11-19",
-  "environment": "Isolated aihubot workspace, Rust service, live model and Chrome. The briefs and business data are fictional.",
-  "editing": "Recorded the actual product UI replaying stored conversations. Navigation, draft previews and final files are shown. Model waits are omitted. Bilingual captions and chapter markers were added.",
-  "verification": "The final files were downloaded from their workspace delivery records, checked against the SHA-256 in the receipts, and reviewed against the revised briefs. All 421 captured UI frames were checked for private identity, credentials, URLs and model configuration with macOS Vision OCR; zero findings.",
-  "recordings": [
+  "format": 2,
+  "method": "Final files exported from a real Rust website delivery. Browser recordings use a private demonstration workspace and the exported pages. The film was edited from generated images and approved storyboards. Personal details and model identity are excluded.",
+  "heroSha256": "88262cbd85815dab32b36c992b1f34c013658cec2d84f1e4fa2a326b5fc1ec3f",
+  "heroFramesReviewed": 64,
+  "filmFramesSampled": 60,
+  "cases": [
     {
-      "scenario": "refunds",
-      "animation": "office-refunds.gif",
-      "durationMs": 15420,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 68,
-      "encodedFrames": 29,
-      "animationSha256": "045629e94dbc7f5c31f4fee36bf7e40ca96e17b44a6652b484259f61db292bba",
-      "deliveredFile": "office-results/refunds.md",
-      "deliverySha256": "92dbf8ff9e9f959de210d7de800f7ece4f79af0076b3d13c6fb67c01ed502f86"
+      "slug": "commerce",
+      "versions": [
+        "a13c7753ce4cb6281840de3ad84fa0dd70c08387c20182df8d82fe0923aaaf3b",
+        "ac6861b402f79736b5e08e0af42a3b994072ed6c34b0472b6e4020a9df12048e",
+        "142d6302b97026834372aefdcd985fa5df9b3d74b27231881b42262ddc9c6a08"
+      ],
+      "publishedVersion": "142d6302b97026834372aefdcd985fa5df9b3d74b27231881b42262ddc9c6a08",
+      "files": [
+        {
+          "path": "delay-5500.csv",
+          "bytes": 233,
+          "sha256": "3cc70cc204863b483dbfd7bd3f3afab973688aae1036a9e790412fa9e7f2253e"
+        },
+        {
+          "path": "delay-6900.csv",
+          "bytes": 233,
+          "sha256": "23b9dd38cbd07dab0911713df61a56f4b90acdcb152b3524d66cd2a2ea1a90ba"
+        },
+        {
+          "path": "field.css",
+          "bytes": 4276,
+          "sha256": "74556a1ba355dc880ebe45717156bfcb5d9fb6caaa5f1db9aecd7d5ed333217e"
+        },
+        {
+          "path": "field.js",
+          "bytes": 1828,
+          "sha256": "4885a7afce3307460845a19f9bfd8a0501b0d958a2601e636754fd3a55ab1d60"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3292,
+          "sha256": "abef09d44d29ada7606bec1d19ee2628e805c7df1b3291e258d92a3805e87746"
+        },
+        {
+          "path": "orders.csv",
+          "bytes": 176,
+          "sha256": "b1871687b9b81c6f67d07d6566988e9c844efc7e1ab099f1333b0fa8a8390601"
+        },
+        {
+          "path": "plans.js",
+          "bytes": 491,
+          "sha256": "c35f6f254c90467e0c4f4370570f4d819d0375b38aeb8ab36964327c186c8157"
+        },
+        {
+          "path": "regular-5500.csv",
+          "bytes": 232,
+          "sha256": "7e2595ce0eac9ac6bdc68f4983b489e8ab42bfe5e1068e12c1ec6c65f542fa91"
+        },
+        {
+          "path": "regular-6900.csv",
+          "bytes": 232,
+          "sha256": "55eb8983e9796a7d5d3d8b865da59d14d360b1a352e164c8d3c1f8360e7a0c5f"
+        },
+        {
+          "path": "shell.jpg",
+          "bytes": 340638,
+          "sha256": "b2042fd4c45fa787e4a893f11c683dc3103cb1f672215fc46a365d2569b61c91"
+        }
+      ],
+      "posterSha256": "70c5293c1e2ca3dff86bd8da55594fd7974f3c472167169ea600511cda4c67a0",
+      "animationSha256": "698fd317cb26d0858279d7682179f2b4caa0623279daaceb190ea029b79666de",
+      "privacyFramesReviewed": 23
     },
     {
-      "scenario": "editorial",
-      "animation": "office-editorial.gif",
-      "durationMs": 15230,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 67,
-      "encodedFrames": 28,
-      "animationSha256": "f904a1b927f66a983ad71ccfb394c8fddd228ccc0b31e1cce3ab124b85a4686e",
-      "deliveredFile": "office-results/editorial.md",
-      "deliverySha256": "aae0cc45e0e15806e5c35472b8b69d6764c8df03cd3442ff0f36631b370cc447"
+      "slug": "editorial",
+      "versions": [
+        "ac0b01f4e8b66a07d96d1aeaf13a7fb320b3ab39df413631c631ed3808ffc006",
+        "6ac86d41ed975b9d9b15a18343c4dd07b39350308712cd762a34fd3e6684da4d",
+        "f67b91bb708c4fc95288b2e82792d9d7b5c7ad6ccc56b8bc4be85edcca7e70af"
+      ],
+      "publishedVersion": "f67b91bb708c4fc95288b2e82792d9d7b5c7ad6ccc56b8bc4be85edcca7e70af",
+      "files": [
+        {
+          "path": "film.css",
+          "bytes": 6023,
+          "sha256": "826b98234a2a206c270efdf020d4f8e19fd447e57681fdfc4fb9c373198cdb92"
+        },
+        {
+          "path": "film.mp4",
+          "bytes": 1919035,
+          "sha256": "5033b76a28f0ee7748f28fe92f6889ebdc8632562a4af65108d2d3d1b4804d55"
+        },
+        {
+          "path": "index.html",
+          "bytes": 3537,
+          "sha256": "b7c796f7f740026c116196da7c8d6876423cf5112c5d74967e1c92e507df22b4"
+        },
+        {
+          "path": "player.js",
+          "bytes": 853,
+          "sha256": "bf6759c0418da7a38c6990a97a34cddab5957fdb659b17c7971d5c084ada41f6"
+        },
+        {
+          "path": "poster.jpg",
+          "bytes": 119261,
+          "sha256": "38a8603c14ba5d94dc778e10b445735213557bd82ac4728314d3d6afd7695804"
+        },
+        {
+          "path": "shot-1.html",
+          "bytes": 1280,
+          "sha256": "cbae5fb6a8ff3669ae78a7d348d87aa6d263d907aa1fa31413c2d1088ccd20d0"
+        },
+        {
+          "path": "shot-1.jpg",
+          "bytes": 5664,
+          "sha256": "85a3a16af18ad073839e10adbc90644caec178c1a9016088782dcc3cd5d0ffe7"
+        },
+        {
+          "path": "shot-2.html",
+          "bytes": 1256,
+          "sha256": "a62b613e42c760a3c966f945aa3235cfe2f5cb9b05e02b03829d3937755a622f"
+        },
+        {
+          "path": "shot-2.jpg",
+          "bytes": 5668,
+          "sha256": "5dcd793558fa8acf23fc6a52c68034bc74d55516fb2895ab91807422018a824c"
+        },
+        {
+          "path": "shot-3.html",
+          "bytes": 1257,
+          "sha256": "898adecbd39192a2816e1f8d6c04aff692092203a7582ee4105e9f5c78513013"
+        },
+        {
+          "path": "shot-3.jpg",
+          "bytes": 5344,
+          "sha256": "35e65508f61403a8d48661d70e54e142626566fca9b9c2dd4ce88a494c82e8a8"
+        },
+        {
+          "path": "shot-4.html",
+          "bytes": 1267,
+          "sha256": "87e5bcafbc84f177664b4d5bd58e7f7a58657bb3247e62fa2d861e2275dc5425"
+        },
+        {
+          "path": "shot-4.jpg",
+          "bytes": 5465,
+          "sha256": "a32b5fd8e726b96a981bbfc07214477c038c8f47041fab973b8e4a49bc56147e"
+        },
+        {
+          "path": "shot-5.html",
+          "bytes": 1284,
+          "sha256": "1b608b3e0d2e10107fb7501253fbd211314d05231cc55498c219ee1ab0826c9f"
+        },
+        {
+          "path": "shot-5.jpg",
+          "bytes": 4393,
+          "sha256": "287c469474ab2f9b783086114aaca7cf63b924ef2e336a296660bd01152d04d1"
+        },
+        {
+          "path": "shot-6.html",
+          "bytes": 1215,
+          "sha256": "6ca125bb26e426ee233a2b43a780d14deb1f042fd81f6db2216483977ea27c0d"
+        },
+        {
+          "path": "shot-6.jpg",
+          "bytes": 4225,
+          "sha256": "39eb883f4bdcddf7372abac8ff2336d20607a663450cfdbc37ef24cb5d7d86be"
+        }
+      ],
+      "posterSha256": "2b81885b40fe2bb6b58fc3b1913f0463131cd49dbf45a4ead1acdfaa3d667fe4",
+      "animationSha256": "cff6dfbc6ccc23b6cfb3dbaa0eedf5633b1c6225729bb7adbe26e8a3afb9b080",
+      "privacyFramesReviewed": 18
     },
     {
-      "scenario": "funnel",
-      "animation": "office-funnel.gif",
-      "durationMs": 15800,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 70,
-      "encodedFrames": 27,
-      "animationSha256": "3e1f01378c270c0ae8d569540f992c3b704a7d1b0d85e28824bc4eab2c99100b",
-      "deliveredFile": "office-results/funnel.csv",
-      "deliverySha256": "d6437c5903b0980e8f806916b494c4724b61e39d80063fa0c33340fc01fa010b"
+      "slug": "operations",
+      "versions": [
+        "226211a25dd045236db8c86647e3bf70324897bfd3a5298150c0220a39ce2c8a",
+        "0f1ba918c315830d5969b6676fa2218419b9d09d3a32f03bc1b00afb62c6ed41",
+        "3af320addd46872917734cf73852d30f7735d1259ee12d8b1094074b7e057613"
+      ],
+      "publishedVersion": "3af320addd46872917734cf73852d30f7735d1259ee12d8b1094074b7e057613",
+      "files": [
+        {
+          "path": "board.css",
+          "bytes": 7757,
+          "sha256": "14340925546880221644b894493c0881cd1bcec08535e7fb8dc2a701b0ef84df"
+        },
+        {
+          "path": "board.js",
+          "bytes": 1681,
+          "sha256": "3f3f43a56ad70be7603325b05035cf5d761df75249b9c5a0be114812c29528fa"
+        },
+        {
+          "path": "emergency.html",
+          "bytes": 11675,
+          "sha256": "51e68d564cc4109a64a79f6c3b2281c92f060e4d28e6089975abf8dcb3f4f956"
+        },
+        {
+          "path": "index.html",
+          "bytes": 12179,
+          "sha256": "55a07e40ddd84e6cd49ef8cd7ff0c1aace2f770b9655d659903b8d4726048f3e"
+        },
+        {
+          "path": "layout.css",
+          "bytes": 3219,
+          "sha256": "32ce833bdcad41c377b845c124854d4ce6be4527ca4ec58f4959818cb1251459"
+        },
+        {
+          "path": "plan.js",
+          "bytes": 986,
+          "sha256": "530b89917d6a02aae70537ed8167c445303b12d0c85dd6fc746df22755911753"
+        },
+        {
+          "path": "tide-week-emergency-2027-05-16.ics",
+          "bytes": 2160,
+          "sha256": "f954f6880ccdc0e3753d866e9d5f97a66d1eac22d20f63c82abc20dc682b4580"
+        }
+      ],
+      "posterSha256": "2c6dce0d8d221a807c65d118c54a93cb82c4eaa96796b899eba33971f85a37f7",
+      "animationSha256": "7cbd15f16f2cea0db9f2db5d84df8086f1b276696e9e9203e736daaa8d05bac5",
+      "privacyFramesReviewed": 21
     },
     {
-      "scenario": "minutes",
-      "animation": "office-minutes.gif",
-      "durationMs": 15420,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 68,
-      "encodedFrames": 33,
-      "animationSha256": "a3782eb96f6d06afbc0756f5009c1da770612f2158bb8528d0c3a0dad4bdfe32",
-      "deliveredFile": "office-results/minutes.md",
-      "deliverySha256": "680a2a24c041e9e8db82ac8207987a335b977893db55456899149c86e7da4bae"
+      "slug": "board",
+      "versions": [
+        "d18a2f694aa55418ad1fe76167fbce047857107492d9046f24c76a1c79041813",
+        "0277e49f4fde8f5d3dfa97e94f3f9d01ede94743f3ee32f59e5d7dbae9b8306f"
+      ],
+      "publishedVersion": "0277e49f4fde8f5d3dfa97e94f3f9d01ede94743f3ee32f59e5d7dbae9b8306f",
+      "files": [
+        {
+          "path": "approve.txt",
+          "bytes": 702,
+          "sha256": "cd4b506fbcb3c7d2030a71e7ecae3172817a7ddf30ac37e26be620de28f93132"
+        },
+        {
+          "path": "deck.css",
+          "bytes": 6418,
+          "sha256": "1fa4e7e6be4282bd5f15686401ff1930ee4cf0a727b9e2a3b7348254379cad85"
+        },
+        {
+          "path": "deck.js",
+          "bytes": 2340,
+          "sha256": "8151021dc20f359274b3a7c7aeca188d5823aa95546f407e93325e5fb2621fa6"
+        },
+        {
+          "path": "defer.txt",
+          "bytes": 711,
+          "sha256": "69d8c1c2713b7891a441a61dec6c7a6efa89efa7c0d059cf98e4988e5c265843"
+        },
+        {
+          "path": "index.html",
+          "bytes": 8820,
+          "sha256": "45a428232bea4de38f7faccba6ea438b9befc3ebbccc904f19ccd3a66014bcfd"
+        },
+        {
+          "path": "reading-room.svg",
+          "bytes": 1827,
+          "sha256": "c378271d47a2320aa66c3a91006bb2be84963eb2bedf1134fbc5b10d03ac7b16"
+        },
+        {
+          "path": "revise.txt",
+          "bytes": 720,
+          "sha256": "515820d88628d06b24538101ff84969f4b6ccf40e3f2e9a964724de820e18ecd"
+        }
+      ],
+      "posterSha256": "31c82d976beb787798ae7ef40513914215e0e8fe4eec30b7a692f4f8997ef678",
+      "animationSha256": "1d185cbb7781f2a6215c64603f99a0a9131468dd4e9866977187f7ab5e1df63e",
+      "privacyFramesReviewed": 15
     },
     {
-      "scenario": "sourcing",
-      "animation": "office-sourcing.gif",
-      "durationMs": 15420,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 68,
-      "encodedFrames": 31,
-      "animationSha256": "e23f890f00c4d6e4a7f264d6c6c887003b7ac2f1b265ab06e7e2461b3e10fbd5",
-      "deliveredFile": "office-results/sourcing.md",
-      "deliverySha256": "c45fc6b89abc7723c92baa61ebc1c96a8f0598c8dcf9d3cd7c8a18981ea73d0f"
+      "slug": "market",
+      "versions": [
+        "1d4523b765fa628bedf372755da23e87ad2f71e5049b6687bffdcd7206b6f5e0",
+        "d31346a09410424328cd278d7c35c7acf79fefae80edb69895680e58ae435398",
+        "480a498f902086fe12c4da9bfd5dd35d199e18cfde1014f5665751c4008643eb"
+      ],
+      "publishedVersion": "480a498f902086fe12c4da9bfd5dd35d199e18cfde1014f5665751c4008643eb",
+      "files": [
+        {
+          "path": "central-postgresql.html",
+          "bytes": 2935,
+          "sha256": "d264fedf8148aa88984f6f2b29541240f94e82b9f3840c367d98a621ca9220bd"
+        },
+        {
+          "path": "central-sqlite.html",
+          "bytes": 2932,
+          "sha256": "b8c2061c633a260a9dab570434ee6cd9c87352f328ea42420b845b43326064b9"
+        },
+        {
+          "path": "central.html",
+          "bytes": 3509,
+          "sha256": "b9883d927efd5d14619f5222ee5c42ee22d5d2a6c53b3ac005c0fc9489639dd8"
+        },
+        {
+          "path": "edge-postgresql.html",
+          "bytes": 2937,
+          "sha256": "8ccb6ec990bcb3fd4710a34b3da1577dba65234555df1a3d793401cc9ba6f490"
+        },
+        {
+          "path": "edge-sqlite.html",
+          "bytes": 2934,
+          "sha256": "982a002600b13d2fa9aaf7abd463209dc84832aed45c7156a7cff48c7e55c081"
+        },
+        {
+          "path": "index.html",
+          "bytes": 5143,
+          "sha256": "4f5a7262e3f1d4252eeedd8679f3925eb96a37e4cf47e7b64a640e9525483d73"
+        },
+        {
+          "path": "layered-postgresql.html",
+          "bytes": 3099,
+          "sha256": "f33c94fff9c39b49bd9fe611f469adeaac7988122d5c58e26e1e44746d167424"
+        },
+        {
+          "path": "layered-sqlite.html",
+          "bytes": 3096,
+          "sha256": "ec39f971909db0c431ad231a13ca2e51917ebc246a9bb7b0192f688b28abb805"
+        },
+        {
+          "path": "layered.html",
+          "bytes": 3674,
+          "sha256": "9199d44eccfe2375a8a22b8cd5587d6d35edab99e63995fb2efb6ab06f6af47e"
+        },
+        {
+          "path": "policy.js",
+          "bytes": 2302,
+          "sha256": "71e78308dc5f33dd93f0bc66892ba8e91cb4c2a4fe1791c859d59d9708fcdcd2"
+        },
+        {
+          "path": "requirements-postgresql.html",
+          "bytes": 2875,
+          "sha256": "1f53ec0a830fae2bf81d2e99766b372a5cf7cc6fe4830fd7166805962ea36e44"
+        },
+        {
+          "path": "requirements-sqlite.html",
+          "bytes": 2872,
+          "sha256": "e86162ceb92e11260ae82d424c343c1a83ed6d1f7353abeab94034c0887df00b"
+        },
+        {
+          "path": "requirements.html",
+          "bytes": 3450,
+          "sha256": "19dce111a0f2c6a13a9fc60216a80a1cbcd9d251f5d9364041f64d242740b315"
+        },
+        {
+          "path": "style.css",
+          "bytes": 4821,
+          "sha256": "fe6499834a68bacc1f9ec51c585efb0dc540eb18b6666b586a9ac99839b086e0"
+        },
+        {
+          "path": "ui.js",
+          "bytes": 3297,
+          "sha256": "9e95bcf23b1364eba8b3f23c6a09826f76d4f237467bd132fa06fba0ea0ac382"
+        }
+      ],
+      "posterSha256": "82415c8c44fdb264f78ceb63c25d7c8e62b7627e8c9b57b69f2a0bf3773601ab",
+      "animationSha256": "7aff0f8dd950957ff8185d89ecc44e377ad2b988bb27e7d1bd87022b839a7a9b",
+      "privacyFramesReviewed": 55
     },
     {
-      "scenario": "interviews",
-      "animation": "office-interviews.gif",
-      "durationMs": 17700,
-      "width": 1080,
-      "height": 769,
-      "capturedFrames": 80,
-      "encodedFrames": 28,
-      "animationSha256": "5bdf49fab7a9845a80841f53d849850a80ff1fd67f46d3abc6034aff8ed98379",
-      "deliveredFile": "office-results/interviews.md",
-      "deliverySha256": "41ead10ef577e2763f0e51288e37251e40df83200a023efd995998dd3eec5ccf"
+      "slug": "research",
+      "versions": [
+        "cca127c57cdf9d6cf327c04509792486e79046949b20acc03f1adaa66da93581",
+        "46c7b1cfda0e2147fe0653199725f303141629573bff52e345359a4c657f39c7",
+        "554ec11b3ae4e784ba732074402bd99f64fb911360b018e30b2ee4a935399de7"
+      ],
+      "publishedVersion": "554ec11b3ae4e784ba732074402bd99f64fb911360b018e30b2ee4a935399de7",
+      "files": [
+        {
+          "path": "analysis.js",
+          "bytes": 7143,
+          "sha256": "82ec3909290b7eb0f0c1a977ca3fe7df549fc52300ce75fbe84fd5a59dd0e463"
+        },
+        {
+          "path": "data.js",
+          "bytes": 3797,
+          "sha256": "d6eee784404449e2b7df56e992857a2f52e5d5a682f02082503129038c133dce"
+        },
+        {
+          "path": "index.html",
+          "bytes": 27132,
+          "sha256": "4b9a976118c7a1e8173ca4e79a1b4b81e364fc3577c55a78bb7da50fcbbaf90e"
+        },
+        {
+          "path": "method.html",
+          "bytes": 2613,
+          "sha256": "4c84b93a5813c9ac89edc804b1d1efcc13b76e5b7cef3dd72652e89981ae6c84"
+        },
+        {
+          "path": "plot-adelie.html",
+          "bytes": 12889,
+          "sha256": "3d4ad295645e7499e8185162a1eb02a9c498b667c5ac89437c48bacbe67fed0d"
+        },
+        {
+          "path": "plot-chinstrap.html",
+          "bytes": 8674,
+          "sha256": "7c16a4165b38e749e8951ab340e569985da6a37b281acbeb3fd0b69de30f478d"
+        },
+        {
+          "path": "plot-gentoo.html",
+          "bytes": 9944,
+          "sha256": "76aeba50a3e637ef1727d2355a67ff0103cfb08e29df27a999ce2e7d6d3a8b75"
+        },
+        {
+          "path": "rows-adelie.html",
+          "bytes": 6112,
+          "sha256": "8f17e869efbf792771584e56f12c1df4e27b0462558780e66945f57462562e08"
+        },
+        {
+          "path": "rows-all.html",
+          "bytes": 10852,
+          "sha256": "81e4a936b311f02aad7b7304dd4dc1923204fe4ba37028096a2c45437026f694"
+        },
+        {
+          "path": "rows-chinstrap.html",
+          "bytes": 4093,
+          "sha256": "c750d9693df344774b4b24eae5180ad3a0c893c5af1036304ca8e85f229e3324"
+        },
+        {
+          "path": "rows-gentoo.html",
+          "bytes": 4839,
+          "sha256": "c9e6b143ecd7472a224b038f7de3a38d2ff5b7e8760fd1e41590373cddb8687d"
+        },
+        {
+          "path": "style.css",
+          "bytes": 4597,
+          "sha256": "0130ecc4118c6b493f755ba00b38c49cf6e2bac11ecffa18f0815350e0c33480"
+        },
+        {
+          "path": "view.js",
+          "bytes": 3990,
+          "sha256": "d4c6e7d8170d632aa9463023932434a8c19014432d63666ec8c2476313c8c937"
+        }
+      ],
+      "posterSha256": "84f443af8ffd4257f2011f6adec26f8641e0270066e2f1f3a78430e802fb8256",
+      "animationSha256": "eb2007f2dc66023da752e8d65b56c4a2433159f358a782d33999e50b207c23aa",
+      "privacyFramesReviewed": 58
     }
   ]
 }

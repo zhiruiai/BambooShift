@@ -1,0 +1,5 @@
+sku,item,stock_72h,demand_72h,units_per_carton,unit_cost,unit_price,arrival_hours
+RJ01,雨壳,8,26,6,280,475,24
+HL02,头灯,14,40,8,98,168,36
+DB03,防水袋,10,42,12,42,94,18
+

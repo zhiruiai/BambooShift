@@ -2,27 +2,25 @@
 
 **English** · [简体中文](README.zh-CN.md)
 
-**Give a Bot a brief. Open the first draft, ask for a change, and get the revised file in the same conversation.** aihubot is a self-hosted workspace for small teams, with a model you choose.
+**aihubot is a self-hosted Bot workspace.** Give a Bot a brief, open its delivery, then change a constraint in the original conversation and review the new version.
 
-[Six office recordings](docs/office-workflows.md) · [Quick start](#quick-start) · [Download](https://github.com/zhiruiai/aihubot/releases/latest) · [Try a delivered website](https://zhiruiai.github.io/aihubot/en/)
+[Open the six interactive projects](https://zhiruiai.github.io/aihubot/work/) · [Recordings and evidence](docs/office-workflows.md) · [Quick start](#quick-start) · [Download](https://github.com/zhiruiai/aihubot/releases/latest)
 
-## Reconcile a duplicated refund
+## The rain shells will miss opening day
 
-A shop reports 2,200 in refunds. One refund was entered twice. Open the first reconciliation, ask the Bot to correct it and inspect the revised ledger.
+There are 72 hours until a pop-up opens. Its main supplier now needs 96 hours and the buyer has ¥1,400 less to spend. The Bot changes the three orders from **3 / 1 / 2 cartons to 1 / 3 / 2**. Switch lead times and budgets, inspect the projected margin and download the matching order.
 
-[![E-commerce reconciliation. A duplicate refund of 200 is removed and net revenue is corrected to 28,000.](docs/demo/office-refunds.gif)](docs/office-workflows.md#refunds)
+[![Browser footage of six delivered projects, from an outdoor buying desk and a playable coffee film to a reproducible field study](docs/demo/work-studio.gif)](https://zhiruiai.github.io/aihubot/work/)
 
-[Open the actual reconciliation](docs/demo/office-results/refunds.md)
+## Try the work
 
-## Six office workflows
+Each cover opens a working project in Chinese, with no sign-in. Four use fictional business briefs. The technology and research cases use public sources. All six went through a real model and the Rust delivery service.
 
-Each card opens the recording, the review request and the actual final file. These tasks ran with a real model and the Rust service in an isolated workspace using fictional business data. The recordings replay the saved conversations in the product UI, omit waiting time and include Chinese and English captions.
-
-| Numbers & decisions | Writing & research |
+| Operations and evidence | Content and decisions |
 | --- | --- |
-| [![E-commerce reconciliation](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds)<br>[Refund reconciliation](docs/office-workflows.md#refunds) | [![Editorial review](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial)<br>[Video script review](docs/office-workflows.md#editorial) |
-| [![Campaign operations](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel)<br>[Campaign funnel](docs/office-workflows.md#funnel) | [![Decision memo](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes)<br>[Decision memo](docs/office-workflows.md#minutes) |
-| [![Supplier research](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing)<br>[Supplier comparison](docs/office-workflows.md#sourcing) | [![Qualitative research](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews)<br>[Interview analysis](docs/office-workflows.md#interviews) |
+| [![Restock a rain-delayed pop-up](docs/showcase-work/posters/commerce.jpg)](https://zhiruiai.github.io/aihubot/work/commerce/)<br>**[Restock a rain-delayed pop-up](https://zhiruiai.github.io/aihubot/work/commerce/)**<br>Change cash and lead time, then download the matching purchase order. | [![Watch the 30-second cut](docs/showcase-work/posters/editorial.jpg)](https://zhiruiai.github.io/aihubot/work/editorial/)<br>**[Watch the 30-second cut](https://zhiruiai.github.io/aihubot/work/editorial/)**<br>Review individual shots and take home the vertical coffee film. |
+| [![Rescue a six-session event](docs/showcase-work/posters/operations.jpg)](https://zhiruiai.github.io/aihubot/work/operations/)<br>**[Rescue a six-session event](https://zhiruiai.github.io/aihubot/work/operations/)**<br>Close the main hall and export the replacement schedule to a calendar. | [![Vote on a bookstore pilot](docs/showcase-work/posters/board.jpg)](https://zhiruiai.github.io/aihubot/work/board/)<br>**[Vote on a bookstore pilot](https://zhiruiai.github.io/aihubot/work/board/)**<br>Check the 600-seat arithmetic and take the eight-week proposal to a vote. |
+| [![Choose a field database](docs/showcase-work/posters/market.jpg)](https://zhiruiai.github.io/aihubot/work/market/)<br>**[Choose a field database](https://zhiruiai.github.io/aihubot/work/market/)**<br>Switch between offline sampling and concurrent central writes. Inspect the primary sources. | [![Investigate a sign reversal](docs/showcase-work/posters/research.jpg)](https://zhiruiai.github.io/aihubot/work/research/)<br>**[Investigate a sign reversal](https://zhiruiai.github.io/aihubot/work/research/)**<br>Inspect individual penguin observations and compare pooled and within-species correlations. |
 
 ## Quick start
 
@@ -54,7 +52,7 @@ Open the file card. Ask the Bot to split the 12 guides across Wednesday and Thur
 
 - **Website delivery.** Open a delivered site from chat, compare revisions, revisit the first version and continue in its original thread. The version-history recording shows saved deliveries from a real model. The playable Starport Landing example comes from a scripted conversation. [Version-history recording](docs/demo/website-delivery.gif) · [Play Starport Landing](https://zhiruiai.github.io/aihubot/en/)
 - **Install and run a skill.** In the Bot’s settings, open **Choose and manage skills → Choose from skill library**. Inspect the files in **Data quality review**, install it, attach a CSV and select the skill with `/`. Its Python script returns an exit code and row statistics. The execution Mac needs Python 3 and local command access. [Skill packages and execution](docs/bot-models-and-skills.md)
-- **Team and publishing.** Pick a ready-made team in the Bot Gallery or describe the role to the recruiter. For external publishing, configure a supported account and verify the platform receipt. The editorial recording above ends at a reviewed script. [Team templates](docs/bot-templates.md) · [Publishing accounts](docs/publishing.md)
+- **Team and publishing.** Pick a ready-made team in the Bot Gallery or describe the role to the recruiter. For external publishing, configure a supported account and verify the platform receipt. The coffee case delivers a playable MP4 and a downloadable poster. [Team templates](docs/bot-templates.md) · [Publishing accounts](docs/publishing.md)
 
 ## Architecture and contributing
 

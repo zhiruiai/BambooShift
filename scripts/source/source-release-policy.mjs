@@ -3,6 +3,7 @@ import { constants } from 'node:fs';
 import { join, extname } from 'node:path';
 import { userInfo, homedir } from 'node:os';
 import { isIP } from 'node:net';
+import studio from '../../docs/demo/office-recordings.json' with { type: 'json' };
 import { isSourceFile, isTestTree } from './policy/files.mjs';
 
 export const releaseFiles = [
@@ -15,6 +16,7 @@ export const releaseFiles = [
   'SECURITY.md',
   'THIRD_PARTY.md',
   '.gitignore',
+  '.gitattributes',
   '.npmrc',
   '.env.example',
   '.prettierignore',
@@ -77,7 +79,24 @@ const generated = new Set([
   'mobile/ios/Runner/GeneratedPluginRegistrant.h',
   'mobile/ios/Runner/GeneratedPluginRegistrant.m',
 ]);
+// Only these reviewed snapshots and posters are also staged to GitHub Pages.
+export const studioDigests = new Map();
+for (const scene of studio.cases) {
+  if (!['commerce', 'editorial', 'operations', 'board', 'market', 'research'].includes(scene.slug))
+    throw Error('Unknown studio case.');
+  for (const asset of scene.files) {
+    if (!/^[a-z0-9_-]+(?:\.[a-z0-9]+)+$/.test(asset.path) || !/^[0-9a-f]{64}$/.test(asset.sha256))
+      throw Error('Invalid studio asset descriptor.');
+    studioDigests.set('docs/showcase-work/' + scene.slug + '/' + asset.path, asset.sha256);
+  }
+  if (!/^[0-9a-f]{64}$/.test(scene.posterSha256)) throw Error('Invalid studio poster digest.');
+  studioDigests.set('docs/showcase-work/posters/' + scene.slug + '.jpg', scene.posterSha256);
+}
 export const reviewedShowcaseFiles = new Set([
+  'docs/showcase-work/index.html',
+  'docs/showcase-work/mark.svg',
+  'docs/showcase-work/studio.css',
+  ...studioDigests.keys(),
   'docs/showcase/index.html',
   'docs/showcase/zh.html',
   'docs/showcase/showcase.css',
@@ -104,11 +123,8 @@ const reviewedDocumentationMedia = new Set([
   'docs/demo/meeting-actions.en.gif',
   'docs/demo/meeting-actions.gif',
   'docs/demo/office-cover.svg',
-  'docs/demo/office-results/funnel.csv',
-  ...['refunds', 'editorial', 'funnel', 'minutes', 'sourcing', 'interviews'].flatMap((scene) => [
-    `docs/demo/office-${scene}.gif`,
-    `docs/demo/office-${scene}-poster.jpg`,
-  ]),
+  'docs/demo/work-studio.gif',
+  ...studio.cases.map(({ slug }) => 'docs/demo/work-' + slug + '.gif'),
   'docs/demo/orbital-landing.en.gif',
   'docs/demo/orbital-landing.gif',
   'docs/demo/pizza-fractions.en.gif',
@@ -184,7 +200,10 @@ export async function collectReleaseFiles(root) {
           !child.includes('/fixtures/')
         )
           continue;
-        if (child.startsWith('docs/showcase/') && !entry.isDirectory()) {
+        if (
+          (child.startsWith('docs/showcase/') || child.startsWith('docs/showcase-work/')) &&
+          !entry.isDirectory()
+        ) {
           if (!reviewedShowcaseFiles.has(child)) continue;
         } else if (
           child.startsWith('docs/') &&

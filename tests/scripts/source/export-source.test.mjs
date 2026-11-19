@@ -116,6 +116,8 @@ test('source export retains playable showcase files and excludes unrelated showc
   try {
     const playable = [
       'docs/showcase/index.html',
+      'docs/showcase-work/index.html',
+      'docs/showcase-work/operations/index.html',
       'docs/showcase/panda.svg',
       'docs/showcase/showcase.css',
       'docs/showcase/zh.html',
@@ -131,11 +133,16 @@ test('source export retains playable showcase files and excludes unrelated showc
     ];
     for (const path of playable) await f.put(path, 'PUBLIC SHOWCASE');
     await f.put('docs/showcase/internal.md', 'UNREVIEWED DOCUMENT');
+    await f.put('docs/showcase-work/operations/private.json', 'UNREVIEWED DATA');
     await f.put('docs/showcase/en/src/extra.mjs', 'UNREVIEWED CODE');
     await exportSource({ ...f, privateValues: [] });
     const manifest = JSON.parse(await readFile(join(f.output, 'source-manifest.json'), 'utf8'));
     assert.deepEqual(
-      manifest.files.map(({ path }) => path).filter((path) => path.startsWith('docs/showcase/')),
+      manifest.files
+        .map(({ path }) => path)
+        .filter(
+          (path) => path.startsWith('docs/showcase/') || path.startsWith('docs/showcase-work/'),
+        ),
       playable.sort(),
     );
   } finally {

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RIDGELINE · 雨季快闪补货</title><link rel="stylesheet" href="field.css"></head>
+<body>
+<header class="mast"><strong class="wordmark"><span aria-hidden="true">◢</span> RIDGELINE</strong><span>山径装备 / 商品计划</span></header>
+<main>
+<section class="hero" aria-label="雨季快闪备货">
+<div class="heroCopy"><p class="eyeline">FIELD SUPPLY ｜ 雨季快闪</p><h1>雨季开店前的<br>72 小时<span>。</span></h1><p class="lead">雨壳晚到一天，现金也少了 ¥1,400。<br>哪些货值得抢救？</p></div>
+<figure><img src="shell.jpg" alt="橘色技术雨壳搭在潮湿的林间岩石上"><figcaption>RJ–01　/　ALPINE SHELL</figcaption></figure>
+</section>
+<section class="desk" aria-label="采购推演">
+<div class="edition"><p class="eyeline">BUYING DESK</p><h2>采购决策台</h2><div class="switches" aria-label="选择供货及预算情景"><button id="normal" type="button">01　原排期</button><button id="disrupted" class="active" type="button">02　供应商延误</button></div></div>
+<div class="status"><span id="signal">● 到货变更</span><p id="brief">常规雨壳 96 小时才到。同城只剩 1 箱，每件加 ¥65。</p></div>
+<div class="metrics" aria-live="polite"><div><small>预计新增商品毛利</small><b id="gain">¥3,708</b></div><div><small>采购支出</small><b id="spend">¥5,430</b></div><div><small>仍缺货</small><b id="gap">22 件</b></div></div>
+<div class="budget"><span>可用现金</span><button id="low" type="button" class="active">¥5,500</button><button id="high" type="button">¥6,900</button></div>
+<div class="lines">
+<table><caption>整箱采购单</caption><thead><tr><th>商品 / SKU</th><th>采购量</th><th>采购小计</th><th>到货</th></tr></thead><tbody>
+<tr><th>硬壳冲锋衣 <small>RJ01</small></th><td id="qty0">1 箱 · 6 件</td><td id="amt0">¥2,070</td><td id="eta">同城 12h</td></tr>
+<tr><th>越野头灯 <small>HL02</small></th><td id="qty1">3 箱 · 24 件</td><td id="amt1">¥2,352</td><td>36h</td></tr>
+<tr><th>卷口防水袋 <small>DB03</small></th><td id="qty2">2 箱 · 24 件</td><td id="amt2">¥1,008</td><td>18h</td></tr>
+</tbody></table></div>
+<div class="actions"><div>采购单 <b id="po">PO–R2 / 5500</b></div>
+<a id="po0" class="hide" href="regular-5500.csv" download>下载采购单 ↓</a><a id="po1" class="hide" href="regular-6900.csv" download>下载采购单 ↓</a>
+<a id="po2" href="delay-5500.csv" download>下载采购单 ↓</a><a id="po3" class="hide" href="delay-6900.csv" download>下载采购单 ↓</a></div>
+<details><summary>核对原始需求和计算口径</summary><p>现货优先。雨壳、头灯、防水袋的需求缺口分别为 18、26、32 件。枚举整箱组合，仅计算 72 小时内可售数量与单位商品毛利的乘积，毛利相同先少花钱，再少买箱。此口径未扣物流和其他营业费用。</p><a href="orders.csv" download>下载原始商品明细 ↓</a></details>
+</section>
+</main><footer>RIDGELINE FIELD SUPPLY　/　虚构品牌与采购数据 · 模拟采购单</footer>
+<script src="plans.js"></script><script src="field.js"></script></body></html>

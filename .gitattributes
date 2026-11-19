@@ -3,3 +3,7 @@ legal/third-party/** -text
 # These upstream originals contain whitespace that must not be reformatted.
 legal/third-party/canvas-1.1.0/skia/third_party/etc1/LICENSE -whitespace
 legal/third-party/canvas-1.1.0/skia-third-party/libwebp/COPYING -whitespace
+# Website snapshots must keep their Rust manifest digests, including calendar and CSV line endings.
+docs/showcase-work/** -text whitespace=cr-at-eol
+# The original attached stock sheet includes a trailing empty record.
+docs/showcase-work/commerce/orders.csv whitespace=cr-at-eol,-blank-at-eof

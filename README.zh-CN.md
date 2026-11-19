@@ -2,27 +2,25 @@
 
 **简体中文** · [English](README.md)
 
-**把任务交给 Bot，打开初稿提修改，在原对话里收到可以核对的终稿。** aihubot 是可自托管的团队工作空间，模型由你选择。
+**aihubot 是一个可以自托管的 Bot 工作空间。** 在聊天里交一份简报，打开交付物，告诉 Bot 哪个条件变了，再回到同一条对话核对新版。
 
-[看六个办公实录](docs/office-workflows.md) · [快速开始](#快速开始) · [下载](https://github.com/zhiruiai/aihubot/releases/latest) · [试玩交付的网站](https://zhiruiai.github.io/aihubot/zh.html)
+[打开六件作品](https://zhiruiai.github.io/aihubot/work/) · [看实录与验收依据](docs/office-workflows.md) · [快速开始](#快速开始) · [下载客户端](https://github.com/zhiruiai/aihubot/releases/latest)
 
-## 纠正一笔重复退款
+## 开店前 72 小时，主力商品晚到了
 
-店铺报了 2,200 元退款，复核时发现有 200 元重复入账。打开初稿、提出修正，再看终稿里的净收入和退款率如何变化。
+雨壳要 96 小时才到，采购预算也从 ¥6,900 缩到 ¥5,500。采购 Bot 将三款商品从 **3 / 1 / 2 箱改为 1 / 3 / 2 箱**。打开采购台，切换交期和预算，对照预计毛利，再下载对应采购单。
 
-[![电商退款核算实录。修订稿扣除 200 元重复退款，净收入改为 28,000 元。](docs/demo/office-refunds.gif)](docs/office-workflows.md#refunds)
+[![六件实际交付作品的浏览器实录，从橘色雨壳采购台、咖啡竖屏短片到可复核的数据研究](docs/demo/work-studio.gif)](https://zhiruiai.github.io/aihubot/work/)
 
-[打开这份对账终稿](docs/demo/office-results/refunds.md)
+## 亲手试一次
 
-## 六个办公场景
+点封面打开成品，无需登录。四组业务资料为虚构示例，选型与研究使用公开资料。每个案例都经过真实模型与 Rust 服务的交付、修改和复核。
 
-点封面可看动画、复核要求和实际交付文件。六个任务均由真实模型连接 Rust 服务执行，使用独立工作空间和虚构业务资料。动画在产品界面中回放留存的对话和文件，省略等待时间，配有中英文字幕。
-
-| 经营与决策 | 内容与研究 |
+| 经营与现场 | 内容与决策 |
 | --- | --- |
-| [![电商退款核算](docs/demo/office-refunds-poster.jpg)](docs/office-workflows.md#refunds)<br>[电商退款核算](docs/office-workflows.md#refunds) | [![自媒体口播送审](docs/demo/office-editorial-poster.jpg)](docs/office-workflows.md#editorial)<br>[自媒体口播送审](docs/office-workflows.md#editorial) |
-| [![活动转化复盘](docs/demo/office-funnel-poster.jpg)](docs/office-workflows.md#funnel)<br>[活动漏斗复盘](docs/office-workflows.md#funnel) | [![项目决策纪要](docs/demo/office-minutes-poster.jpg)](docs/office-workflows.md#minutes)<br>[项目决策纪要](docs/office-workflows.md#minutes) |
-| [![市场调研与采购比选](docs/demo/office-sourcing-poster.jpg)](docs/office-workflows.md#sourcing)<br>[供应商报价比选](docs/office-workflows.md#sourcing) | [![访谈证据复核](docs/demo/office-interviews-poster.jpg)](docs/office-workflows.md#interviews)<br>[访谈证据复核](docs/office-workflows.md#interviews) |
+| [![雨壳晚到，重新开采购单](docs/showcase-work/posters/commerce.jpg)](https://zhiruiai.github.io/aihubot/work/commerce/)<br>**[雨壳晚到，重新开采购单](https://zhiruiai.github.io/aihubot/work/commerce/)**<br>供应商延期与预算削减后，重算整箱件数、毛利和到货。 | [![把周末拍成一支 30 秒短片](docs/showcase-work/posters/editorial.jpg)](https://zhiruiai.github.io/aihubot/work/editorial/)<br>**[把周末拍成一支 30 秒短片](https://zhiruiai.github.io/aihubot/work/editorial/)**<br>从修订分镜到可播放、可下载的竖屏咖啡成片。 |
+| [![主厅关闭，六场活动照办](docs/showcase-work/posters/operations.jpg)](https://zhiruiai.github.io/aihubot/work/operations/)<br>**[主厅关闭，六场活动照办](https://zhiruiai.github.io/aihubot/work/operations/)**<br>查看原排期与应急排期，把调整后的活动导入日历。 | [![夜读试点，投还是不投？](docs/showcase-work/posters/board.jpg)](https://zhiruiai.github.io/aihubot/work/board/)<br>**[夜读试点，投还是不投？](https://zhiruiai.github.io/aihubot/work/board/)**<br>翻看修正后的 600 席议案，检查盈亏线与退出条件。 |
+| [![现场离线，中心多机写入](docs/showcase-work/posters/market.jpg)](https://zhiruiai.github.io/aihubot/work/market/)<br>**[现场离线，中心多机写入](https://zhiruiai.github.io/aihubot/work/market/)**<br>改变部署约束，看数据库选型何时翻转，逐条核查官方来源。 | [![一张会翻转结论的散点图](docs/showcase-work/posters/research.jpg)](https://zhiruiai.github.io/aihubot/work/research/)<br>**[一张会翻转结论的散点图](https://zhiruiai.github.io/aihubot/work/research/)**<br>检查 110 条原始观测，按物种拆开总体负相关。 |
 
 ## 快速开始
 
@@ -54,7 +52,7 @@ npm run dev
 
 - **交付网站。** 从聊天打开成品，对比修改，回看第一版，再回原线程继续改。版本历史动画展示了真实模型留下的交付记录，「星港降落」试玩来自预设对话。[版本回看实录](docs/demo/website-delivery.gif) · [试玩星港降落](https://zhiruiai.github.io/aihubot/zh.html)
 - **安装并运行技能。** 在 Bot 设置中打开 **选择与管理技能 → 从技能库选择**。检查「数据质量核对」包内文件并安装，附上 CSV，在聊天中用 `/` 选择该技能。脚本会返回退出码和统计结果，执行端需要 Python 3 和本机命令权限。[技能包与脚本执行](docs/bot-models-and-skills.md)
-- **组队与发布。** 在 Bot 广场选取现成团队，或向招聘助理描述所需角色。对外发布时需配置相应账号并核对平台回执。本页自媒体实录的交付范围是送审稿。[团队模板](docs/bot-templates.md) · [发布账号](docs/publishing.md)
+- **组队与发布。** 在 Bot 广场选取现成团队，或向招聘助理描述所需角色。对外发布时需配置相应账号并核对平台回执。本页咖啡短片支持播放、下载和逐镜复核。[团队模板](docs/bot-templates.md) · [发布账号](docs/publishing.md)
 
 ## 架构与贡献
 

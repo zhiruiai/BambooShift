@@ -1,0 +1,19 @@
+'use strict';
+if (typeof document.createDocumentFragment === 'function') {
+  const layout = document.getElementById('full-interaction');
+  if (layout) document.querySelector('main').replaceWith(layout.content.cloneNode(true));
+'use strict';
+const q=id=>document.getElementById(id);const labels={All:'全部物种',Adelie:'阿德利',Chinstrap:'帽带',Gentoo:'巴布亚'};
+const colors={Adelie:'#d18349',Chinstrap:'#9271a6',Gentoo:'#2b8380'};const svg=q('graph');const ns='http://www.w3.org/2000/svg';let group='All',focused=null;
+function el(tag,attrs={},txt){const v=document.createElementNS(ns,tag);for(const [k,t]of Object.entries(attrs))v.setAttribute(k,t);if(txt!==undefined)v.textContent=txt;svg.append(v);return v}
+function setFocus(r){focused=r;const sample=q('sample');if(!r){sample.textContent='点选任一观测，核对该行的原始数值。';return;}sample.textContent='源行 #'+r[0]+' · '+labels[r[1]]+' / '+r[2]+' · '+r[3]+' g / '+r[4]+' mm';}
+function render(){svg.replaceChildren();const rows=window.observations.filter(r=>(group==='All'||r[1]===group)&&r[3]!==null&&r[4]!==null);const result=window.analyseSample(rows);const x=v=>48+(v-2400)/4000*435,y=v=>205-(v-12)/10*175;
+for(const t of [12,14,16,18,20,22]){el('line',{x1:48,x2:484,y1:y(t),y2:y(t),stroke:'#dce5db'});el('text',{x:38,y:y(t)+3,'text-anchor':'end'},t)}for(const t of [3000,4000,5000,6000]){el('line',{x1:x(t),x2:x(t),y1:30,y2:205,stroke:'#edf0e9'});el('text',{x:x(t),y:222,'text-anchor':'middle'},(t/1000).toFixed(1))}
+el('text',{x:47,y:14},'喙深 mm');el('text',{x:480,y:240,'text-anchor':'end'},'体重 kg');for(const row of rows){const p=el('circle',{cx:x(row[3]),cy:y(row[4]),r:4,fill:colors[row[1]],opacity:'.82',tabindex:'0',role:'button','aria-label':labels[row[1]]+' 源行 '+row[0]});const show=()=>setFocus(row);p.addEventListener('click',show);p.addEventListener('focus',show);p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')show()});const title=document.createElementNS(ns,'title');title.textContent='#'+row[0]+' · '+row[3]+' g / '+row[4]+' mm';p.append(title);}
+const min=Math.min(...rows.map(r=>r[3])),max=Math.max(...rows.map(r=>r[3]));el('line',{x1:x(min),x2:x(max),y1:y(result.intercept+result.slope*min),y2:y(result.intercept+result.slope*max),stroke:'#173f42','stroke-width':2,'pointer-events':'none','stroke-dasharray':'6 4'});
+q('value').textContent=(result.r>=0?'+':'−')+Math.abs(result.r).toFixed(2);q('group').textContent=labels[group]+' / n = '+rows.length;q('summary').textContent=window.interpretSample(group,result,rows);setFocus(null);for(const b of q('picks').children)b.setAttribute('aria-pressed',String(b.dataset.species===group))}
+function table(){const data=window.observations.filter(r=>group==='All'||r[1]===group);q('row-count').textContent=data.length+' 条原始记录，可滚动逐行核对。缺测行在图中剔除。';q('table').replaceChildren(...data.map(row=>{const tr=document.createElement('tr');for(const value of ['#'+row[0],labels[row[1]],row[2],row[3]??'缺测',row[4]??'缺测']){const td=document.createElement('td');td.textContent=value;tr.append(td)}return tr}));q('species').value=group;}
+function tab(value){for(const id of ['plot','rows','method'])q(id).hidden=id!==value;for(const b of document.querySelectorAll('.tabs button'))b.setAttribute('aria-selected',String(b.dataset.tab===value));if(value==='rows')table();}
+for(const [value,label]of Object.entries(labels)){let b=document.createElement('button');b.dataset.species=value;b.textContent=(value==='All'?'':'● ')+label;b.addEventListener('click',()=>{group=value;render()});q('picks').append(b);const opt=document.createElement('option');opt.value=value;opt.textContent=label;q('species').append(opt)}
+for(const b of document.querySelectorAll('.tabs button'))b.addEventListener('click',()=>tab(b.dataset.tab));q('species').addEventListener('change',e=>{group=e.target.value;table();render()});q('raw').addEventListener('click',()=>tab('rows'));render();
+}

@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'docs/showcase/**'
+      - 'docs/showcase-work/**'
+      - 'docs/demo/office-recordings.json'
       - 'scripts/source/source-release-policy.mjs'
       - '.github/workflows/showcase.yml'
 
@@ -35,6 +37,7 @@ jobs:
         shell: bash
         run: |
           node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
           import { mkdir, writeFile } from 'node:fs/promises';
           import { dirname, join } from 'node:path';
           import {
@@ -43,11 +46,13 @@ jobs:
             regularBytes,
             releaseFindings,
             reviewedShowcaseFiles,
+            studioDigests,
           } from './scripts/source/source-release-policy.mjs';
 
           const prefix = 'docs/showcase/';
+          const studio = 'docs/showcase-work/';
           const root = process.cwd();
-          const files = (await collectReleaseFiles(root)).filter((file) => file.startsWith(prefix));
+          const files = (await collectReleaseFiles(root)).filter((file) => file.startsWith(prefix) || file.startsWith(studio));
           if (files.length !== reviewedShowcaseFiles.size ||
               files.some((file) => !reviewedShowcaseFiles.has(file))) {
             throw Error('The showcase is missing one or more reviewed files.');
@@ -55,11 +60,16 @@ jobs:
           const values = await privateReleaseValues(root);
           const output = join(process.env.RUNNER_TEMP, 'pandamate-showcase');
           for (const file of files) {
-            const content = await regularBytes(join(root, file), 256 * 1024);
+            const digest = studioDigests.get(file);
+            const limit = digest && /\.(?:mp4|jpg|png|webp)$/.test(file) ? 4 * 1024 * 1024 : 256 * 1024;
+            const content = await regularBytes(join(root, file), limit);
+            if (digest && createHash('sha256').update(content).digest('hex') !== digest)
+              throw Error('Reviewed studio file has changed: ' + file);
             if (releaseFindings(file, content, values).length) {
               throw Error('Showcase privacy check failed: ' + file);
             }
-            const destination = join(output, file.slice(prefix.length));
+            const destination = file.startsWith(prefix) ? join(output, file.slice(prefix.length))
+              : join(output, 'work', file.slice(studio.length));
             await mkdir(dirname(destination), { recursive: true });
             await writeFile(destination, content, { flag: 'wx' });
           }

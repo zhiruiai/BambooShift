@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#172d38" />
+    <title>潮汐城市设计周 · 场控调度台</title>
+    <link rel="stylesheet" href="board.css" />
+    <script defer="" src="plan.js"></script>
+    <script defer="" src="board.js"></script>
+    <link rel="stylesheet" href="layout.css" />
+  </head>
+  <body data-version="revised">
+    <header>
+      <div class="top wrap">
+        <span class="identity"><i class="signal" aria-hidden="true"></i> 潮汐城市设计周</span
+        ><span class="top-date">2027.05.16 <span> / 上海时间 UTC+8</span></span>
+      </div>
+      <div class="hero wrap">
+        <div class="intro">
+          <p class="eyebrow">EVENT OPERATIONS <span>/</span> 场务执行</p>
+          <h1>场控调度台<span>.</span></h1>
+          <p>开场前，泊岸主厅临时关闭。重新安置六场活动，保留转播切换和清场时间。</p>
+        </div>
+        <div class="impact">
+          <span class="impact-label">场地冲突 <span>/ CONFLICTS</span></span
+          ><strong><span>03</span><i>→</i><span>00</span></strong
+          ><small>原排期 <span>应急排期</span></small>
+        </div>
+      </div>
+    </header>
+    <main class="wrap">
+      <section aria-labelledby="schedule-heading">
+        <div class="section-title">
+          <div>
+            <p class="kicker">现场执行 / RUN OF SHOW</p>
+            <h2 id="schedule-heading">场地时间线</h2>
+          </div>
+          <div class="actions">
+            <div class="filters" role="group" aria-label="筛选场地">
+              <button type="button" class="filter active" id="filter-all" data-venue="all">
+                全部</button
+              ><button type="button" class="filter" id="filter-M" data-venue="M">主厅</button
+              ><button type="button" class="filter" id="filter-N" data-venue="N">北仓</button
+              ><button type="button" class="filter" id="filter-W" data-venue="W">工坊</button
+              ><button type="button" class="filter" id="filter-S" data-venue="S">沙龙</button>
+            </div>
+            <a class="export" id="export" href="tide-week-emergency-2027-05-16.ics" download=""
+              >↓&nbsp; 导出应急日历</a
+            >
+          </div>
+        </div>
+        <div class="switchrow">
+          <div class="switch" aria-label="排期版本">
+            <a id="before" href="index.html">原排期</a
+            ><a id="after" href="emergency.html" aria-current="page">应急排期</a>
+          </div>
+          <p id="status" role="status" class="clear">✓ 全场 6 场通过约束核验</p>
+        </div>
+        <div class="board" id="board">
+          <div class="axis">
+            <span class="axis-title">场馆 / 席位</span>
+            <div class="scale">
+              <span class="time" style="left: 4.65116%">13:00</span
+              ><span class="time" style="left: 18.6047%">13:30</span
+              ><span class="time" style="left: 32.5581%">14:00</span
+              ><span class="time" style="left: 46.5116%">14:30</span
+              ><span class="time" style="left: 60.4651%">15:00</span
+              ><span class="time" style="left: 74.4186%">15:30</span
+              ><span class="time" style="left: 88.3721%">16:00</span>
+            </div>
+          </div>
+          <div class="lane" data-room="M">
+            <div class="room"><b>泊岸主厅</b><small>M / 180 席</small></div>
+            <div class="track">
+              <span class="gridmark" style="left: 4.65116%"></span
+              ><span class="gridmark" style="left: 18.6047%"></span
+              ><span class="gridmark" style="left: 32.5581%"></span
+              ><span class="gridmark" style="left: 46.5116%"></span
+              ><span class="gridmark" style="left: 60.4651%"></span
+              ><span class="gridmark" style="left: 74.4186%"></span
+              ><span class="gridmark" style="left: 88.3721%"></span
+              ><span class="blocked">INC-04 场地封闭</span>
+            </div>
+          </div>
+          <div class="lane" data-room="N">
+            <div class="room"><b>北仓剧场</b><small>N / 150 席</small></div>
+            <div class="track">
+              <span class="gridmark" style="left: 4.65116%"></span
+              ><span class="gridmark" style="left: 18.6047%"></span
+              ><span class="gridmark" style="left: 32.5581%"></span
+              ><span class="gridmark" style="left: 46.5116%"></span
+              ><span class="gridmark" style="left: 60.4651%"></span
+              ><span class="gridmark" style="left: 74.4186%"></span
+              ><span class="gridmark" style="left: 88.3721%"></span
+              ><button
+                class="event changed current"
+                data-session="A"
+                aria-label="开幕主旨，北仓剧场，13:15"
+                style="left: 11.6279%; width: 20.9302%"
+                data-room="N"
+                data-title="开幕主旨"
+                data-when="13:15–14:00 · 北仓剧场 · 报名 138 人 / 150 席"
+                data-reason=""
+                data-version="revised"
+                id="session-A"
+              >
+                <small>A · 13:15–14:00</small><strong>开幕主旨</strong></button
+              ><button
+                class="event changed"
+                data-session="D"
+                aria-label="城市策展圆桌，北仓剧场，14:15"
+                style="left: 39.5349%; width: 20.9302%"
+                data-room="N"
+                data-title="城市策展圆桌"
+                data-when="14:15–15:00 · 北仓剧场 · 报名 104 人 / 150 席"
+                data-reason=""
+                data-version="revised"
+                id="session-D"
+              >
+                <small>D · 14:15–15:00</small><strong>城市策展圆桌</strong></button
+              ><button
+                class="event changed"
+                data-session="F"
+                aria-label="闭幕对谈，北仓剧场，15:30"
+                style="left: 74.4186%; width: 20.9302%"
+                data-room="N"
+                data-title="闭幕对谈"
+                data-when="15:30–16:15 · 北仓剧场 · 报名 110 人 / 150 席"
+                data-reason=""
+                data-version="revised"
+                id="session-F"
+              >
+                <small>F · 15:30–16:15</small><strong>闭幕对谈</strong>
+              </button>
+            </div>
+          </div>
+          <div class="lane" data-room="W">
+            <div class="room"><b>天窗工坊</b><small>W / 68 席</small></div>
+            <div class="track">
+              <span class="gridmark" style="left: 4.65116%"></span
+              ><span class="gridmark" style="left: 18.6047%"></span
+              ><span class="gridmark" style="left: 32.5581%"></span
+              ><span class="gridmark" style="left: 46.5116%"></span
+              ><span class="gridmark" style="left: 60.4651%"></span
+              ><span class="gridmark" style="left: 74.4186%"></span
+              ><span class="gridmark" style="left: 88.3721%"></span
+              ><button
+                class="event"
+                data-session="B"
+                aria-label="街区拼贴实验，天窗工坊，13:10"
+                style="left: 9.30233%; width: 27.907%"
+                data-room="W"
+                data-title="街区拼贴实验"
+                data-when="13:10–14:10 · 天窗工坊 · 报名 48 人 / 68 席"
+                data-reason=""
+                data-version="revised"
+                id="session-B"
+              >
+                <small>B · 13:10–14:10</small><strong>街区拼贴实验</strong></button
+              ><button
+                class="event"
+                data-session="E"
+                aria-label="原型速制工坊，天窗工坊，14:30"
+                style="left: 46.5116%; width: 23.2558%"
+                data-room="W"
+                data-title="原型速制工坊"
+                data-when="14:30–15:20 · 天窗工坊 · 报名 60 人 / 68 席"
+                data-reason=""
+                data-version="revised"
+                id="session-E"
+              >
+                <small>E · 14:30–15:20</small><strong>原型速制工坊</strong>
+              </button>
+            </div>
+          </div>
+          <div class="lane" data-room="S">
+            <div class="room"><b>河口沙龙</b><small>S / 96 席</small></div>
+            <div class="track">
+              <span class="gridmark" style="left: 4.65116%"></span
+              ><span class="gridmark" style="left: 18.6047%"></span
+              ><span class="gridmark" style="left: 32.5581%"></span
+              ><span class="gridmark" style="left: 46.5116%"></span
+              ><span class="gridmark" style="left: 60.4651%"></span
+              ><span class="gridmark" style="left: 74.4186%"></span
+              ><span class="gridmark" style="left: 88.3721%"></span
+              ><button
+                class="event changed"
+                data-session="C"
+                aria-label="工艺直播演示，河口沙龙，14:15"
+                style="left: 39.5349%; width: 20.9302%"
+                data-room="S"
+                data-title="工艺直播演示"
+                data-when="14:15–15:00 · 河口沙龙 · 报名 88 人 / 96 席"
+                data-reason=""
+                data-version="revised"
+                id="session-C"
+              >
+                <small>C · 14:15–15:00</small><strong>工艺直播演示</strong>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="board-note">
+          <span><i class="dot base"></i>原时地</span><span><i class="dot move"></i>已调整</span
+          ><span><i class="dot stop"></i>场馆关闭</span
+          ><span class="instruction">选择场次查看依据 ↓</span>
+        </div>
+      </section>
+      <div class="bottom">
+        <section class="detail" id="detail" aria-live="polite">
+          <div class="detail-label" id="detail-label">SESSION A / 场次核对</div>
+          <h3 id="detail-title">开幕主旨</h3>
+          <p id="detail-when">13:15–14:00 · 北仓剧场 · 报名 138 人 / 150 席</p>
+          <p id="detail-note">
+            INC-04 M关闭，138人仅N(150)可容；N
+            13:15交场，推迟15min≤15min上限（CAP-01,RUN-02,TECH-03）
+          </p>
+        </section>
+        <details class="sources" id="sources">
+          <summary>调度依据 <span>原始资料 ↗</span></summary>
+          <p>
+            <b>CAP-01 · 场馆</b> 主厅 180 席，北仓 150 席，工坊 68 席，沙龙 96 席。北仓 13:15
+            交场，工坊仅支持实操。
+          </p>
+          <p>
+            <b>RUN-02 · 原排期</b> 六场不可拆分、压缩或取消。B、E 固定时地，D、F 固定时间，A、C
+            最多延后 15、25 分钟。
+          </p>
+          <p>
+            <b>TECH-03 · 设备</b> A 与 C 共用转播机，两场须间隔至少 15 分钟。任意场地相邻活动须预留
+            10 分钟清场。
+          </p>
+          <p>
+            <b>INC-04 · 闭馆通知</b> 12:45
+            收到场务报告，泊岸主厅当日下午封闭。同等可行方案优先保持原时间，其次取最早可行时刻。
+          </p>
+        </details>
+      </div>
+      <footer><span>aihubot / 工作样例</span><span>虚构活动与报名数据 · 离线可用</span></footer>
+    </main>
+  </body>
+</html>
