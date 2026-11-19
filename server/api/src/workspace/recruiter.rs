@@ -23,7 +23,9 @@ const PROFILE_FIELDS: [&str; 6] = [
     "avatar",
     "color",
 ];
-const LEGACY_PROFILES: [(&str, &str); 2] = [
+// SHA-256 of the six exact profile fields in each released catalog.
+const LEGACY_PROFILES: [(&str, &str); 4] = [
+    // ca41ab8, before the dedicated recruiter entry.
     (
         "zh-CN",
         "aba904a9ce1a9650f9e0c3b0616be83e799fcb1661af651b877575e4a02dce7a",
@@ -31,6 +33,15 @@ const LEGACY_PROFILES: [(&str, &str); 2] = [
     (
         "en",
         "22c33c62e910e8c747955c584f64f3c1256f05bcc2ed23a1e0b7222da6e1aff0",
+    ),
+    // b836a58 through the last BambooShift release.
+    (
+        "zh-CN",
+        "86093cd6efe3a8f6f2efb2856201c0463fcb87203b8077bb2eb12e95758ad139",
+    ),
+    (
+        "en",
+        "e27ebe725d8f8c4bf1024ec750e4443b3cda6fba3067a714cd7397fe19413131",
     ),
 ];
 fn profile(locale: &str) -> Value {
@@ -77,17 +88,15 @@ async fn find_or_create(
             .filter(|agent| mutations::local(agent).is_ok()),
         None => None,
     };
-    let (mut agent, legacy) = if let Some(agent) = agent {
-        (agent, None)
+    let profiles = [profile("zh-CN"), profile("en")];
+    let (mut agent, matched) = if let Some(agent) = agent {
+        let matched = prior_template(&agent, &profiles);
+        (agent, matched)
     } else {
-        let profiles = [profile("zh-CN"), profile("en")];
         let agents = WorkspaceStore::list_in(conn, Table::Agents).await?;
         let candidate = agents.into_iter().find_map(|agent| {
-            let legacy = match prior_template(&agent, &profiles)? {
-                TemplateMatch::Current => None,
-                TemplateMatch::Previous(locale) => Some(locale),
-            };
-            Some((agent, legacy))
+            let matched = prior_template(&agent, &profiles)?;
+            Some((agent, Some(matched)))
         });
         let Some(candidate) = candidate else {
             let (agent, chat) = mutations::create_bot(store, conn, &profile(locale)).await?;
@@ -113,7 +122,7 @@ async fn find_or_create(
     };
     let mut changed = false;
     let old_name = agent["name"].clone();
-    if let Some(locale) = legacy {
+    if let Some(TemplateMatch::Previous(locale)) = matched {
         let updated = profile(locale);
         for key in PROFILE_FIELDS {
             agent[key] = updated[key].clone();

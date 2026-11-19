@@ -226,48 +226,102 @@ async fn an_exact_template_is_reused_and_deleted_direct_chat_is_recreated_for_th
     f.close().await;
 }
 
-#[tokio::test]
-async fn unchanged_legacy_chinese_recruiter_is_upgraded_in_place_with_its_chat() {
-    let f = Fixture::new().await;
-    // This was the shipped profile before the dedicated recruiter entry was added.
-    let legacy = json!({
-        "name":"AI 同事招募员",
-        "role":"复用现有 Bot，补齐团队职责",
-        "description":"按产品目标检查角色缺口，提出可审核的 AI 同事或团队方案。",
-        "instructions":r#"你是 AI 同事招募员，负责配置 aihubot 的 Bot 团队，不招聘或联系真人。先明确成果、验收标准、已有项目和缺少的职责；优先复用合适 Bot，避免只改名字重复创建。
+// Unmodified snapshots from both generations of the shipped BambooShift catalog.
+fn historical_profiles() -> Value {
+    serde_json::from_str(include_str!(
+        "../../../tests/fixtures/shared/legacy-recruiter-profiles.json"
+    ))
+    .unwrap()
+}
 
-用 list_peers 查看当前可见同事及真实标识。普通 Bot 私聊的可见范围可能只有自己，不能据此判断整个空间没有其他 Bot。若目录不足，让用户在现有智能组队入口检查完整目录或交由已选主 Bot 协调；不要猜测 agentId，也不擅自把自己设为主 Bot。只有有明确新增需要时提出新角色。
-
-用户要求单个 AI 同事且当前提供 propose_bot 时，提交 name、role、description、instructions、avatar、color，明确输入、输出、工具前提和验收标准。该工具只在拥有者与本地 Bot 的人工私聊等受支持场景出现。需要团队且提供 propose_team 时，提交 {goal,draft}，draft 仅含 title、summary、leadKey、members，2–6 位互补成员。复用项用 {key,kind:"reuse",agentId,assignment}；新增项用 {key,kind:"create",name,role,description,instructions,avatar,color,assignment}。key 唯一，leadKey 指向成员，avatar 选 orb/drop/leaf/spark/gem/arch，color 用 #RRGGBB。角色分工写出前置交付、工作范围、输出与复查人；不要添加不存在的 dependsOn 或计划执行字段。
-
-每轮只提出一份团队方案，用户可在原卡片中编辑、复用同事并确认。工具不存在时给出文字方案和现有模板入口，不声称已经创建。确认前不开始开发、不发消息、不安排例行任务、不变更连接或权限。未知创建结果先查看原卡片或回执，不重复招募。已经存在的软件产品团队应调整分工，不再创建同名队伍。"#,
-        "avatar":"arch",
-        "color":"#8b5eaa",
-    });
-    let (code, old) = f
+async fn create_historical_recruiter(f: &Fixture, profile: Value, bound: bool) -> (Value, Value) {
+    let (code, agent) = f
         .request(
             "POST",
             &f.path("/agents"),
-            Some(legacy),
+            Some(profile),
             false,
             Some(&f.owner),
         )
         .await;
-    assert_eq!(code, 201, "{old}");
-    let snapshot = f.bootstrap().await;
-    let chat = snapshot["conversations"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .find(|chat| chat["agentIds"] == json!([old["id"]]))
+    assert_eq!(code, 201, "{agent}");
+    let store = f
+        .state
+        .workspace
+        .get(&f.workspace, &f.workspace)
+        .await
         .unwrap();
-    let opened = open(&f, "en").await;
-    assert_eq!(opened["agentId"], old["id"]);
-    assert_eq!(opened["conversationId"], chat["id"]);
-    assert_eq!(opened["agent"]["name"], "招聘助理");
-    assert_eq!(opened["conversation"]["title"], "招聘助理");
-    assert_ne!(opened["agent"]["configRevision"], old["configRevision"]);
-    assert_ne!(opened["agent"]["instructions"], old["instructions"]);
-    assert_eq!(open(&f, "en").await, opened);
-    f.close().await;
+    let chat = store
+        .list(Table::Conversations)
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|chat| chat["agentIds"] == json!([agent["id"]]))
+        .unwrap();
+    if bound {
+        store
+            .put(
+                Table::Settings,
+                &json!({
+                    "id": "builtin-recruiter", "agentId": agent["id"], "conversationId": chat["id"]
+                }),
+            )
+            .await
+            .unwrap();
+    }
+    (agent, chat)
+}
+
+#[tokio::test]
+async fn unchanged_released_recruiters_keep_their_bots_chats_and_locale_after_upgrade() {
+    let profiles = historical_profiles();
+    let current: Value =
+        serde_json::from_str(include_str!("../../../shared/bot-starter-templates.json")).unwrap();
+    for (generation, bound) in [("ca41ab8", false), ("3d28810", false), ("3d28810", true)] {
+        for (locale, requested) in [("zh-CN", "en"), ("en", "zh-CN")] {
+            let f = Fixture::new().await;
+            let (old, chat) =
+                create_historical_recruiter(&f, profiles[generation][locale].clone(), bound).await;
+            let opened = open(&f, requested).await;
+            let expected = &current["recruitment"]["locales"][locale];
+            assert_eq!(opened["agentId"], old["id"], "{generation} {locale}");
+            assert_eq!(opened["conversationId"], chat["id"]);
+            assert_eq!(opened["agent"]["instructions"], expected["instructions"]);
+            assert_eq!(opened["agent"]["name"], expected["name"]);
+            assert_eq!(opened["conversation"]["title"], expected["name"]);
+            assert_ne!(opened["agent"]["configRevision"], old["configRevision"]);
+            assert_eq!(open(&f, requested).await, opened);
+            f.close().await;
+        }
+    }
+}
+
+#[tokio::test]
+async fn a_modified_old_profile_is_never_adopted_or_overwritten_during_the_rename() {
+    for bound in [false, true] {
+        let f = Fixture::new().await;
+        let mut profile = historical_profiles()["3d28810"]["en"].clone();
+        profile["instructions"] = json!(format!(
+            "{}\nOnly recruit the roles listed in this team's staffing plan.",
+            profile["instructions"].as_str().unwrap()
+        ));
+        let (old, chat) = create_historical_recruiter(&f, profile, bound).await;
+        let opened = open(&f, "en").await;
+        assert_eq!(opened["agentId"] == old["id"], bound);
+        assert_eq!(opened["conversationId"] == chat["id"], bound);
+        let store = f
+            .state
+            .workspace
+            .get(&f.workspace, &f.workspace)
+            .await
+            .unwrap();
+        let saved = store
+            .get(Table::Agents, old["id"].as_str().unwrap())
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(saved["instructions"], old["instructions"]);
+        assert_eq!(saved["configRevision"], old["configRevision"]);
+        f.close().await;
+    }
 }
